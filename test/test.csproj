@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ope-schemes\ope-schemes.csproj" />
-    <ProjectReference Include="..\simulator\simulator.csproj" />
-    <ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
+    <ProjectReference Include="..\src\ope-schemes\ope-schemes.csproj" />
+    <ProjectReference Include="..\src\simulator\simulator.csproj" />
+    <ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
   </ItemGroup>
 
 </Project>
