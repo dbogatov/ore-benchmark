@@ -4,7 +4,7 @@ namespace OPESchemes
 {
 	public class CryptDBScheme : IOPEScheme
 	{
-		public string Decrypt(string ciphertext, string key)
+		public int Decrypt(int ciphertext, int key)
 		{
 			throw new NotImplementedException();
 		}
@@ -14,7 +14,7 @@ namespace OPESchemes
 			throw new NotImplementedException();
 		}
 
-		public string Encrypt(string plaintext, string key)
+		public int Encrypt(int plaintext, int key)
 		{
 			throw new NotImplementedException();
 		}
@@ -24,17 +24,17 @@ namespace OPESchemes
 			throw new NotImplementedException();
 		}
 
-		public bool IsEqual(string ciphertextOne, string ciphertextTwo)
+		public bool IsEqual(int ciphertextOne, int ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsGreater(string ciphertextOne, string ciphertextTwo)
+		public bool IsGreater(int ciphertextOne, int ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public string KeyGen()
+		public int KeyGen()
 		{
 			throw new NotImplementedException();
 		}

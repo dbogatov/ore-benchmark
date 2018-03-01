@@ -23,7 +23,7 @@ namespace OPESchemes
 		/// Randomized routine that generates a valid encryption key
 		/// </summary>
 		/// <returns>A valid encryption key</returns>
-		string KeyGen();
+		int KeyGen();
 
 		/// <summary>
 		/// Possibly randomized routine.
@@ -32,7 +32,7 @@ namespace OPESchemes
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		string Encrypt(string plaintext, string key);
+		int Encrypt(int plaintext, int key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -41,7 +41,7 @@ namespace OPESchemes
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		string Decrypt(string ciphertext, string key);
+		int Decrypt(int ciphertext, int key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -51,7 +51,7 @@ namespace OPESchemes
 		/// <param name="ciphertextOne">First ciphertext to test</param>
 		/// <param name="ciphertextTwo">Second ciphertext to test</param>
 		/// <returns>True if plaintexts were equal, and false otherwise</returns>
-		bool IsEqual(string ciphertextOne, string ciphertextTwo);
+		bool IsEqual(int ciphertextOne, int ciphertextTwo);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -64,6 +64,6 @@ namespace OPESchemes
 		/// True if the first plaintext was greater than the second one, 
 		/// and false otherwise
 		/// </returns>
-		bool IsGreater(string ciphertextOne, string ciphertextTwo);
+		bool IsGreater(int ciphertextOne, int ciphertextTwo);
 	}
 }

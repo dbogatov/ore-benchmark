@@ -5,10 +5,9 @@ namespace OPESchemes
 {
 	public class NoEncryptionScheme : IOPEScheme
 	{
-		private readonly int keyLength = 16;
 		private readonly Random generator = new Random();
 
-		public string Decrypt(string ciphertext, string key)
+		public int Decrypt(int ciphertext, int key)
 		{
 			return ciphertext;
 		}
@@ -18,7 +17,7 @@ namespace OPESchemes
 			return;
 		}
 
-		public string Encrypt(string plaintext, string key)
+		public int Encrypt(int plaintext, int key)
 		{
 			return plaintext;
 		}
@@ -28,28 +27,19 @@ namespace OPESchemes
 			return;
 		}
 
-		public bool IsEqual(string ciphertextOne, string ciphertextTwo)
+		public bool IsEqual(int ciphertextOne, int ciphertextTwo)
 		{
-			return ciphertextOne.Equals(ciphertextTwo, StringComparison.Ordinal);
+			return ciphertextOne == ciphertextTwo;
 		}
 
-		public bool IsGreater(string ciphertextOne, string ciphertextTwo)
+		public bool IsGreater(int ciphertextOne, int ciphertextTwo)
 		{
-			return string.Compare(ciphertextOne, ciphertextTwo, true) > 0;
+			return ciphertextOne > ciphertextTwo;
 		}
 
-		public string KeyGen()
+		public int KeyGen()
 		{
-			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-			
-			return 
-				new string(
-					Enumerable
-						.Repeat(chars, keyLength)
-						.Select(s => s[generator.Next(s.Length)])
-						.ToArray()
-					);
-
+			return generator.Next(Int32.MaxValue);
 		}
 	}
 }
