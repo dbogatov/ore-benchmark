@@ -1,42 +1,45 @@
 ﻿using System;
+using System.Linq;
 
 namespace OPESchemes
 {
-	public class CryptDBScheme : IOPEScheme
+	public class NoEncryptionScheme : IOPEScheme
 	{
+		private readonly Random generator = new Random();
+
 		public int Decrypt(int ciphertext, int key)
 		{
-			throw new NotImplementedException();
+			return ciphertext;
 		}
 
 		public void Destruct()
 		{
-			throw new NotImplementedException();
+			return;
 		}
 
 		public int Encrypt(int plaintext, int key)
 		{
-			throw new NotImplementedException();
+			return plaintext;
 		}
 
 		public void Init()
 		{
-			throw new NotImplementedException();
+			return;
 		}
 
 		public bool IsEqual(int ciphertextOne, int ciphertextTwo)
 		{
-			throw new NotImplementedException();
+			return ciphertextOne == ciphertextTwo;
 		}
 
 		public bool IsGreater(int ciphertextOne, int ciphertextTwo)
 		{
-			throw new NotImplementedException();
+			return ciphertextOne > ciphertextTwo;
 		}
 
 		public int KeyGen()
 		{
-			throw new NotImplementedException();
+			return generator.Next(Int32.MaxValue);
 		}
 	}
 }
