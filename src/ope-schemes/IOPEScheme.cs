@@ -2,6 +2,28 @@
 
 namespace OPESchemes
 {
+	public enum OPESchemes
+	{
+		NoEncryption,
+		CryptDB
+	}
+
+	public class OPESchemesFactory
+	{
+		public static IOPEScheme GetScheme(OPESchemes scheme)
+		{
+			switch (scheme)
+			{
+				case OPESchemes.NoEncryption:
+					return new NoEncryptionScheme();
+				case OPESchemes.CryptDB:
+					return new CryptDBScheme();
+				default:
+					throw new ArgumentException("Scheme enum is invalid");
+			}
+		}
+	}
+
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
 	/// </summary>

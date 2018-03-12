@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures;
+using DataStructures.BPlusTree;
 
 namespace test
 {
@@ -9,7 +9,7 @@ namespace test
         [Fact]
         public void BPlusTreeTest()
         {
-			Assert.True(new BPlusTree().DummyMethod());
+			new Tree<int>(new Options());
         }
     }
 }
