@@ -9,7 +9,7 @@ namespace DataStructures.BPlusTree
 
 		private class LeafNode : Node
 		{
-			public LeafNode next = null;
+			private LeafNode next = null;
 
 			public LeafNode(Options options) : base(options) { }
 

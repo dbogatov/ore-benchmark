@@ -9,7 +9,7 @@ namespace DataStructures.BPlusTree
 		private readonly Options _options;
 		private readonly IOPEScheme _scheme;
 
-		public int Size { get; private set; }
+		private int _size = 0;
 
 		private Node _root;
 
@@ -17,8 +17,6 @@ namespace DataStructures.BPlusTree
 		{
 			_options = options;
 			_scheme = OPESchemesFactory.GetScheme(options.Scheme);
-
-			Size = 0;
 			_root = new LeafNode(options);
 		}
 
@@ -26,7 +24,7 @@ namespace DataStructures.BPlusTree
 		{
 			value = default(T);
 
-			if (Size == 0)
+			if (_size == 0)
 			{
 				return false;
 			}
@@ -43,7 +41,7 @@ namespace DataStructures.BPlusTree
 				throw new ArgumentException("Improper range");
 			}
 
-			if (Size == 0)
+			if (_size == 0)
 			{
 				return false;
 			}
@@ -69,7 +67,7 @@ namespace DataStructures.BPlusTree
 				);
 			}
 
-			Size++;
+			_size++;
 		}
 
 		public bool Delete(int key)
