@@ -22,6 +22,12 @@ namespace DataStructures.BPlusTree
 				return true;
 			}
 
+			public override Node Insert(int key, T value)
+			{
+				this.value = value;
+				return this;
+			}
+
 			protected override void Initialize() { }
 
 			public override string ToString(int level, bool last, List<bool> nests, int index)

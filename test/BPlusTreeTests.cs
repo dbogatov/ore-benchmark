@@ -101,6 +101,22 @@ namespace Test
 			);
 		}
 
+		[Fact]
+		public void RandomSequenceTest()
+		{
+			const int max = 1000;
+			Random random = new Random(3068354); // seed is static
 
+			for (int i = 3; i < 11; i++)
+			{
+				ConstructAndValidateTree(
+					new Options(OPESchemes.OPESchemes.NoEncryption, i),
+					Enumerable
+						.Range(1, max)
+						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
+						.ToList()
+				);
+			}
+		}
 	}
 }

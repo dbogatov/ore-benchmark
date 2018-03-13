@@ -70,7 +70,15 @@ namespace DataStructures.BPlusTree
 
 					if (key <= children[i].index)
 					{
-						children.Insert(i, new IndexValue(key, new DataNode(_options, value)));
+						// Update then
+						if (key == children[i].index)
+						{
+							children[i].node.Insert(key, value);
+						}
+						else
+						{
+							children.Insert(i, new IndexValue(key, new DataNode(_options, value)));
+						}
 
 						break;
 					}
@@ -102,10 +110,10 @@ namespace DataStructures.BPlusTree
 			{
 				bool atLeastOneChild = children.Count > 0;
 				bool nextDefined = next != null || children.Last().index == Int32.MaxValue; // Rightmost leaf
-				bool childrenOrdered = 
+				bool childrenOrdered =
 					children
 						.Zip(
-							children.Skip(1), 
+							children.Skip(1),
 							(a, b) => new { a, b }
 						)
 						.All(pair => pair.a.index < pair.b.index);
