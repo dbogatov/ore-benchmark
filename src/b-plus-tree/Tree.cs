@@ -76,5 +76,15 @@ namespace DataStructures.BPlusTree
 		{
 			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, Int32.MinValue);
 		}
+
+		public void Validate()
+		{
+			if (!_root.isBalanced())
+			{
+				throw new InvalidOperationException("Tree is not balanced");
+			}
+
+			_root.Validate(true);
+		}
 	}
 }

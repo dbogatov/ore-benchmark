@@ -9,7 +9,7 @@ namespace Test
 {
 	public class BPlusTreeTests
 	{
-		private void ConstructTree(Options options, List<int> input, bool print = false)
+		private Tree<string> ConstructAndValidateTree(Options options, List<int> input, bool print = false)
 		{
 			var tree = new Tree<string>(options);
 
@@ -21,11 +21,14 @@ namespace Test
 						Console.WriteLine($"Adding {val}");
 					}
 					tree.Insert(val, val.ToString());
+					tree.Validate();
 					if (print)
 					{
 						Console.WriteLine(tree.ToString());
 					}
 				});
+
+			return tree;
 		}
 
 		[Fact]
@@ -37,7 +40,7 @@ namespace Test
 		[Fact]
 		public void InsertSingleElementTest()
 		{
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3 }
 			);
@@ -46,7 +49,7 @@ namespace Test
 		[Fact]
 		public void TriggerRootSplitTest()
 		{
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8 }
 			);
@@ -55,16 +58,18 @@ namespace Test
 		[Fact]
 		public void TriggerInternalSplitTest()
 		{
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8, 6 }
 			);
+
+			
 		}
 
 		[Fact]
 		public void FromLectureSlidesTest()
 		{
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
 			);
@@ -73,7 +78,7 @@ namespace Test
 		[Fact]
 		public void SquaresSeriesTest()
 		{
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				Enumerable
 					.Range(1, 100)
@@ -87,7 +92,7 @@ namespace Test
 		{
 			const int max = 1000;
 
-			ConstructTree(
+			ConstructAndValidateTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 5),
 				Enumerable
 					.Range(1, max)

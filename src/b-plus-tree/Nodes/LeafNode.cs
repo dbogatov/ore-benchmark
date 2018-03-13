@@ -82,11 +82,10 @@ namespace DataStructures.BPlusTree
 					var half = children.Count / 2 + children.Count % 2;
 
 					var newNodeChildren = this.children.Skip(half).ToList();
-					// newNodeChildren.Insert(0, new IndexValue(Int32.MinValue, null));
 					var newNode = new LeafNode(_options, this.next, newNodeChildren);
+					next = newNode;
 
 					children = children.Take(half).ToList();
-					// children.Add(new IndexValue(Int32.MaxValue, null));
 
 					return newNode;
 				}
@@ -97,6 +96,28 @@ namespace DataStructures.BPlusTree
 			public override string TypeString()
 			{
 				return "L";
+			}
+
+			public override void Validate(bool isRoot)
+			{
+				bool atLeastOneChild = children.Count > 0;
+				bool nextDefined = next != null || children.Last().index == Int32.MaxValue; // Rightmost leaf
+				bool childrenOrdered = 
+					children
+						.Zip(
+							children.Skip(1), 
+							(a, b) => new { a, b }
+						)
+						.All(pair => pair.a.index < pair.b.index);
+
+				if (
+					!atLeastOneChild ||
+					!nextDefined ||
+					!childrenOrdered
+				)
+				{
+					throw new InvalidOperationException("Leaf node is not valid");
+				}
 			}
 		}
 

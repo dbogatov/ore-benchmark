@@ -65,6 +65,34 @@ namespace DataStructures.BPlusTree
 			{
 				return "I";
 			}
+
+			public override void Validate(bool isRoot)
+			{
+				bool underflow = 
+					children.Count < 0.5 * _options.Branching && !isRoot ||
+					children.Count < 2 && isRoot;
+				bool overflow = children.Count > _options.Branching;
+				bool childrenOrdered = 
+					children
+						.Zip(
+							children.Skip(1), 
+							(a, b) => new { a, b }
+						)
+						.All(pair => pair.a.index < pair.b.index);
+
+				if (
+					!childrenOrdered ||
+					underflow ||
+					overflow
+				)
+				{
+					throw new InvalidOperationException("Internal node is not valid");
+				}
+
+				children.ForEach(ch => ch.node.Validate());
+			}
+
+			
 		}
 	}
 }

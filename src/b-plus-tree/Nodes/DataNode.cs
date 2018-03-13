@@ -40,6 +40,16 @@ namespace DataStructures.BPlusTree
 			{
 				return "D";
 			}
+
+			protected override int Height()
+			{
+				return 1;
+			}
+
+			public override bool isBalanced()
+			{
+				return true;
+			}
 		}
 	}
 }

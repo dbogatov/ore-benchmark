@@ -142,6 +142,28 @@ namespace DataStructures.BPlusTree
 			}
 
 			public abstract string TypeString();
+
+			public virtual void Validate(bool isRoot = false) { }
+
+			protected virtual int Height()
+			{
+				return 1 + children
+					.Where(ch => ch.node != null)
+					.Max(ch => ch.node.Height());
+			}
+
+			public virtual bool isBalanced()
+			{
+				return
+					children
+						.Where(ch => ch.node != null)
+						.Select(ch => ch.node.Height())
+						.Distinct()
+						.Count() == 1 &&
+					children
+						.Where(ch => ch.node != null)
+						.All(ch => ch.node.isBalanced());
+			}
 		}
 	}
 }
