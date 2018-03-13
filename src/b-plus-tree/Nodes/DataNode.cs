@@ -9,17 +9,27 @@ namespace DataStructures.BPlusTree
 
 		private class DataNode : Node
 		{
+			public int key;
 			public T value;
 
-			public DataNode(Options options, T value) : base(options)
+			public DataNode(Options options, int key, T value) : base(options)
 			{
+				this.key = key;
 				this.value = value;
 			}
 
 			public override bool TryGet(int key, out T value)
 			{
-				value = this.value;
-				return true;
+				if (this.key == key)
+				{
+					value = this.value;
+					return true;
+				}
+				else
+				{
+					value = default(T);
+					return false;
+				}
 			}
 
 			public override Node Insert(int key, T value)

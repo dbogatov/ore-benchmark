@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace Test
 {
-	public class BPlusTreeTests
+	public partial class BPlusTreeTests
 	{
-		private Tree<string> ConstructAndValidateTree(Options options, List<int> input, bool print = false)
+		private Tree<string> ConstructTree(Options options, List<int> input, bool validate = true, bool print = false)
 		{
 			var tree = new Tree<string>(options);
 
@@ -21,7 +21,10 @@ namespace Test
 						Console.WriteLine($"Adding {val}");
 					}
 					tree.Insert(val, val.ToString());
-					tree.Validate();
+					if (validate)
+					{
+						tree.Validate();
+					}
 					if (print)
 					{
 						Console.WriteLine(tree.ToString());
@@ -40,7 +43,7 @@ namespace Test
 		[Fact]
 		public void InsertSingleElementTest()
 		{
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3 }
 			);
@@ -49,7 +52,7 @@ namespace Test
 		[Fact]
 		public void TriggerRootSplitTest()
 		{
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8 }
 			);
@@ -58,18 +61,18 @@ namespace Test
 		[Fact]
 		public void TriggerInternalSplitTest()
 		{
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8, 6 }
 			);
 
-			
+
 		}
 
 		[Fact]
 		public void FromLectureSlidesTest()
 		{
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
 			);
@@ -78,7 +81,7 @@ namespace Test
 		[Fact]
 		public void SquaresSeriesTest()
 		{
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				Enumerable
 					.Range(1, 100)
@@ -92,7 +95,7 @@ namespace Test
 		{
 			const int max = 1000;
 
-			ConstructAndValidateTree(
+			ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 5),
 				Enumerable
 					.Range(1, max)
@@ -109,7 +112,7 @@ namespace Test
 
 			for (int i = 3; i < 11; i++)
 			{
-				ConstructAndValidateTree(
+				ConstructTree(
 					new Options(OPESchemes.OPESchemes.NoEncryption, i),
 					Enumerable
 						.Range(1, max)

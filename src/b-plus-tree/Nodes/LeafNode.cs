@@ -55,7 +55,7 @@ namespace DataStructures.BPlusTree
 			{
 				if (children.Count == 0)
 				{
-					children.Add(new IndexValue(key, new DataNode(_options, value)));
+					children.Add(new IndexValue(key, new DataNode(_options, key, value)));
 					children.Add(new IndexValue(Int32.MaxValue, null));
 
 					return null;
@@ -65,7 +65,7 @@ namespace DataStructures.BPlusTree
 				{
 					if (children[i].node == null)
 					{
-						new DataNode(_options, value);
+						new DataNode(_options, key, value);
 					}
 
 					if (key <= children[i].index)
@@ -77,7 +77,7 @@ namespace DataStructures.BPlusTree
 						}
 						else
 						{
-							children.Insert(i, new IndexValue(key, new DataNode(_options, value)));
+							children.Insert(i, new IndexValue(key, new DataNode(_options, key, value)));
 						}
 
 						break;

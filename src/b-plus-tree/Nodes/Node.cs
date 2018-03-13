@@ -50,19 +50,15 @@ namespace DataStructures.BPlusTree
 					return false;
 				}
 
-				for (int i = 0; i < children.Count - 1; i++)
+				for (int i = 0; i < children.Count; i++)
 				{
-					if (key >= children[i].index && key <= children[i + 1].index)
+					if (key <= children[i].index)
 					{
-						if (children[i].node == null)
-						{
-							return false;
-						}
-
 						return children[i].node.TryGet(key, out value);
 					}
 				}
 
+				// Should never be here
 				return false;
 			}
 
@@ -102,10 +98,7 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
-			public virtual Node Insert(int key, T value)
-			{
-				throw new NotImplementedException("Should never be called on this instance");
-			}
+			public abstract Node Insert(int key, T value);
 
 			public virtual string ToString(int level, bool last, List<bool> nests, int index)
 			{
