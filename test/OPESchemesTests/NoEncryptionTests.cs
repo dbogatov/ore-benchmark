@@ -4,7 +4,7 @@ using OPESchemes;
 using System.Linq;
 using System.Threading;
 
-namespace test
+namespace Test
 {
 	public class NoEncryptionTests
 	{

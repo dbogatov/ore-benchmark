@@ -2,7 +2,7 @@ using System;
 using Xunit;
 using Simulation;
 
-namespace test
+namespace Test
 {
     public class SimulatorTests
     {
