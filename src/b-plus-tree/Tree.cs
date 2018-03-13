@@ -38,6 +38,11 @@ namespace DataStructures.BPlusTree
 		{
 			values = new List<T>();
 
+			if (start >= end)
+			{
+				throw new ArgumentException("Improper range");
+			}
+
 			if (Size == 0)
 			{
 				return false;

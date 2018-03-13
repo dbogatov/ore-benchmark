@@ -21,7 +21,7 @@ namespace Test
 		}
 
 		[Fact]
-		public void SearchNotEmptyTreeTest()
+		public void SearchEmptyTreeTest()
 		{
 			var result = new Tree<string>(new Options()).TryGet(2, out _);
 
@@ -40,7 +40,7 @@ namespace Test
 
 			Assert.True(result);
 
-			Assert.Equal(output, 3.ToString());
+			Assert.Equal(3.ToString(), output);
 		}
 
 		[Fact]
@@ -58,7 +58,7 @@ namespace Test
 
 			Assert.True(result);
 
-			Assert.Equal(output, (58*58).ToString());
+			Assert.Equal((58*58).ToString(), output);
 		}
 
 		[Fact]

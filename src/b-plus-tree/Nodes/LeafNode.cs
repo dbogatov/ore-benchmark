@@ -19,36 +19,23 @@ namespace DataStructures.BPlusTree
 				this.children = children;
 			}
 
-			public override bool TryRange(int start, int end, List<T> values = null)
+			public override bool TryRange(int start, int end, List<T> values)
 			{
-				if (children.Count == 0)
-				{
-					return false;
-				}
+				var found = false;
 
-				for (int i = 0; i < children.Count - 1; i++)
+				for (int i = 0; i < children.Count; i++)
 				{
-					if (
-						start >= children[i].index && start <= children[i + 1].index ||
-						children[i].index >= start && children[i].index <= end
-					)
+					if (start <= children[i].index && end >= children[i].index && children[i].node != null)
 					{
-						if (children[i].node == null)
-						{
-							return false;
-						}
+						found = true;
 
 						T value;
 						children[i].node.TryGet(children[i].index, out value);
 						values.Add(value);
-
-						next.TryRange(Int32.MinValue, end, values);
-
-						return true;
 					}
 				}
 
-				return false;
+				return (next == null ? false : next.TryRange(Int32.MinValue, end, values)) || found;
 			}
 
 			public override Node Insert(int key, T value)

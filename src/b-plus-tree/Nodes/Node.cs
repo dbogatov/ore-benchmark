@@ -62,29 +62,11 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
-			public virtual bool TryRange(int start, int end, List<T> values = null)
+			public virtual bool TryRange(int start, int end, List<T> values)
 			{
-				if (start >= end)
+				for (int i = 0; i < children.Count; i++)
 				{
-					throw new ArgumentException("Improper range");
-				}
-
-				if (values == null)
-				{
-					values = new List<T>();
-				}
-
-				if (children.Count == 0)
-				{
-					return false;
-				}
-
-				for (int i = 0; i < children.Count - 1; i++)
-				{
-					if (
-						start >= children[i].index && start <= children[i + 1].index ||
-						children[i].index >= start && children[i].index <= end
-					)
+					if (start <= children[i].index)
 					{
 						if (children[i].node == null)
 						{
@@ -95,6 +77,7 @@ namespace DataStructures.BPlusTree
 					}
 				}
 
+				// Should never be here
 				return false;
 			}
 
