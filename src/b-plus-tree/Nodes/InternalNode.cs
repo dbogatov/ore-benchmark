@@ -20,13 +20,15 @@ namespace DataStructures.BPlusTree
 			{
 				Node extraNode = null;
 				Node prevNode = null;
+				int insertedIndex = -1;
 
-				for (int i = 0; i < children.Count - 1; i++)
+				for (int i = 0; i < children.Count; i++)
 				{
-					if (key >= children[i].index && key <= children[i + 1].index)
+					if (key <= children[i].index)
 					{
-						extraNode = children[i + 1].node.Insert(key, value);
-						prevNode = children[i + 1].node;
+						insertedIndex = i;
+						prevNode = children[i].node;
+						extraNode = children[i].node.Insert(key, value);
 
 						break;
 					}
@@ -38,29 +40,20 @@ namespace DataStructures.BPlusTree
 				}
 
 				var newKey = prevNode.LargestIndex();
+				
+				children[insertedIndex] = new IndexValue(children[insertedIndex].index, extraNode);
 
-				for (int i = 0; i < children.Count; i++)
-				{
-					if (children[i].node == prevNode)
-					{
-						children[i] = new IndexValue(children[i].index, extraNode);
+				children.Insert(insertedIndex, new IndexValue(newKey, prevNode));
 
-						children.Insert(i, new IndexValue(newKey, prevNode));
-						break;
-					}
-				}
-
-				if (children.Count == _options.Branching + 2)
+				if (children.Count > _options.Branching)
 				{
 					// Split
 					var half = children.Count / 2 + children.Count % 2;
 
 					var newNodeChildren = this.children.Skip(half).ToList();
-					newNodeChildren.Insert(0, new IndexValue(Int32.MinValue, null));
 					var newNode = new InternalNode(_options, newNodeChildren);
 
 					children = children.Take(half).ToList();
-					children.Add(new IndexValue(Int32.MaxValue, null));
 
 					return newNode;
 				}

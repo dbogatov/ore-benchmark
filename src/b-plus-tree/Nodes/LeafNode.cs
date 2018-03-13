@@ -55,34 +55,38 @@ namespace DataStructures.BPlusTree
 			{
 				if (children.Count == 0)
 				{
-					children.Add(new IndexValue(Int32.MinValue, null));
 					children.Add(new IndexValue(key, new DataNode(_options, value)));
 					children.Add(new IndexValue(Int32.MaxValue, null));
 
 					return null;
 				}
 
-				for (int i = 0; i < children.Count - 1; i++)
+				for (int i = 0; i < children.Count; i++)
 				{
-					if (key >= children[i].index && key <= children[i + 1].index)
+					if (children[i].node == null)
 					{
-						children.Insert(i + 1, new IndexValue(key, new DataNode(_options, value)));
+						new DataNode(_options, value);
+					}
+
+					if (key <= children[i].index)
+					{
+						children.Insert(i, new IndexValue(key, new DataNode(_options, value)));
 
 						break;
 					}
 				}
 
-				if (children.Count == _options.Branching + 3)
+				if (children.Count > _options.Branching)
 				{
 					// Split
 					var half = children.Count / 2 + children.Count % 2;
 
 					var newNodeChildren = this.children.Skip(half).ToList();
-					newNodeChildren.Insert(0, new IndexValue(Int32.MinValue, null));
+					// newNodeChildren.Insert(0, new IndexValue(Int32.MinValue, null));
 					var newNode = new LeafNode(_options, this.next, newNodeChildren);
 
 					children = children.Take(half).ToList();
-					children.Add(new IndexValue(Int32.MaxValue, null));
+					// children.Add(new IndexValue(Int32.MaxValue, null));
 
 					return newNode;
 				}

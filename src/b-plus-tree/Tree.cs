@@ -58,7 +58,6 @@ namespace DataStructures.BPlusTree
 				_root = new InternalNode(
 					_options,
 					new List<IndexValue> {
-						new IndexValue(Int32.MinValue, null),
 						new IndexValue(prevRoot.LargestIndex(), prevRoot),
 						new IndexValue(Int32.MaxValue, extraNode)
 					}

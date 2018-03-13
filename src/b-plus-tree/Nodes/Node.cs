@@ -38,7 +38,7 @@ namespace DataStructures.BPlusTree
 
 			public int LargestIndex()
 			{
-				return children[children.Count - 2].index;
+				return children.Max(ch => ch.index);
 			}
 
 			public virtual bool TryGet(int key, out T value)
@@ -123,9 +123,9 @@ namespace DataStructures.BPlusTree
 					result += $"─[<= { (index == Int32.MaxValue ? "∞" : $"{index}").PadRight(3) }]";
 				}
 
-				result += $"──({LargestIndex().ToString().PadRight(3)} {TypeString()})\n";
+				result += $"──({TypeString()} {children.Count}|{ Math.Round(100.0 * children.Count / _options.Branching) }%)\n";
 
-				for (int i = 1; i < children.Count; i++)
+				for (int i = 0; i < children.Count; i++)
 				{
 					if (children[i].node != null)
 					{

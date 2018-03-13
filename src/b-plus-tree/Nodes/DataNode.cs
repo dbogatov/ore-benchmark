@@ -33,7 +33,7 @@ namespace DataStructures.BPlusTree
 					result += nests[i] ? "│   " : "    ";
 				}
 
-				return result + $"{(last ? "└" : "├")}[{index}]──\"{value}\"\n";
+				return result + $"{(last ? "└" : "├")}[{index.ToString().PadRight(3)}]──\"{value}\"\n";
 			}
 
 			public override string TypeString()
