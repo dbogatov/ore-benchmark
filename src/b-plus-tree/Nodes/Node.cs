@@ -7,6 +7,18 @@ namespace DataStructures.BPlusTree
 {
 	public partial class Tree<T>
 	{
+		private struct DeleteInfo
+		{
+			public bool notFound;
+			public Node onlyChild;
+
+			public DeleteInfo(bool notFound = false, Node onlyChild = null)
+			{
+				this.notFound = notFound;
+				this.onlyChild = onlyChild;
+			}
+		}
+
 		private struct IndexValue
 		{
 			public int index;
@@ -82,6 +94,11 @@ namespace DataStructures.BPlusTree
 			}
 
 			public abstract Node Insert(int key, T value);
+
+			public virtual DeleteInfo Delete(int key)
+			{
+				throw new NotImplementedException();
+			}
 
 			public virtual string ToString(int level, bool last, List<bool> nests, int index)
 			{

@@ -72,7 +72,31 @@ namespace DataStructures.BPlusTree
 
 		public bool Delete(int key)
 		{
-			throw new NotImplementedException();
+			var result = _root.Delete(key);
+
+			if (result.notFound)
+			{
+				return false;
+			}
+
+			if (result.onlyChild != null)
+			{
+				_root = result.onlyChild;	
+			}
+
+			_size--;
+
+			if (_size == 0)
+			{
+				_root = new LeafNode(_options);
+			}
+
+			return true;
+		}
+
+		public int Size()
+		{
+			return _size;
 		}
 
 		public override string ToString()
