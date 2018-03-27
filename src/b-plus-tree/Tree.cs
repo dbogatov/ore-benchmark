@@ -75,7 +75,7 @@ namespace DataStructures.BPlusTree
 
 		public bool Delete(int key)
 		{
-			var result = _root.Delete(key, true);
+			var result = _root.Delete(key);
 
 			if (result.notFound)
 			{

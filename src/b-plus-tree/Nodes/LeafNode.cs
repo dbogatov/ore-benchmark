@@ -84,13 +84,13 @@ namespace DataStructures.BPlusTree
 							// Update neighbors
 							if (i != 0)
 							{
-								((DataNode)children[i - 1].node).SetNextNeighbor((DataNode)children[i].node);
+								children[i - 1].node.next = children[i].node;
 							}
 
 							// if next node is not infinity
 							if (children[i + 1].node != null)
 							{
-								((DataNode)children[i + 1].node).SetPrevNeighbor((DataNode)children[i].node);
+								children[i + 1].node.prev = children[i].node;
 							}
 						}
 

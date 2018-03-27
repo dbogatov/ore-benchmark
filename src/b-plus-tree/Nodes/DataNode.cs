@@ -18,16 +18,6 @@ namespace DataStructures.BPlusTree
 				this.value = value;
 			}
 
-			public void SetNextNeighbor(DataNode next)
-			{
-				this.next = next;
-			}
-			
-			public void SetPrevNeighbor(DataNode prev)
-			{
-				this.prev = prev;
-			}
-
 			public override bool TryGet(int key, out T value)
 			{
 				if (this.key == key)
@@ -47,6 +37,21 @@ namespace DataStructures.BPlusTree
 				this.value = value;
 				return this;
 			}
+
+			public override DeleteInfo Delete(int key)
+			{
+				return
+					this.key == key ?
+					new DeleteInfo
+					{
+						orphan = this
+					} :
+					new DeleteInfo
+					{
+						notFound = true
+					};
+			}
+
 
 			protected override void Initialize() { }
 

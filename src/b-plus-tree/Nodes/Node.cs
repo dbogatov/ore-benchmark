@@ -61,9 +61,9 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Needed for deletion algorithm
 			/// </summary>
-			protected Node next = null;
-			protected Node prev = null;
-			protected Node parent = null;
+			public Node next = null;
+			public Node prev = null;
+			public Node parent = null;
 
 			public Node(Options options, Node parent, Node next, Node prev)
 			{
@@ -128,7 +128,7 @@ namespace DataStructures.BPlusTree
 
 			public abstract Node Insert(int key, T value);
 
-			public virtual DeleteInfo Delete(int key, bool isRoot = false)
+			public virtual DeleteInfo Delete(int key)
 			{
 				// TODO: check if this case is even possible
 				if (children.Count == 0)
@@ -158,23 +158,16 @@ namespace DataStructures.BPlusTree
 					};
 				}
 
+				// Merge ocurred
+				if (result.orphan != null)
+				{
+					children.Remove(children.First(ch => ch.node == result.orphan));
+				}
+
 				if (result.mergeOrShiftOcurred)
 				{
-					// Merge ocurred
-					if (result.orphan != null)
-					{
-						children.Remove(children.First(ch => ch.node == result.orphan));
-					}
-
 					// Rebuild indices
-					for (int i = 0; i < children.Count; i++)
-					{
-						children[i] = new IndexValue
-						{
-							node = children[i].node,
-							index = children[i].node.LargestIndex()
-						};
-					}
+					this.RebuildIndices();
 
 					// Underflow
 					if (this.IsUnderflow())
@@ -193,18 +186,111 @@ namespace DataStructures.BPlusTree
 							return new DeleteInfo();
 						}
 
+						// try to borrow from the right neighbor
 						if (this.next != null)
 						{
-							var fromRight = this.next.BorrowChildren(true);
-							if (fromRight != null)
+							var right = this.next.BorrowChildren(true);
+							if (right != null)
 							{
+								children.AddRange(right);
+								this.RebuildIndices();
 
+								return new DeleteInfo
+								{
+									mergeOrShiftOcurred = true
+								};
 							}
 						}
+
+						// try to borrow from the left neighbor
+						if (this.prev != null)
+						{
+							var left = this.prev.BorrowChildren(false);
+							if (left != null)
+							{
+								left.AddRange(children);
+								children = left;
+								this.RebuildIndices();
+
+								return new DeleteInfo
+								{
+									mergeOrShiftOcurred = true
+								};
+							}
+						}
+
+						// try to merge with the right neighbor
+						if (this.next != null)
+						{
+							this.next.Merge(children, true);
+
+							return new DeleteInfo
+							{
+								orphan = this,
+								mergeOrShiftOcurred = true
+							};
+						}
+
+						// try to merge with the left neighbor
+						// must be not null here
+						if (this.prev != null)
+						{
+							this.prev.Merge(children, false);
+
+							return new DeleteInfo
+							{
+								orphan = this,
+								mergeOrShiftOcurred = true
+							};
+						}
+
+						// should never reach here
+						throw new InvalidOperationException("Could not merge.");
 					}
 				}
 
 				return new DeleteInfo();
+			}
+
+			protected void Merge(List<IndexValue> orphans, bool fromLeft)
+			{
+				if (fromLeft)
+				{
+					orphans.AddRange(children);
+					children = orphans;
+				}
+				else
+				{
+					children.AddRange(orphans);
+				}
+
+				this.RebuildIndices();
+			}
+
+			protected void RebuildIndices()
+			{
+				var changeMade = false;
+
+				for (int i = 0; i < children.Count; i++)
+				{
+					if (children[i].index != children[i].node.LargestIndex())
+					{
+						children[i] = new IndexValue
+						{
+							node = children[i].node,
+							index = children[i].node.LargestIndex()
+						};
+
+						changeMade = true;
+					}
+
+					children[i].node.SetParent(this);
+				}
+
+				if (changeMade)
+				{
+					this.parent.RebuildIndices();
+				}
 			}
 
 			protected List<IndexValue> BorrowChildren(bool leftMost)
@@ -217,21 +303,24 @@ namespace DataStructures.BPlusTree
 					return null;
 				}
 
+				List<IndexValue> spareChildren;
+
 				if (leftMost)
 				{
-					var spareChildren = this.children.Take(count).ToList();
+					spareChildren = this.children.Take(count).ToList();
 					children = children.Skip(count).Take(children.Count - count).ToList();
-
-					return spareChildren;
 				}
 				else
 				{
-					var spareChildren = this.children.Skip(children.Count - count).Take(count).ToList();
+					spareChildren = this.children.Skip(children.Count - count).Take(count).ToList();
 					children = children.Take(children.Count - count).ToList();
 
-					return spareChildren;
 				}
 
+				// if rightmost children taken, it may affect parent's indices
+				this.RebuildIndices();
+
+				return spareChildren;
 			}
 
 			protected abstract bool IsUnderflow();
@@ -281,7 +370,7 @@ namespace DataStructures.BPlusTree
 
 			public virtual bool CheckNeighborLinks(bool leftMost = false)
 			{
-				return 
+				return
 					(this.next != null || this.children.Last().index == Int32.MaxValue) &&
 					(this.next == null || this.next.CheckNeighborLinks()) &&
 					(leftMost ? this.children.First().node.CheckNeighborLinks(true) : true);
