@@ -40,16 +40,22 @@ namespace DataStructures.BPlusTree
 
 			public override DeleteInfo Delete(int key)
 			{
-				return
-					this.key == key ?
-					new DeleteInfo
+				if (this.key == key)
+				{
+					ConnectNeighbors();
+
+					return new DeleteInfo
 					{
 						orphan = this
-					} :
-					new DeleteInfo
+					};
+				}
+				else
+				{
+					return new DeleteInfo
 					{
 						notFound = true
 					};
+				}
 			}
 
 
@@ -89,7 +95,9 @@ namespace DataStructures.BPlusTree
 
 			public override bool CheckNeighborLinks(bool leftMost = false)
 			{
-				return true;
+				return
+					(this.next != null || this.key == Int32.MaxValue) &&
+					(this.next == null || this.next.CheckNeighborLinks());
 			}
 		}
 	}

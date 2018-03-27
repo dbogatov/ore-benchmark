@@ -110,6 +110,11 @@ namespace DataStructures.BPlusTree
 
 		public void Validate()
 		{
+			if (_size == 0)
+			{
+				return;
+			}
+
 			if (!_root.isBalanced())
 			{
 				throw new InvalidOperationException("Tree is not balanced");

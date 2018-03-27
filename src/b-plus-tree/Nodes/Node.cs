@@ -15,12 +15,6 @@ namespace DataStructures.BPlusTree
 			public bool notFound;
 
 			/// <summary>
-			/// True if during the deletion process a merge or a shift ocurred
-			/// Thus, it is necessary to rebuild indices
-			/// </summary>
-			public bool mergeOrShiftOcurred;
-
-			/// <summary>
 			/// If during the deletion process there is only one node left, it is returned
 			/// Thus, root must be collapsed
 			/// </summary>
@@ -32,11 +26,10 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			public Node orphan;
 
-			public DeleteInfo(bool notFound = false, Node onlyChild = null, bool mergeOrShiftOcurred = false, Node orphan = null)
+			public DeleteInfo(bool notFound = false, Node onlyChild = null, Node orphan = null)
 			{
 				this.notFound = notFound;
 				this.onlyChild = onlyChild;
-				this.mergeOrShiftOcurred = mergeOrShiftOcurred;
 				this.orphan = orphan;
 			}
 		}
@@ -162,91 +155,82 @@ namespace DataStructures.BPlusTree
 				if (result.orphan != null)
 				{
 					children.Remove(children.First(ch => ch.node == result.orphan));
+
+					this.RebuildIndices();
 				}
 
-				if (result.mergeOrShiftOcurred)
-				{
-					// Rebuild indices
-					this.RebuildIndices();
 
-					// Underflow
-					if (this.IsUnderflow())
+				// Underflow
+				if (this.IsUnderflow())
+				{
+					// if this is root
+					if (this.next == null && this.prev == null)
 					{
-						// if this is root
-						if (this.next == null && this.prev == null)
+						if (children.Count <= 1)
 						{
-							if (children.Count <= 1)
+							return new DeleteInfo
 							{
-								return new DeleteInfo
-								{
-									onlyChild = children.First().node
-								};
-							}
+								onlyChild = children.First().node
+							};
+						}
+
+						return new DeleteInfo();
+					}
+
+					// try to borrow from the right neighbor
+					if (this.next != null)
+					{
+						var right = this.next.BorrowChildren(true);
+						if (right != null)
+						{
+							children.AddRange(right);
+							this.RebuildIndices();
 
 							return new DeleteInfo();
 						}
-
-						// try to borrow from the right neighbor
-						if (this.next != null)
-						{
-							var right = this.next.BorrowChildren(true);
-							if (right != null)
-							{
-								children.AddRange(right);
-								this.RebuildIndices();
-
-								return new DeleteInfo
-								{
-									mergeOrShiftOcurred = true
-								};
-							}
-						}
-
-						// try to borrow from the left neighbor
-						if (this.prev != null)
-						{
-							var left = this.prev.BorrowChildren(false);
-							if (left != null)
-							{
-								left.AddRange(children);
-								children = left;
-								this.RebuildIndices();
-
-								return new DeleteInfo
-								{
-									mergeOrShiftOcurred = true
-								};
-							}
-						}
-
-						// try to merge with the right neighbor
-						if (this.next != null)
-						{
-							this.next.Merge(children, true);
-
-							return new DeleteInfo
-							{
-								orphan = this,
-								mergeOrShiftOcurred = true
-							};
-						}
-
-						// try to merge with the left neighbor
-						// must be not null here
-						if (this.prev != null)
-						{
-							this.prev.Merge(children, false);
-
-							return new DeleteInfo
-							{
-								orphan = this,
-								mergeOrShiftOcurred = true
-							};
-						}
-
-						// should never reach here
-						throw new InvalidOperationException("Could not merge.");
 					}
+
+					// try to borrow from the left neighbor
+					if (this.prev != null)
+					{
+						var left = this.prev.BorrowChildren(false);
+						if (left != null)
+						{
+							left.AddRange(children);
+							children = left;
+							this.RebuildIndices();
+
+							return new DeleteInfo();
+						}
+					}
+
+					// try to merge with the right neighbor
+					if (this.next != null)
+					{
+						this.next.Merge(children, true);
+						this.ConnectNeighbors();
+
+						return new DeleteInfo
+						{
+							orphan = this
+						};
+					}
+
+					// try to merge with the left neighbor
+					// must be not null here
+					if (this.prev != null)
+					{
+						this.prev.Merge(children, false);
+						this.ConnectNeighbors();
+
+						return new DeleteInfo
+						{
+							orphan = this
+						};
+					}
+
+					// should never reach here
+					throw new InvalidOperationException("Could not merge.");
 				}
 
 				return new DeleteInfo();
@@ -324,6 +308,19 @@ namespace DataStructures.BPlusTree
 			}
 
 			protected abstract bool IsUnderflow();
+
+			protected void ConnectNeighbors()
+			{
+				if (this.prev != null)
+				{
+					this.prev.next = this.next;
+				}
+
+				if (this.next != null)
+				{
+					this.next.prev = this.prev;
+				}
+			}
 
 			public void SetParent(Node parent)
 			{

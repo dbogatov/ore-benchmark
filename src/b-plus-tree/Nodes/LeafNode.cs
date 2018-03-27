@@ -65,32 +65,36 @@ namespace DataStructures.BPlusTree
 						}
 						else
 						{
-							children.Insert(
-								i,
-								new IndexValue(
-									key,
-									new DataNode(
-										_options,
-										this,
-										// i != children.Count - 1 ? children[i].node : null,
-										children[i].node,
-										i != 0 ? children[i - 1].node : null,
-										key,
-										value
-									)
-								)
-							);
-
-							// Update neighbors
+							Node prev = null;
 							if (i != 0)
 							{
-								children[i - 1].node.next = children[i].node;
+								prev = children[i - 1].node;
+							}
+							else if (children[i].node != null)
+							{
+								prev = children[i].node.prev;
 							}
 
-							// if next node is not infinity
-							if (children[i + 1].node != null)
+							var newNode = new DataNode(
+								_options,
+								this,
+								children[i].node,
+								prev,
+								key,
+								value
+							);
+							children.Insert(i, new IndexValue(key, newNode));
+
+							// update neighbors
+							// it must be the case that the neighbor of new node exists
+							if (newNode.next != null)
 							{
-								children[i + 1].node.prev = children[i].node;
+								newNode.next.prev = newNode;
+							}
+
+							if (newNode.prev != null)
+							{
+								newNode.prev.next = newNode;
 							}
 						}
 
