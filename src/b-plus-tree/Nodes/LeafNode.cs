@@ -9,14 +9,12 @@ namespace DataStructures.BPlusTree
 
 		private class LeafNode : Node
 		{
-			private LeafNode next = null;
+			public LeafNode(Options options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
 
-			public LeafNode(Options options) : base(options) { }
-
-			public LeafNode(Options options, LeafNode next, List<IndexValue> children) : base(options)
+			public LeafNode(Options options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
-				this.next = next;
 				this.children = children;
+				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.SetParent(this));
 			}
 
 			public override bool TryRange(int start, int end, List<T> values)
@@ -42,18 +40,21 @@ namespace DataStructures.BPlusTree
 			{
 				if (children.Count == 0)
 				{
-					children.Add(new IndexValue(key, new DataNode(_options, key, value)));
+					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
 					children.Add(new IndexValue(Int32.MaxValue, null));
+
+					// children.Add(new IndexValue(Int32.MaxValue, new DataNode(_options, this, null, null, key, value)));
 
 					return null;
 				}
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (children[i].node == null)
-					{
-						new DataNode(_options, key, value);
-					}
+					// TODO what the f...?
+					// if (children[i].node == null)
+					// {
+					// 	new DataNode(_options, this, key, value);
+					// }
 
 					if (key <= children[i].index)
 					{
@@ -64,7 +65,33 @@ namespace DataStructures.BPlusTree
 						}
 						else
 						{
-							children.Insert(i, new IndexValue(key, new DataNode(_options, key, value)));
+							children.Insert(
+								i,
+								new IndexValue(
+									key,
+									new DataNode(
+										_options,
+										this,
+										// i != children.Count - 1 ? children[i].node : null,
+										children[i].node,
+										i != 0 ? children[i - 1].node : null,
+										key,
+										value
+									)
+								)
+							);
+
+							// Update neighbors
+							if (i != 0)
+							{
+								((DataNode)children[i - 1].node).SetNextNeighbor((DataNode)children[i].node);
+							}
+
+							// if next node is not infinity
+							if (children[i + 1].node != null)
+							{
+								((DataNode)children[i + 1].node).SetPrevNeighbor((DataNode)children[i].node);
+							}
 						}
 
 						break;
@@ -77,8 +104,8 @@ namespace DataStructures.BPlusTree
 					var half = children.Count / 2 + children.Count % 2;
 
 					var newNodeChildren = this.children.Skip(half).ToList();
-					var newNode = new LeafNode(_options, this.next, newNodeChildren);
-					next = newNode;
+					var newNode = new LeafNode(_options, this.parent, this.next, this, newNodeChildren);
+					this.next = newNode;
 
 					children = children.Take(half).ToList();
 
@@ -113,6 +140,11 @@ namespace DataStructures.BPlusTree
 				{
 					throw new InvalidOperationException("Leaf node is not valid");
 				}
+			}
+
+			protected override bool IsUnderflow()
+			{
+				return children.Count < (_options.Branching / 2) + (_options.Branching % 2) - 1;
 			}
 		}
 

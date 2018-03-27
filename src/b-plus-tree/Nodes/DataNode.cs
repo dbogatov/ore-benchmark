@@ -12,10 +12,20 @@ namespace DataStructures.BPlusTree
 			public int key;
 			public T value;
 
-			public DataNode(Options options, int key, T value) : base(options)
+			public DataNode(Options options, Node parent, Node next, Node prev, int key, T value) : base(options, parent, next, prev)
 			{
 				this.key = key;
 				this.value = value;
+			}
+
+			public void SetNextNeighbor(DataNode next)
+			{
+				this.next = next;
+			}
+			
+			public void SetPrevNeighbor(DataNode prev)
+			{
+				this.prev = prev;
 			}
 
 			public override bool TryGet(int key, out T value)
@@ -63,6 +73,16 @@ namespace DataStructures.BPlusTree
 			}
 
 			public override bool isBalanced()
+			{
+				return true;
+			}
+
+			protected override bool IsUnderflow()
+			{
+				return false;
+			}
+
+			public override bool CheckNeighborLinks(bool leftMost = false)
 			{
 				return true;
 			}

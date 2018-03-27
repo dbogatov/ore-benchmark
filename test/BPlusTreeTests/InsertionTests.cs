@@ -65,8 +65,6 @@ namespace Test
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8, 6 }
 			);
-
-
 		}
 
 		[Fact]

@@ -17,7 +17,7 @@ namespace DataStructures.BPlusTree
 		{
 			_options = options;
 			_scheme = OPESchemesFactory.GetScheme(options.Scheme);
-			_root = new LeafNode(options);
+			_root = new LeafNode(options, null, null, null);
 		}
 
 		public bool TryGet(int key, out T value)
@@ -60,6 +60,9 @@ namespace DataStructures.BPlusTree
 
 				_root = new InternalNode(
 					_options,
+					null,
+					null,
+					null,
 					new List<IndexValue> {
 						new IndexValue(prevRoot.LargestIndex(), prevRoot),
 						new IndexValue(Int32.MaxValue, extraNode)
@@ -72,7 +75,7 @@ namespace DataStructures.BPlusTree
 
 		public bool Delete(int key)
 		{
-			var result = _root.Delete(key);
+			var result = _root.Delete(key, true);
 
 			if (result.notFound)
 			{
@@ -81,14 +84,15 @@ namespace DataStructures.BPlusTree
 
 			if (result.onlyChild != null)
 			{
-				_root = result.onlyChild;	
+				_root = result.onlyChild;
 			}
 
 			_size--;
 
+			// Check if this is necessary
 			if (_size == 0)
 			{
-				_root = new LeafNode(_options);
+				_root = new LeafNode(_options, null, null, null);
 			}
 
 			return true;
@@ -112,6 +116,8 @@ namespace DataStructures.BPlusTree
 			}
 
 			_root.Validate(true);
+
+			_root.CheckNeighborLinks(true);
 		}
 	}
 }
