@@ -422,10 +422,7 @@ namespace DataStructures.BPlusTree
 
 				result += $"{(last ? "└" : "├")}";
 
-				// if (index != Int32.MinValue)
-				// {
 				result += $"─[<= { (_options.Scheme.IsEqual(index, _options.Scheme.MaxCiphertextValue()) ? "∞" : $"{index}").PadRight(3) }]";
-				// }
 
 				result += $"──({TypeString()} {children.Count}|{ Math.Round(100.0 * children.Count / _options.Branching) }%)\n";
 
