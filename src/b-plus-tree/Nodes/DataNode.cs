@@ -104,9 +104,11 @@ namespace DataStructures.BPlusTree
 
 			public override bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
-				return
+				var result =
 					(this.parent != null) &&
 					(this.next == null || this.next.CheckNeighborLinks());
+
+				return result;
 			}
 		}
 	}

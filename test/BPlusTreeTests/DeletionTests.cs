@@ -9,10 +9,21 @@ namespace Test
 {
 	public partial class BPlusTreeTests
 	{
-		public Tree<string> DeleteAndValidate(Tree<string> tree, int element)
+		public Tree<string> DeleteAndValidate(Tree<string> tree, int element, bool print = false)
 		{
+			if (print)
+			{
+				Console.WriteLine($"Deleting {element}");
+			}
+
 			Assert.True(tree.Delete(element));
+
+			if (print)
+			{
+				Console.WriteLine(tree.ToString());
+			}
 			Assert.False(tree.TryGet(element, out _));
+
 			Assert.True(tree.Validate());
 
 			return tree;
@@ -34,7 +45,7 @@ namespace Test
 		{
 			var tree = new Tree<string>(new Options());
 
-			DeleteAndValidate(tree, 2);
+			Assert.False(tree.Delete(2));
 		}
 
 		[Fact]
@@ -81,17 +92,51 @@ namespace Test
 		}
 
 		[Fact]
-		public void DeleteWithBorrow()
+		public void DeleteLargestElement()
 		{
 			var tree = ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
-				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 },
-				true
+				new List<int> { 3, -2, 8, 6, 20, 21, 11 }
+			);
+
+			DeleteAndValidate(tree, 21);
+		}
+
+		[Fact]
+		public void DeleteWithMergeToRight()
+		{
+			var tree = ConstructTree(
+				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, 22 }
 			);
 
 			DeleteAndValidate(tree, 6);
 			DeleteAndValidate(tree, 8);
-			Console.WriteLine(tree.ToString());
+		}
+
+		[Fact]
+		public void DeleteWithBorrowFromLeft()
+		{
+			var tree = ConstructTree(
+				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, -5, -10 }
+			);
+
+			DeleteAndValidate(tree, 11);
+			DeleteAndValidate(tree, 12);
+			DeleteAndValidate(tree, 20);
+		}
+
+		[Fact]
+		public void DeleteWithBorrowFromRight()
+		{
+			var tree = ConstructTree(
+				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 }
+			);
+
+			DeleteAndValidate(tree, 6);
+			DeleteAndValidate(tree, 8);
 		}
 
 		[Fact]
@@ -106,26 +151,26 @@ namespace Test
 					Enumerable
 						.Range(1, max)
 						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
+						.Distinct()
 						.ToList();
 				var tree = ConstructTree(
 					new Options(OPESchemes.OPESchemes.NoEncryption, i),
 					input
 				);
 
-				for (int j = 0; j < max / 5; j++)
+				for (int j = 0; j < input.Count; j++)
 				{
 					if (j % 10 == 0)
 					{
 						// delete non existing element
-						Assert.False(tree.Delete(3 * max + random.Next(max)));
+						Assert.False(tree.Delete(5 * max + random.Next(max)));
 					}
-					else
-					{
-						// delete an element from the tree and validate the structure
-						var value = input[random.Next(input.Count)];
-						input.Remove(value);
-						DeleteAndValidate(tree, value);
-					}
+
+					// delete an element from the tree and validate the structure
+					var value = input[random.Next(input.Count)];
+					input.Remove(value);
+					DeleteAndValidate(tree, value);
+
 				}
 			}
 		}

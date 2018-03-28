@@ -92,7 +92,7 @@ namespace DataStructures.BPlusTree
 				{
 					if (key <= children[i].index)
 					{
-						return children[i].node.TryGet(key, out value);
+						return children[i].node != null ? children[i].node.TryGet(key, out value) : false;
 					}
 				}
 
@@ -138,6 +138,15 @@ namespace DataStructures.BPlusTree
 				{
 					if (key <= children[i].index)
 					{
+						// last node and still not found
+						if (children[i].node == null)
+						{
+							return new DeleteInfo
+							{
+								notFound = true
+							};
+						}
+
 						result = children[i].node.Delete(key);
 						break;
 					}
@@ -161,6 +170,8 @@ namespace DataStructures.BPlusTree
 
 				if (children.Count == 0)
 				{
+					this.ConnectNeighbors();
+					
 					return new DeleteInfo
 					{
 						orphan = this
@@ -171,7 +182,7 @@ namespace DataStructures.BPlusTree
 				if (this.IsUnderflow())
 				{
 					// if this is root
-					if (this.next == null && this.prev == null)
+					if (this.next == null && this.prev == null && this.parent == null)
 					{
 						if (children.Count <= 1)
 						{
@@ -255,7 +266,7 @@ namespace DataStructures.BPlusTree
 					children.AddRange(orphans);
 				}
 
-				this.RebuildIndices();
+				this.RebuildIndices(true);
 			}
 
 			protected void RebuildIndices(bool updateParent = false)
@@ -263,23 +274,27 @@ namespace DataStructures.BPlusTree
 				// leaf node
 				if (children.Count == 0)
 				{
-					updateParent = true;	
+					updateParent = true;
 				}
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (children[i].index != children[i].node.LargestIndex())
+					// shadow infinity node
+					if (children[i].node != null)
 					{
-						children[i] = new IndexValue
+						if (children[i].index != children[i].node.LargestIndex())
 						{
-							node = children[i].node,
-							index = children[i].node.LargestIndex()
-						};
+							children[i] = new IndexValue
+							{
+								node = children[i].node,
+								index = children[i].node.LargestIndex()
+							};
 
-						updateParent = true;
+							updateParent = true;
+						}
+
+						children[i].node.SetParent(this);
 					}
-
-					children[i].node.SetParent(this);
 				}
 
 				if (updateParent && this.parent != null)
@@ -313,7 +328,7 @@ namespace DataStructures.BPlusTree
 				}
 
 				// if rightmost children taken, it may affect parent's indices
-				this.RebuildIndices();
+				this.RebuildIndices(true);
 
 				return spareChildren;
 			}
@@ -388,12 +403,29 @@ namespace DataStructures.BPlusTree
 
 			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
-				return
-					(this.next != null || this.children.Last().index == Int32.MaxValue) &&
-					(this.next == null || this.next.CheckNeighborLinks()) &&
-					(leftMost == (this.prev == null)) &&
-					(isRoot == (this.parent == null)) &&
-					(leftMost ? this.children.First().node.CheckNeighborLinks(true) : true);
+				var thisNextLink = (this.next != null || this.children.Last().index == Int32.MaxValue);
+				var siblingsChain = (this.next == null || this.next.CheckNeighborLinks());
+				var thisPrevLink = (leftMost == (this.prev == null));
+				var thisParentLink = (isRoot == (this.parent == null));
+				var childrenChain = (leftMost ? this.children.First().node.CheckNeighborLinks(true) : true);
+				var nextPrevLink = (this.next == null || this.next.prev == this);
+				var prevNextLink = (this.prev == null || this.prev.next == this);
+
+				var result =
+					 thisNextLink &&
+					 siblingsChain &&
+					 thisPrevLink &&
+					 thisParentLink &&
+					 childrenChain &&
+					 nextPrevLink &&
+					 prevNextLink;
+
+				if (!result)
+				{
+					
+				}
+
+				return result;
 			}
 
 			protected virtual int Height()

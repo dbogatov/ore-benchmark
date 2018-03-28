@@ -85,6 +85,7 @@ namespace DataStructures.BPlusTree
 			if (result.onlyChild != null)
 			{
 				_root = result.onlyChild;
+				_root.parent = null; // kill old skin
 			}
 
 			_size--;

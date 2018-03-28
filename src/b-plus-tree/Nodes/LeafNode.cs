@@ -50,12 +50,6 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					// TODO what the f...?
-					// if (children[i].node == null)
-					// {
-					// 	new DataNode(_options, this, key, value);
-					// }
-
 					if (key <= children[i].index)
 					{
 						// Update then
@@ -109,6 +103,11 @@ namespace DataStructures.BPlusTree
 
 					var newNodeChildren = this.children.Skip(half).ToList();
 					var newNode = new LeafNode(_options, this.parent, this.next, this, newNodeChildren);
+
+					if (this.next != null)
+					{
+						this.next.prev = newNode;
+					}
 					this.next = newNode;
 
 					children = children.Take(half).ToList();
@@ -147,7 +146,9 @@ namespace DataStructures.BPlusTree
 
 			protected override bool IsUnderflow()
 			{
-				return children.Count < (_options.Branching / 2) + (_options.Branching % 2) - 1;
+				return
+					(children.Count < (_options.Branching / 2) + (_options.Branching % 2) - 1) ||
+					(children.Count == 1 && children[0].node == null); // or the only node is shadow infinity
 			}
 		}
 

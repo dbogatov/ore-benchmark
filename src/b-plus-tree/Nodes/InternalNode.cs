@@ -53,6 +53,11 @@ namespace DataStructures.BPlusTree
 
 					var newNodeChildren = this.children.Skip(half).ToList();
 					var newNode = new InternalNode(_options, this.parent, this.next, this, newNodeChildren);
+					
+					if (this.next != null)
+					{
+						this.next.prev = newNode;
+					}
 					this.next = newNode;
 
 					children = children.Take(half).ToList();
