@@ -114,11 +114,6 @@ namespace OPESchemes
 		/// and false otherwise
 		/// </returns>
 		bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo);
-		// {
-		// 	return
-		// 		IsGreater(ciphertextOne, ciphertextTwo) ||
-		// 		IsEqual(ciphertextOne, ciphertextTwo);
-		// }
 
 		/// <summary>
 		/// Deterministic routine.
@@ -132,11 +127,6 @@ namespace OPESchemes
 		/// and false otherwise
 		/// </returns>
 		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
-		// {
-		// 	return
-		// 		IsLess(ciphertextOne, ciphertextTwo) ||
-		// 		IsEqual(ciphertextOne, ciphertextTwo);
-		// }
 
 		/// <summary>
 		/// Returns the encryption of the greatest possible value
