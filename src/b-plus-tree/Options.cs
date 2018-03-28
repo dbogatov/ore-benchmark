@@ -3,14 +3,14 @@ using OPESchemes;
 
 namespace DataStructures.BPlusTree
 {
-	public class Options
+	public class Options<P, C>
 	{
 		public int Branching { get; private set; }
 		public double Occupancy { get; private set; }
-		public OPESchemes.OPESchemes Scheme { get; private set; }
+		public IOPEScheme<P, C> Scheme { get; private set; }
 
 		public Options(
-			OPESchemes.OPESchemes scheme = OPESchemes.OPESchemes.NoEncryption,
+			IOPEScheme<P, C> scheme,
 			int branching = 60,
 			double occupancy = 0.7
 		)
@@ -25,6 +25,7 @@ namespace DataStructures.BPlusTree
 
 			Branching = branching;
 			Occupancy = occupancy;
+
 			Scheme = scheme;
 		}
 	}

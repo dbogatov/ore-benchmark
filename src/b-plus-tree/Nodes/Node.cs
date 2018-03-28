@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T>
+	public partial class Tree<T, C, P>
 	{
 		private struct InsertInfo
 		{
@@ -48,10 +48,10 @@ namespace DataStructures.BPlusTree
 
 		private struct IndexValue
 		{
-			public int index;
+			public C index;
 			public Node node;
 
-			public IndexValue(int index, Node node)
+			public IndexValue(C index, Node node)
 			{
 				this.index = index;
 				this.node = node;
@@ -60,7 +60,7 @@ namespace DataStructures.BPlusTree
 
 		private abstract class Node
 		{
-			protected readonly Options _options;
+			protected readonly Options<P, C> _options;
 			protected List<IndexValue> children;
 
 			/// <summary>
@@ -70,7 +70,7 @@ namespace DataStructures.BPlusTree
 			public Node prev = null;
 			public Node parent = null;
 
-			public Node(Options options, Node parent, Node next, Node prev)
+			public Node(Options<P, C> options, Node parent, Node next, Node prev)
 			{
 				_options = options;
 
@@ -94,15 +94,22 @@ namespace DataStructures.BPlusTree
 			/// Returns the largest index among all children
 			/// If there no children (during deletion process), smallest int is returned
 			/// </summary>
-			public virtual int LargestIndex()
+			public virtual C LargestIndex()
 			{
-				return children.Count > 0 ? children.Max(ch => ch.index) : Int32.MinValue;
+				return
+					children.Count > 0 ?
+					children.Select(ch => ch.index).Aggregate((acc, next) =>
+					{
+						acc = _options.Scheme.IsGreater(next, acc) ? next : acc;
+						return acc;
+					}) :
+					_options.Scheme.MaxCiphertextValue();
 			}
 
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryGet(int key, out T value)
+			public virtual bool TryGet(C key, out T value)
 			{
 				value = default(T);
 
@@ -113,7 +120,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (key <= children[i].index)
+					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
 					{
 						return children[i].node != null ? children[i].node.TryGet(key, out value) : false;
 					}
@@ -126,11 +133,11 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryRange(int start, int end, List<T> values)
+			public virtual bool TryRange(C start, C end, List<T> values)
 			{
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (start <= children[i].index)
+					if (_options.Scheme.IsLessOrEqual(start, children[i].index))
 					{
 						if (children[i].node == null)
 						{
@@ -148,14 +155,14 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public abstract InsertInfo Insert(int key, T value);
+			public abstract InsertInfo Insert(C key, T value);
 
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
 			/// <param name="key">Key to remove</param>
 			/// <returns>The struct identifying the result of the inner delete</returns>
-			public virtual DeleteInfo Delete(int key)
+			public virtual DeleteInfo Delete(C key)
 			{
 				if (children.Count == 0)
 				{
@@ -169,7 +176,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (key <= children[i].index)
+					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
 					{
 						// last node and still not found
 						if (children[i].node == null)
@@ -324,7 +331,7 @@ namespace DataStructures.BPlusTree
 					// shadow infinity node
 					if (children[i].node != null)
 					{
-						if (children[i].index != children[i].node.LargestIndex())
+						if (!_options.Scheme.IsEqual(children[i].index, children[i].node.LargestIndex()))
 						{
 							children[i] = new IndexValue
 							{
@@ -404,7 +411,7 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
-			public virtual string ToString(int level, bool last, List<bool> nests, int index)
+			public virtual string ToString(int level, bool last, List<bool> nests, C index)
 			{
 				var result = "    ";
 
@@ -415,10 +422,10 @@ namespace DataStructures.BPlusTree
 
 				result += $"{(last ? "└" : "├")}";
 
-				if (index != Int32.MinValue)
-				{
-					result += $"─[<= { (index == Int32.MaxValue ? "∞" : $"{index}").PadRight(3) }]";
-				}
+				// if (index != Int32.MinValue)
+				// {
+				result += $"─[<= { (_options.Scheme.IsEqual(index, _options.Scheme.MaxCiphertextValue()) ? "∞" : $"{index}").PadRight(3) }]";
+				// }
 
 				result += $"──({TypeString()} {children.Count}|{ Math.Round(100.0 * children.Count / _options.Branching) }%)\n";
 
@@ -461,7 +468,7 @@ namespace DataStructures.BPlusTree
 			public virtual bool CheckIndexes()
 			{
 				return
-					children.Where(ch => ch.node != null).All(ch => ch.index == ch.node.LargestIndex()) &&
+					children.Where(ch => ch.node != null).All(ch => _options.Scheme.IsEqual(ch.index, ch.node.LargestIndex())) &&
 					children.Where(ch => ch.node != null).All(ch => ch.node.CheckIndexes());
 			}
 
@@ -474,7 +481,7 @@ namespace DataStructures.BPlusTree
 			/// <returns>True, if check is passed, false otherwise</returns>
 			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
-				var thisNextLink = (this.next != null || this.children.Last().index == Int32.MaxValue);
+				var thisNextLink = (this.next != null || _options.Scheme.IsEqual(this.children.Last().index, _options.Scheme.MaxCiphertextValue()));
 				var siblingsChain = (this.next == null || this.next.CheckNeighborLinks());
 				var thisPrevLink = (leftMost == (this.prev == null));
 				var thisParentLink = (isRoot == (this.parent == null));

@@ -9,7 +9,7 @@ namespace Test
 {
 	public partial class BPlusTreeTests
 	{
-		public Tree<string> DeleteAndValidate(Tree<string> tree, int element, bool print = false)
+		public Tree<string, int, int> DeleteAndValidate(Tree<string, int, int> tree, int element, bool print = false)
 		{
 			if (print)
 			{
@@ -33,7 +33,10 @@ namespace Test
 		public void DeleteNotExistingElementTest()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			);
 
@@ -43,7 +46,12 @@ namespace Test
 		[Fact]
 		public void DeleteEmptyTreeTest()
 		{
-			var tree = new Tree<string>(new Options());
+			var tree = new Tree<string, int, int>(
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				)
+			);
 
 			Assert.False(tree.Delete(2));
 		}
@@ -52,7 +60,10 @@ namespace Test
 		public void DeleteSingleElementTest()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			);
 
@@ -63,7 +74,10 @@ namespace Test
 		public void DeleteMultilevelTest()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -77,7 +91,10 @@ namespace Test
 		public void DeleteThenInsertTest()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -95,7 +112,10 @@ namespace Test
 		public void DeleteLargestElement()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11 }
 			);
 
@@ -106,7 +126,10 @@ namespace Test
 		public void DeleteWithMergeToRight()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, 22 }
 			);
 
@@ -118,7 +141,10 @@ namespace Test
 		public void DeleteWithBorrowFromLeft()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, -5, -10 }
 			);
 
@@ -131,7 +157,10 @@ namespace Test
 		public void DeleteWithBorrowFromRight()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 }
 			);
 
@@ -154,7 +183,10 @@ namespace Test
 						.Distinct()
 						.ToList();
 				var tree = ConstructTree(
-					new Options(OPESchemes.OPESchemes.NoEncryption, i),
+					new Options<int, int>(
+						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+						i
+					),
 					input
 				);
 
@@ -170,7 +202,6 @@ namespace Test
 					var value = input[random.Next(input.Count)];
 					input.Remove(value);
 					DeleteAndValidate(tree, value);
-
 				}
 			}
 		}

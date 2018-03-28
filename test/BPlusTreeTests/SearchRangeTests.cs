@@ -13,7 +13,10 @@ namespace Test
 		public void SearchRangeNotExistingTest()
 		{
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			).TryRange(5, 10, out _);
 
@@ -23,7 +26,12 @@ namespace Test
 		[Fact]
 		public void SearchRangeEmptyTreeTest()
 		{
-			var result = new Tree<string>(new Options()).TryRange(2, 3, out _);
+			var result = new Tree<string, int, int>(
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				)
+			).TryRange(2, 3, out _);
 
 			Assert.False(result);
 		}
@@ -34,7 +42,10 @@ namespace Test
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			).TryRange(2, 4, out output);
 
@@ -49,7 +60,10 @@ namespace Test
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -74,7 +88,10 @@ namespace Test
 		public void SearchRangeNonExistingMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -90,7 +107,13 @@ namespace Test
 		public void SearchRangeEndBeforeStartTest(int start, int end)
 		{
 			Assert.Throws<ArgumentException>(
-				() => new Tree<string>(new Options()).TryRange(start, end, out _)
+				() => 
+				new Tree<string, int, int>(
+					new Options<int, int>(
+						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+						3
+					)
+				).TryRange(start, end, out _)
 			);
 		}
 	}

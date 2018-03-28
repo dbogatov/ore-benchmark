@@ -13,7 +13,10 @@ namespace Test
 		public void InsertNotUpdate()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, 4, 5 }
 			);
 
@@ -24,7 +27,10 @@ namespace Test
 		public void UpdateNotInsert()
 		{
 			var tree = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3, 4, 5 }
 			);
 

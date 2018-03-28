@@ -4,23 +4,22 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T>
+	public partial class Tree<T, C, P>
 	{
-
 		private class DataNode : Node
 		{
-			public int key;
+			public C key;
 			public T value;
 
-			public DataNode(Options options, Node parent, Node next, Node prev, int key, T value) : base(options, parent, next, prev)
+			public DataNode(Options<P, C> options, Node parent, Node next, Node prev, C key, T value) : base(options, parent, next, prev)
 			{
 				this.key = key;
 				this.value = value;
 			}
 
-			public override bool TryGet(int key, out T value)
+			public override bool TryGet(C key, out T value)
 			{
-				if (this.key == key)
+				if (_options.Scheme.IsEqual(this.key, key))
 				{
 					value = this.value;
 					return true;
@@ -32,7 +31,7 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
-			public override InsertInfo Insert(int key, T value)
+			public override InsertInfo Insert(C key, T value)
 			{
 				this.value = value;
 				return new InsertInfo
@@ -41,9 +40,9 @@ namespace DataStructures.BPlusTree
 				};
 			}
 
-			public override DeleteInfo Delete(int key)
+			public override DeleteInfo Delete(C key)
 			{
-				if (this.key == key)
+				if (_options.Scheme.IsEqual(this.key, key))
 				{
 					ConnectNeighbors();
 
@@ -61,14 +60,14 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
-			public override int LargestIndex()
+			public override C LargestIndex()
 			{
 				return this.key;
 			}
 
 			protected override void Initialize() { }
 
-			public override string ToString(int level, bool last, List<bool> nests, int index)
+			public override string ToString(int level, bool last, List<bool> nests, C index)
 			{
 				var result = "    ";
 

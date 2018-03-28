@@ -4,20 +4,20 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T>
+	public partial class Tree<T, C, P>
 	{
 
 		private class InternalNode : Node
 		{
-			public InternalNode(Options options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
+			public InternalNode(Options<P, C> options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
 
-			public InternalNode(Options options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
+			public InternalNode(Options<P, C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
-			public override InsertInfo Insert(int key, T value)
+			public override InsertInfo Insert(C key, T value)
 			{
 				Node extraNode = null;
 				Node prevNode = null;
@@ -26,7 +26,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (key <= children[i].index)
+					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
 					{
 						insertedIndex = i;
 						prevNode = children[i].node;
@@ -98,7 +98,7 @@ namespace DataStructures.BPlusTree
 							children.Skip(1),
 							(a, b) => new { a, b }
 						)
-						.All(pair => pair.a.index < pair.b.index);
+						.All(pair => _options.Scheme.IsLess(pair.a.index, pair.b.index));
 
 				return
 					childrenOrdered &&

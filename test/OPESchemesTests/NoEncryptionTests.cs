@@ -8,7 +8,7 @@ namespace Test
 {
 	public class NoEncryptionTests
 	{
-		private readonly IOPEScheme _scheme = new NoEncryptionScheme();
+		private readonly IOPEScheme<int, int> _scheme = new NoEncryptionScheme();
 		private readonly int _runs = 10;
 
 		[Fact]

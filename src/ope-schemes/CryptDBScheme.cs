@@ -2,7 +2,7 @@
 
 namespace OPESchemes
 {
-	public class CryptDBScheme : IOPEScheme
+	public class CryptDBScheme : IOPEScheme<int, int>
 	{
 		public int Decrypt(int ciphertext, int key)
 		{
@@ -34,7 +34,32 @@ namespace OPESchemes
 			throw new NotImplementedException();
 		}
 
+		public bool IsGreaterOrEqual(int ciphertextOne, int ciphertextTwo)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsLess(int ciphertextOne, int ciphertextTwo)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsLessOrEqual(int ciphertextOne, int ciphertextTwo)
+		{
+			throw new NotImplementedException();
+		}
+
 		public int KeyGen()
+		{
+			throw new NotImplementedException();
+		}
+
+		public int MaxCiphertextValue()
+		{
+			throw new NotImplementedException();
+		}
+
+		public int MinCiphertextValue()
 		{
 			throw new NotImplementedException();
 		}

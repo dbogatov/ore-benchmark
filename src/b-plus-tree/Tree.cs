@@ -4,19 +4,22 @@ using OPESchemes;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T>
+	/// <summary>
+	/// T is a data in the data node type
+	/// C is a ciphertext (index) type
+	/// P is a plaintext (index) type
+	/// </summary>
+	public partial class Tree<T, C, P>
 	{
-		private readonly Options _options;
-		private readonly IOPEScheme _scheme;
+		private readonly Options<P, C> _options;
 
 		private int _size = 0;
 
 		private Node _root;
 
-		public Tree(Options options)
+		public Tree(Options<P, C> options)
 		{
 			_options = options;
-			_scheme = OPESchemesFactory.GetScheme(options.Scheme);
 			_root = new LeafNode(options, null, null, null);
 		}
 
@@ -26,7 +29,7 @@ namespace DataStructures.BPlusTree
 		/// <param name="key">Search key</param>
 		/// <param name="value">Variable to place value to</param>
 		/// <returns>True if element is found, false otherwise</returns>
-		public bool TryGet(int key, out T value)
+		public bool TryGet(C key, out T value)
 		{
 			value = default(T);
 
@@ -45,11 +48,11 @@ namespace DataStructures.BPlusTree
 		/// <param name="end">Key for end of the range</param>
 		/// <param name="values">The list to put found value to</param>
 		/// <returns>True if at least element found, false otherwise</returns>
-		public bool TryRange(int start, int end, out List<T> values)
+		public bool TryRange(C start, C end, out List<T> values)
 		{
 			values = new List<T>();
 
-			if (start >= end)
+			if (_options.Scheme.IsGreaterOrEqual(start, end))
 			{
 				throw new ArgumentException("Improper range");
 			}
@@ -68,7 +71,7 @@ namespace DataStructures.BPlusTree
 		/// <param name="key">Key for value</param>
 		/// <param name="value">Value to insert or update with</param>
 		/// <returns>True if the value was inserted, false if the value was updated</returns>
-		public bool Insert(int key, T value)
+		public bool Insert(C key, T value)
 		{
 			var result = _root.Insert(key, value);
 			var extraNode = result.extraNode;
@@ -85,7 +88,7 @@ namespace DataStructures.BPlusTree
 					null,
 					new List<IndexValue> {
 						new IndexValue(prevRoot.LargestIndex(), prevRoot),
-						new IndexValue(Int32.MaxValue, extraNode)
+						new IndexValue(_options.Scheme.MaxCiphertextValue(), extraNode)
 					}
 				);
 			}
@@ -100,7 +103,7 @@ namespace DataStructures.BPlusTree
 		/// </summary>
 		/// <param name="key">The key to remove</param>
 		/// <returns>True if element was found, false otherwise</returns>
-		public bool Delete(int key)
+		public bool Delete(C key)
 		{
 			var result = _root.Delete(key);
 
@@ -136,7 +139,7 @@ namespace DataStructures.BPlusTree
 
 		public override string ToString()
 		{
-			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, Int32.MinValue);
+			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.Scheme.MinCiphertextValue());
 		}
 
 		/// <summary>
@@ -152,13 +155,13 @@ namespace DataStructures.BPlusTree
 			}
 
 			var balanced = _root.isBalanced();
-			
+
 			var indexes = _root.CheckIndexes();
-			
+
 			var links = _root.CheckNeighborLinks(true, true);
-			
+
 			var invariants = _root.Validate(true);
-			
+
 			return
 				balanced &&
 				indexes &&

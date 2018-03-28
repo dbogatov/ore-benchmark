@@ -13,7 +13,10 @@ namespace Test
 		public void SearchNotExistingElementTest()
 		{
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			).TryGet(2, out _);
 
@@ -23,7 +26,12 @@ namespace Test
 		[Fact]
 		public void SearchEmptyTreeTest()
 		{
-			var result = new Tree<string>(new Options()).TryGet(2, out _);
+			var result = new Tree<string, int, int>(
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				)
+			).TryGet(2, out _);
 
 			Assert.False(result);
 		}
@@ -34,7 +42,10 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				new List<int> { 3 }
 			).TryGet(3, out output);
 
@@ -49,7 +60,10 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -65,7 +79,10 @@ namespace Test
 		public void SearchNonExistingElementMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					3
+				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)

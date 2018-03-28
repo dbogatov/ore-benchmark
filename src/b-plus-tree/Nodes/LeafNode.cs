@@ -4,26 +4,28 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T>
+	public partial class Tree<T, C, P>
 	{
-
 		private class LeafNode : Node
 		{
-			public LeafNode(Options options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
+			public LeafNode(Options<P, C> options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
 
-			public LeafNode(Options options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
+			public LeafNode(Options<P, C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
-			public override bool TryRange(int start, int end, List<T> values)
+			public override bool TryRange(C start, C end, List<T> values)
 			{
 				var found = false;
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (start <= children[i].index && end >= children[i].index && children[i].node != null)
+					if (
+						_options.Scheme.IsLessOrEqual(start, children[i].index) && 
+						_options.Scheme.IsGreaterOrEqual(end, children[i].index) && 
+						children[i].node != null)
 					{
 						found = true;
 
@@ -33,27 +35,27 @@ namespace DataStructures.BPlusTree
 					}
 				}
 
-				return (next == null ? false : next.TryRange(Int32.MinValue, end, values)) || found;
+				return (next == null ? false : next.TryRange(_options.Scheme.MinCiphertextValue(), end, values)) || found;
 			}
 
-			public override InsertInfo Insert(int key, T value)
+			public override InsertInfo Insert(C key, T value)
 			{
 				var updated = false;
 
 				if (children.Count == 0)
 				{
 					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
-					children.Add(new IndexValue(Int32.MaxValue, null));
+					children.Add(new IndexValue(_options.Scheme.MaxCiphertextValue(), null));
 
 					return new InsertInfo();
 				}
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (key <= children[i].index)
+					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
 					{
 						// Update then
-						if (key == children[i].index)
+						if (_options.Scheme.IsEqual(key, children[i].index))
 						{
 							children[i].node.Insert(key, value);
 							updated = true;
@@ -141,7 +143,7 @@ namespace DataStructures.BPlusTree
 							children.Skip(1),
 							(a, b) => new { a, b }
 						)
-						.All(pair => pair.a.index < pair.b.index);
+						.All(pair => _options.Scheme.IsLess(pair.a.index, pair.b.index));
 
 				return
 					atLeastOneChild &&
