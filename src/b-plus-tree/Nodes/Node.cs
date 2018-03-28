@@ -76,7 +76,7 @@ namespace DataStructures.BPlusTree
 
 			public virtual int LargestIndex()
 			{
-				return children.Max(ch => ch.index);
+				return children.Count > 0 ? children.Max(ch => ch.index) : Int32.MinValue;
 			}
 
 			public virtual bool TryGet(int key, out T value)
@@ -156,9 +156,16 @@ namespace DataStructures.BPlusTree
 				{
 					children.Remove(children.First(ch => ch.node == result.orphan));
 
-					this.RebuildIndices();
+					this.RebuildIndices(true);
 				}
 
+				if (children.Count == 0)
+				{
+					return new DeleteInfo
+					{
+						orphan = this
+					};
+				}
 
 				// Underflow
 				if (this.IsUnderflow())
@@ -184,7 +191,7 @@ namespace DataStructures.BPlusTree
 						if (right != null)
 						{
 							children.AddRange(right);
-							this.RebuildIndices();
+							this.RebuildIndices(true);
 
 							return new DeleteInfo();
 						}
@@ -198,7 +205,7 @@ namespace DataStructures.BPlusTree
 						{
 							left.AddRange(children);
 							children = left;
-							this.RebuildIndices();
+							this.RebuildIndices(true);
 
 							return new DeleteInfo();
 						}
@@ -251,9 +258,13 @@ namespace DataStructures.BPlusTree
 				this.RebuildIndices();
 			}
 
-			protected void RebuildIndices()
+			protected void RebuildIndices(bool updateParent = false)
 			{
-				var changeMade = false;
+				// leaf node
+				if (children.Count == 0)
+				{
+					updateParent = true;	
+				}
 
 				for (int i = 0; i < children.Count; i++)
 				{
@@ -265,13 +276,13 @@ namespace DataStructures.BPlusTree
 							index = children[i].node.LargestIndex()
 						};
 
-						changeMade = true;
+						updateParent = true;
 					}
 
 					children[i].node.SetParent(this);
 				}
 
-				if (changeMade)
+				if (updateParent && this.parent != null)
 				{
 					this.parent.RebuildIndices();
 				}
