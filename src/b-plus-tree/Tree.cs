@@ -20,6 +20,12 @@ namespace DataStructures.BPlusTree
 			_root = new LeafNode(options, null, null, null);
 		}
 
+		/// <summary>
+		/// Returns the value for the key
+		/// </summary>
+		/// <param name="key">Search key</param>
+		/// <param name="value">Variable to place value to</param>
+		/// <returns>True if element is found, false otherwise</returns>
 		public bool TryGet(int key, out T value)
 		{
 			value = default(T);
@@ -32,6 +38,13 @@ namespace DataStructures.BPlusTree
 			return _root.TryGet(key, out value);
 		}
 
+		/// <summary>
+		/// Returns the value for the key range (both ends inclusive)
+		/// </summary>
+		/// <param name="start">Key for start of the range</param>
+		/// <param name="end">Key for end of the range</param>
+		/// <param name="values">The list to put found value to</param>
+		/// <returns>True if at least element found, false otherwise</returns>
 		public bool TryRange(int start, int end, out List<T> values)
 		{
 			values = new List<T>();
@@ -49,6 +62,11 @@ namespace DataStructures.BPlusTree
 			return _root.TryRange(start, end, values);
 		}
 
+		/// <summary>
+		/// Inserts or updates the value for the key
+		/// </summary>
+		/// <param name="key">Key for value</param>
+		/// <param name="value">Value to insert or update with</param>
 		public void Insert(int key, T value)
 		{
 			var extraNode = _root.Insert(key, value);
@@ -73,6 +91,11 @@ namespace DataStructures.BPlusTree
 			_size++;
 		}
 
+		/// <summary>
+		/// Remove an element with a given key from the tree
+		/// </summary>
+		/// <param name="key">The key to remove</param>
+		/// <returns>True if element was found, false otherwise</returns>
 		public bool Delete(int key)
 		{
 			var result = _root.Delete(key);
@@ -90,7 +113,6 @@ namespace DataStructures.BPlusTree
 
 			_size--;
 
-			// Check if this is necessary
 			if (_size == 0)
 			{
 				_root = new LeafNode(_options, null, null, null);
@@ -99,6 +121,10 @@ namespace DataStructures.BPlusTree
 			return true;
 		}
 
+		/// <summary>
+		/// Returns the size of tree in number of elements
+		/// </summary>
+		/// <returns>The size of tree in number of elements</returns>
 		public int Size()
 		{
 			return _size;
@@ -109,6 +135,11 @@ namespace DataStructures.BPlusTree
 			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, Int32.MinValue);
 		}
 
+		/// <summary>
+		/// Runs checks to verify the integrity of the tree
+		/// Needed for proper testing
+		/// </summary>
+		/// <returns>True if tree satisfies all constraints, false otherwise</returns>
 		public bool Validate()
 		{
 			if (_size == 0)

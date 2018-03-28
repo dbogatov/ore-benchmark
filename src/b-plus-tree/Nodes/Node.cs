@@ -69,16 +69,27 @@ namespace DataStructures.BPlusTree
 				Initialize();
 			}
 
+			/// <summary>
+			/// Performs necessary operation to setup the tree
+			/// before insertion of the first element
+			/// </summary>
 			protected virtual void Initialize()
 			{
 				children = new List<IndexValue>(_options.Branching + 2);
 			}
 
+			/// <summary>
+			/// Returns the largest index among all children
+			/// If there no children (during deletion process), smallest int is returned
+			/// </summary>
 			public virtual int LargestIndex()
 			{
 				return children.Count > 0 ? children.Max(ch => ch.index) : Int32.MinValue;
 			}
 
+			/// <summary>
+			/// Reflects the Tree method with the same name
+			/// </summary>
 			public virtual bool TryGet(int key, out T value)
 			{
 				value = default(T);
@@ -100,6 +111,9 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
+			/// <summary>
+			/// Reflects the Tree method with the same name
+			/// </summary>
 			public virtual bool TryRange(int start, int end, List<T> values)
 			{
 				for (int i = 0; i < children.Count; i++)
@@ -119,11 +133,18 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
+			/// <summary>
+			/// Reflects the Tree method with the same name
+			/// </summary>
 			public abstract Node Insert(int key, T value);
 
+			/// <summary>
+			/// Reflects the Tree method with the same name
+			/// </summary>
+			/// <param name="key">Key to remove</param>
+			/// <returns>The struct identifying the result of the inner delete</returns>
 			public virtual DeleteInfo Delete(int key)
 			{
-				// TODO: check if this case is even possible
 				if (children.Count == 0)
 				{
 					return new DeleteInfo
@@ -171,7 +192,7 @@ namespace DataStructures.BPlusTree
 				if (children.Count == 0)
 				{
 					this.ConnectNeighbors();
-					
+
 					return new DeleteInfo
 					{
 						orphan = this
@@ -254,6 +275,11 @@ namespace DataStructures.BPlusTree
 				return new DeleteInfo();
 			}
 
+			/// <summary>
+			/// Merges into itself children of the neighbor node
+			/// </summary>
+			/// <param name="orphans">Children to adopt</param>
+			/// <param name="fromLeft">True if the children come from the left side, false otherwise</param>
 			protected void Merge(List<IndexValue> orphans, bool fromLeft)
 			{
 				if (fromLeft)
@@ -269,6 +295,10 @@ namespace DataStructures.BPlusTree
 				this.RebuildIndices(true);
 			}
 
+			/// <summary>
+			/// Recursively (all the way up, if necessary) recomputes indices
+			/// </summary>
+			/// <param name="updateParent">Forcefully update the parent</param>
 			protected void RebuildIndices(bool updateParent = false)
 			{
 				// leaf node
@@ -293,7 +323,7 @@ namespace DataStructures.BPlusTree
 							updateParent = true;
 						}
 
-						children[i].node.SetParent(this);
+						children[i].node.parent = this;
 					}
 				}
 
@@ -303,6 +333,12 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
+			/// <summary>
+			/// Gives up part (half of the surplus) of own children to neighbor node
+			/// If there are no children to spare, returns null
+			/// </summary>
+			/// <param name="leftMost">If true, children would be taken from the left side of the list</param>
+			/// <returns>Spare children, or null</returns>
 			protected List<IndexValue> BorrowChildren(bool leftMost)
 			{
 				var count = (children.Count - (_options.Branching / 2)) / 2;
@@ -333,8 +369,16 @@ namespace DataStructures.BPlusTree
 				return spareChildren;
 			}
 
+			/// <summary>
+			/// Returns true if for this particular node, underflow is detected
+			/// Needed for proper deletion
+			/// </summary>
 			protected abstract bool IsUnderflow();
 
+			/// <summary>
+			/// Sets up next nad prev neighbors links
+			/// Prepares itself for deletion
+			/// </summary>
 			protected void ConnectNeighbors()
 			{
 				if (this.prev != null)
@@ -346,11 +390,6 @@ namespace DataStructures.BPlusTree
 				{
 					this.next.prev = this.prev;
 				}
-			}
-
-			public void SetParent(Node parent)
-			{
-				this.parent = parent;
 			}
 
 			public virtual string ToString(int level, bool last, List<bool> nests, int index)
@@ -387,13 +426,26 @@ namespace DataStructures.BPlusTree
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the character identifying the type of node
+			/// Needed for better visualization
+			/// </summary>
 			public abstract string TypeString();
 
+			/// <summary>
+			/// Reflects the Tree method with the same name
+			/// </summary>
+			/// <param name="isRoot">Identify that this node is a root</param>
+			/// <returns>Tru, if validation passes, false otherwise</returns>
 			public virtual bool Validate(bool isRoot = false)
 			{
 				return true;
 			}
 
+			/// <summary>
+			/// Verifies that the indices for this node and its children satisfy constraints
+			/// </summary>
+			/// <returns>True if check is passed, false otherwise</returns>
 			public virtual bool CheckIndexes()
 			{
 				return
@@ -401,6 +453,13 @@ namespace DataStructures.BPlusTree
 					children.Where(ch => ch.node != null).All(ch => ch.node.CheckIndexes());
 			}
 
+			/// <summary>
+			/// Verifies that the links (next, prev, parent) for this node and its siblings and its children 
+			/// satisfy the constraints
+			/// </summary>
+			/// <param name="leftMost">If true, than this node is the "first" of its siblings</param>
+			/// <param name="isRoot">True, if this node is a root</param>
+			/// <returns>True, if check is passed, false otherwise</returns>
 			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
 				var thisNextLink = (this.next != null || this.children.Last().index == Int32.MaxValue);
@@ -420,14 +479,12 @@ namespace DataStructures.BPlusTree
 					 nextPrevLink &&
 					 prevNextLink;
 
-				if (!result)
-				{
-					
-				}
-
 				return result;
 			}
 
+			/// <summary>
+			/// Returns the maximum height of all of its children
+			/// </summary>
 			protected virtual int Height()
 			{
 				return 1 + children
@@ -435,6 +492,11 @@ namespace DataStructures.BPlusTree
 					.Max(ch => ch.node.Height());
 			}
 
+			/// <summary>
+			/// Verifies that the tree is balanced;
+			/// that is, all paths are of equal lengths
+			/// </summary>
+			/// <returns>True, if check is passed, false otherwise</returns>
 			public virtual bool isBalanced()
 			{
 				return

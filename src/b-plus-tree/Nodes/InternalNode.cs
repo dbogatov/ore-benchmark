@@ -14,7 +14,7 @@ namespace DataStructures.BPlusTree
 			public InternalNode(Options options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;
-				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.SetParent(this));
+				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
 			public override Node Insert(int key, T value)

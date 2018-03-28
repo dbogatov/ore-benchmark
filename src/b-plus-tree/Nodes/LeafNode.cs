@@ -14,7 +14,7 @@ namespace DataStructures.BPlusTree
 			public LeafNode(Options options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;
-				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.SetParent(this));
+				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
 			public override bool TryRange(int start, int end, List<T> values)
@@ -42,8 +42,6 @@ namespace DataStructures.BPlusTree
 				{
 					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
 					children.Add(new IndexValue(Int32.MaxValue, null));
-
-					// children.Add(new IndexValue(Int32.MaxValue, new DataNode(_options, this, null, null, key, value)));
 
 					return null;
 				}
