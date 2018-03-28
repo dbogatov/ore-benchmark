@@ -32,10 +32,13 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
-			public override Node Insert(int key, T value)
+			public override InsertInfo Insert(int key, T value)
 			{
 				this.value = value;
-				return this;
+				return new InsertInfo
+				{
+					extraNode = this
+				};
 			}
 
 			public override DeleteInfo Delete(int key)

@@ -36,14 +36,16 @@ namespace DataStructures.BPlusTree
 				return (next == null ? false : next.TryRange(Int32.MinValue, end, values)) || found;
 			}
 
-			public override Node Insert(int key, T value)
+			public override InsertInfo Insert(int key, T value)
 			{
+				var updated = false;
+
 				if (children.Count == 0)
 				{
 					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
 					children.Add(new IndexValue(Int32.MaxValue, null));
 
-					return null;
+					return new InsertInfo();
 				}
 
 				for (int i = 0; i < children.Count; i++)
@@ -54,6 +56,7 @@ namespace DataStructures.BPlusTree
 						if (key == children[i].index)
 						{
 							children[i].node.Insert(key, value);
+							updated = true;
 						}
 						else
 						{
@@ -110,10 +113,16 @@ namespace DataStructures.BPlusTree
 
 					children = children.Take(half).ToList();
 
-					return newNode;
+					return new InsertInfo
+					{
+						extraNode = newNode,
+						updated = updated
+					};
 				}
 
-				return null;
+				return new InsertInfo {
+					updated = updated
+				};
 			}
 
 			public override string TypeString()

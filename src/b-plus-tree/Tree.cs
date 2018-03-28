@@ -67,9 +67,11 @@ namespace DataStructures.BPlusTree
 		/// </summary>
 		/// <param name="key">Key for value</param>
 		/// <param name="value">Value to insert or update with</param>
-		public void Insert(int key, T value)
+		/// <returns>True if the value was inserted, false if the value was updated</returns>
+		public bool Insert(int key, T value)
 		{
-			var extraNode = _root.Insert(key, value);
+			var result = _root.Insert(key, value);
+			var extraNode = result.extraNode;
 
 			if (extraNode != null)
 			{
@@ -89,6 +91,8 @@ namespace DataStructures.BPlusTree
 			}
 
 			_size++;
+
+			return !result.updated;
 		}
 
 		/// <summary>

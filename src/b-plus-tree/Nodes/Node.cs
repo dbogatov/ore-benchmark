@@ -7,6 +7,18 @@ namespace DataStructures.BPlusTree
 {
 	public partial class Tree<T>
 	{
+		private struct InsertInfo
+		{
+			public bool updated;
+			public Node extraNode;
+
+			public InsertInfo(bool updated = false, Node extraNode = null)
+			{
+				this.updated = updated;
+				this.extraNode = extraNode;
+			}
+		}
+
 		private struct DeleteInfo
 		{
 			/// <summary>
@@ -136,7 +148,7 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public abstract Node Insert(int key, T value);
+			public abstract InsertInfo Insert(int key, T value);
 
 			/// <summary>
 			/// Reflects the Tree method with the same name

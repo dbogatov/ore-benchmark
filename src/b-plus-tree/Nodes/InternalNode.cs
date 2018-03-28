@@ -17,11 +17,12 @@ namespace DataStructures.BPlusTree
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
-			public override Node Insert(int key, T value)
+			public override InsertInfo Insert(int key, T value)
 			{
 				Node extraNode = null;
 				Node prevNode = null;
 				int insertedIndex = -1;
+				bool updated = false;
 
 				for (int i = 0; i < children.Count; i++)
 				{
@@ -29,7 +30,9 @@ namespace DataStructures.BPlusTree
 					{
 						insertedIndex = i;
 						prevNode = children[i].node;
-						extraNode = children[i].node.Insert(key, value);
+						var result = children[i].node.Insert(key, value);
+						extraNode = result.extraNode;
+						updated = result.updated;
 
 						break;
 					}
@@ -37,7 +40,10 @@ namespace DataStructures.BPlusTree
 
 				if (extraNode == null)
 				{
-					return null;
+					return new InsertInfo
+					{
+						updated = updated
+					};
 				}
 
 				var newKey = prevNode.LargestIndex();
@@ -53,7 +59,7 @@ namespace DataStructures.BPlusTree
 
 					var newNodeChildren = this.children.Skip(half).ToList();
 					var newNode = new InternalNode(_options, this.parent, this.next, this, newNodeChildren);
-					
+
 					if (this.next != null)
 					{
 						this.next.prev = newNode;
@@ -62,10 +68,17 @@ namespace DataStructures.BPlusTree
 
 					children = children.Take(half).ToList();
 
-					return newNode;
+					return new InsertInfo
+					{
+						updated = updated,
+						extraNode = newNode
+					};
 				}
 
-				return null;
+				return new InsertInfo
+				{
+					updated = updated
+				};
 			}
 
 			public override string TypeString()
