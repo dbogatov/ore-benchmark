@@ -58,6 +58,10 @@ namespace DataStructures.BPlusTree
 				}
 			}
 
+			public override int LargestIndex()
+			{
+				return this.key;
+			}
 
 			protected override void Initialize() { }
 
@@ -93,10 +97,15 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
-			public override bool CheckNeighborLinks(bool leftMost = false)
+			public override bool CheckIndexes()
+			{
+				return true;
+			}
+
+			public override bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
 				return
-					(this.next != null || this.key == Int32.MaxValue) &&
+					(this.parent != null) &&
 					(this.next == null || this.next.CheckNeighborLinks());
 			}
 		}

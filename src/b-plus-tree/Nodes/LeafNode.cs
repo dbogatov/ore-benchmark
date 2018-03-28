@@ -124,10 +124,11 @@ namespace DataStructures.BPlusTree
 				return "L";
 			}
 
-			public override void Validate(bool isRoot)
+			public override bool Validate(bool isRoot)
 			{
 				bool atLeastOneChild = children.Count > 0;
-				bool nextDefined = next != null || children.Last().index == Int32.MaxValue; // Rightmost leaf
+				bool noUnderflow = isRoot || children.Count >= (_options.Branching / 2) + (_options.Branching % 2) - 1;
+				bool overflow = children.Count > _options.Branching;
 				bool childrenOrdered =
 					children
 						.Zip(
@@ -136,14 +137,12 @@ namespace DataStructures.BPlusTree
 						)
 						.All(pair => pair.a.index < pair.b.index);
 
-				if (
-					!atLeastOneChild ||
-					!nextDefined ||
-					!childrenOrdered
-				)
-				{
-					throw new InvalidOperationException("Leaf node is not valid");
-				}
+				return
+					atLeastOneChild &&
+					noUnderflow &&
+					!overflow &&
+					childrenOrdered &&
+					children.Where(ch => ch.node != null).All(ch => ch.node.Validate());
 			}
 
 			protected override bool IsUnderflow()

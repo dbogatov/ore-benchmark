@@ -108,21 +108,26 @@ namespace DataStructures.BPlusTree
 			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, Int32.MinValue);
 		}
 
-		public void Validate()
+		public bool Validate()
 		{
 			if (_size == 0)
 			{
-				return;
+				return true;
 			}
 
-			if (!_root.isBalanced())
-			{
-				throw new InvalidOperationException("Tree is not balanced");
-			}
-
-			_root.Validate(true);
-
-			_root.CheckNeighborLinks(true);
+			var balanced = _root.isBalanced();
+			
+			var indexes = _root.CheckIndexes();
+			
+			var links = _root.CheckNeighborLinks(true, true);
+			
+			var invariants = _root.Validate(true);
+			
+			return
+				balanced &&
+				indexes &&
+				links &&
+				invariants;
 		}
 	}
 }

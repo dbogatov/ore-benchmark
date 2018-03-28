@@ -68,10 +68,10 @@ namespace DataStructures.BPlusTree
 				return "I";
 			}
 
-			public override void Validate(bool isRoot)
+			public override bool Validate(bool isRoot)
 			{
 				bool underflow =
-					children.Count < 0.5 * _options.Branching && !isRoot ||
+					children.Count < (_options.Branching / 2) + (_options.Branching % 2) && !isRoot ||
 					children.Count < 2 && isRoot;
 				bool overflow = children.Count > _options.Branching;
 				bool childrenOrdered =
@@ -82,16 +82,11 @@ namespace DataStructures.BPlusTree
 						)
 						.All(pair => pair.a.index < pair.b.index);
 
-				if (
-					!childrenOrdered ||
-					underflow ||
-					overflow
-				)
-				{
-					throw new InvalidOperationException("Internal node is not valid");
-				}
-
-				children.ForEach(ch => ch.node.Validate());
+				return
+					childrenOrdered &&
+					!underflow &&
+					!overflow &&
+					children.All(ch => ch.node.Validate());
 			}
 
 			protected override bool IsUnderflow()

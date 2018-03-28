@@ -74,7 +74,7 @@ namespace DataStructures.BPlusTree
 				children = new List<IndexValue>(_options.Branching + 2);
 			}
 
-			public int LargestIndex()
+			public virtual int LargestIndex()
 			{
 				return children.Max(ch => ch.index);
 			}
@@ -363,13 +363,25 @@ namespace DataStructures.BPlusTree
 
 			public abstract string TypeString();
 
-			public virtual void Validate(bool isRoot = false) { }
+			public virtual bool Validate(bool isRoot = false)
+			{
+				return true;
+			}
 
-			public virtual bool CheckNeighborLinks(bool leftMost = false)
+			public virtual bool CheckIndexes()
+			{
+				return
+					children.Where(ch => ch.node != null).All(ch => ch.index == ch.node.LargestIndex()) &&
+					children.Where(ch => ch.node != null).All(ch => ch.node.CheckIndexes());
+			}
+
+			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
 				return
 					(this.next != null || this.children.Last().index == Int32.MaxValue) &&
 					(this.next == null || this.next.CheckNeighborLinks()) &&
+					(leftMost == (this.prev == null)) &&
+					(isRoot == (this.parent == null)) &&
 					(leftMost ? this.children.First().node.CheckNeighborLinks(true) : true);
 			}
 

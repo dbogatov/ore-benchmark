@@ -13,7 +13,7 @@ namespace Test
 		{
 			Assert.True(tree.Delete(element));
 			Assert.False(tree.TryGet(element, out _));
-			tree.Validate();
+			Assert.True(tree.Validate());
 
 			return tree;
 		}
@@ -86,7 +86,7 @@ namespace Test
 			var tree = ConstructTree(
 				new Options(OPESchemes.OPESchemes.NoEncryption, 3),
 				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 },
-				true, true
+				true
 			);
 
 			DeleteAndValidate(tree, 6);
