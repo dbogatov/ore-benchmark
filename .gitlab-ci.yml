@@ -5,6 +5,7 @@ unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: test
   script:
-  - dotnet test test/
+  - apk add --update bash
+  - ./test/test.sh
   tags:
   - docker

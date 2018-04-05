@@ -2,10 +2,33 @@
 
 namespace OPESchemes
 {
+	public enum OPESchemes
+	{
+		NoEncryption,
+		CryptDB
+	}
+
+	public class OPESchemesFactoryIntToInt
+	{
+		public static IOPEScheme<int, int> GetScheme(OPESchemes scheme)
+		{
+			switch (scheme)
+			{
+				case OPESchemes.NoEncryption:
+					return new NoEncryptionScheme();
+				case OPESchemes.CryptDB:
+					return new CryptDBScheme();
+				default:
+					throw new ArgumentException("Scheme enum is invalid");
+			}
+		}
+	}
+
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
+	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
-	public interface IOPEScheme
+	public interface IOPEScheme<P, C>
 	{
 		/// <summary>
 		/// Performs some work on initializing the scheme
@@ -32,7 +55,7 @@ namespace OPESchemes
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		int Encrypt(int plaintext, int key);
+		C Encrypt(P plaintext, int key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -41,7 +64,7 @@ namespace OPESchemes
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		int Decrypt(int ciphertext, int key);
+		P Decrypt(C ciphertext, int key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -51,7 +74,7 @@ namespace OPESchemes
 		/// <param name="ciphertextOne">First ciphertext to test</param>
 		/// <param name="ciphertextTwo">Second ciphertext to test</param>
 		/// <returns>True if plaintexts were equal, and false otherwise</returns>
-		bool IsEqual(int ciphertextOne, int ciphertextTwo);
+		bool IsEqual(C ciphertextOne, C ciphertextTwo);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -64,6 +87,55 @@ namespace OPESchemes
 		/// True if the first plaintext was greater than the second one, 
 		/// and false otherwise
 		/// </returns>
-		bool IsGreater(int ciphertextOne, int ciphertextTwo);
+		bool IsGreater(C ciphertextOne, C ciphertextTwo);
+
+		/// <summary>
+		/// Deterministic routine.
+		/// Tests two plaintexts given their encryptions produced with the same 
+		/// key on order
+		/// </summary>
+		/// <param name="ciphertextOne">First ciphertext to test</param>
+		/// <param name="ciphertextTwo">Second ciphertext to test</param>
+		/// <returns>
+		/// True if the first plaintext was less than the second one, 
+		/// and false otherwise
+		/// </returns>
+		bool IsLess(C ciphertextOne, C ciphertextTwo);
+
+		/// <summary>
+		/// Deterministic routine.
+		/// Tests two plaintexts given their encryptions produced with the same 
+		/// key on order
+		/// </summary>
+		/// <param name="ciphertextOne">First ciphertext to test</param>
+		/// <param name="ciphertextTwo">Second ciphertext to test</param>
+		/// <returns>
+		/// True if the first plaintext was greater than or equal to the second one, 
+		/// and false otherwise
+		/// </returns>
+		bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo);
+
+		/// <summary>
+		/// Deterministic routine.
+		/// Tests two plaintexts given their encryptions produced with the same 
+		/// key on order
+		/// </summary>
+		/// <param name="ciphertextOne">First ciphertext to test</param>
+		/// <param name="ciphertextTwo">Second ciphertext to test</param>
+		/// <returns>
+		/// True if the first plaintext was less than or equal to the second one, 
+		/// and false otherwise
+		/// </returns>
+		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
+
+		/// <summary>
+		/// Returns the encryption of the greatest possible value
+		/// </summary>
+		C MaxCiphertextValue();
+
+		/// <summary>
+		/// Returns the encryption of the smallest possible value
+		/// </summary>
+		C MinCiphertextValue();
 	}
 }

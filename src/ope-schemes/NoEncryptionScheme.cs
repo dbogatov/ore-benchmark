@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace OPESchemes
 {
-	public class NoEncryptionScheme : IOPEScheme
+	public class NoEncryptionScheme : IOPEScheme<int, int>
 	{
 		private readonly Random generator = new Random();
 
@@ -37,9 +37,34 @@ namespace OPESchemes
 			return ciphertextOne > ciphertextTwo;
 		}
 
+		public bool IsGreaterOrEqual(int ciphertextOne, int ciphertextTwo)
+		{
+			return ciphertextOne >= ciphertextTwo;
+		}
+
+		public bool IsLess(int ciphertextOne, int ciphertextTwo)
+		{
+			return ciphertextOne < ciphertextTwo;
+		}
+
+		public bool IsLessOrEqual(int ciphertextOne, int ciphertextTwo)
+		{
+			return ciphertextOne <= ciphertextTwo;
+		}
+
 		public int KeyGen()
 		{
 			return generator.Next(Int32.MaxValue);
+		}
+
+		public int MaxCiphertextValue()
+		{
+			return Int32.MaxValue;
+		}
+
+		public int MinCiphertextValue()
+		{
+			return Int32.MinValue;
 		}
 	}
 }
