@@ -9,7 +9,7 @@ namespace Test
         [Fact]
         public void SimulatorTest()
         {
-			Assert.True(new Simulator().DummyMethod());
+			Simulator<int, string>.Simulate(new Inputs<int, string>());
         }
     }
 }
