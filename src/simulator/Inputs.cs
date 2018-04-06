@@ -15,11 +15,14 @@ namespace Simulation
 		Exact, Range, Update, Delete
 	}
 
-	public class ExactQuery<T>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// </summary>
+	public class ExactQuery<I>
 	{
-		public T index { get; private set; }
+		public I index { get; private set; }
 
-		public ExactQuery(T index)
+		public ExactQuery(I index)
 		{
 			this.index = index;
 		}
@@ -30,12 +33,15 @@ namespace Simulation
 		}
 	}
 
-	public class RangeQuery<T>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// </summary>
+	public class RangeQuery<I>
 	{
-		public T from { get; private set; }
-		public T to { get; private set; }
+		public I from { get; private set; }
+		public I to { get; private set; }
 
-		public RangeQuery(T from, T to)
+		public RangeQuery(I from, I to)
 		{
 			this.from = from;
 			this.to = to;
@@ -47,12 +53,16 @@ namespace Simulation
 		}
 	}
 
-	public class UpdateQuery<T, C>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// D - data type
+	/// </summary>
+	public class UpdateQuery<I, D>
 	{
-		public T index { get; private set; }
-		public C value { get; private set; }
+		public I index { get; private set; }
+		public D value { get; private set; }
 
-		public UpdateQuery(T index, C value)
+		public UpdateQuery(I index, D value)
 		{
 			this.index = index;
 			this.value = value;
@@ -64,11 +74,14 @@ namespace Simulation
 		}
 	}
 
-	public class DeleteQuery<T>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// </summary>
+	public class DeleteQuery<I>
 	{
-		public T index { get; private set; }
+		public I index { get; private set; }
 
-		public DeleteQuery(T index)
+		public DeleteQuery(I index)
 		{
 			this.index = index;
 		}
@@ -79,12 +92,16 @@ namespace Simulation
 		}
 	}
 
-	public class Record<T, C>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// D - data type
+	/// </summary>
+	public class Record<I, D>
 	{
-		public T index { get; private set; }
-		public C value { get; private set; }
+		public I index { get; private set; }
+		public D value { get; private set; }
 
-		public Record(T index, C value)
+		public Record(I index, D value)
 		{
 			this.index = index;
 			this.value = value;
@@ -96,15 +113,15 @@ namespace Simulation
 		}
 	}
 
-	public class Inputs<T, C>
+	public class Inputs<I, D>
 	{
-		public List<Record<T, C>> Dataset = new List<Record<T, C>>();
+		public List<Record<I, D>> Dataset = new List<Record<I, D>>();
 		public QueriesType Type { get; set; }
 
-		public List<ExactQuery<T>> ExactQueries = new List<ExactQuery<T>>();
-		public List<RangeQuery<T>> RangeQueries = new List<RangeQuery<T>>();
-		public List<UpdateQuery<T, C>> UpdateQueries = new List<UpdateQuery<T, C>>();
-		public List<DeleteQuery<T>> DeleteQueries = new List<DeleteQuery<T>>();
+		public List<ExactQuery<I>> ExactQueries = new List<ExactQuery<I>>();
+		public List<RangeQuery<I>> RangeQueries = new List<RangeQuery<I>>();
+		public List<UpdateQuery<I, D>> UpdateQueries = new List<UpdateQuery<I, D>>();
+		public List<DeleteQuery<I>> DeleteQueries = new List<DeleteQuery<I>>();
 
 		public int QueriesCount()
 		{
@@ -119,6 +136,36 @@ namespace Simulation
 
 	public class Report
 	{
+		public class SubReport
+		{
+			public int IOs { get; set; } = 0;
+			public int Time { get; set; } = 0;
+			public int CPUCycles { get; set; } = 0;
+			public int RAMUsage { get; set; } = 0;
 
+			public override string ToString()
+			{
+				return $@"
+	Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
+	Number of milliseconds elapsed: {Time}
+	Number of CPU cycles elapsed: {CPUCycles}
+	Number of megabytes of RAM used: {RAMUsage}
+";
+			}
+		}
+
+		public SubReport Construction;
+		public SubReport Queries;
+		public QueriesType QueriesType;
+
+		public override string ToString()
+		{
+			return $@"
+Construction stage report:
+{Construction}
+{QueriesType} queries stage report:
+{Queries}
+";
+		}
 	}
 }

@@ -2,13 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OPESchemes;
 using Simulation;
 
 namespace CLI
 {
-	public class DataReader<T, C>
+	/// <summary>
+	/// I - index (plaintext) type
+	/// D - data type
+	/// </summary>
+	public class DataReader<I, D>
 	{
-		public Inputs<T, C> Inputs = new Inputs<T, C>();
+		public Inputs<I, D> Inputs = new Inputs<I, D>();
 
 		/// <summary>
 		/// Immediately populates its local lists with the data read from files
@@ -25,7 +30,7 @@ namespace CLI
 				{
 					var record = line.Split(',');
 
-					Inputs.Dataset.Add(new Record<T, C>(ConvertToType<T>(record[0]), ConvertToType<C>(record[1])));
+					Inputs.Dataset.Add(new Record<I, D>(ConvertToType<I>(record[0]), ConvertToType<D>(record[1])));
 				}
 			}
 
@@ -38,16 +43,16 @@ namespace CLI
 					switch (type)
 					{
 						case QueriesType.Exact:
-							Inputs.ExactQueries.Add(new ExactQuery<T>(ConvertToType<T>(line)));
+							Inputs.ExactQueries.Add(new ExactQuery<I>(ConvertToType<I>(line)));
 							break;
 						case QueriesType.Range:
-							Inputs.RangeQueries.Add(new RangeQuery<T>(ConvertToType<T>(line.Split(',')[0]), ConvertToType<T>(line.Split(',')[1])));
+							Inputs.RangeQueries.Add(new RangeQuery<I>(ConvertToType<I>(line.Split(',')[0]), ConvertToType<I>(line.Split(',')[1])));
 							break;
 						case QueriesType.Update:
-							Inputs.UpdateQueries.Add(new UpdateQuery<T, C>(ConvertToType<T>(line.Split(',')[0]), ConvertToType<C>(line.Split(',')[1])));
+							Inputs.UpdateQueries.Add(new UpdateQuery<I, D>(ConvertToType<I>(line.Split(',')[0]), ConvertToType<D>(line.Split(',')[1])));
 							break;
 						case QueriesType.Delete:
-							Inputs.DeleteQueries.Add(new DeleteQuery<T>(ConvertToType<T>(line)));
+							Inputs.DeleteQueries.Add(new DeleteQuery<I>(ConvertToType<I>(line)));
 							break;
 						default:
 							throw new InvalidOperationException($"Type {type} is not supported");
@@ -56,14 +61,14 @@ namespace CLI
 			}
 		}
 
-		private D ConvertToType<D>(string value)
+		private T ConvertToType<T>(string value)
 		{
-			switch (Type.GetTypeCode(typeof(D)))
+			switch (Type.GetTypeCode(typeof(T)))
 			{
 				case TypeCode.String:
-					return (D)(object)value;
+					return (T)(object)value;
 				case TypeCode.Int32:
-					return (D)(object)int.Parse(value);
+					return (T)(object)int.Parse(value);
 				default:
 					throw new NotImplementedException($"Type {value.GetType()} is not implemented");
 			}

@@ -9,7 +9,7 @@ namespace Test
         [Fact]
         public void SimulatorTest()
         {
-			Simulator<int, string>.Simulate(new Inputs<int, string>());
+			// new Simulator<int, string>().Simulate(new Inputs<int, string>());
         }
     }
 }

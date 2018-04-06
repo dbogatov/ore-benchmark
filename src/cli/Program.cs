@@ -4,6 +4,9 @@ using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using OPESchemes;
+using DataStructures.BPlusTree;
+using System.Linq;
 
 namespace CLI
 {
@@ -57,7 +60,16 @@ namespace CLI
 			Console.WriteLine($"Queries of  {reader.Inputs.QueriesCount()} queries.");
 			Console.WriteLine($"Inputs read in {readTimer.ElapsedMilliseconds} ms");
 
-			var report = Simulator<int, string>.Simulate(reader.Inputs);
+			var simulator = new Simulator<int, string>(
+				reader.Inputs,
+				new Options<int, int>(
+					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					BPlusTreeBranching
+				)
+			);
+			var report = simulator.Simulate();
+
+			System.Console.WriteLine(report);
 
 			return 0;
 		}

@@ -3,11 +3,21 @@ using OPESchemes;
 
 namespace DataStructures.BPlusTree
 {
+	public delegate void NodeVisitedEventHandler(int nodeHash);
+
+	/// <summary>
+	/// P - plaintex type
+	/// C - ciphertext type
+	/// </summary>
 	public class Options<P, C>
 	{
+		public event NodeVisitedEventHandler NodeVisited;
+
 		public int Branching { get; private set; }
 		public double Occupancy { get; private set; }
 		public IOPEScheme<P, C> Scheme { get; private set; }
+
+		private int _generator = 0;
 
 		public Options(
 			IOPEScheme<P, C> scheme,
@@ -28,5 +38,16 @@ namespace DataStructures.BPlusTree
 
 			Scheme = scheme;
 		}
+
+		public void OnVisit(int hash)
+		{
+			var handler = NodeVisited;
+			if (handler != null)
+			{
+				handler(hash);
+			}
+		}
+
+		public int GetNextId() => _generator++;
 	}
 }

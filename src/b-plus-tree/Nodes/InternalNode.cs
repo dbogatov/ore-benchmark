@@ -19,6 +19,8 @@ namespace DataStructures.BPlusTree
 
 			public override InsertInfo Insert(C key, T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+				
 				Node extraNode = null;
 				Node prevNode = null;
 				int insertedIndex = -1;

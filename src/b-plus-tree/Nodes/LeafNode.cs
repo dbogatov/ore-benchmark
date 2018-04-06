@@ -18,6 +18,8 @@ namespace DataStructures.BPlusTree
 
 			public override bool TryRange(C start, C end, List<T> values)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				var found = false;
 
 				for (int i = 0; i < children.Count; i++)
@@ -40,6 +42,8 @@ namespace DataStructures.BPlusTree
 
 			public override InsertInfo Insert(C key, T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+				
 				var updated = false;
 
 				if (children.Count == 0)
