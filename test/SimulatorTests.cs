@@ -17,7 +17,7 @@ namespace Test
 		[InlineData(QueriesType.Delete)]
 		public void SimulatorTest(QueriesType type)
 		{
-			var max = 10000;
+			var max = 1000;
 			var inputs = new Inputs<int, string>
 			{
 				Type = type,
