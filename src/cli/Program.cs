@@ -56,8 +56,8 @@ namespace CLI
 
 			readTimer.Stop();
 
-			Console.WriteLine($"Dataset of  {reader.Inputs.Dataset.Count} records.");
-			Console.WriteLine($"Queries of  {reader.Inputs.QueriesCount()} queries.");
+			Console.WriteLine($"Dataset of {reader.Inputs.Dataset.Count} records.");
+			Console.WriteLine($"Queries of {reader.Inputs.QueriesCount()} queries.");
 			Console.WriteLine($"Inputs read in {readTimer.ElapsedMilliseconds} ms");
 
 			var simulator = new Simulator<int, string>(

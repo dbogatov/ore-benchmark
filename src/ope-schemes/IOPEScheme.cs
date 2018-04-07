@@ -8,6 +8,11 @@ namespace OPESchemes
 		CryptDB
 	}
 
+	public enum SchemeOperation
+	{
+		Init, Destruct, KeyGen, Encrypt, Decrypt, Comparison
+	}
+
 	public class OPESchemesFactoryIntToInt
 	{
 		public static IOPEScheme<int, int> GetScheme(OPESchemes scheme)
@@ -24,12 +29,16 @@ namespace OPESchemes
 		}
 	}
 
+	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
+
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
 	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
 	public interface IOPEScheme<P, C>
 	{
+		event SchemeOperationEventHandler OperationOcurred;
+
 		/// <summary>
 		/// Performs some work on initializing the scheme
 		/// Eq. sets up some internal data, sample distributions, generates 

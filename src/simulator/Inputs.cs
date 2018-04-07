@@ -139,17 +139,17 @@ namespace Simulation
 		public class SubReport
 		{
 			public int IOs { get; set; } = 0;
-			public int Time { get; set; } = 0;
-			public int CPUCycles { get; set; } = 0;
-			public int RAMUsage { get; set; } = 0;
+			public int SchemeOperations { get; set; } = 0;
+			public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
+			public TimeSpan CPUTime { get; set; } = new TimeSpan(0);
 
 			public override string ToString()
 			{
 				return $@"
 	Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
-	Number of milliseconds elapsed: {Time}
-	Number of CPU cycles elapsed: {CPUCycles}
-	Number of megabytes of RAM used: {RAMUsage}
+	Number of OPE/ORE scheme operations performed: {SchemeOperations}
+	Observable time elapsed: {ObservedTime}
+	CPU time reported: {CPUTime}
 ";
 			}
 		}
