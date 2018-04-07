@@ -11,16 +11,16 @@ namespace Simulation
 	/// I - index (plaintext) type
 	/// D - data type
 	/// </summary>
-	public class Simulator<I, D>
+	public class Simulator<I, D, C>
 	{
 		private HashSet<int> _visited = new HashSet<int>();
 		private Dictionary<SchemeOperation, int> _schemeOperations = new Dictionary<SchemeOperation, int>();
 		private Inputs<I, D> _inputs;
-		private IOPEScheme<I, I> _scheme;
+		private IOPEScheme<I, C> _scheme;
 		private int _key;
-		private Tree<D, I, I> _tree;
+		private Tree<D, C, I> _tree;
 
-		public Simulator(Inputs<I, D> inputs, Options<I, I> options)
+		public Simulator(Inputs<I, D> inputs, Options<I, C> options)
 		{
 			_inputs = inputs;
 			_scheme = options.Scheme;
@@ -36,7 +36,7 @@ namespace Simulation
 				.ToList()
 				.ForEach(val => _schemeOperations.Add(val, 0));
 
-			_tree = new Tree<D, I, I>(options);
+			_tree = new Tree<D, C, I>(options);
 		}
 
 		void RecordNodeVisit(int nodeHash) => _visited.Add(nodeHash);

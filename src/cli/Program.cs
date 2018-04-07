@@ -29,13 +29,13 @@ namespace CLI
 		[Option("--queries <FILE>", Description = "Required. Path to queries file.")]
 		public string Queries { get; }
 
-		[Option("--queries-type <enum>", Description = "Type of queries (eq. exact match).")]
+		[Option("--queries-type <enum>", Description = "Type of queries (eq. Exact).")]
 		public QueriesType QueriesType { get; } = QueriesType.Exact;
 
-		[Option("--data-structure <enum>", Description = "One of [b-plus-tree]. Default b-plus-tree.")]
+		[Option("--data-structure <enum>", Description = "Data structure to use (eq. BPlusTree)")]
 		public DataStructure DataStruct { get; } = DataStructure.BPlusTree;
 
-		[Option("--ore-scheme <enum>", Description = "One of [no-enc, crypt-db]. Default no-enc.")]
+		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (eq. NoEncryption)")]
 		public OPESchemes.OPESchemes OREScheme { get; } = OPESchemes.OPESchemes.NoEncryption;
 
 		[Option("--verbose", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
@@ -49,25 +49,34 @@ namespace CLI
 		{
 			Console.WriteLine($"Inputs: dataset={Dataset}, queries={Queries}, type={QueriesType}, dataStructure={DataStruct}, scheme={OREScheme}");
 
-			var readTimer = System.Diagnostics.Stopwatch.StartNew();
+			var timer = System.Diagnostics.Stopwatch.StartNew();
 
-			// TODO types hard-coded
 			var reader = new DataReader<int, string>(Dataset, Queries, QueriesType);
 
-			readTimer.Stop();
+			timer.Stop();
 
 			Console.WriteLine($"Dataset of {reader.Inputs.Dataset.Count} records.");
 			Console.WriteLine($"Queries of {reader.Inputs.QueriesCount()} queries.");
-			Console.WriteLine($"Inputs read in {readTimer.ElapsedMilliseconds} ms");
+			Console.WriteLine($"Inputs read in {timer.ElapsedMilliseconds} ms");
 
-			var simulator = new Simulator<int, string>(
-				reader.Inputs,
-				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
-					BPlusTreeBranching
-				)
-			);
-			var report = simulator.Simulate();
+			Report report;
+
+			switch (OREScheme)
+			{
+				case OPESchemes.OPESchemes.NoEncryption:
+				case OPESchemes.OPESchemes.CryptDB:
+					report = 
+						new Simulator<int, string, int>(
+							reader.Inputs,
+							new Options<int, int>(
+								OPESchemesFactoryIntToInt.GetScheme(OREScheme),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
+				default:
+					throw new InvalidOperationException($"No such scheme: {OREScheme}");
+			}
 
 			System.Console.WriteLine(report);
 
