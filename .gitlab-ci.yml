@@ -1,5 +1,18 @@
 stages:
+- build
 - test
+
+
+build-all:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: build
+  script:
+  - dotnet build -c release src/cli/
+  artifacts:
+    paths:
+    - src/cli/bin/release/netcoreapp2.0/
+  tags:
+  - docker
 
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
@@ -7,5 +20,16 @@ unit-tests:
   script:
   - apk add --update bash
   - ./test/test.sh
+  tags:
+  - docker
+
+integration-tests:
+  image: microsoft/dotnet:2.1-runtime-alpine
+  stage: test
+  script:
+  - dotnet src/cli/bin/release/netcoreapp2.0/cli.dll -- --dataset data/dataset.txt --queries data/exact-queries.txt
+  - dotnet src/cli/bin/release/netcoreapp2.0/cli.dll -- --dataset data/dataset.txt --queries data/range-queries.txt --queries-type range
+  - dotnet src/cli/bin/release/netcoreapp2.0/cli.dll -- --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update
+  - dotnet src/cli/bin/release/netcoreapp2.0/cli.dll -- --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete
   tags:
   - docker
