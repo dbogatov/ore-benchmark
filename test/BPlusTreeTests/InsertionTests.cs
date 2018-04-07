@@ -9,7 +9,7 @@ namespace Test
 {
 	public partial class BPlusTreeTests
 	{
-		private Tree<string, int, int> ConstructTree(Options<int, int> options, List<int> input, bool print = false)
+		private Tree<string, int, int> ConstructTree(Options<int, int> options, List<int> input, bool print = false, bool validate = true)
 		{
 			var tree = new Tree<string, int, int>(options);
 
@@ -21,7 +21,10 @@ namespace Test
 						Console.WriteLine($"Adding {val}");
 					}
 					tree.Insert(val, val.ToString());
-					Assert.True(tree.Validate());
+					if (validate)
+					{
+						Assert.True(tree.Validate());
+					}
 					if (print)
 					{
 						Console.WriteLine(tree.ToString());
