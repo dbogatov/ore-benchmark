@@ -27,9 +27,9 @@ integration-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
   stage: test
   script:
-  - dotnet src/cli/dist/cli.dll -- --dataset data/dataset.txt --queries data/exact-queries.txt
-  - dotnet src/cli/dist/cli.dll -- --dataset data/dataset.txt --queries data/range-queries.txt --queries-type range
-  - dotnet src/cli/dist/cli.dll -- --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update
-  - dotnet src/cli/dist/cli.dll -- --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete
+  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt
+  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-queries.txt --queries-type range
+  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update
+  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete
   tags:
   - docker
