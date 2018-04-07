@@ -57,7 +57,7 @@ namespace CLI
 
 			Console.WriteLine($"Dataset of {reader.Inputs.Dataset.Count} records.");
 			Console.WriteLine($"Queries of {reader.Inputs.QueriesCount()} queries.");
-			Console.WriteLine($"Inputs read in {timer.ElapsedMilliseconds} ms");
+			Console.WriteLine($"Inputs read in {timer.ElapsedMilliseconds} ms.");
 
 			Report report;
 
