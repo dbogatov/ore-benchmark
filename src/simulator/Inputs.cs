@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OPESchemes;
 
 namespace Simulation
 {
@@ -146,10 +145,10 @@ namespace Simulation
 			public override string ToString()
 			{
 				return $@"
-	Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
-	Number of OPE/ORE scheme operations performed: {SchemeOperations}
-	Observable time elapsed: {ObservedTime}
-	CPU time reported: {CPUTime}
+		Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
+		Number of OPE/ORE scheme operations performed: {SchemeOperations}
+		Observable time elapsed: {ObservedTime}
+		CPU time reported: {CPUTime}
 ";
 			}
 		}
@@ -161,9 +160,10 @@ namespace Simulation
 		public override string ToString()
 		{
 			return $@"
-Construction stage report:
+Report for {QueriesType} queries simulation:
+	Construction stage report:
 {Construction}
-{QueriesType} queries stage report:
+	{QueriesType} queries stage report:
 {Queries}
 ";
 		}

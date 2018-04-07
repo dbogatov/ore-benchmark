@@ -116,6 +116,7 @@ namespace Simulation
 		{
 			return new Report
 			{
+				QueriesType = _inputs.Type,
 				Construction = ConstructionStage(),
 				Queries = QueryStage()
 			};
