@@ -66,8 +66,8 @@ namespace Test
 				{
 					Assert.NotEqual(0, report.Construction.IOs);
 					Assert.NotEqual(0, report.Construction.SchemeOperations);
-					Assert.NotEqual(new TimeSpan(0), report.Construction.ObservedTime);
-					Assert.NotEqual(new TimeSpan(0), report.Construction.CPUTime);
+					Assert.NotEqual(new TimeSpan(0).Ticks, report.Construction.ObservedTime.Ticks);
+					Assert.NotEqual(new TimeSpan(0).Ticks, report.Construction.CPUTime.Ticks);
 				}
 			);
 		}
