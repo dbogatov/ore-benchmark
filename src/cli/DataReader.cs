@@ -61,6 +61,11 @@ namespace CLI
 			}
 		}
 
+		/// <summary>
+		/// Converts string value to the specified type
+		/// </summary>
+		/// <param name="value">Value to convert</param>
+		/// <returns>The input value but of a proper type</returns>
 		private T ConvertToType<T>(string value)
 		{
 			switch (Type.GetTypeCode(typeof(T)))

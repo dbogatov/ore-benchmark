@@ -33,6 +33,10 @@ namespace DataStructures.BPlusTree
 			Scheme = scheme;
 		}
 
+		/// <summary>
+		/// Emits event when node has been visited
+		/// </summary>
+		/// <param name="hash">Unique hash of the node</param>
 		public void OnVisit(int hash)
 		{
 			var handler = NodeVisited;
@@ -42,6 +46,9 @@ namespace DataStructures.BPlusTree
 			}
 		}
 
+		/// <summary>
+		/// Returns the next unique available id for a node
+		/// </summary>
 		public int GetNextId() => _generator++;
 	}
 }

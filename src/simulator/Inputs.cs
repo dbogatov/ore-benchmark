@@ -112,6 +112,10 @@ namespace Simulation
 		}
 	}
 
+	/// <summary>
+	/// I - index (plaintext) type
+	/// D - data type
+	/// </summary>
 	public class Inputs<I, D>
 	{
 		public List<Record<I, D>> Dataset = new List<Record<I, D>>();
@@ -122,6 +126,10 @@ namespace Simulation
 		public List<UpdateQuery<I, D>> UpdateQueries = new List<UpdateQuery<I, D>>();
 		public List<DeleteQuery<I>> DeleteQueries = new List<DeleteQuery<I>>();
 
+		/// <summary>
+		/// Returns the number of queries in the inputs.
+		/// Assumes that only one type is present
+		/// </summary>
 		public int QueriesCount()
 		{
 			return new List<int> {

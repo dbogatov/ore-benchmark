@@ -39,9 +39,22 @@ namespace Simulation
 			_tree = new Tree<D, C, I>(options);
 		}
 
+		/// <summary>
+		/// Handler for the event that node has been visited
+		/// </summary>
+		/// <param name="nodeHash">hash of the node</param>
 		void RecordNodeVisit(int nodeHash) => _visited.Add(nodeHash);
+
+		/// <summary>
+		/// Handler for the event that the scheme has performed an operation
+		/// </summary>
+		/// <param name="operation">Performed operation</param>
 		void RecordSchemeOperation(SchemeOperation operation) => _schemeOperations[operation]++;
 
+		/// <summary>
+		/// Generated sub-report for the construction stage of simulation
+		/// when data structure gets populated with dataset.
+		/// </summary>
 		private Report.SubReport ConstructionStage() =>
 			Profile(() =>
 				_inputs
@@ -49,6 +62,10 @@ namespace Simulation
 					.ForEach(record => _tree.Insert(_scheme.Encrypt(record.index, _key), record.value))
 			);
 
+		/// <summary>
+		/// Generated sub-report for the query stage of simulation
+		/// when queries are run against data structure.
+		/// </summary>
 		private Report.SubReport QueryStage()
 		{
 			return Profile(() =>
@@ -89,6 +106,11 @@ namespace Simulation
 			});
 		}
 
+		/// <summary>
+		/// Generates a sub-report filled with data gathered during the execution of 
+		/// given function. Records times and number of events.
+		/// </summary>
+		/// <param name="routine">Function to profile</param>
 		private Report.SubReport Profile(Action routine)
 		{
 			var currentProcess = Process.GetCurrentProcess();
@@ -112,6 +134,11 @@ namespace Simulation
 			};
 		}
 
+		/// <summary>
+		/// Runs simulation for the inputs and options provided through
+		/// the constructor.
+		/// </summary>
+		/// <returns>A final report containing sub-reports for different stages</returns>
 		public Report Simulate()
 		{
 			return new Report

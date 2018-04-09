@@ -15,17 +15,28 @@ namespace OPESchemes
 
 	public class OPESchemesFactoryIntToInt
 	{
+		/// <summary>
+		/// Returns an initialized scheme
+		/// </summary>
+		/// <param name="scheme">Enum indicating the requested scheme</param>
+		/// <returns>Initialized scheme</returns>
 		public static IOPEScheme<int, int> GetScheme(OPESchemes scheme)
 		{
+			IOPEScheme<int, int> result;
 			switch (scheme)
 			{
 				case OPESchemes.NoEncryption:
-					return new NoEncryptionScheme();
+					result = new NoEncryptionScheme();
+					break;
 				case OPESchemes.CryptDB:
-					return new CryptDBScheme();
+					result = new CryptDBScheme();
+					break;
 				default:
 					throw new ArgumentException("Scheme enum is invalid");
 			}
+
+			result.Init();
+			return result;
 		}
 	}
 
