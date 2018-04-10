@@ -18,13 +18,15 @@ namespace DataStructures.BPlusTree
 
 			public override bool TryRange(C start, C end, List<T> values)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				var found = false;
 
 				for (int i = 0; i < children.Count; i++)
 				{
 					if (
-						_options.Scheme.IsLessOrEqual(start, children[i].index) && 
-						_options.Scheme.IsGreaterOrEqual(end, children[i].index) && 
+						_options.Scheme.IsLessOrEqual(start, children[i].index) &&
+						_options.Scheme.IsGreaterOrEqual(end, children[i].index) &&
 						children[i].node != null)
 					{
 						found = true;
@@ -35,11 +37,54 @@ namespace DataStructures.BPlusTree
 					}
 				}
 
-				return (next == null ? false : next.TryRange(_options.Scheme.MinCiphertextValue(), end, values)) || found;
+				if (found)
+				{
+					LeafNode nextLeaf = (LeafNode)next;
+					while (nextLeaf != null)
+					{
+						nextLeaf = nextLeaf.ReturnRange(_options.Scheme.MinCiphertextValue(), end, values);
+					}
+				}
+
+				return found;
+			}
+
+			/// <summary>
+			/// A non-recursive version of leaf's TryRange
+			/// A recursive one would trigger StackOverflow exception
+			/// </summary>
+			/// <param name="start">Start of the search range</param>
+			/// <param name="end">End of the search range</param>
+			/// <param name="values">List to append results to</param>
+			/// <returns>The next leaf if at least one element was found, null otherwise</returns>
+			protected LeafNode ReturnRange(C start, C end, List<T> values)
+			{
+				_options.OnVisit(this.GetHashCode());
+
+				var found = false;
+
+				for (int i = 0; i < children.Count; i++)
+				{
+					if (
+						_options.Scheme.IsLessOrEqual(start, children[i].index) &&
+						_options.Scheme.IsGreaterOrEqual(end, children[i].index) &&
+						children[i].node != null)
+					{
+						found = true;
+
+						T value;
+						children[i].node.TryGet(children[i].index, out value);
+						values.Add(value);
+					}
+				}
+
+				return found ? (LeafNode)next : null;
 			}
 
 			public override InsertInfo Insert(C key, T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				var updated = false;
 
 				if (children.Count == 0)
@@ -122,7 +167,8 @@ namespace DataStructures.BPlusTree
 					};
 				}
 
-				return new InsertInfo {
+				return new InsertInfo
+				{
 					updated = updated
 				};
 			}

@@ -70,6 +70,8 @@ namespace DataStructures.BPlusTree
 			public Node prev = null;
 			public Node parent = null;
 
+			private int _id;
+
 			public Node(Options<P, C> options, Node parent, Node next, Node prev)
 			{
 				_options = options;
@@ -79,6 +81,10 @@ namespace DataStructures.BPlusTree
 				this.prev = prev;
 
 				Initialize();
+
+				options.OnVisit(this.GetHashCode());
+
+				_id = options.GetNextId();
 			}
 
 			/// <summary>
@@ -96,6 +102,8 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			public virtual C LargestIndex()
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				return
 					children.Count > 0 ?
 					children.Select(ch => ch.index).Aggregate((acc, next) =>
@@ -111,6 +119,8 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			public virtual bool TryGet(C key, out T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				value = default(T);
 
 				if (children.Count == 0)
@@ -135,6 +145,8 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			public virtual bool TryRange(C start, C end, List<T> values)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				for (int i = 0; i < children.Count; i++)
 				{
 					if (_options.Scheme.IsLessOrEqual(start, children[i].index))
@@ -164,6 +176,8 @@ namespace DataStructures.BPlusTree
 			/// <returns>The struct identifying the result of the inner delete</returns>
 			public virtual DeleteInfo Delete(C key)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				if (children.Count == 0)
 				{
 					return new DeleteInfo
@@ -301,6 +315,8 @@ namespace DataStructures.BPlusTree
 			/// <param name="fromLeft">True if the children come from the left side, false otherwise</param>
 			protected void Merge(List<IndexValue> orphans, bool fromLeft)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				if (fromLeft)
 				{
 					orphans.AddRange(children);
@@ -320,6 +336,8 @@ namespace DataStructures.BPlusTree
 			/// <param name="updateParent">Forcefully update the parent</param>
 			protected void RebuildIndices(bool updateParent = false)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				// leaf node
 				if (children.Count == 0)
 				{
@@ -360,6 +378,8 @@ namespace DataStructures.BPlusTree
 			/// <returns>Spare children, or null</returns>
 			protected List<IndexValue> BorrowChildren(bool leftMost)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				var count = (children.Count - (_options.Branching / 2)) / 2;
 
 				if (count == 0)
@@ -487,13 +507,13 @@ namespace DataStructures.BPlusTree
 				var prevNextLink = (this.prev == null || this.prev.next == this);
 
 				var result =
-					 thisNextLink &&
-					 siblingsChain &&
-					 thisPrevLink &&
-					 thisParentLink &&
-					 childrenChain &&
-					 nextPrevLink &&
-					 prevNextLink;
+					thisNextLink &&
+					siblingsChain &&
+					thisPrevLink &&
+					thisParentLink &&
+					childrenChain &&
+					nextPrevLink &&
+					prevNextLink;
 
 				return result;
 			}
@@ -525,6 +545,8 @@ namespace DataStructures.BPlusTree
 						.Where(ch => ch.node != null)
 						.All(ch => ch.node.isBalanced());
 			}
+
+			public override int GetHashCode() => _id;
 		}
 	}
 }

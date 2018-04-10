@@ -3,6 +3,7 @@ using Xunit;
 using OPESchemes;
 using System.Linq;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Test
 {
@@ -112,6 +113,55 @@ namespace Test
 			{
 				Assert.False(result);
 			}
+		}
+
+		[Theory]
+		[InlineData(SchemeOperation.Init)]
+		[InlineData(SchemeOperation.KeyGen)]
+		[InlineData(SchemeOperation.Destruct)]
+		[InlineData(SchemeOperation.Encrypt)]
+		[InlineData(SchemeOperation.Decrypt)]
+		[InlineData(SchemeOperation.Comparison)]
+		public void EventsTest(SchemeOperation operation)
+		{
+			var actual = new Dictionary<SchemeOperation, int>();
+			Enum
+				.GetValues(typeof(SchemeOperation))
+				.OfType<SchemeOperation>()
+				.ToList()
+				.ForEach(val => actual.Add(val, 0));
+
+			_scheme.OperationOcurred += new SchemeOperationEventHandler(op => actual[op]++);
+
+			_scheme.Init();
+			var key = _scheme.KeyGen();
+
+			var ciphertexts =
+				Enumerable
+					.Range(1, 10)
+					.Select(val => _scheme.Encrypt(val, key))
+					.Select(val => _scheme.Decrypt(val, key))
+					.ToList();
+
+			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsGreater(first, second)).ToList();
+			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsGreaterOrEqual(first, second)).ToList();
+			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsLess(first, second)).ToList();
+			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsLessOrEqual(first, second)).ToList();
+			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsEqual(first, second)).ToList();
+
+			_scheme.Destruct();
+
+			var expected = new Dictionary<SchemeOperation, int>
+			{
+				{ SchemeOperation.Init, 1} ,
+				{ SchemeOperation.KeyGen, 1 },
+				{ SchemeOperation.Destruct, 1 },
+				{ SchemeOperation.Encrypt, 10 },
+				{ SchemeOperation.Decrypt, 10 },
+				{ SchemeOperation.Comparison, 9 * 5 },
+			};
+
+			Assert.Equal(expected[operation], actual[operation]);
 		}
 	}
 }

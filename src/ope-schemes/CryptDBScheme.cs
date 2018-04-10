@@ -4,6 +4,8 @@ namespace OPESchemes
 {
 	public class CryptDBScheme : IOPEScheme<int, int>
 	{
+		public event SchemeOperationEventHandler OperationOcurred;
+
 		public int Decrypt(int ciphertext, int key)
 		{
 			throw new NotImplementedException();

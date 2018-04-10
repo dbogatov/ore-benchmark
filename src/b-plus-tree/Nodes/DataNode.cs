@@ -19,6 +19,8 @@ namespace DataStructures.BPlusTree
 
 			public override bool TryGet(C key, out T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				if (_options.Scheme.IsEqual(this.key, key))
 				{
 					value = this.value;
@@ -33,6 +35,8 @@ namespace DataStructures.BPlusTree
 
 			public override InsertInfo Insert(C key, T value)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				this.value = value;
 				return new InsertInfo
 				{
@@ -42,6 +46,8 @@ namespace DataStructures.BPlusTree
 
 			public override DeleteInfo Delete(C key)
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				if (_options.Scheme.IsEqual(this.key, key))
 				{
 					ConnectNeighbors();
@@ -62,6 +68,8 @@ namespace DataStructures.BPlusTree
 
 			public override C LargestIndex()
 			{
+				_options.OnVisit(this.GetHashCode());
+
 				return this.key;
 			}
 

@@ -54,8 +54,12 @@ namespace Test
 			Assert.Equal(new List<string> { 3.ToString() }, output);
 		}
 
-		[Fact]
-		public void SearchRangeMultilevelTest()
+		[Theory]
+		[InlineData(10000, 58, 6545)]
+		[InlineData(10000, 5000, 5001)]
+		[InlineData(10000, 3000, 7000)]
+		[InlineData(10000, 1, 10000)]
+		public void SearchRangeMultilevelTest(int max, int from, int to)
 		{
 			List<string> output = null;
 
@@ -65,17 +69,19 @@ namespace Test
 					3
 				),
 				Enumerable
-					.Range(1, 100)
-					.Select(val => val * val)
-					.ToList()
-			).TryRange(58 * 58, 65 * 65, out output);
+					.Range(1, max)
+					.Select(val => val * 123)
+					.ToList(),
+				false,
+				false
+			).TryRange(from * 123, to * 123, out output);
 
 			Assert.True(result);
 
 			Assert.Equal(
 				Enumerable
-					.Range(58, 65 - 58 + 1)
-					.Select(val => (val * val).ToString())
+					.Range(from, to - from + 1)
+					.Select(val => (val * 123).ToString())
 					.OrderBy(val => val)
 					.ToList(),
 				output
@@ -107,7 +113,7 @@ namespace Test
 		public void SearchRangeEndBeforeStartTest(int start, int end)
 		{
 			Assert.Throws<ArgumentException>(
-				() => 
+				() =>
 				new Tree<string, int, int>(
 					new Options<int, int>(
 						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
