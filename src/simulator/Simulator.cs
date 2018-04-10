@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OPESchemes;
+using ORESchemes.Shared;
 using DataStructures.BPlusTree;
 using System.Diagnostics;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace Simulation
 		private HashSet<int> _visited = new HashSet<int>();
 		private Dictionary<SchemeOperation, int> _schemeOperations = new Dictionary<SchemeOperation, int>();
 		private Inputs<I, D> _inputs;
-		private IOPEScheme<I, C> _scheme;
+		private IOREScheme<I, C> _scheme;
 		private int _key;
 		private Tree<D, C, I> _tree;
 

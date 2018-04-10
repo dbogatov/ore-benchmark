@@ -1,5 +1,5 @@
 using System;
-using OPESchemes;
+using ORESchemes.Shared;
 
 namespace DataStructures.BPlusTree
 {
@@ -14,12 +14,12 @@ namespace DataStructures.BPlusTree
 		public event NodeVisitedEventHandler NodeVisited;
 
 		public int Branching { get; private set; }
-		public IOPEScheme<P, C> Scheme { get; private set; }
+		public IOREScheme<P, C> Scheme { get; private set; }
 
 		private int _generator = 0;
 
 		public Options(
-			IOPEScheme<P, C> scheme,
+			IOREScheme<P, C> scheme,
 			int branching = 60
 		)
 		{

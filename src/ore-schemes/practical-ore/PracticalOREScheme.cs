@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using ORESchemes.Shared;
 
-namespace OPESchemes
+namespace ORESchemes.PracticalORE
 {
-	public class NoEncryptionScheme : IOPEScheme<int, int>
+	public class PracticalOREScheme : IOREScheme<int, int>
 	{
 		private readonly Random generator = new Random();
 

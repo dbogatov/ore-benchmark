@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using OPESchemes;
+using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +34,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3 }
@@ -48,7 +48,7 @@ namespace Test
 		{
 			var tree = new Tree<string, int, int>(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				)
 			);
@@ -61,7 +61,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3 }
@@ -75,7 +75,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				Enumerable
@@ -92,7 +92,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				Enumerable
@@ -113,7 +113,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11 }
@@ -127,7 +127,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, 22 }
@@ -142,7 +142,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, -5, -10 }
@@ -158,7 +158,7 @@ namespace Test
 		{
 			var tree = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 }
@@ -184,7 +184,7 @@ namespace Test
 						.ToList();
 				var tree = ConstructTree(
 					new Options<int, int>(
-						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+						new NoEncryptionScheme(),
 						i
 					),
 					input

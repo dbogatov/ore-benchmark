@@ -1,15 +1,15 @@
 using System;
 using Xunit;
-using OPESchemes;
+using ORESchemes.Shared;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace Test
+namespace Test.ORESchemes
 {
 	public class NoEncryptionTests
 	{
-		private readonly IOPEScheme<int, int> _scheme = new NoEncryptionScheme();
+		private readonly IOREScheme<int, int> _scheme = new NoEncryptionScheme();
 		private readonly int _runs = 10;
 
 		[Fact]

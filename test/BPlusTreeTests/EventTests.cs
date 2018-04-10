@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using OPESchemes;
+using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +12,7 @@ namespace Test
 		private int ProfileVisitedNodes(Action<Tree<string, int, int>> routine, List<int> seeds = null)
 		{
 			var options = new Options<int, int>(
-				OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+				new NoEncryptionScheme(),
 				3
 			);
 			var tree = new Tree<string, int, int>(options);

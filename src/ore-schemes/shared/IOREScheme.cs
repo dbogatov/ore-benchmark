@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace OPESchemes
+namespace ORESchemes.Shared
 {
-	public enum OPESchemes
+	public enum ORESchemes
 	{
 		NoEncryption,
 		CryptDB
@@ -13,40 +13,13 @@ namespace OPESchemes
 		Init, Destruct, KeyGen, Encrypt, Decrypt, Comparison
 	}
 
-	public class OPESchemesFactoryIntToInt
-	{
-		/// <summary>
-		/// Returns an initialized scheme
-		/// </summary>
-		/// <param name="scheme">Enum indicating the requested scheme</param>
-		/// <returns>Initialized scheme</returns>
-		public static IOPEScheme<int, int> GetScheme(OPESchemes scheme)
-		{
-			IOPEScheme<int, int> result;
-			switch (scheme)
-			{
-				case OPESchemes.NoEncryption:
-					result = new NoEncryptionScheme();
-					break;
-				case OPESchemes.CryptDB:
-					result = new CryptDBScheme();
-					break;
-				default:
-					throw new ArgumentException("Scheme enum is invalid");
-			}
-
-			result.Init();
-			return result;
-		}
-	}
-
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
 
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
 	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
-	public interface IOPEScheme<P, C>
+	public interface IOREScheme<P, C>
 	{
 		event SchemeOperationEventHandler OperationOcurred;
 

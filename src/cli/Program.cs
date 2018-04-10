@@ -2,7 +2,6 @@
 using Simulation;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
-using OPESchemes;
 using DataStructures.BPlusTree;
 
 namespace CLI
@@ -33,7 +32,7 @@ namespace CLI
 		public DataStructure DataStruct { get; } = DataStructure.BPlusTree;
 
 		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (eq. NoEncryption)")]
-		public OPESchemes.OPESchemes OREScheme { get; } = OPESchemes.OPESchemes.NoEncryption;
+		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
 
 		[Option("--verbose", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
@@ -60,13 +59,13 @@ namespace CLI
 
 			switch (OREScheme)
 			{
-				case OPESchemes.OPESchemes.NoEncryption:
-				case OPESchemes.OPESchemes.CryptDB:
+				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case ORESchemes.Shared.ORESchemes.CryptDB:
 					report = 
 						new Simulator<int, string, int>(
 							reader.Inputs,
 							new Options<int, int>(
-								OPESchemesFactoryIntToInt.GetScheme(OREScheme),
+								ORESchemesFactoryIntToInt.GetScheme(OREScheme),
 								BPlusTreeBranching
 							)
 						).Simulate();

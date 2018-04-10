@@ -1,8 +1,9 @@
 ﻿using System;
+using ORESchemes.Shared;
 
-namespace OPESchemes
+namespace ORESchemes.CryptDBOPE
 {
-	public class CryptDBScheme : IOPEScheme<int, int>
+	public class CryptDBScheme : IOREScheme<int, int>
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 

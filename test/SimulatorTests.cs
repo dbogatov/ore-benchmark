@@ -2,7 +2,7 @@ using System;
 using Xunit;
 using Simulation;
 using System.Linq;
-using OPESchemes;
+using ORESchemes.Shared;
 using DataStructures.BPlusTree;
 using System.Collections.Generic;
 
@@ -49,7 +49,7 @@ namespace Test
 			};
 
 			var options = new Options<int, int>(
-				OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+				new NoEncryptionScheme(),
 				3
 			);
 
