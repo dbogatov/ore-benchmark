@@ -18,6 +18,8 @@ By simulating a real database using a B+ tree we examine how ORE schemes make ef
 We will be using two encryption schemes from the following papers: [Order Preserving Symmetric Encryption](https://eprint.iacr.org/2012/624.pdf), and [Practical Order-Revealing Encryption with Limited Leakage](https://eprint.iacr.org/2015/1125.pdf). 
 We will be using benchmark data from the following website: [tpc.org](http://www.tpc.org) for evaluation.
 
+The original project repository is [here](https://git.dbogatov.org/bu/CS-562/Project-Code).
+
 ### Progress
 
 * Implemented
