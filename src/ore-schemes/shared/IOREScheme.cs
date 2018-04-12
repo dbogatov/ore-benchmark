@@ -5,7 +5,8 @@ namespace ORESchemes.Shared
 	public enum ORESchemes
 	{
 		NoEncryption,
-		CryptDB
+		CryptDB,
+		PracticalORE
 	}
 
 	public enum SchemeOperation
@@ -39,7 +40,7 @@ namespace ORESchemes.Shared
 		/// Randomized routine that generates a valid encryption key
 		/// </summary>
 		/// <returns>A valid encryption key</returns>
-		int KeyGen();
+		byte[] KeyGen();
 
 		/// <summary>
 		/// Possibly randomized routine.
@@ -48,7 +49,7 @@ namespace ORESchemes.Shared
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		C Encrypt(P plaintext, int key);
+		C Encrypt(P plaintext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -57,7 +58,7 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		P Decrypt(C ciphertext, int key);
+		P Decrypt(C ciphertext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.

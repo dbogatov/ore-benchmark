@@ -5,11 +5,11 @@ namespace ORESchemes.Shared
 {
 	public class NoEncryptionScheme : IOREScheme<int, int>
 	{
-		private readonly Random generator = new Random();
+		private readonly Random _generator = new Random();
 
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		public int Decrypt(int ciphertext, int key)
+		public int Decrypt(int ciphertext, byte[] key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
@@ -23,7 +23,7 @@ namespace ORESchemes.Shared
 			return;
 		}
 
-		public int Encrypt(int plaintext, int key)
+		public int Encrypt(int plaintext, byte[] key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
@@ -72,11 +72,14 @@ namespace ORESchemes.Shared
 			return ciphertextOne <= ciphertextTwo;
 		}
 
-		public int KeyGen()
+		public byte[] KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
-			return generator.Next(Int32.MaxValue);
+			byte[] key = new byte[256 / 8];
+			_generator.NextBytes(key);
+
+			return key;
 		}
 
 		public int MaxCiphertextValue()

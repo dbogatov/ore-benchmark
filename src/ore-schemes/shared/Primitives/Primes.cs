@@ -1,4 +1,0 @@
-namespace ORESchemes.Shared.Primitives
-{
-	
-}

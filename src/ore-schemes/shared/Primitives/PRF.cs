@@ -16,7 +16,7 @@ namespace ORESchemes.Shared.Primitives
 
 	public interface IPRF
 	{
-		byte[] PRF(byte[] key, byte[] input);
+		byte[] PRF(byte[] key, byte[] input, byte[] IV = null);
 		byte[] InversePRF(byte[] key, byte[] input);
 		void SetSecurityParameter(int alpha);
 	}
@@ -31,18 +31,24 @@ namespace ORESchemes.Shared.Primitives
 		}
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
-		public byte[] PRF(byte[] key, byte[] input)
+		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
 		{
 			byte[] encrypted;
-			byte[] IV;
 
 			using (Aes aesAlg = Aes.Create())
 			{
 				aesAlg.KeySize = _alpha;
 				aesAlg.Key = key;
 
-				aesAlg.GenerateIV();
-				IV = aesAlg.IV;
+				if (IV == null)
+				{
+					aesAlg.GenerateIV();
+					IV = aesAlg.IV;
+				}
+				else
+				{
+					aesAlg.IV = IV;
+				}
 
 				aesAlg.Mode = CipherMode.CBC;
 

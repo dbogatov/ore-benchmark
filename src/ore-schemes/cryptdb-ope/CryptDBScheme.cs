@@ -7,7 +7,7 @@ namespace ORESchemes.CryptDBOPE
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		public int Decrypt(int ciphertext, int key)
+		public int Decrypt(int ciphertext, byte[] key)
 		{
 			throw new NotImplementedException();
 		}
@@ -17,7 +17,7 @@ namespace ORESchemes.CryptDBOPE
 			throw new NotImplementedException();
 		}
 
-		public int Encrypt(int plaintext, int key)
+		public int Encrypt(int plaintext, byte[] key)
 		{
 			throw new NotImplementedException();
 		}
@@ -52,7 +52,7 @@ namespace ORESchemes.CryptDBOPE
 			throw new NotImplementedException();
 		}
 
-		public int KeyGen()
+		public byte[] KeyGen()
 		{
 			throw new NotImplementedException();
 		}

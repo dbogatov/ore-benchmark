@@ -7,24 +7,27 @@ namespace Test.ORESchemes
 {
 	public class PrimitiveTests
 	{
-		// [Theory]
-		// [InlineData("Hello")]
-		// public void AESStringCorrectness(string plaintext)
-		// {
-		// 	var seed = 245613;
-		// 	var random = new Random(seed);
+		[Theory]
+		[InlineData("Hello")]
+		[InlineData("World")]
+		[InlineData("")]
+		[InlineData("1305")]
+		public void AESStringCorrectness(string plaintext)
+		{
+			var seed = 245613;
+			var random = new Random(seed);
 
-		// 	IPRF aes = PRFFactory.GetPRF();
+			AES aes = new AES();
 
-		// 	aes.SetSecurityParameter(128);
-		// 	byte[] key = new byte[128 / 8];
-		// 	random.NextBytes(key);
+			aes.SetSecurityParameter(256);
+			byte[] key = new byte[256 / 8];
+			random.NextBytes(key);
 
-		// 	var ciphertext = aes.PRF(key, Encoding.UTF8.GetBytes(plaintext));
-		// 	var decrypted = aes.InversePRF(key, ciphertext);
+			var ciphertext = aes.PRF(key, Encoding.Default.GetBytes(plaintext));
+			var decrypted = aes.InversePRF(key, ciphertext);
 
-		// 	Assert.Equal(plaintext, Convert.ToBase64String(decrypted));
-		// }
+			Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
+		}
 
 		[Theory]
 		[InlineData(128)]
@@ -34,7 +37,7 @@ namespace Test.ORESchemes
 			var seed = 245613;
 
 			var random = new Random(seed);
-			IPRF aes = PRFFactory.GetPRF();
+			AES aes = new AES();
 
 			aes.SetSecurityParameter(alpha);
 			byte[] key = new byte[alpha / 8];
@@ -45,10 +48,13 @@ namespace Test.ORESchemes
 				byte[] plaintext = new byte[4];
 				random.NextBytes(plaintext);
 
-				var ciphertext = aes.PRF(key, plaintext);
-				var decrypted = aes.InversePRF(key, ciphertext);
-
-				Assert.Equal(plaintext, decrypted);
+				Assert.Equal(
+					plaintext,
+					aes.InversePRF(
+						key, 
+						aes.PRF(key, plaintext)
+					)
+				);
 			}
 		}
 	}

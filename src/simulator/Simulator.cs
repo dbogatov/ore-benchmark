@@ -17,7 +17,7 @@ namespace Simulation
 		private Dictionary<SchemeOperation, int> _schemeOperations = new Dictionary<SchemeOperation, int>();
 		private Inputs<I, D> _inputs;
 		private IOREScheme<I, C> _scheme;
-		private int _key;
+		private byte[] _key;
 		private Tree<D, C, I> _tree;
 
 		public Simulator(Inputs<I, D> inputs, Options<I, C> options)
