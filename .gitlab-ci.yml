@@ -15,11 +15,11 @@ build-all:
   - docker
 
 unit-tests:
-  image: microsoft/dotnet:2.1-sdk
+  image: microsoft/dotnet:2.1-sdk-alpine
   stage: test
   script:
-  # - apk add --update bash
-  - dotnet restore -v diag test/
+  - apk add --update bash
+  - dotnet restore test/
   - ./test/test.sh
   tags:
   - docker
