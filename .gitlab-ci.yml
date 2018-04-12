@@ -15,7 +15,7 @@ build-all:
   - docker
 
 unit-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: microsoft/dotnet:2.1-sdk
   stage: test
   script:
   - apk add --update bash
