@@ -4,9 +4,8 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
 		<PackageReference Include="xunit" Version="2.3.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
@@ -16,3 +15,19 @@
 		<ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
 	</ItemGroup>
 </Project>
+
+GET https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app/index.json (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/microsoft.net.test.sdk/index.json (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/xunit/index.json (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/xunit.runner.visualstudio/index.json (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app/index.json 852ms (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app/2.0.0/microsoft.netcore.app.2.0.0.nupkg (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app/2.0.0/microsoft.netcore.app.2.0.0.nupkg 29ms (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/xunit.runner.visualstudio/index.json 1098ms (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/xunit.runner.visualstudio/2.3.1/xunit.runner.visualstudio.2.3.1.nupkg (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/microsoft.netcore.dotnethostpolicy/index.json (TaskId:90)
+GET https://api.nuget.org/v3-flatcontainer/netstandard.library/index.json (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/xunit.runner.visualstudio/2.3.1/xunit.runner.visualstudio.2.3.1.nupkg 723ms (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/xunit/index.json 1844ms (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/microsoft.net.test.sdk/index.json 1846ms (TaskId:90)
+OK https://api.nuget.org/v3-flatcontainer/microsoft.netcore.dotnethostpolicy/index.json 1683ms (TaskId:90)
