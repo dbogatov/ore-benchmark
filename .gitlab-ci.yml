@@ -19,7 +19,7 @@ unit-tests:
   stage: test
   script:
   - apk add --update bash
-  - dotnet restore test/
+  - dotnet restore -v diag test/
   - ./test/test.sh
   tags:
   - docker
