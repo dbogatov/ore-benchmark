@@ -18,7 +18,7 @@ unit-tests:
   image: microsoft/dotnet:2.1-sdk
   stage: test
   script:
-  - apk add --update bash
+  # - apk add --update bash
   - dotnet restore -v diag test/
   - ./test/test.sh
   tags:
