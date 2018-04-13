@@ -10,6 +10,7 @@ namespace Simulation
 	/// <summary>
 	/// I - index (plaintext) type
 	/// D - data type
+	/// C - ciphertext type
 	/// </summary>
 	public class Simulator<I, D, C>
 	{

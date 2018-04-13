@@ -159,6 +159,18 @@ namespace Simulation
 		CPU time reported: {CPUTime}
 ";
 			}
+
+			public string ToConciseString(bool queryStage)
+			{
+				var stage = queryStage ? "Query" : "Construction";
+
+				return $@"
+{stage} IOs: {IOs}
+{stage} OPs: {SchemeOperations}
+{stage} Time: {ObservedTime.TotalMilliseconds}
+{stage} CPUTime: {CPUTime.TotalMilliseconds}
+";
+			}
 		}
 
 		public SubReport Construction;
@@ -173,6 +185,14 @@ Report for {QueriesType} queries simulation:
 {Construction}
 	{QueriesType} queries stage report:
 {Queries}
+";
+		}
+
+		public string ToConciseString()
+		{
+			return $@"
+{Construction.ToConciseString(false)}
+{Queries.ToConciseString(true)}
 ";
 		}
 	}

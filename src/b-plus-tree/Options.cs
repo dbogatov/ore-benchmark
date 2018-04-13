@@ -23,7 +23,7 @@ namespace DataStructures.BPlusTree
 			int branching = 60
 		)
 		{
-			if (branching < 3 || branching > 65536)
+			if (branching < 2 || branching > 65536)
 			{
 				throw new ArgumentException("Bad B+ tree options");
 			}

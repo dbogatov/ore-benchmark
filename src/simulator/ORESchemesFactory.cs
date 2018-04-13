@@ -5,14 +5,19 @@ using ORESchemes.PracticalORE;
 
 namespace Simulation
 {
-	public class ORESchemesFactoryIntToInt
+	public abstract class ORESchemesFactory<P, C>
 	{
 		/// <summary>
 		/// Returns an initialized scheme
 		/// </summary>
 		/// <param name="scheme">Enum indicating the requested scheme</param>
 		/// <returns>Initialized scheme</returns>
-		public static IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0);
+	}
+
+	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, int>
+	{
+		public override IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
 		{
 			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
 
@@ -25,11 +30,29 @@ namespace Simulation
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					result = new CryptDBScheme();
 					break;
-				// case ORESchemes.Shared.ORESchemes.PracticalORE:
-				// 	result = new PracticalOREScheme(alpha, seed);
-				// 	break;
 				default:
-					throw new ArgumentException("Scheme enum is invalid");
+					throw new ArgumentException($"{scheme} scheme is not Int to Int");
+			}
+
+			result.Init();
+			return result;
+		}
+	}
+
+	public class ORESchemesFactoryPractical : ORESchemesFactory<int, ORESchemes.PracticalORE.Ciphertext>
+	{
+		public override IOREScheme<int, Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		{
+			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
+
+			IOREScheme<int, Ciphertext> result;
+			switch (scheme)
+			{
+				case ORESchemes.Shared.ORESchemes.PracticalORE:
+					result = new PracticalOREScheme(alpha, seed);
+					break;
+				default:
+					throw new ArgumentException($"{scheme} scheme is not PracticalORE");
 			}
 
 			result.Init();
@@ -37,3 +60,4 @@ namespace Simulation
 		}
 	}
 }
+
