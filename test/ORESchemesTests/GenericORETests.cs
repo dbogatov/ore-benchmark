@@ -51,7 +51,7 @@ namespace Test.ORESchemes
 		{
 			_scheme.Init();
 
-			var generator = new Random();
+			var generator = new Random(456784);
 			var key = _scheme.KeyGen();
 
 			for (int i = 0; i < _runs; i++)

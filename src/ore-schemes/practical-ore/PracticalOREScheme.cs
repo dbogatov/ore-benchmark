@@ -138,11 +138,7 @@ namespace ORESchemes.PracticalORE
 
 				if (u1 != u2)
 				{
-					var res1 = (u2 % M);
-					var res2 = ((u1 + 1) % M);
-					var result = res1 == res2;
-					var lolo = (res1 == res2);
-					return result;
+					return (u2 % M) == ((u1 + 1) % M);
 				}
 			}
 
