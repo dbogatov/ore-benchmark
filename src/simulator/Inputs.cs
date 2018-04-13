@@ -160,6 +160,10 @@ namespace Simulation
 ";
 			}
 
+			/// <summary>
+			/// Returns the string representation of the object in a concise manner
+			/// </summary>
+			/// <param name="queryStage">The stage for which this sub-report was generated</param>
 			public string ToConciseString(bool queryStage)
 			{
 				var stage = queryStage ? "Query" : "Construction";
@@ -188,6 +192,9 @@ Report for {QueriesType} queries simulation:
 ";
 		}
 
+		/// <summary>
+		/// Returns the string representation of the object in a concise manner
+		/// </summary>
 		public string ToConciseString()
 		{
 			return $@"

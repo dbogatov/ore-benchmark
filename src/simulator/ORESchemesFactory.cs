@@ -12,6 +12,9 @@ namespace Simulation
 		/// </summary>
 		/// <param name="scheme">Enum indicating the requested scheme</param>
 		/// <returns>Initialized scheme</returns>
+		/// <remarks>
+		/// Will throw exception if requested scheme is not of the proper type
+		/// </remarks>
 		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0);
 	}
 

@@ -8,6 +8,9 @@ namespace ORESchemes.Shared.Primitives
 {
 	public class PRFFactory
 	{
+		/// <summary>
+		/// Returns an initialized instance of a PRF
+		/// </summary>
 		public static IPRF GetPRF()
 		{
 			return new AES();
@@ -16,8 +19,27 @@ namespace ORESchemes.Shared.Primitives
 
 	public interface IPRF
 	{
+		/// <summary>
+		/// Computes the value of the pseudo random function
+		/// </summary>
+		/// <param name="key">The key componenet to function</param>
+		/// <param name="input">The input value to function</param>
+		/// <param name="IV">The initialized vector to use; if given, PRF is deterministic</param>
+		/// <returns>The value of the function of its arguments</returns>
 		byte[] PRF(byte[] key, byte[] input, byte[] IV = null);
+
+		/// <summary>
+		/// Computes the value of the inverse of pseudo random function
+		/// </summary>
+		/// <param name="key">The key componenet to function</param>
+		/// <param name="input">The input value to function</param>
+		/// <returns>The value of the inverse of function of its arguments</returns>
 		byte[] InversePRF(byte[] key, byte[] input);
+
+		/// <summary>
+		/// Set the security parameter
+		/// </summary>
+		/// <param name="alpha">The number of bits representing security parameter</param>
 		void SetSecurityParameter(int alpha);
 	}
 
@@ -54,7 +76,7 @@ namespace ORESchemes.Shared.Primitives
 
 				var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-				// Create the streams used for encryption. 
+				// Create the streams used for encryption
 				using (var msEncrypt = new MemoryStream())
 				{
 					using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
@@ -70,19 +92,17 @@ namespace ORESchemes.Shared.Primitives
 			Array.Copy(IV, 0, combinedIvCt, 0, IV.Length);
 			Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
 
-			// Return the encrypted bytes from the memory stream. 
+			// Return the encrypted bytes from the memory stream.
 			return combinedIvCt;
 		}
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
 		public byte[] InversePRF(byte[] key, byte[] input)
 		{
-			// Declare the string used to hold 
-			// the decrypted text. 
+			// Declare the string used to hold the decrypted text
 			byte[] plaintext = null;
 
-			// Create an Aes object 
-			// with the specified key and IV. 
+			// Create an Aes object with the specified key and IV
 			using (Aes aesAlg = Aes.Create())
 			{
 				aesAlg.KeySize = _alpha;
@@ -97,7 +117,7 @@ namespace ORESchemes.Shared.Primitives
 				aesAlg.IV = IV;
 				aesAlg.Mode = CipherMode.CBC;
 
-				// Create a decrytor to perform the stream transform.
+				// Create a decrytor to perform the stream transform
 				var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
 				// Create the streams used for decryption. 

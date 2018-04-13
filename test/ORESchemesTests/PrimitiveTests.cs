@@ -23,10 +23,61 @@ namespace Test.ORESchemes
 			byte[] key = new byte[256 / 8];
 			random.NextBytes(key);
 
-			var ciphertext = aes.PRF(key, Encoding.Default.GetBytes(plaintext));
-			var decrypted = aes.InversePRF(key, ciphertext);
+			Assert.Equal(
+				plaintext,
+				Encoding
+					.Default
+					.GetString(
+						aes
+							.InversePRF(
+								key,
+								aes
+									.PRF(
+										key,
+										Encoding
+											.Default
+											.GetBytes(plaintext)
+										)
+							)
+					)
+			);
+		}
 
-			Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
+		[Fact]
+		public void AESIntCorrectness()
+		{
+			var seed = 245613;
+			var random = new Random(seed);
+
+			AES aes = new AES();
+
+			aes.SetSecurityParameter(256);
+			byte[] key = new byte[256 / 8];
+			random.NextBytes(key);
+
+			for (int i = 0; i < 100; i++)
+			{
+				var plaintext = random.Next();
+
+				Assert.Equal(
+					plaintext,
+					BitConverter
+						.ToInt32(
+							aes
+								.InversePRF(
+									key,
+									aes
+										.PRF(
+											key,
+											BitConverter
+												.GetBytes(plaintext)
+										)
+								),
+							0
+					)
+				);
+			}
+
 		}
 
 		[Theory]
@@ -35,8 +86,8 @@ namespace Test.ORESchemes
 		public void AESCorrectnessTest(int alpha)
 		{
 			var seed = 245613;
-
 			var random = new Random(seed);
+
 			AES aes = new AES();
 
 			aes.SetSecurityParameter(alpha);
@@ -51,7 +102,7 @@ namespace Test.ORESchemes
 				Assert.Equal(
 					plaintext,
 					aes.InversePRF(
-						key, 
+						key,
 						aes.PRF(key, plaintext)
 					)
 				);
