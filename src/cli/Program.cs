@@ -2,7 +2,6 @@
 using Simulation;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
-using OPESchemes;
 using DataStructures.BPlusTree;
 
 namespace CLI
@@ -33,13 +32,13 @@ namespace CLI
 		public DataStructure DataStruct { get; } = DataStructure.BPlusTree;
 
 		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (eq. NoEncryption)")]
-		public OPESchemes.OPESchemes OREScheme { get; } = OPESchemes.OPESchemes.NoEncryption;
+		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
 
-		[Option("--verbose", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
+		[Option("--verbose|-v", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
 
-		[Range(2, 100)]
-		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 100. Default 3.")]
+		[Range(2, 1024)]
+		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
 		public int BPlusTreeBranching { get; } = 3;
 
 		private int OnExecute()
@@ -60,13 +59,23 @@ namespace CLI
 
 			switch (OREScheme)
 			{
-				case OPESchemes.OPESchemes.NoEncryption:
-				case OPESchemes.OPESchemes.CryptDB:
-					report = 
+				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case ORESchemes.Shared.ORESchemes.CryptDB:
+					report =
 						new Simulator<int, string, int>(
 							reader.Inputs,
 							new Options<int, int>(
-								OPESchemesFactoryIntToInt.GetScheme(OREScheme),
+								new ORESchemesFactoryIntToInt().GetScheme(OREScheme),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
+				case ORESchemes.Shared.ORESchemes.PracticalORE:
+					report =
+						new Simulator<int, string, ORESchemes.PracticalORE.Ciphertext>(
+							reader.Inputs,
+							new Options<int, ORESchemes.PracticalORE.Ciphertext>(
+								new ORESchemesFactoryPractical().GetScheme(OREScheme),
 								BPlusTreeBranching
 							)
 						).Simulate();
@@ -75,7 +84,7 @@ namespace CLI
 					throw new InvalidOperationException($"No such scheme: {OREScheme}");
 			}
 
-			System.Console.WriteLine(report);
+			System.Console.WriteLine(Verbose ? report.ToString() : report.ToConciseString());
 
 			return 0;
 		}

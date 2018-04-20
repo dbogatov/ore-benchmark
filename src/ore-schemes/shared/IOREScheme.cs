@@ -1,43 +1,17 @@
 ﻿using System;
 
-namespace OPESchemes
+namespace ORESchemes.Shared
 {
-	public enum OPESchemes
+	public enum ORESchemes
 	{
 		NoEncryption,
-		CryptDB
+		CryptDB,
+		PracticalORE
 	}
 
 	public enum SchemeOperation
 	{
 		Init, Destruct, KeyGen, Encrypt, Decrypt, Comparison
-	}
-
-	public class OPESchemesFactoryIntToInt
-	{
-		/// <summary>
-		/// Returns an initialized scheme
-		/// </summary>
-		/// <param name="scheme">Enum indicating the requested scheme</param>
-		/// <returns>Initialized scheme</returns>
-		public static IOPEScheme<int, int> GetScheme(OPESchemes scheme)
-		{
-			IOPEScheme<int, int> result;
-			switch (scheme)
-			{
-				case OPESchemes.NoEncryption:
-					result = new NoEncryptionScheme();
-					break;
-				case OPESchemes.CryptDB:
-					result = new CryptDBScheme();
-					break;
-				default:
-					throw new ArgumentException("Scheme enum is invalid");
-			}
-
-			result.Init();
-			return result;
-		}
 	}
 
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
@@ -46,7 +20,7 @@ namespace OPESchemes
 	/// Defines a generic Order Preserving Encryption scheme
 	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
-	public interface IOPEScheme<P, C>
+	public interface IOREScheme<P, C>
 	{
 		event SchemeOperationEventHandler OperationOcurred;
 
@@ -66,7 +40,7 @@ namespace OPESchemes
 		/// Randomized routine that generates a valid encryption key
 		/// </summary>
 		/// <returns>A valid encryption key</returns>
-		int KeyGen();
+		byte[] KeyGen();
 
 		/// <summary>
 		/// Possibly randomized routine.
@@ -75,7 +49,7 @@ namespace OPESchemes
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		C Encrypt(P plaintext, int key);
+		C Encrypt(P plaintext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -84,7 +58,7 @@ namespace OPESchemes
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		P Decrypt(C ciphertext, int key);
+		P Decrypt(C ciphertext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.

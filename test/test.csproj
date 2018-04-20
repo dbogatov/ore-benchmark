@@ -1,21 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0-*" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\src\ope-schemes\ope-schemes.csproj" />
-    <ProjectReference Include="..\src\simulator\simulator.csproj" />
-    <ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+		<PackageReference Include="xunit" Version="2.3.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
+		<ProjectReference Include="..\src\ore-schemes\cryptdb-ope\cryptdb-ope.csproj" />
+		<ProjectReference Include="..\src\ore-schemes\practical-ore\practical-ore.csproj" />
+		<ProjectReference Include="..\src\simulator\simulator.csproj" />
+		<ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
+	</ItemGroup>
 </Project>

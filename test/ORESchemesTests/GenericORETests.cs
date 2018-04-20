@@ -1,16 +1,24 @@
 using System;
 using Xunit;
-using OPESchemes;
+using ORESchemes.Shared;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace Test
+namespace Test.ORESchemes
 {
-	public class NoEncryptionTests
+	public abstract class GenericORETests<C>
 	{
-		private readonly IOPEScheme<int, int> _scheme = new NoEncryptionScheme();
-		private readonly int _runs = 10;
+		protected IOREScheme<int, C> _scheme;
+		private readonly int _runs = 100;
+
+		public GenericORETests()
+		{
+			SetScheme();
+		}
+
+		protected abstract void SetScheme();
+
 
 		[Fact]
 		public void InitTest()
@@ -21,6 +29,7 @@ namespace Test
 		[Fact]
 		public void DestructTest()
 		{
+			_scheme.Init();
 			_scheme.Destruct();
 		}
 
@@ -28,9 +37,6 @@ namespace Test
 		public void KeyGenTest()
 		{
 			var keyOne = _scheme.KeyGen();
-
-			Thread.Sleep(50);
-
 			var keyTwo = _scheme.KeyGen();
 
 			Assert.NotEqual(keyOne, keyTwo);
@@ -45,7 +51,7 @@ namespace Test
 		{
 			_scheme.Init();
 
-			var generator = new Random();
+			var generator = new Random(456784);
 			var key = _scheme.KeyGen();
 
 			for (int i = 0; i < _runs; i++)
@@ -59,59 +65,38 @@ namespace Test
 					),
 					plaintext
 				);
-
-				Thread.Sleep(50);
 			}
 		}
 
 		[Theory]
-		[InlineData(0, 0, true)]
-		[InlineData(-1, -1, true)]
-		[InlineData(1, 1, true)]
-		[InlineData(-1, 1, false)]
-		[InlineData(1, 2, false)]
-		public void EqualityCorrectnessTest(int plaintextOne, int plaintextTwo, bool equal)
+		[InlineData(0, 0)]
+		[InlineData(1, 1)]
+		[InlineData(-1, -1)]
+		[InlineData(-1, 1)]
+		[InlineData(1, -1)]
+		[InlineData(2, 1)]
+		[InlineData(1, 2)]
+		[InlineData(-2, -1)]
+		[InlineData(-1, -2)]
+		public void OrderCorrectnessTest(int plaintextOne, int plaintextTwo)
 		{
 			_scheme.Init();
 
 			var key = _scheme.KeyGen();
-			var ciphertextOne = _scheme.Encrypt(plaintextOne, key);
-			var ciphertextTwo = _scheme.Encrypt(plaintextTwo, key);
 
-			var result = _scheme.IsEqual(ciphertextOne, ciphertextTwo);
-
-			if (equal)
+			for (int i = 0; i < _runs; i++)
 			{
-				Assert.True(result);
-			}
-			else
-			{
-				Assert.False(result);
-			}
-		}
+				var pOne = plaintextOne * (i + 1);
+				var pTwo = plaintextTwo * (i + 1);
 
-		[Theory]
-		[InlineData(1, 1, false)]
-		[InlineData(-1, 1, false)]
-		[InlineData(1, -1, true)]
-		[InlineData(2, 1, true)]
-		public void OrderCorrectnessTest(int plaintextOne, int plaintextTwo, bool equal)
-		{
-			_scheme.Init();
+				var ciphertextOne = _scheme.Encrypt(pOne, key);
+				var ciphertextTwo = _scheme.Encrypt(pTwo, key);
 
-			var key = _scheme.KeyGen();
-			var ciphertextOne = _scheme.Encrypt(plaintextOne, key);
-			var ciphertextTwo = _scheme.Encrypt(plaintextTwo, key);
-
-			var result = _scheme.IsGreater(ciphertextOne, ciphertextTwo);
-
-			if (equal)
-			{
-				Assert.True(result);
-			}
-			else
-			{
-				Assert.False(result);
+				Assert.Equal(pOne > pTwo, _scheme.IsGreater(ciphertextOne, ciphertextTwo));
+				Assert.Equal(pOne < pTwo, _scheme.IsLess(ciphertextOne, ciphertextTwo));
+				Assert.Equal(pOne >= pTwo, _scheme.IsGreaterOrEqual(ciphertextOne, ciphertextTwo));
+				Assert.Equal(pOne <= pTwo, _scheme.IsLessOrEqual(ciphertextOne, ciphertextTwo));
+				Assert.Equal(pOne == pTwo, _scheme.IsEqual(ciphertextOne, ciphertextTwo));
 			}
 		}
 
@@ -140,7 +125,6 @@ namespace Test
 				Enumerable
 					.Range(1, 10)
 					.Select(val => _scheme.Encrypt(val, key))
-					.Select(val => _scheme.Decrypt(val, key))
 					.ToList();
 
 			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsGreater(first, second)).ToList();
@@ -149,19 +133,27 @@ namespace Test
 			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsLessOrEqual(first, second)).ToList();
 			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsEqual(first, second)).ToList();
 
+			ciphertexts
+				.Select(val => _scheme.Decrypt(val, key))
+				.ToList();
+
 			_scheme.Destruct();
 
-			var expected = new Dictionary<SchemeOperation, int>
+			var expected = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
-				{ SchemeOperation.Init, 1} ,
-				{ SchemeOperation.KeyGen, 1 },
-				{ SchemeOperation.Destruct, 1 },
-				{ SchemeOperation.Encrypt, 10 },
-				{ SchemeOperation.Decrypt, 10 },
-				{ SchemeOperation.Comparison, 9 * 5 },
+				{ SchemeOperation.Init, new Tuple<int, int>(1, 1)} ,
+				{ SchemeOperation.KeyGen, new Tuple<int, int>(1, 1) },
+				{ SchemeOperation.Destruct, new Tuple<int, int>(1, 1) },
+				{ SchemeOperation.Encrypt, new Tuple<int, int>(10, 15) },
+				{ SchemeOperation.Decrypt, new Tuple<int, int>(10, 15) },
+				{ SchemeOperation.Comparison, new Tuple<int, int>(9 * 5, 9 * 5 * 4) },
 			};
 
-			Assert.Equal(expected[operation], actual[operation]);
+			foreach (var op in expected.Keys)
+			{
+				Assert.InRange(actual[op], expected[op].Item1, expected[op].Item2);
+			}
+
 		}
 	}
 }

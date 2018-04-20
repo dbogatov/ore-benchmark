@@ -1,9 +1,9 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using OPESchemes;
 using System.Collections.Generic;
 using System.Linq;
+using ORESchemes.Shared;
 
 namespace Test
 {
@@ -14,7 +14,7 @@ namespace Test
 		{
 			var result = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3 }
@@ -28,7 +28,7 @@ namespace Test
 		{
 			var result = new Tree<string, int, int>(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				)
 			).TryRange(2, 3, out _);
@@ -43,7 +43,7 @@ namespace Test
 
 			var result = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3 }
@@ -65,7 +65,7 @@ namespace Test
 
 			var result = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				Enumerable
@@ -95,7 +95,7 @@ namespace Test
 		{
 			var result = ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				Enumerable
@@ -116,7 +116,7 @@ namespace Test
 				() =>
 				new Tree<string, int, int>(
 					new Options<int, int>(
-						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+						new NoEncryptionScheme(),
 						3
 					)
 				).TryRange(start, end, out _)

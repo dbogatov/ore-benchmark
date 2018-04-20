@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OPESchemes;
+using ORESchemes.Shared;
 using DataStructures.BPlusTree;
 using System.Diagnostics;
 using System.Linq;
@@ -10,14 +10,15 @@ namespace Simulation
 	/// <summary>
 	/// I - index (plaintext) type
 	/// D - data type
+	/// C - ciphertext type
 	/// </summary>
 	public class Simulator<I, D, C>
 	{
 		private HashSet<int> _visited = new HashSet<int>();
 		private Dictionary<SchemeOperation, int> _schemeOperations = new Dictionary<SchemeOperation, int>();
 		private Inputs<I, D> _inputs;
-		private IOPEScheme<I, C> _scheme;
-		private int _key;
+		private IOREScheme<I, C> _scheme;
+		private byte[] _key;
 		private Tree<D, C, I> _tree;
 
 		public Simulator(Inputs<I, D> inputs, Options<I, C> options)

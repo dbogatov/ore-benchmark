@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
 		<ProjectReference Include="..\simulator\simulator.csproj" />
-		<ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
+		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
 	</ItemGroup>
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>

@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<ProjectReference Include="..\ope-schemes\ope-schemes.csproj" />
+		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+		<ProjectReference Include="..\ore-schemes\cryptdb-ope\cryptdb-ope.csproj" />
+		<ProjectReference Include="..\ore-schemes\practical-ore\practical-ore.csproj" />
 		<ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
 	</ItemGroup>
 	<PropertyGroup>

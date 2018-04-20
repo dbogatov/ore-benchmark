@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using OPESchemes;
+using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,7 +39,8 @@ namespace Test
 		{
 			new Tree<int, int, int>(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption)
+					new NoEncryptionScheme(),
+					3
 				)
 			);
 		}
@@ -49,7 +50,7 @@ namespace Test
 		{
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3 }
@@ -61,7 +62,7 @@ namespace Test
 		{
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8 }
@@ -73,7 +74,7 @@ namespace Test
 		{
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 3, -2, 8, 6 }
@@ -85,7 +86,7 @@ namespace Test
 		{
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
@@ -97,7 +98,7 @@ namespace Test
 		{
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					3
 				),
 				Enumerable
@@ -114,7 +115,7 @@ namespace Test
 
 			ConstructTree(
 				new Options<int, int>(
-					OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+					new NoEncryptionScheme(),
 					5
 				),
 				Enumerable
@@ -134,7 +135,7 @@ namespace Test
 			{
 				ConstructTree(
 					new Options<int, int>(
-						OPESchemesFactoryIntToInt.GetScheme(OPESchemes.OPESchemes.NoEncryption),
+						new NoEncryptionScheme(),
 						i
 					),
 					Enumerable
