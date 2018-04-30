@@ -2,15 +2,16 @@ stages:
 - build
 - test
 
-
 build-all:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
   - dotnet publish -c release src/cli/ -o dist/
+  - dotnet publish -c release tools/data-gen/ -o dist/
   artifacts:
     paths:
     - src/cli/dist
+    - tools/data-gen/dist
   tags:
   - docker
 
@@ -27,6 +28,7 @@ integration-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
   stage: test
   script:
+  - ./data/generate.sh -m 20 -s 1305 -n
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-queries.txt --queries-type range
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update
