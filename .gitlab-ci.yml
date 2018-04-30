@@ -28,6 +28,7 @@ integration-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
   stage: test
   script:
+  - apk add --update bash
   - ./data/generate.sh -m 20 -s 1305 -n
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-queries.txt --queries-type range
