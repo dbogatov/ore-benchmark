@@ -27,15 +27,15 @@ while getopts "m:s:" o; do
 done
 shift $((OPTIND-1))
 
-dotnet build -c release ../src/data-gen/
+dotnet build -c release ../tools/data-gen/
 
 set -x # echo ON
-dotnet ../src/data-gen/bin/release/netcoreapp2.0/data-gen.dll --dataset --count $MAX --max $MAX --seed $SEED > dataset.txt
+dotnet ../tools/data-gen/bin/release/netcoreapp2.0/data-gen.dll --dataset --count $MAX --max $MAX --seed $SEED > dataset.txt
 
 queries=( exact range update delete )
 for query in "${queries[@]}"
 do
-	dotnet ../src/data-gen/bin/release/netcoreapp2.0/data-gen.dll --queries-type $query --count $MAX --max $MAX --seed $SEED > $query-queries.txt
+	dotnet ../tools/data-gen/bin/release/netcoreapp2.0/data-gen.dll --queries-type $query --count $MAX --max $MAX --seed $SEED > $query-queries.txt
 done
 
 echo "Done!"

@@ -1,10 +1,14 @@
 ﻿using System;
-using Simulation;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataGen
 {
+	public enum QueriesType
+	{
+		Exact, Range, Update, Delete
+	}
+	
 	[HelpOption("-?|-h|--help")]
 	[Command(Name = "data-gen", Description = "Data generation utility", ThrowOnUnexpectedArgument = true)]
 	class Program
