@@ -126,6 +126,8 @@ namespace Simulation
 		public List<UpdateQuery<I, D>> UpdateQueries = new List<UpdateQuery<I, D>>();
 		public List<DeleteQuery<I>> DeleteQueries = new List<DeleteQuery<I>>();
 
+		public int CacheSize { get; set; }
+
 		/// <summary>
 		/// Returns the number of queries in the inputs.
 		/// </summary>
@@ -151,10 +153,10 @@ namespace Simulation
 	{
 		public class SubReport
 		{
-			public int IOs { get; set; } = 0;
-			public int AvgIOs { get; set; } = 0;
-			public int SchemeOperations { get; set; } = 0;
-			public int AvgSchemeOperations { get; set; } = 0;
+			public long IOs { get; set; } = 0;
+			public long AvgIOs { get; set; } = 0;
+			public long SchemeOperations { get; set; } = 0;
+			public long AvgSchemeOperations { get; set; } = 0;
 			public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
 			public TimeSpan CPUTime { get; set; } = new TimeSpan(0);
 

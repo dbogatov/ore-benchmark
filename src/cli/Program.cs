@@ -37,6 +37,10 @@ namespace CLI
 		[Option("--verbose|-v", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
 
+		[Range(0, Int32.MaxValue)]
+		[Option("--cache-size <number>", Description = "Cache size for node of data structure. 0 means no cache. Default 100.")]
+		public int CacheSize { get; } = 100;
+
 		[Range(2, 1024)]
 		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
 		public int BPlusTreeBranching { get; } = 3;
@@ -48,6 +52,7 @@ namespace CLI
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
 			var reader = new DataReader<int, string>(Dataset, Queries, QueriesType);
+			reader.Inputs .CacheSize = CacheSize;
 
 			timer.Stop();
 
