@@ -153,6 +153,7 @@ namespace Simulation
 	{
 		public class SubReport
 		{
+			public int CacheSize { get; set; } = 0;
 			public long IOs { get; set; } = 0;
 			public long AvgIOs { get; set; } = 0;
 			public long SchemeOperations { get; set; } = 0;
@@ -163,7 +164,7 @@ namespace Simulation
 			public override string ToString()
 			{
 				return $@"
-		Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
+		Number of I/O operations (for cache size {CacheSize}): {IOs}
 		Average number of I/O operations per query: {AvgIOs}
 		Number of OPE/ORE scheme operations performed: {SchemeOperations}
 		Average number of OPE/ORE scheme operations per query: {AvgSchemeOperations}
@@ -181,6 +182,7 @@ namespace Simulation
 				var stage = queryStage ? "Query" : "Construction";
 
 				return $@"
+{stage} CacheSize: {CacheSize}
 {stage} IOs: {IOs}
 {stage} AvgIOs: {AvgIOs}
 {stage} OPs: {SchemeOperations}

@@ -4,36 +4,40 @@ build = "dotnet build -c release src/cli/"
 puts ">>> #{build}"
 puts `#{build}`
 
-Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :cios, :avgcios, :cops, :avgcops, :ctime, :ccputime, :qios, :avgqios, :qops, :avgqops, :qtime, :qcputime)
+Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, :cios, :avgcios, :cops, :avgcops, :ctime, :ccputime, :qcache, :qios, :avgqios, :qops, :avgqops, :qtime, :qcputime)
 
 runs = Array.new
 
 for scheme in ["practicalore", "noencryption"] do
 	for type in ["exact", "range-0.5", "range-1", "range-2", "range-3", "update", "delete"] do
 		for btreebranches in [2, 5, 20, 50] do
+			for cache in [0, 10, 100] do
 			
-			cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches}"
-			puts ">>> #{cmd}"
-			output = `#{cmd}`;
+				cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache}"
+				puts ">>> #{cmd}"
+				output = `#{cmd}`;
 
-			setsize = output.scan(/Dataset of (.*) records/)
-			querysize = output.scan(/Queries of (.*) queries/)
+				setsize = output.scan(/Dataset of (.*) records/)
+				querysize = output.scan(/Queries of (.*) queries/)
 
-			cios = output.scan(/Construction IOs: (.*)/)
-			avgcios = output.scan(/Construction AvgIOs: (.*)/)
-			cops = output.scan(/Construction OPs: (.*)/)
-			avgcops = output.scan(/Construction AvgOPs: (.*)/)
-			ctime = output.scan(/Construction Time: (.*)/)
-			ccputime = output.scan(/Construction CPUTime: (.*)/)
+				ccache = output.scan(/Construction CacheSize: (.*)/)
+				cios = output.scan(/Construction IOs: (.*)/)
+				avgcios = output.scan(/Construction AvgIOs: (.*)/)
+				cops = output.scan(/Construction OPs: (.*)/)
+				avgcops = output.scan(/Construction AvgOPs: (.*)/)
+				ctime = output.scan(/Construction Time: (.*)/)
+				ccputime = output.scan(/Construction CPUTime: (.*)/)
 
-			qios = output.scan(/Query IOs: (.*)/)
-			avgqios = output.scan(/Query AvgIOs: (.*)/)
-			qops = output.scan(/Query OPs: (.*)/)
-			avgqops = output.scan(/Query AvgOPs: (.*)/)
-			qtime = output.scan(/Query Time: (.*)/)
-			qcputime = output.scan(/Query CPUTime: (.*)/)
+				qcache = output.scan(/Query CacheSize: (.*)/)
+				qios = output.scan(/Query IOs: (.*)/)
+				avgqios = output.scan(/Query AvgIOs: (.*)/)
+				qops = output.scan(/Query OPs: (.*)/)
+				avgqops = output.scan(/Query AvgOPs: (.*)/)
+				qtime = output.scan(/Query Time: (.*)/)
+				qcputime = output.scan(/Query CPUTime: (.*)/)
 
-			runs.push(Run.new(setsize, querysize, scheme, type, btreebranches, cios, avgcios, cops, avgcops, ctime, ccputime, qios, avgqios, qops, avgqops, qtime, qcputime))
+				runs.push(Run.new(setsize, querysize, scheme, type, btreebranches, ccache, cios, avgcios, cops, avgcops, ctime, ccputime, qcache, qios, avgqios, qops, avgqops, qtime, qcputime))
+			end
 		end
 	end
 end
@@ -52,12 +56,14 @@ File.open("results.csv", 'w') {
 		"ORE scheme",
 		"Query type",
 		"B+ tree branches",
+		"Construction Cache Size",
 		"Construction IOs",
 		"Construction AvgIOs",
 		"Construction scheme OPs",
 		"Construction scheme AvgOPs",
 		"Construction observed time (ms)",
 		"Construction CPU time (ms)",
+		"Query Cache Size",
 		"Query IOs",
 		"Query AvgIOs",
 		"Query scheme OPs",

@@ -169,14 +169,18 @@ namespace Simulation
 
 			routine();
 
-			var processEndTime = currentProcess.TotalProcessorTime;
+			var processEndTime = currentProcess.UserProcessorTime;
 			timer.Stop();
+
+			// for some reason this value is off by exactly hundred
+			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
 
 			var actionsNumber = constructionStage ? _inputs.Dataset.Count : _inputs.QueriesCount();
 
 			return new Report.SubReport
 			{
-				CPUTime = processEndTime - processStartTime,
+				CacheSize = _inputs.CacheSize,
+				CPUTime = procTime,
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
 				IOs = _visited,
 				AvgIOs = _visited / actionsNumber,
