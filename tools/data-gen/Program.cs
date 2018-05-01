@@ -8,7 +8,7 @@ namespace DataGen
 	{
 		Exact, Range, Update, Delete
 	}
-	
+
 	[HelpOption("-?|-h|--help")]
 	[Command(Name = "data-gen", Description = "Data generation utility", ThrowOnUnexpectedArgument = true)]
 	class Program
@@ -28,6 +28,10 @@ namespace DataGen
 		[Option("--count <number>", Description = "Number of records/queries to generate. Default 100.")]
 		public int Count { get; } = 100;
 
+		[Range(0.5, 80)]
+		[Option("--range-percent <number>", Description = "Generate ranges of lengths equal to this percent of max. Default 0.5.")]
+		public double RangePercent { get; } = 0.5;
+
 		[Range(10, Int32.MaxValue)]
 		[Option("--max <number>", Description = "Largest index number (can control record/query density). Default 100.")]
 		public int Max { get; } = 100;
@@ -37,7 +41,7 @@ namespace DataGen
 
 		private int OnExecute()
 		{
-			var generator = new Random(Seed + 3 * (13 + (int)QueriesType));
+			var generator = new Random(Seed + 3 * (13 + (int)QueriesType) + 5 * (17 + (int)Math.Round(RangePercent * 100)));
 
 			for (int i = 0; i < Count; i++)
 			{
@@ -60,12 +64,13 @@ namespace DataGen
 						Console.WriteLine($"{first},\"{first}_updated_{second}\"");
 						break;
 					case QueriesType.Range:
-						if (first == second)
+						var rangeLength = Math.Ceiling(Max * RangePercent / 100);
+						if (first >= Max - rangeLength)
 						{
 							i--;
 							continue;
 						}
-						Console.WriteLine(first < second ? $"{first},{second}" : $"{second},{first}");
+						Console.WriteLine($"{first},{first + rangeLength}");
 						break;
 					default:
 						throw new InvalidOperationException($"Invalid type: {QueriesType}");

@@ -33,16 +33,22 @@ shift $((OPTIND-1))
 
 if [ "$BUILD" == true ];
 then
-	dotnet build -c release ../tools/data-gen/ -o dist/
+	dotnet build -c release -o dist/
 fi
 
 set -x # echo ON
-dotnet ../tools/data-gen/dist/data-gen.dll --dataset --count $MAX --max $MAX --seed $SEED > dataset.txt
+dotnet ./dist/data-gen.dll --dataset --count $MAX --max $MAX --seed $SEED > ../../data/dataset.txt
 
-queries=( exact range update delete )
+queries=( exact update delete )
 for query in "${queries[@]}"
 do
-	dotnet ../tools/data-gen/dist/data-gen.dll --queries-type $query --count $MAX --max $MAX --seed $SEED > $query-queries.txt
+	dotnet ./dist/data-gen.dll --queries-type $query --count $MAX --max $MAX --seed $SEED > ../../data/$query-queries.txt
+done
+
+ranges=( 0.5 1 2 3 )
+for range in "${ranges[@]}"
+do
+	dotnet ./dist/data-gen.dll --queries-type range --count $MAX --max $MAX --range-percent $range --seed $SEED > ../../data/range-$range-queries.txt
 done
 
 echo "Done!"

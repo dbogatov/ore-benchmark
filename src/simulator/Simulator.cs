@@ -61,6 +61,7 @@ namespace Simulation
 				_inputs
 					.Dataset
 					.ForEach(record => _tree.Insert(_scheme.Encrypt(record.index, _key), record.value))
+				, true
 			);
 
 		/// <summary>
@@ -104,7 +105,7 @@ namespace Simulation
 					default:
 						break;
 				}
-			});
+			}, false);
 		}
 
 		/// <summary>
@@ -112,7 +113,7 @@ namespace Simulation
 		/// given function. Records times and number of events.
 		/// </summary>
 		/// <param name="routine">Function to profile</param>
-		private Report.SubReport Profile(Action routine)
+		private Report.SubReport Profile(Action routine, bool constructionStage)
 		{
 			var currentProcess = Process.GetCurrentProcess();
 			_visited.Clear();
@@ -123,15 +124,19 @@ namespace Simulation
 
 			routine();
 
-			var processEndTime = currentProcess.UserProcessorTime;
+			var processEndTime = currentProcess.TotalProcessorTime;
 			timer.Stop();
+
+			var actionsNumber = constructionStage ? _inputs.Dataset.Count : _inputs.QueriesCount();
 
 			return new Report.SubReport
 			{
 				CPUTime = processEndTime - processStartTime,
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
 				IOs = _visited.Count,
-				SchemeOperations = _schemeOperations.Values.Sum()
+				AvgIOs = _visited.Count / actionsNumber,
+				SchemeOperations = _schemeOperations.Values.Sum(),
+				AvgSchemeOperations = _schemeOperations.Values.Sum() / actionsNumber
 			};
 		}
 
