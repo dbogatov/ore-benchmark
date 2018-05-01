@@ -42,7 +42,7 @@ namespace Test
 						.ForEach(val => tree.Insert(val, val.ToString()))
 			);
 
-			Assert.InRange(visited, 15, 100);
+			Assert.InRange(visited, 100, 300);
 		}
 
 		[Fact]
