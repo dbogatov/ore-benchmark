@@ -7,7 +7,8 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-dotnet build
+dotnet restore --disable-parallel
+dotnet build --no-restore
 
 if [ -n "$1" ]
 then
