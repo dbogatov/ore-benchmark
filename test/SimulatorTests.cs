@@ -67,7 +67,7 @@ namespace Test
 					Assert.NotEqual(0, report.Construction.IOs);
 					Assert.NotEqual(0, report.Construction.SchemeOperations);
 					Assert.NotEqual(new TimeSpan(0).Ticks, report.Construction.ObservedTime.Ticks);
-					Assert.NotEqual(new TimeSpan(0).Ticks, report.Construction.CPUTime.Ticks);
+					// CPU can be zero due to rounding and inacuracy
 				}
 			);
 		}
