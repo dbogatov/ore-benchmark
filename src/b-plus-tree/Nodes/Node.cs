@@ -82,9 +82,9 @@ namespace DataStructures.BPlusTree
 
 				Initialize();
 
-				options.OnVisit(this.GetHashCode());
-
 				_id = options.GetNextId();
+				
+				options.OnVisit(this.GetHashCode());
 			}
 
 			/// <summary>

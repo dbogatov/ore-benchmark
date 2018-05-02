@@ -14,8 +14,11 @@ namespace Simulation
 	/// </summary>
 	public class Simulator<I, D, C>
 	{
-		private HashSet<int> _visited = new HashSet<int>();
-		private Dictionary<SchemeOperation, int> _schemeOperations = new Dictionary<SchemeOperation, int>();
+		private List<Tuple<int, long>> _cache;
+		private long _visited = 0;
+		private long _clock = 0;
+
+		private Dictionary<SchemeOperation, long> _schemeOperations = new Dictionary<SchemeOperation, long>();
 		private Inputs<I, D> _inputs;
 		private IOREScheme<I, C> _scheme;
 		private byte[] _key;
@@ -30,7 +33,8 @@ namespace Simulation
 			options.NodeVisited += new NodeVisitedEventHandler(RecordNodeVisit);
 			options.Scheme.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
 
-			_visited.Clear();
+			_cache = new List<Tuple<int, long>>(inputs.CacheSize);
+			_cache.Clear();
 			Enum
 				.GetValues(typeof(SchemeOperation))
 				.OfType<SchemeOperation>()
@@ -44,7 +48,46 @@ namespace Simulation
 		/// Handler for the event that node has been visited
 		/// </summary>
 		/// <param name="nodeHash">hash of the node</param>
-		void RecordNodeVisit(int nodeHash) => _visited.Add(nodeHash);
+		void RecordNodeVisit(int nodeHash)
+		{
+			_clock++;
+
+			if (_inputs.CacheSize > 0)
+			{
+				var min = Int64.MaxValue;
+				var toEvict = 0;
+				for (int i = 0; i < _cache.Count; i++)
+				{
+					var tuple = _cache[i];
+
+					if (tuple.Item1 == nodeHash)
+					{
+						// cache hit
+						return;
+					}
+
+					if (tuple.Item2 < min)
+					{
+						min = tuple.Item2;
+						toEvict = i;
+					}
+				}
+
+				if (_cache.Count == _inputs.CacheSize)
+				{
+					// Need to evict
+					_cache[toEvict] = new Tuple<int, long>(nodeHash, _clock);
+				}
+				else
+				{
+					// No need to evict
+					_cache.Add(new Tuple<int, long>(nodeHash, _clock));
+				}
+
+			}
+
+			_visited++;
+		}
 
 		/// <summary>
 		/// Handler for the event that the scheme has performed an operation
@@ -61,6 +104,7 @@ namespace Simulation
 				_inputs
 					.Dataset
 					.ForEach(record => _tree.Insert(_scheme.Encrypt(record.index, _key), record.value))
+				, true
 			);
 
 		/// <summary>
@@ -104,7 +148,7 @@ namespace Simulation
 					default:
 						break;
 				}
-			});
+			}, false);
 		}
 
 		/// <summary>
@@ -112,11 +156,13 @@ namespace Simulation
 		/// given function. Records times and number of events.
 		/// </summary>
 		/// <param name="routine">Function to profile</param>
-		private Report.SubReport Profile(Action routine)
+		private Report.SubReport Profile(Action routine, bool constructionStage)
 		{
 			var currentProcess = Process.GetCurrentProcess();
-			_visited.Clear();
+			_cache.Clear();
 			_schemeOperations.Keys.ToList().ForEach(key => _schemeOperations[key] = 0);
+			_clock = 0;
+			_visited = 0;
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 			var processStartTime = currentProcess.UserProcessorTime;
@@ -126,12 +172,20 @@ namespace Simulation
 			var processEndTime = currentProcess.UserProcessorTime;
 			timer.Stop();
 
+			// for some reason this value is off by exactly hundred
+			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
+
+			var actionsNumber = constructionStage ? _inputs.Dataset.Count : _inputs.QueriesCount();
+
 			return new Report.SubReport
 			{
-				CPUTime = processEndTime - processStartTime,
+				CacheSize = _inputs.CacheSize,
+				CPUTime = procTime,
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
-				IOs = _visited.Count,
-				SchemeOperations = _schemeOperations.Values.Sum()
+				IOs = _visited,
+				AvgIOs = _visited / actionsNumber,
+				SchemeOperations = _schemeOperations.Values.Sum(),
+				AvgSchemeOperations = _schemeOperations.Values.Sum() / actionsNumber
 			};
 		}
 

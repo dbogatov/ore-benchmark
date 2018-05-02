@@ -126,18 +126,26 @@ namespace Simulation
 		public List<UpdateQuery<I, D>> UpdateQueries = new List<UpdateQuery<I, D>>();
 		public List<DeleteQuery<I>> DeleteQueries = new List<DeleteQuery<I>>();
 
+		public int CacheSize { get; set; }
+
 		/// <summary>
 		/// Returns the number of queries in the inputs.
-		/// Assumes that only one type is present
 		/// </summary>
 		public int QueriesCount()
 		{
-			return new List<int> {
-				ExactQueries.Count,
-				RangeQueries.Count,
-				UpdateQueries.Count,
-				DeleteQueries.Count
-			}.Max();
+			switch (Type)
+			{
+				case QueriesType.Exact:
+					return ExactQueries.Count;
+				case QueriesType.Range:
+					return RangeQueries.Count;
+				case QueriesType.Update:
+					return UpdateQueries.Count;
+				case QueriesType.Delete:
+					return DeleteQueries.Count;
+				default:
+					throw new InvalidOperationException($"Invalid type: {Type}");
+			}
 		}
 	}
 
@@ -145,16 +153,21 @@ namespace Simulation
 	{
 		public class SubReport
 		{
-			public int IOs { get; set; } = 0;
-			public int SchemeOperations { get; set; } = 0;
+			public int CacheSize { get; set; } = 0;
+			public long IOs { get; set; } = 0;
+			public long AvgIOs { get; set; } = 0;
+			public long SchemeOperations { get; set; } = 0;
+			public long AvgSchemeOperations { get; set; } = 0;
 			public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
 			public TimeSpan CPUTime { get; set; } = new TimeSpan(0);
 
 			public override string ToString()
 			{
 				return $@"
-		Number of I/O operations (assuming pages always cached and cash size is infinite): {IOs}
+		Number of I/O operations (for cache size {CacheSize}): {IOs}
+		Average number of I/O operations per query: {AvgIOs}
 		Number of OPE/ORE scheme operations performed: {SchemeOperations}
+		Average number of OPE/ORE scheme operations per query: {AvgSchemeOperations}
 		Observable time elapsed: {ObservedTime}
 		CPU time reported: {CPUTime}
 ";
@@ -169,8 +182,11 @@ namespace Simulation
 				var stage = queryStage ? "Query" : "Construction";
 
 				return $@"
+{stage} CacheSize: {CacheSize}
 {stage} IOs: {IOs}
+{stage} AvgIOs: {AvgIOs}
 {stage} OPs: {SchemeOperations}
+{stage} AvgOPs: {AvgSchemeOperations}
 {stage} Time: {ObservedTime.TotalMilliseconds}
 {stage} CPUTime: {CPUTime.TotalMilliseconds}
 ";
