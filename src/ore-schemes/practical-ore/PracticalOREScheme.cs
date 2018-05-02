@@ -83,7 +83,7 @@ namespace ORESchemes.PracticalORE
 				BitConverter.GetBytes(plaintext)
 			);
 
-			var unsignedPlaintext = unchecked((uint)plaintext) + Int32.MaxValue;
+			var unsignedPlaintext = unchecked((uint)plaintext + 1) + Int32.MaxValue;
 
 			for (int i = 0; i < 8 * sizeof(int); i++)
 			{

@@ -153,7 +153,36 @@ namespace Test.ORESchemes
 			{
 				Assert.InRange(actual[op], expected[op].Item1, expected[op].Item2);
 			}
+		}
 
+		[Fact]
+		public void MinMaxTest()
+		{
+			_scheme.Init();
+			var key = _scheme.KeyGen();
+
+			Assert.Equal(
+				Int32.MinValue,
+				_scheme.Decrypt(_scheme.MinCiphertextValue(), key)
+			);
+
+			Assert.Equal(
+				Int32.MaxValue,
+				_scheme.Decrypt(_scheme.MaxCiphertextValue(), key)
+			);
+
+			new List<int> { Int32.MinValue, Int32.MinValue / 2, -1, 0, 1, Int32.MaxValue / 2, Int32.MaxValue }
+				.ForEach(
+					num =>
+					{
+						Assert.True(
+							_scheme.IsLessOrEqual(_scheme.MinCiphertextValue(), _scheme.Encrypt(num, key))
+						);
+						Assert.True(
+							_scheme.IsGreaterOrEqual(_scheme.MaxCiphertextValue(), _scheme.Encrypt(num, key))
+						);
+					}
+				);
 		}
 	}
 }

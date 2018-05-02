@@ -131,7 +131,7 @@ namespace Simulation
 										.TryRange(
 											_scheme.Encrypt(query.from, _key),
 											_scheme.Encrypt(query.to, _key),
-											 out _
+											out _
 											)
 									);
 						break;

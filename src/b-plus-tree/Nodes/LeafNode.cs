@@ -35,6 +35,10 @@ namespace DataStructures.BPlusTree
 						children[i].node.TryGet(children[i].index, out value);
 						values.Add(value);
 					}
+					else
+					{
+						break;
+					}
 				}
 
 				if (found)
@@ -75,6 +79,10 @@ namespace DataStructures.BPlusTree
 						T value;
 						children[i].node.TryGet(children[i].index, out value);
 						values.Add(value);
+					}
+					else
+					{
+						break;
 					}
 				}
 
