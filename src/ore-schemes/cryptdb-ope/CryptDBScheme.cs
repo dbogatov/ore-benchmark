@@ -1,5 +1,6 @@
 ﻿using System;
 using ORESchemes.Shared;
+using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.CryptDBOPE
 {
