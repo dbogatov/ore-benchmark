@@ -4,21 +4,70 @@ using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.CryptDBOPE
 {
-	public class CryptDBScheme : IOREScheme<int, int>
+	public struct Range
+	{
+		public long From { get; set; }
+		public long To { get; set; }
+
+		long Size
+		{
+			get
+			{
+				return To - From;
+			}
+		}
+	}
+
+	public class CryptDBScheme : IOREScheme<int, long>
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		public int Decrypt(int ciphertext, byte[] key)
+		private Range _domain;
+		private Range _target;
+		private ISampler _sampler;
+		private ILFPRF _tapeGen;
+
+		private readonly Random _generator = new Random();
+		private readonly int _alpha = 128;
+
+		public CryptDBScheme(
+			Range domain,
+			Range target,
+			ISampler sampler,
+			ILFPRF tapeGen,
+			int? seed = null,
+			int? alpha = null
+		)
+		{
+			if (seed.HasValue)
+			{
+				_generator = new Random(seed.Value);
+			}
+
+			if (alpha.HasValue)
+			{
+				_alpha = alpha.Value;
+			}
+
+			_domain = domain;
+			_target = target;
+			_sampler = sampler;
+			_tapeGen = tapeGen;
+		}
+
+		public int Decrypt(long ciphertext, byte[] key)
 		{
 			throw new NotImplementedException();
 		}
 
 		public void Destruct()
 		{
-			throw new NotImplementedException();
+			// OnOperation(SchemeOperation.Destruct);
+
+			return;
 		}
 
-		public int Encrypt(int plaintext, byte[] key)
+		public long Encrypt(int plaintext, byte[] key)
 		{
 			throw new NotImplementedException();
 		}
@@ -28,27 +77,27 @@ namespace ORESchemes.CryptDBOPE
 			throw new NotImplementedException();
 		}
 
-		public bool IsEqual(int ciphertextOne, int ciphertextTwo)
+		public bool IsEqual(long ciphertextOne, long ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsGreater(int ciphertextOne, int ciphertextTwo)
+		public bool IsGreater(long ciphertextOne, long ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsGreaterOrEqual(int ciphertextOne, int ciphertextTwo)
+		public bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsLess(int ciphertextOne, int ciphertextTwo)
+		public bool IsLess(long ciphertextOne, long ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool IsLessOrEqual(int ciphertextOne, int ciphertextTwo)
+		public bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
 		{
 			throw new NotImplementedException();
 		}
@@ -58,12 +107,12 @@ namespace ORESchemes.CryptDBOPE
 			throw new NotImplementedException();
 		}
 
-		public int MaxCiphertextValue()
+		public long MaxCiphertextValue()
 		{
 			throw new NotImplementedException();
 		}
 
-		public int MinCiphertextValue()
+		public long MinCiphertextValue()
 		{
 			throw new NotImplementedException();
 		}

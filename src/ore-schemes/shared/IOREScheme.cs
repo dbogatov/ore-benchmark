@@ -132,4 +132,115 @@ namespace ORESchemes.Shared
 		/// </summary>
 		C MinCiphertextValue();
 	}
+
+	public abstract class AbsOREScheme<C> : IOREScheme<int, C>
+	{
+		public event SchemeOperationEventHandler OperationOcurred;
+
+		protected readonly Random _generator = new Random();
+		protected readonly int _alpha = 128;
+
+		private C maxCiphertextValue = default(C);
+		private C minCiphertextValue = default(C);
+
+		public AbsOREScheme(int alpha, int seed)
+		{
+			_generator = new Random(seed);
+			_alpha = alpha;
+		}
+
+		public abstract int Decrypt(C ciphertext, byte[] key);
+
+		public abstract C Encrypt(int plaintext, byte[] key);
+
+		public virtual void Destruct()
+		{
+			OnOperation(SchemeOperation.Destruct);
+
+			return;
+		}
+		public void Init()
+		{
+			OnOperation(SchemeOperation.Init);
+
+			return;
+		}
+
+		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return
+				!IsLess(ciphertextOne, ciphertextTwo) &&
+				!IsLess(ciphertextTwo, ciphertextOne);
+		}
+
+		public bool IsGreater(C ciphertextOne, C ciphertextTwo)
+		{
+			return
+				!IsLess(ciphertextOne, ciphertextTwo) &&
+				!IsEqual(ciphertextOne, ciphertextTwo);
+		}
+
+		public bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return !IsLess(ciphertextOne, ciphertextTwo);
+		}
+
+		public bool IsLess(C ciphertextOne, C ciphertextTwo)
+		{
+			return Compare(ciphertextOne, ciphertextTwo);
+		}
+
+		public bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return !IsGreater(ciphertextOne, ciphertextTwo);
+		}
+
+		public byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			byte[] key = new byte[_alpha / 8];
+			_generator.NextBytes(key);
+
+			maxCiphertextValue = Encrypt(Int32.MaxValue, key);
+			minCiphertextValue = Encrypt(Int32.MinValue, key);
+
+			return key;
+		}
+
+		public C MaxCiphertextValue()
+		{
+			if (maxCiphertextValue == null)
+			{
+				throw new InvalidOperationException("Max value is generated during KeyGen operation");
+			}
+
+			return maxCiphertextValue;
+		}
+
+		public C MinCiphertextValue()
+		{
+			if (minCiphertextValue == null)
+			{
+				throw new InvalidOperationException("Min value is generated during KeyGen operation");
+			}
+
+			return minCiphertextValue;
+		}
+
+		/// <summary>
+		/// Emits the event that scheme performed an operation
+		/// </summary>
+		/// <param name="operation">The operation that scheme performed</param>
+		protected void OnOperation(SchemeOperation operation)
+		{
+			var handler = OperationOcurred;
+			if (handler != null)
+			{
+				handler(operation);
+			}
+		}
+
+		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
+	}
 }

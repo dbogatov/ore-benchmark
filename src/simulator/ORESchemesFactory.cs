@@ -31,7 +31,9 @@ namespace Simulation
 					result = new NoEncryptionScheme();
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
-					result = new CryptDBScheme();
+					// result = new CryptDBScheme();
+					// TODO
+					result = new NoEncryptionScheme();
 					break;
 				default:
 					throw new ArgumentException($"{scheme} scheme is not Int to Int");
