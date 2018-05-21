@@ -100,14 +100,8 @@ namespace Test.ORESchemes
 			}
 		}
 
-		[Theory]
-		[InlineData(SchemeOperation.Init)]
-		[InlineData(SchemeOperation.KeyGen)]
-		[InlineData(SchemeOperation.Destruct)]
-		[InlineData(SchemeOperation.Encrypt)]
-		[InlineData(SchemeOperation.Decrypt)]
-		[InlineData(SchemeOperation.Comparison)]
-		public void EventsTest(SchemeOperation operation)
+		[Fact]
+		public void EventsTest()
 		{
 			var actual = new Dictionary<SchemeOperation, int>();
 			Enum

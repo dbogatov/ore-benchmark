@@ -137,16 +137,16 @@ namespace ORESchemes.Shared
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		protected readonly Random _generator = new Random();
-		protected readonly int _alpha = 128;
+		protected readonly Random _generator;
+		protected readonly int _alpha;
 
 		private C maxCiphertextValue = default(C);
 		private C minCiphertextValue = default(C);
 
-		public AbsOREScheme(int alpha, int seed)
+		public AbsOREScheme(int? alpha, int? seed)
 		{
-			_generator = new Random(seed);
-			_alpha = alpha;
+			_generator = new Random(seed.HasValue ? seed.Value : new Random().Next());
+			_alpha = alpha.HasValue ? alpha.Value : 128;
 		}
 
 		public abstract int Decrypt(C ciphertext, byte[] key);
