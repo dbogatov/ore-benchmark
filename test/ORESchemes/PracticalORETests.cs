@@ -1,3 +1,4 @@
+using System;
 using ORESchemes.PracticalORE;
 
 namespace Test.ORESchemes
@@ -6,7 +7,7 @@ namespace Test.ORESchemes
 	{
 		protected override void SetScheme()
 		{
-			_scheme = new PracticalOREScheme(128, 123456);
+			_scheme = new PracticalOREScheme(BitConverter.GetBytes(123456));
 		}
 	}
 }

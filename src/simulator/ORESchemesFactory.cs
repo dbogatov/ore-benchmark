@@ -15,14 +15,23 @@ namespace Simulation
 		/// <remarks>
 		/// Will throw exception if requested scheme is not of the proper type
 		/// </remarks>
-		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0);
+		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null);
 	}
 
 	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, int>
 	{
-		public override IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		public override IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
-			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
+			byte[] entropy;
+			if (seed != null)
+			{
+				entropy = BitConverter.GetBytes(seed.Value);
+			}
+			else
+			{
+				entropy = new byte[256 / 8];
+				new Random().NextBytes(entropy);
+			}
 
 			IOREScheme<int, int> result;
 			switch (scheme)
@@ -46,15 +55,24 @@ namespace Simulation
 
 	public class ORESchemesFactoryPractical : ORESchemesFactory<int, ORESchemes.PracticalORE.Ciphertext>
 	{
-		public override IOREScheme<int, Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		public override IOREScheme<int, Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
-			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
+			byte[] entropy;
+			if (seed != null)
+			{
+				entropy = BitConverter.GetBytes(seed.Value);
+			}
+			else
+			{
+				entropy = new byte[256 / 8];
+				new Random().NextBytes(entropy);
+			}
 
 			IOREScheme<int, Ciphertext> result;
 			switch (scheme)
 			{
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					result = new PracticalOREScheme(alpha, seed);
+					result = new PracticalOREScheme(entropy);
 					break;
 				default:
 					throw new ArgumentException($"{scheme} scheme is not PracticalORE");

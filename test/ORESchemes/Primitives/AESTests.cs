@@ -3,23 +3,22 @@ using System.Text;
 using ORESchemes.Shared.Primitives;
 using Xunit;
 
-namespace Test.ORESchemes
+namespace Test.ORESchemes.Primitives
 {
-	public class PrimitiveTests
+	public class AESTests
 	{
 		[Theory]
 		[InlineData("Hello")]
 		[InlineData("World")]
 		[InlineData("")]
 		[InlineData("1305")]
-		public void AESStringCorrectness(string plaintext)
+		public void StringCorrectness(string plaintext)
 		{
 			var seed = 245613;
 			var random = new Random(seed);
 
 			AES aes = new AES();
 
-			aes.SetSecurityParameter(256);
 			byte[] key = new byte[256 / 8];
 			random.NextBytes(key);
 
@@ -44,14 +43,13 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void AESIntCorrectness()
+		public void IntCorrectness()
 		{
 			var seed = 245613;
 			var random = new Random(seed);
 
 			AES aes = new AES();
 
-			aes.SetSecurityParameter(256);
 			byte[] key = new byte[256 / 8];
 			random.NextBytes(key);
 
@@ -83,14 +81,13 @@ namespace Test.ORESchemes
 		[Theory]
 		[InlineData(128)]
 		[InlineData(256)]
-		public void AESCorrectnessTest(int alpha)
+		public void CorrectnessTest(int alpha)
 		{
 			var seed = 245613;
 			var random = new Random(seed);
 
 			AES aes = new AES();
 
-			aes.SetSecurityParameter(alpha);
 			byte[] key = new byte[alpha / 8];
 			random.NextBytes(key);
 

@@ -11,12 +11,9 @@ namespace ORESchemes.Shared.Primitives
 		/// <summary>
 		/// Returns an initialized instance of a PRG
 		/// </summary>
-		public static ILFPRF GetLFPRF(Nullable<int> seed = null)
+		public static ILFPRF GetLFPRF()
 		{
-			return new TapeGen(
-				PRFFactory.GetPRF(),
-				PRGFactory.GetPRG(seed)
-			);
+			return new TapeGen();
 		}
 	}
 
@@ -28,43 +25,20 @@ namespace ORESchemes.Shared.Primitives
 
 	public class TapeGen : ILFPRF
 	{
-		public IPRF _prf;
-		public IPRG _prg;
-
-		public TapeGen(IPRF prf, IPRG prg)
-		{
-			_prf = prf;
-			_prg = prg;
-		}
-
 		public byte[] Generate(byte[] key, int length, byte[] input)
 		{
 			byte[] result = new byte[length];
 
-			byte[] encrypted = _prf.PRF(key, input, key);
+			byte[] encrypted = PRFFactory.GetPRF().PRF(key, input, key);
 
 			// TODO
 			// Seed should be the entire bytes from PRF
 			// Not reduced entropy
-			int seed = BytesHashCode(encrypted);
+			// int seed = encrypted.GetProperHashCode();
 
-			_prg
-				.RecreateWithSeed(seed)
-				.NextBytes(result);
+			PRGFactory.GetPRG(encrypted).NextBytes(result);
 
 			return result;
-		}
-
-		// https://stackoverflow.com/a/7244316/1644554
-		private int BytesHashCode(byte[] bytes)
-		{
-			var hashCode = 0;
-			for (var i = 0; i < bytes.Length; i++)
-			{
-				// Rotate by 3 bits and XOR the new value.
-				hashCode = (hashCode << 3) | (hashCode >> (29)) ^ bytes[i];
-			}
-			return hashCode;
 		}
 	}
 }

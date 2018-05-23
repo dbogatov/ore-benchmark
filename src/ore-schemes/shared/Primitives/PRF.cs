@@ -35,22 +35,11 @@ namespace ORESchemes.Shared.Primitives
 		/// <param name="input">The input value to function</param>
 		/// <returns>The value of the inverse of function of its arguments</returns>
 		byte[] InversePRF(byte[] key, byte[] input);
-
-		/// <summary>
-		/// Set the security parameter
-		/// </summary>
-		/// <param name="alpha">The number of bits representing security parameter</param>
-		void SetSecurityParameter(int alpha);
 	}
 
 	public class AES : IPRF
 	{
-		private int _alpha = 256;
-
-		public void SetSecurityParameter(int alpha)
-		{
-			_alpha = alpha;
-		}
+		private const int ALPHA = 256;
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
 		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
@@ -59,7 +48,7 @@ namespace ORESchemes.Shared.Primitives
 
 			using (Aes aesAlg = Aes.Create())
 			{
-				aesAlg.KeySize = _alpha;
+				aesAlg.KeySize = ALPHA;
 				aesAlg.Key = key;
 
 				if (IV == null)
@@ -105,7 +94,7 @@ namespace ORESchemes.Shared.Primitives
 			// Create an Aes object with the specified key and IV
 			using (Aes aesAlg = Aes.Create())
 			{
-				aesAlg.KeySize = _alpha;
+				aesAlg.KeySize = ALPHA;
 				aesAlg.Key = key;
 
 				byte[] IV = new byte[aesAlg.BlockSize / 8];

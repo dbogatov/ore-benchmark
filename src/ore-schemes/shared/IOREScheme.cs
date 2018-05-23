@@ -1,4 +1,5 @@
 ﻿using System;
+using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.Shared
 {
@@ -137,16 +138,15 @@ namespace ORESchemes.Shared
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		protected readonly Random _generator;
-		protected readonly int _alpha;
+		protected readonly IPRG _generator;
+		protected const int ALPHA = 256;
 
 		private C maxCiphertextValue = default(C);
 		private C minCiphertextValue = default(C);
 
-		public AbsOREScheme(int? alpha, int? seed)
+		public AbsOREScheme(byte[] seed)
 		{
-			_generator = new Random(seed.HasValue ? seed.Value : new Random().Next());
-			_alpha = alpha.HasValue ? alpha.Value : 128;
+			_generator = PRGFactory.GetPRG(seed);
 		}
 
 		public abstract int Decrypt(C ciphertext, byte[] key);
@@ -199,7 +199,7 @@ namespace ORESchemes.Shared
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
-			byte[] key = new byte[_alpha / 8];
+			byte[] key = new byte[ALPHA / 8];
 			_generator.NextBytes(key);
 
 			maxCiphertextValue = Encrypt(Int32.MaxValue, key);

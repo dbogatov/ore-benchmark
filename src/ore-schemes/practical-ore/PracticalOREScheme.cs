@@ -35,12 +35,12 @@ namespace ORESchemes.PracticalORE
 		private readonly IPRF F;
 		private readonly byte[] IV;
 
-		public PracticalOREScheme(int? alpha = null, int? seed = null) : base(alpha, seed)
+		public PracticalOREScheme(byte[] seed = null) : base(seed)
 		{
 			M = Convert.ToInt32(_generator.Next(4, Int32.MaxValue));
 			F = PRFFactory.GetPRF();
 
-			IV = new byte[_alpha / 8];
+			IV = new byte[128 / 8];
 			_generator.NextBytes(IV);
 		}
 
