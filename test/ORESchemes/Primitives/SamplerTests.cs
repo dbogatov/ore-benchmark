@@ -83,9 +83,9 @@ namespace Test.ORESchemes.Primitives
 		[InlineData(500, 70, 300, 0.01)]
 		public void HGDistributionTest(int N, int K, int n, double epsilon)
 		{
-
 			Func<int, double> pmf =
 				(k) =>
+					k < Math.Max(0, n + K - N) || k > Math.Min(n, K) ? 0 :
 					SpecialFunctions.Binomial(K, k) *
 					SpecialFunctions.Binomial(N - K, n - k) /
 					SpecialFunctions.Binomial(N, n);
@@ -107,7 +107,7 @@ namespace Test.ORESchemes.Primitives
 				}
 			}
 
-			for (int k = 10; k < 35; k++)
+			for (int k = Math.Max(0, n + K - N); k <= Math.Min(n, K); k++)
 			{
 				var actual = (double)(values.ContainsKey((ulong)k) ? values[(ulong)k] : 0) / RUNS;
 				var expected = pmf(k);

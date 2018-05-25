@@ -57,7 +57,7 @@ namespace ORESchemes.Shared.Primitives
 			do
 			{
 				var p = (double)successes / population;
-				var r = _generator.NextDouble(0, Double.MaxValue);
+				var r = _generator.NextDouble(0, 1);
 				if (r < p)
 				{
 					x++;
