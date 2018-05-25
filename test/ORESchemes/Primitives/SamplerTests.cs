@@ -23,9 +23,9 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void UniformityTest()
 		{
-			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
 
-			var values = new Dictionary<long, int>(RUNS);
+			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS * 100; i++)
 			{
 				var value = sampler.Uniform(0, RUNS);
@@ -54,13 +54,13 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void RangesTest()
 		{
-			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
 			Random random = new Random(SEED);
 
 			for (int i = 0; i < RUNS; i++)
 			{
-				var a = (long)(random.NextDouble() * Int64.MaxValue);
-				var b = (long)(random.NextDouble() * Int64.MaxValue);
+				var a = (ulong)(random.NextDouble() * UInt64.MaxValue);
+				var b = (ulong)(random.NextDouble() * UInt64.MaxValue);
 
 				if (a == b)
 				{
@@ -90,7 +90,7 @@ namespace Test.ORESchemes.Primitives
 					SpecialFunctions.Binomial(N - K, n - k) /
 					SpecialFunctions.Binomial(N, n);
 
-			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
 
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS; i++)
@@ -120,7 +120,7 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void HGLargeInputsTest()
 		{
-			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
 			sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
 		}
 
@@ -131,7 +131,7 @@ namespace Test.ORESchemes.Primitives
 		[InlineData(500, 70, 300)]
 		public void HGCorrectnessTest(int N, int K, int n)
 		{
-			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
 			Random random = new Random(SEED);
 
 			for (int i = 0; i < RUNS * 10; i++)

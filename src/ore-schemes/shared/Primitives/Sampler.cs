@@ -9,26 +9,24 @@ namespace ORESchemes.Shared.Primitives
 		/// <summary>
 		/// Returns an initialized instance of a ISampler that works on 64 bits integers
 		/// </summary>
-		public static ISampler<long, ulong> GetSampler(byte[] entropy = null)
+		public static ISampler<ulong> GetSampler(byte[] entropy = null)
 		{
 			return new CustomSampler(entropy);
 		}
 
-		public static ISampler<long, ulong> GetSampler(IPRG prg)
+		public static ISampler<ulong> GetSampler(IPRG prg)
 		{
 			return new CustomSampler(prg);
 		}
 	}
 
-	public interface ISampler<U, H>
-		where U : struct
-		where H : struct
+	public interface ISampler<T> where T : struct
 	{
-		H HyperGeometric(H population, H successes, H samples);
-		U Uniform(U from, U to);
+		T HyperGeometric(T population, T successes, T samples);
+		T Uniform(T from, T to);
 	}
 
-	public class CustomSampler : ISampler<long, ulong>
+	public class CustomSampler : ISampler<ulong>
 	{
 		private IPRG _generator;
 
@@ -55,9 +53,16 @@ namespace ORESchemes.Shared.Primitives
 			}
 		}
 
-		public long Uniform(long from, long to)
+		public ulong Uniform(ulong from, ulong to)
 		{
-			return _generator.NextLong(from, to);
+			ulong diff = to - from;
+
+			long start = 0 - (long)(diff / 2);
+			long end = 0 + (long)(diff / 2);
+
+			long result = _generator.NextLong(start, end);
+
+			return from + (ulong)(result - start);
 		}
 
 		private ulong NaiveHG(ulong population, ulong successes, ulong samples)

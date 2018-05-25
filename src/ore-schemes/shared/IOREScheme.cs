@@ -202,11 +202,14 @@ namespace ORESchemes.Shared
 			byte[] key = new byte[ALPHA / 8];
 			_generator.NextBytes(key);
 
-			maxCiphertextValue = Encrypt(Int32.MaxValue, key);
-			minCiphertextValue = Encrypt(Int32.MinValue, key);
+			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
+			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
 
 			return key;
 		}
+
+		public virtual int MaxPlaintextValue() => Int32.MaxValue;
+		public virtual int MinPlaintextValue() => Int32.MinValue;
 
 		public C MaxCiphertextValue()
 		{
@@ -241,6 +244,12 @@ namespace ORESchemes.Shared
 			}
 		}
 
+		/// <summary>
+		/// Compares two values given by their ciphertexts
+		/// </summary>
+		/// <param name="ciphertextOne">The first ciphertext to compare</param>
+		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
+		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
 		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
 	}
 }

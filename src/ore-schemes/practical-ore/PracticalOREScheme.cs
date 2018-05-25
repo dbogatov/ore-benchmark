@@ -90,12 +90,6 @@ namespace ORESchemes.PracticalORE
 			return result;
 		}
 
-		/// <summary>
-		/// Compares two values given by their ciphertexts
-		/// </summary>
-		/// <param name="ciphertextOne">The first ciphertext to compare</param>
-		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
-		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
 		protected override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);

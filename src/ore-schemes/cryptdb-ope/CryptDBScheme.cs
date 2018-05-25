@@ -1,52 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.CryptDBOPE
 {
-	public struct Range
-	{
-		public long From { get; set; }
-		public long To { get; set; }
-
-		public long Size
-		{
-			get
-			{
-				return To - From;
-			}
-		}
-
-		public long Min
-		{
-			get
-			{
-				return Math.Min(To, From);
-			}
-		}
-
-		public override int GetHashCode()
-		{
-			return
-				5 * From.GetHashCode() +
-				7 * To.GetHashCode();
-		}
-	}
-
 	public class CryptDBScheme : AbsOREScheme<long>
 	{
+		private struct Range
+		{
+			public ulong From { get; set; }
+			public ulong To { get; set; }
+
+			public ulong Size
+			{
+				get
+				{
+					return To - From + 1;
+				}
+			}
+		}
+
 		private Range _domain;
 		private Range _target;
 
 		public CryptDBScheme(
-			Range domain,
-			Range target,
-			byte[] seed = null
-		) : base(seed)
+			int domainFrom,
+			int domainTo,
+			long targetFrom,
+			long targetTo,
+			byte[] entropy = null
+		) : base(entropy)
 		{
-			_domain = domain;
-			_target = target;
+			_domain.From = ToUInt(domainFrom);
+			_domain.To = ToUInt(domainTo);
+
+			_target.From = ToULong(targetFrom);
+			_target.To = ToULong(targetTo);
 		}
 
 		public override int Decrypt(long ciphertext, byte[] key)
@@ -56,61 +47,103 @@ namespace ORESchemes.CryptDBOPE
 
 		public override long Encrypt(int plaintext, byte[] key)
 		{
-			var M = _domain.Size;
-			var N = _target.Size;
+			uint m = ToUInt(plaintext);
 
-			var d = _domain.Min - 1;
-			var r = _target.Min - 1;
-
-			byte[] input;
-			byte[] cc;
-
-			var y = r + (int)Math.Ceiling((decimal)N / (decimal)2.0);
-
-			if (M == 1)
+			if (m > _domain.To || m < _domain.From)
 			{
-				input =
-					BitConverter.GetBytes(_domain.GetHashCode())
-						.Concat(BitConverter.GetBytes(_target.GetHashCode()))
-						.Concat(BitConverter.GetBytes((int)1))
-						.Concat(BitConverter.GetBytes(plaintext))
-						.ToArray();
-
-				// cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
-
-				// TODO
-				// Use whole cc to sample
-				// var uniform = SamplerFactory.GetSampler(cc.GetProperHashCode());
-
-				// var c = SamplerFactory.GetSampler(cc).Uniform(_target.From, _target.To); //_target.SampleUniform(uniform);
-
-				return 0;
+				throw new ArgumentException($"Scheme was initialized with domain [{ToInt((uint)_domain.From)}, {ToInt((uint)_domain.To)}]");
 			}
 
-			input =
-					BitConverter.GetBytes(_domain.GetHashCode())
-						.Concat(BitConverter.GetBytes(_target.GetHashCode()))
-						.Concat(BitConverter.GetBytes((int)0))
-						.Concat(BitConverter.GetBytes(y))
-						.ToArray();
+			Range domain = _domain;
+			Range target = _target;
 
-			// cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
+			while (true)
+			{
+				ulong M = domain.Size;
+				ulong N = target.Size;
 
-			// TODO
-			// Check params
-			var x = d + (long)SamplerFactory.GetSampler().HyperGeometric((ulong)N, (ulong)M, (ulong)(y - r));
+				ulong d = domain.From - 1;
+				ulong r = target.From - 1;
 
-			// if (m <= x)
-			// {
+				ulong y = r + (ulong)Math.Ceiling(N / 2.0M);
 
-			// }
+				byte[] input;
+				TapeGen tape;
 
-			return 0;
+				if (M == 1)
+				{
+					input = Concatenate(domain, target, true, (ulong)m);
+
+					tape = new TapeGen(key, input);
+
+					ulong uniform = SamplerFactory.GetSampler(tape).Uniform(target.From, target.To);
+
+					return ToLong(uniform);
+				}
+
+				input = Concatenate(domain, target, false, y);
+
+				tape = new TapeGen(key, input);
+
+				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
+				ulong x = d + hg;
+
+				if (m <= x)
+				{
+					domain.To = x;
+					target.To = y;
+				}
+				else
+				{
+					domain.From = x + 1;
+					target.From = y + 1;
+				}
+			}
+
+			throw new InvalidOperationException("Should never reach this");
 		}
 
-		protected override bool Compare(long ciphertextOne, long ciphertextTwo)
+		protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+
+		public override int MaxPlaintextValue() => ToInt((uint)_domain.To);
+		public override int MinPlaintextValue() => ToInt((uint)_domain.From);
+
+		private byte[] Concatenate(Range domain, Range target, bool input, ulong value)
 		{
-			throw new NotImplementedException();
+			var bytes = new List<ulong>
+			{
+				domain.From,
+				domain.To,
+				target.From,
+				target.To,
+				input ? 1UL : 0UL,
+				value
+			}
+			.Select(number => BitConverter.GetBytes(number))
+			.ToArray();
+
+			byte[] result = new byte[0];
+
+			for (int i = 0; i < bytes.Count(); i++)
+			{
+				result = result.Concat(bytes[i]).ToArray();
+			}
+
+			return result;
 		}
+
+		// private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
+		// private ulong ToULong(long value) => unchecked((ulong)(value + Int64.MinValue));
+
+		// private int ToInt(uint value) => (int)(value - Int32.MinValue);
+		// private long ToLong(ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
+
+		// FOR DEBUG
+		// TODO
+		private uint ToUInt(int value) => unchecked((uint)(value + 10));
+		private ulong ToULong(long value) => unchecked((ulong)(value + 100));
+
+		private int ToInt(uint value) => (int)(value - 10);
+		private long ToLong(ulong value) => (long)(value - unchecked((ulong)100));
 	}
 }
