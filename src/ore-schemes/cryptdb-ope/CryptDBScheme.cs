@@ -6,7 +6,7 @@ using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.CryptDBOPE
 {
-	public class CryptDBScheme : AbsOREScheme<long>
+	public class CryptDBScheme : AbsOPEScheme
 	{
 		private struct Range
 		{
@@ -42,6 +42,8 @@ namespace ORESchemes.CryptDBOPE
 
 		public override int Decrypt(long ciphertext, byte[] key)
 		{
+			OnOperation(SchemeOperation.Decrypt);
+
 			ulong c = ToULong(ciphertext);
 
 			if (c > _target.To || c < _target.From)
@@ -109,6 +111,8 @@ namespace ORESchemes.CryptDBOPE
 
 		public override long Encrypt(int plaintext, byte[] key)
 		{
+			OnOperation(SchemeOperation.Encrypt);
+
 			uint m = ToUInt(plaintext);
 
 			if (m > _domain.To || m < _domain.From)
@@ -165,8 +169,6 @@ namespace ORESchemes.CryptDBOPE
 			throw new InvalidOperationException("Should never reach this.");
 		}
 
-		protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
-
 		public override int MaxPlaintextValue() => ToInt((uint)_domain.To);
 		public override int MinPlaintextValue() => ToInt((uint)_domain.From);
 
@@ -194,18 +196,10 @@ namespace ORESchemes.CryptDBOPE
 			return result;
 		}
 
-		// private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
-		// private ulong ToULong(long value) => unchecked((ulong)(value + Int64.MinValue));
+		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
+		private ulong ToULong(long value) => unchecked((ulong)(value + Int64.MinValue));
 
-		// private int ToInt(uint value) => (int)(value - Int32.MinValue);
-		// private long ToLong(ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
-
-		// FOR DEBUG
-		// TODO
-		private uint ToUInt(int value) => unchecked((uint)(value + 10));
-		private ulong ToULong(long value) => unchecked((ulong)(value + 100));
-
-		private int ToInt(uint value) => (int)(value - 10);
-		private long ToLong(ulong value) => (long)(value - unchecked((ulong)100));
+		private int ToInt(uint value) => (int)(value - Int32.MinValue);
+		private long ToLong(ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
 	}
 }

@@ -9,8 +9,10 @@ namespace Test.ORESchemes
 		protected override void SetScheme()
 		{
 			_scheme = new CryptDBScheme(
-				-9, 10,
-				-99, 100,
+				Int32.MinValue,
+				Int32.MaxValue,
+				unchecked((long)Int32.MinValue * 100),
+				unchecked((long)Int32.MaxValue * 100),
 				BitConverter.GetBytes(123456)
 			);
 		}
@@ -25,10 +27,10 @@ namespace Test.ORESchemes
 			for (int i = -9; i <= 10; i++)
 			{
 				var cipher = _scheme.Encrypt(i, key);
-				Console.Write($"{i} -> {cipher}");
+				// Console.Write($"{i} -> {cipher}");
 
 				var decrypted = _scheme.Decrypt(cipher, key);
-				Console.WriteLine($" | {cipher} -> {decrypted}");
+				// Console.WriteLine($" | {cipher} -> {decrypted}");
 			}
 		}
 	}

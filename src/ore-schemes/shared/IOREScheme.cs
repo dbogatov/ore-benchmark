@@ -173,24 +173,24 @@ namespace ORESchemes.Shared
 				!IsLess(ciphertextTwo, ciphertextOne);
 		}
 
-		public bool IsGreater(C ciphertextOne, C ciphertextTwo)
+		public virtual bool IsGreater(C ciphertextOne, C ciphertextTwo)
 		{
 			return
 				!IsLess(ciphertextOne, ciphertextTwo) &&
 				!IsEqual(ciphertextOne, ciphertextTwo);
 		}
 
-		public bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
+		public virtual bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
 		{
 			return !IsLess(ciphertextOne, ciphertextTwo);
 		}
 
-		public bool IsLess(C ciphertextOne, C ciphertextTwo)
+		public virtual bool IsLess(C ciphertextOne, C ciphertextTwo)
 		{
 			return Compare(ciphertextOne, ciphertextTwo);
 		}
 
-		public bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
+		public virtual bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
 		{
 			return !IsGreater(ciphertextOne, ciphertextTwo);
 		}
@@ -251,5 +251,47 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
 		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
 		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
+	}
+
+	public abstract class AbsOPEScheme : AbsOREScheme<long>
+	{
+		public AbsOPEScheme(byte[] seed) : base(seed) { }
+
+		public override bool IsEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne == ciphertextTwo;
+		}
+
+		public override bool IsGreater(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne > ciphertextTwo;
+		}
+
+		public override bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne >= ciphertextTwo;
+		}
+
+		public override bool IsLess(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne < ciphertextTwo;
+		}
+
+		public override bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne <= ciphertextTwo;
+		}
+
+		sealed protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
 	}
 }
