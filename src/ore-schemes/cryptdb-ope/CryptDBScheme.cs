@@ -76,15 +76,15 @@ namespace ORESchemes.CryptDBOPE
 						.Concat(BitConverter.GetBytes(plaintext))
 						.ToArray();
 
-				cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
+				// cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
 
 				// TODO
 				// Use whole cc to sample
 				// var uniform = SamplerFactory.GetSampler(cc.GetProperHashCode());
 
-				var c = SamplerFactory.GetSampler(cc).Uniform(_target.From, _target.To); //_target.SampleUniform(uniform);
+				// var c = SamplerFactory.GetSampler(cc).Uniform(_target.From, _target.To); //_target.SampleUniform(uniform);
 
-				return c;
+				return 0;
 			}
 
 			input =
@@ -94,7 +94,7 @@ namespace ORESchemes.CryptDBOPE
 						.Concat(BitConverter.GetBytes(y))
 						.ToArray();
 
-			cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
+			// cc = LFPRFFactory.GetLFPRF().Generate(key, sizeof(long), input);
 
 			// TODO
 			// Check params

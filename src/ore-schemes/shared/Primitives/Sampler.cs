@@ -13,6 +13,11 @@ namespace ORESchemes.Shared.Primitives
 		{
 			return new CustomSampler(entropy);
 		}
+
+		public static ISampler<long, ulong> GetSampler(IPRG prg)
+		{
+			return new CustomSampler(prg);
+		}
 	}
 
 	public interface ISampler<U, H>
@@ -30,6 +35,11 @@ namespace ORESchemes.Shared.Primitives
 		public CustomSampler(byte[] entropy = null)
 		{
 			_generator = PRGFactory.GetPRG(entropy);
+		}
+
+		public CustomSampler(IPRG prg)
+		{
+			_generator = prg;
 		}
 
 		// https://github.com/mathnet/mathnet-numerics
