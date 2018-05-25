@@ -1,5 +1,4 @@
 using System;
-using Accord.Statistics.Distributions.Univariate;
 
 namespace ORESchemes.Shared.Primitives
 {
@@ -31,7 +30,6 @@ namespace ORESchemes.Shared.Primitives
 		public CustomSampler(byte[] entropy = null)
 		{
 			_generator = PRGFactory.GetPRG(entropy);
-			// _generator = PRGFactory.GetDefaultPRG(entropy);
 		}
 
 		// https://github.com/mathnet/mathnet-numerics
@@ -74,6 +72,19 @@ namespace ORESchemes.Shared.Primitives
 			return x;
 		}
 
+		/// <summary>
+		/// This function is borrowed from CryptDB implementation.
+		/// https://github.com/CryptDB/cryptdb/blob/7678bc98d3054f1418371779c6d1050cd1a88b2e/crypto/hgd.cc
+		/// 
+		/// To preserve as much of the original code as possible, all subrotines and types were aliased with the method.
+		/// The behavior of these methods is verified by examining NTL source code.
+		/// 
+		/// I make assumption that is sqr of negative number is invoked (possible), then sqr uses the absolute value 
+		/// of the input.
+		/// 
+		/// It is empirically tested that the functions runs without errors (bit overflows) for parameters
+		/// UInt64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue
+		/// </summary>
 		private ulong EfficientHG(ulong population, ulong successes, ulong samples)
 		{
 			Func<ulong, RR> to_RR = (value) => Convert.ToDecimal(value);
@@ -82,9 +93,11 @@ namespace ORESchemes.Shared.Primitives
 			Func<RR, RR> round = (value) => Math.Round(value, MidpointRounding.ToEven);
 			Func<RR, long> to_int = (value) => Convert.ToInt64(value);
 			Func<RR> RAND = () => Convert.ToDecimal(_generator.NextDouble(0, 1));
-			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double)value));
+			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double) Math.Abs(value)));
 			Func<RR, RR> trunc = (value) => Math.Truncate(value);
 			Func<RR, ulong> to_ZZ = (value) => Convert.ToUInt64(value);
+			Action<bool> throw_c = (value) => throw new ArgumentException();
+
 
 			Func<decimal, decimal> AFC = (I) =>
 			{
@@ -126,8 +139,8 @@ namespace ORESchemes.Shared.Primitives
 			// /*
 			//  * CHECK PARAMETER VALIDITY
 			//  */
-			// if ((NN1 < 0) || (NN2 < 0) || (KK < 0) || (KK > NN1 + NN2))
-			// 	throw_c(false);
+			if ((NN1 < 0) || (NN2 < 0) || (KK < 0) || (KK > NN1 + NN2))
+				throw_c(false);
 
 			/*
 			 * INITIALIZE
@@ -225,7 +238,13 @@ namespace ORESchemes.Shared.Primitives
 				/*
 				 * ...H2PE...
 				 */
-				RR S = sqr((TN - K) * K * N1 * N2 / (TN - 1) / TN / TN);
+				// RR S = sqr((TN - K) * K * N1 * N2 / (TN - 1) / TN / TN);
+				RR S =
+					sqr(((TN - K) / (TN - 1))) *
+					sqr((K / TN)) *
+					sqr((N2 / TN)) *
+					sqr(N1)
+				;
 
 				/*
 				 * ...REMARK:  D IS DEFINED IN REFERENCE WITHOUT INT.
@@ -328,10 +347,10 @@ namespace ORESchemes.Shared.Primitives
 					RR XK = K - M + 0.5M;
 					NM = N2 - K + XM;
 					RR UB = Y * GU - M * GL + DELTAU +
-							 XM * R * (1.0M + R * (-.5M + R / 3.0M)) +
-							 XN * S * (1.0M + S * (-.5M + S / 3.0M)) +
-							 XK * T * (1.0M + T * (-.5M + T / 3.0M)) +
-							 NM * E * (1.0M + E * (-.5M + E / 3.0M));
+						XM * R * (1.0M + R * (-.5M + R / 3.0M)) +
+						XN * S * (1.0M + S * (-.5M + S / 3.0M)) +
+						XK * T * (1.0M + T * (-.5M + T / 3.0M)) +
+						NM * E * (1.0M + E * (-.5M + E / 3.0M));
 
 					/* ...TEST AGAINST UPPER BOUND... */
 

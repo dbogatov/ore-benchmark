@@ -4,6 +4,7 @@ using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared;
 using Xunit;
 using System.Linq;
+using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {
@@ -75,17 +76,26 @@ namespace Test.ORESchemes.Primitives
 			}
 		}
 
-		[Fact]
-		public void HGDistributionTest()
+		[Theory]
+		[InlineData(99, 10, 25, 0.05)]
+		[InlineData(500, 50, 100, 0.03)]
+		[InlineData(500, 60, 200, 0.02)]
+		[InlineData(500, 70, 300, 0.01)]
+		public void HGDistributionTest(int N, int K, int n, double epsilon)
 		{
+
+			Func<int, double> pmf =
+				(k) =>
+					SpecialFunctions.Binomial(K, k) *
+					SpecialFunctions.Binomial(N - K, n - k) /
+					SpecialFunctions.Binomial(N, n);
+
 			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
 
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS; i++)
 			{
-				var value = sampler.HyperGeometric(500, 60, 200);
-
-				// Console.WriteLine(value);
+				var value = sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
 
 				if (values.ContainsKey(value))
 				{
@@ -97,15 +107,39 @@ namespace Test.ORESchemes.Primitives
 				}
 			}
 
-			// // Console.WriteLine("Hello");
-
-			for (ulong i = 0; i < 60; i++)
+			for (int k = 10; k < 35; k++)
 			{
-				var p = (double)(values.ContainsKey(i) ? values[i] : 0) / RUNS;
-				Console.WriteLine($"{i}: {p.ToString("0.00")}");
-			}
+				var actual = (double)(values.ContainsKey((ulong)k) ? values[(ulong)k] : 0) / RUNS;
+				var expected = pmf(k);
 
-			// var value = new CustomSampler(_entropy).HyperGeometric(UInt64.MaxValue, UInt64.MaxValue / 2, (ulong)UInt32.MaxValue);
+				// Console.WriteLine($"{k}: {actual.ToString("0.00")} vs {expected.ToString("0.00")}");
+				Assert.InRange(actual, expected - epsilon, expected + epsilon);
+			}
+		}
+
+		[Fact]
+		public void HGLargeInputsTest()
+		{
+			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
+		}
+
+		[Theory]
+		[InlineData(99, 10, 25)]
+		[InlineData(500, 50, 100)]
+		[InlineData(500, 60, 200)]
+		[InlineData(500, 70, 300)]
+		public void HGCorrectnessTest(int N, int K, int n)
+		{
+			ISampler<long, ulong> sampler = new CustomSampler(_entropy);
+			Random random = new Random(SEED);
+
+			for (int i = 0; i < RUNS * 10; i++)
+			{
+				var value = sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
+
+				Assert.InRange((int)value, Math.Max(0, n + K - N), Math.Min(n, K));
+			}
 		}
 	}
 }
