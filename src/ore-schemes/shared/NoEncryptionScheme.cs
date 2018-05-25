@@ -87,7 +87,17 @@ namespace ORESchemes.Shared
 			return Int32.MaxValue;
 		}
 
+		public int MaxPlaintextValue()
+		{
+			return Int32.MaxValue;
+		}
+
 		public int MinCiphertextValue()
+		{
+			return Int32.MinValue;
+		}
+
+		public int MinPlaintextValue()
 		{
 			return Int32.MinValue;
 		}

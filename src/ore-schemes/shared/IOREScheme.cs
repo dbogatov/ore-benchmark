@@ -132,6 +132,10 @@ namespace ORESchemes.Shared
 		/// Returns the encryption of the smallest possible value
 		/// </summary>
 		C MinCiphertextValue();
+
+		int MaxPlaintextValue();
+
+		int MinPlaintextValue();
 	}
 
 	public abstract class AbsOREScheme<C> : IOREScheme<int, C>

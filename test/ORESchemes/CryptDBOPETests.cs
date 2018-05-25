@@ -18,20 +18,31 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void NoExceptions()
+		public void MalformedCiphertext()
 		{
 			_scheme.Init();
 
 			byte[] key = _scheme.KeyGen();
 
-			for (int i = -9; i <= 10; i++)
-			{
-				var cipher = _scheme.Encrypt(i, key);
-				// Console.Write($"{i} -> {cipher}");
+			long from = 0;
+			long to = 0;
 
-				var decrypted = _scheme.Decrypt(cipher, key);
-				// Console.WriteLine($" | {cipher} -> {decrypted}");
+			for (int i = 0; i < 10; i++)
+			{
+				from = _scheme.Encrypt(50 + i, key);
+				to = _scheme.Encrypt(51 + i, key);
+
+				if (to - from > 1)
+				{
+					break;
+				}
 			}
+
+			Assert.True(to - from > 1);
+
+			Assert.Throws<ArgumentException>(
+				() => _scheme.Decrypt(from + 1, key)
+			);
 		}
 	}
 }

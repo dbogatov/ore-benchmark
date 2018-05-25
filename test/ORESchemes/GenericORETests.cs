@@ -19,7 +19,6 @@ namespace Test.ORESchemes
 
 		protected abstract void SetScheme();
 
-
 		[Fact]
 		public void InitTest()
 		{
@@ -156,17 +155,22 @@ namespace Test.ORESchemes
 			var key = _scheme.KeyGen();
 
 			Assert.Equal(
-				Int32.MinValue,
+				_scheme.MinPlaintextValue(),
 				_scheme.Decrypt(_scheme.MinCiphertextValue(), key)
 			);
 
 			Assert.Equal(
-				Int32.MaxValue,
+				_scheme.MaxPlaintextValue(),
 				_scheme.Decrypt(_scheme.MaxCiphertextValue(), key)
 			);
 
-			new List<int> { Int32.MinValue, Int32.MinValue / 2, -1, 0, 1, Int32.MaxValue / 2, Int32.MaxValue }
-				.ForEach(
+			new List<int> {
+				_scheme.MinPlaintextValue(),
+				_scheme.MinPlaintextValue() / 2,
+				-1, 0, 1,
+				_scheme.MaxPlaintextValue() / 2,
+				_scheme.MaxPlaintextValue()
+			}.ForEach(
 					num =>
 					{
 						Assert.True(
