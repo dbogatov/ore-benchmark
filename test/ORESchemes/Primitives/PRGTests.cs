@@ -68,6 +68,24 @@ namespace Test.ORESchemes.Primitives
 			}
 		}
 
+		[Theory]
+		[InlineData(1)]
+		[InlineData(2)]
+		[InlineData(4)]
+		[InlineData(8)]
+		[InlineData(16)]
+		[InlineData(128)]
+		[InlineData(256)]
+		[InlineData(512)]
+		[InlineData(1024)]
+		public void DifferentSizeRequestsTest(int size)
+		{
+			byte[] bytes = new byte[size];
+			_prg.NextBytes(bytes);
+
+			Assert.False(bytes.All(b => b == 0x00));
+		}
+
 		[Fact]
 		public void NoRepetitionsTest()
 		{
