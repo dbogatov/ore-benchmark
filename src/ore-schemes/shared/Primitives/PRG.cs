@@ -8,9 +8,6 @@ namespace ORESchemes.Shared.Primitives
 {
 	public class PRGFactory
 	{
-		/// <summary>
-		/// Returns an initialized instance of a PRG
-		/// </summary>
 		public static IPRG GetPRG(byte[] seed = null)
 		{
 			if (seed != null)
@@ -22,6 +19,20 @@ namespace ORESchemes.Shared.Primitives
 				seed = new byte[256 / 8];
 				new Random().NextBytes(seed);
 				return new AESPRG(seed);
+			}
+		}
+
+		public static IPRG GetDefaultPRG(byte[] seed = null)
+		{
+			if (seed != null)
+			{
+				return new DefaultRandom(seed);
+			}
+			else
+			{
+				seed = new byte[256 / 8];
+				new Random().NextBytes(seed);
+				return new DefaultRandom(seed);
 			}
 		}
 	}

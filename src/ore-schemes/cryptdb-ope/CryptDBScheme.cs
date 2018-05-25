@@ -98,7 +98,7 @@ namespace ORESchemes.CryptDBOPE
 
 			// TODO
 			// Check params
-			var x = d + SamplerFactory.GetSampler().HyperGeometric(N, M, y - r);
+			var x = d + (long)SamplerFactory.GetSampler().HyperGeometric((ulong)N, (ulong)M, (ulong)(y - r));
 
 			// if (m <= x)
 			// {

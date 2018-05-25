@@ -44,7 +44,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void NoExceptions()
+		public void NoExceptionsTest()
 		{
 			const int runs = 10;
 
@@ -69,7 +69,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void NoRepetitions()
+		public void NoRepetitionsTest()
 		{
 			var values = new HashSet<int>(_runs);
 			for (int i = 0; i < _runs; i++)
@@ -81,7 +81,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void DifferentSeeds()
+		public void DifferentSeedsTest()
 		{
 			var values = new HashSet<int>(_runs);
 			for (int i = 0; i < _runs; i++)
@@ -94,7 +94,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void Uniformity()
+		public void UniformityTest()
 		{
 			var values = new Dictionary<int, int>(_runs);
 			for (int i = 0; i < _runs * 100; i++)
@@ -123,21 +123,21 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void RangesInt()
+		public void RangesIntTest()
 		{
 			var random = new Random(_seed);
 			CheckRanges<int>(random.Next, _prg.Next);
 		}
 
 		[Fact]
-		public void RangesLong()
+		public void RangesLongTest()
 		{
 			var random = new Random(_seed);
 			CheckRanges<long>(() => (long)(random.NextDouble() * Int64.MaxValue), _prg.NextLong);
 		}
 
 		[Fact]
-		public void RangesDouble()
+		public void RangesDoubleTest()
 		{
 			var random = new Random(_seed);
 			CheckRanges<double>(random.NextDouble, _prg.NextDouble);
