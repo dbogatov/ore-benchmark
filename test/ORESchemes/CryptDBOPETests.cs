@@ -25,7 +25,10 @@ namespace Test.ORESchemes
 			for (int i = -9; i <= 10; i++)
 			{
 				var cipher = _scheme.Encrypt(i, key);
-				Console.WriteLine($"{i} -> {cipher}");
+				Console.Write($"{i} -> {cipher}");
+
+				var decrypted = _scheme.Decrypt(cipher, key);
+				Console.WriteLine($" | {cipher} -> {decrypted}");
 			}
 		}
 	}

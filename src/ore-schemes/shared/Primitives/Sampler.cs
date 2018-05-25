@@ -53,16 +53,20 @@ namespace ORESchemes.Shared.Primitives
 			}
 		}
 
+		// https://stackoverflow.com/a/6651661/1644554
 		public ulong Uniform(ulong from, ulong to)
 		{
-			ulong diff = to - from;
+			if (from == to)
+			{
+				return from;
+			}
 
-			long start = 0 - (long)(diff / 2);
-			long end = 0 + (long)(diff / 2);
+			byte[] buffer = new byte[sizeof(ulong)];
+			_generator.NextBytes(buffer);
 
-			long result = _generator.NextLong(start, end);
+			ulong longRand = BitConverter.ToUInt64(buffer, 0);
 
-			return from + (ulong)(result - start);
+			return (longRand % (to - from)) + from;
 		}
 
 		private ulong NaiveHG(ulong population, ulong successes, ulong samples)
@@ -108,7 +112,7 @@ namespace ORESchemes.Shared.Primitives
 			Func<RR, RR> round = (value) => Math.Round(value, MidpointRounding.ToEven);
 			Func<RR, long> to_int = (value) => Convert.ToInt64(value);
 			Func<RR> RAND = () => Convert.ToDecimal(_generator.NextDouble(0, 1));
-			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double) Math.Abs(value)));
+			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double)Math.Abs(value)));
 			Func<RR, RR> trunc = (value) => Math.Truncate(value);
 			Func<RR, ulong> to_ZZ = (value) => Convert.ToUInt64(value);
 			Action<bool> throw_c = (value) => throw new ArgumentException();
