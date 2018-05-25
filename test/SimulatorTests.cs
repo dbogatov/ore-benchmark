@@ -48,12 +48,12 @@ namespace Test
 						.ToList()
 			};
 
-			var options = new Options<int, int>(
+			var options = new Options<int, long>(
 				new NoEncryptionScheme(),
 				3
 			);
 
-			var simulator = new Simulator<int, string, int>(inputs, options);
+			var simulator = new Simulator<int, string, long>(inputs, options);
 			var report = simulator.Simulate();
 
 			Assert.Equal(type, report.QueriesType);

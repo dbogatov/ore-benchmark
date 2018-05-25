@@ -18,9 +18,9 @@ namespace Simulation
 		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null);
 	}
 
-	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, int>
+	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, long>
 	{
-		public override IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
+		public override IOREScheme<int, long> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
 			byte[] entropy;
 			if (seed != null)
@@ -33,19 +33,23 @@ namespace Simulation
 				new Random().NextBytes(entropy);
 			}
 
-			IOREScheme<int, int> result;
+			IOREScheme<int, long> result;
 			switch (scheme)
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
-					result = new NoEncryptionScheme();
+					result = new NoEncryptionScheme(entropy);
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
-					// result = new CryptDBScheme();
-					// TODO
-					result = new NoEncryptionScheme();
+					result = new CryptDBScheme(
+						Int32.MinValue,
+						Int32.MaxValue,
+						Int64.MinValue / 100,
+						Int64.MaxValue / 100,
+						entropy
+					);
 					break;
 				default:
-					throw new ArgumentException($"{scheme} scheme is not Int to Int");
+					throw new ArgumentException($"{scheme} scheme is not Int to Long");
 			}
 
 			result.Init();

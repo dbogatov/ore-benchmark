@@ -13,7 +13,7 @@ namespace Test
 		public void InsertNotUpdate()
 		{
 			var tree = ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -27,7 +27,7 @@ namespace Test
 		public void UpdateNotInsert()
 		{
 			var tree = ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),

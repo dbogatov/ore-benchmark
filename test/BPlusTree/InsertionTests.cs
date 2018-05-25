@@ -9,9 +9,9 @@ namespace Test
 {
 	public partial class BPlusTreeTests
 	{
-		private Tree<string, int, int> ConstructTree(Options<int, int> options, List<int> input, bool print = false, bool validate = true)
+		private Tree<string, long, int> ConstructTree(Options<int, long> options, List<int> input, bool print = false, bool validate = true)
 		{
-			var tree = new Tree<string, int, int>(options);
+			var tree = new Tree<string, long, int>(options);
 
 			input
 				.ForEach(val =>
@@ -37,8 +37,8 @@ namespace Test
 		[Fact]
 		public void InitializeTest()
 		{
-			new Tree<int, int, int>(
-				new Options<int, int>(
+			new Tree<int, long, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				)
@@ -49,7 +49,7 @@ namespace Test
 		public void InsertSingleElementTest()
 		{
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -61,7 +61,7 @@ namespace Test
 		public void TriggerRootSplitTest()
 		{
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -73,7 +73,7 @@ namespace Test
 		public void TriggerInternalSplitTest()
 		{
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -85,7 +85,7 @@ namespace Test
 		public void FromLectureSlidesTest()
 		{
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -97,7 +97,7 @@ namespace Test
 		public void SquaresSeriesTest()
 		{
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -114,7 +114,7 @@ namespace Test
 			const int max = 1000;
 
 			ConstructTree(
-				new Options<int, int>(
+				new Options<int, long>(
 					new NoEncryptionScheme(),
 					5
 				),
@@ -134,7 +134,7 @@ namespace Test
 			for (int i = 3; i < 11; i++)
 			{
 				ConstructTree(
-					new Options<int, int>(
+					new Options<int, long>(
 						new NoEncryptionScheme(),
 						i
 					),
