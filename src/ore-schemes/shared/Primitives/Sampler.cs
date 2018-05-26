@@ -153,6 +153,23 @@ namespace ORESchemes.Shared.Primitives
 		/// </summary>
 		private ulong EfficientHG(ulong population, ulong successes, ulong samples)
 		{
+			uint[] deadlockThresholds = new uint[3] { 10000, 10000, 100 };
+			uint[] deadlockCounters = new uint[3] { 0, 0, 0 };
+			ulong? deadlockCheckResult = null;
+
+			Func<ulong> fallbackToUniform = () => Uniform((samples + successes > population ? samples + successes - population : 0), Math.Min(successes, samples));
+			Func<uint, ulong?> checkDeadlock = (labelId) => {
+				deadlockCounters[labelId]++;
+				if (deadlockCounters[labelId] > deadlockThresholds[labelId])
+				{
+					return fallbackToUniform();
+				}
+				else
+				{
+					return null;
+				}
+			};
+
 			Func<ulong, RR> to_RR = (value) => Convert.ToDecimal(value);
 			Func<RR, RR> exp = (value) => Convert.ToDecimal(Math.Exp((double)value));
 			Func<RR, RR> log = (value) => Convert.ToDecimal(Math.Log((double)value));
@@ -283,11 +300,23 @@ namespace ORESchemes.Shared.Primitives
 				}
 
 			label10:
+				deadlockCheckResult = checkDeadlock(0);
+				if (deadlockCheckResult.HasValue)
+				{
+					return deadlockCheckResult.Value;
+				}
+
 				P = W;
 				IX = MINJX;
 				U = RAND() * SCALE;
 
 			label20:
+				deadlockCheckResult = checkDeadlock(1);
+				if (deadlockCheckResult.HasValue)
+				{
+					return deadlockCheckResult.Value;
+				}
+
 				if (U > P)
 				{
 					U = U - P;
@@ -326,9 +355,12 @@ namespace ORESchemes.Shared.Primitives
 				RR expon = A - AFC(XL) - AFC(N1 - XL) - AFC(K - XL) - AFC(N2 - K + XL);
 
 				// Most of the time the value is negative
-				// It may happend that this value is large (say, 800)
+				// It may happen that this value is large (say, 800)
 				// which causes overflow, so I manually handle that
-				expon = expon > 0 ? 0 : expon;
+				if (expon > 10)
+				{
+					return fallbackToUniform();
+				}
 
 				// Console.WriteLine($"inputs: {population}, {successes}, {samples}");
 				// Console.WriteLine($"M = {M}");
@@ -349,7 +381,6 @@ namespace ORESchemes.Shared.Primitives
 				// Console.WriteLine($"AFC(K-XL) = {AFC(K - XL)}");
 				// Console.WriteLine($"AFC(N2 - K + XL) = {AFC(N2 - K + XL)}");
 				// Console.WriteLine($"expon = {expon}");
-
 				// Console.WriteLine();
 				// Console.WriteLine();
 
@@ -357,10 +388,12 @@ namespace ORESchemes.Shared.Primitives
 
 				// Same as with expon
 				var exponR = A - AFC(XR - 1) - AFC(N1 - XR + 1) - AFC(K - XR + 1) - AFC(N2 - K + XR - 1);
-				exponR = exponR > 0 ? 0 : exponR;
+				if (exponR > 10)
+				{
+					return fallbackToUniform();
+				}
 
 				KR = exp(exponR);
-
 
 				LAMDL = -log(XL * (N2 - K + XL) / (N1 - XL + 1) / (K - XL + 1));
 				LAMDR = -log((N1 - XR + 1) * (K - XR + 1) / XR / (N2 - K + XR));
@@ -369,6 +402,12 @@ namespace ORESchemes.Shared.Primitives
 				P3 = P2 + KR / LAMDR;
 
 			label30:
+				deadlockCheckResult = checkDeadlock(2);
+				if (deadlockCheckResult.HasValue)
+				{
+					return deadlockCheckResult.Value;
+				}
+
 				U = RAND() * P3;
 				V = RAND();
 
