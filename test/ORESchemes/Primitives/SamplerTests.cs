@@ -124,6 +124,20 @@ namespace Test.ORESchemes.Primitives
 			sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
 		}
 
+		[Fact]
+		public void HGInconvenientInputsTest()
+		{
+			ISampler<ulong> sampler = new CustomSampler(_entropy);
+
+			sampler.HyperGeometric(144115188075855871, 72057594037927936, 33562748);
+			sampler.HyperGeometric(72057594037927935, 36028797018963968, 16781410);
+			sampler.HyperGeometric(36028797018963967, 18014398509481984, 8392237);
+
+			sampler.HyperGeometric(18014398509481983 / 2, 9007199254740992 / 2, 4196122 / 2);
+
+			sampler.HyperGeometric(18014398509481983, 9007199254740992, 4196122);
+		}
+
 		[Theory]
 		[InlineData(99, 10, 25)]
 		[InlineData(500, 50, 100)]

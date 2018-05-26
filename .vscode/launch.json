@@ -15,7 +15,15 @@
 				"--dataset",
 				"data/dataset.txt",
 				"--queries",
-				"data/exact-queries.txt"
+				"data/exact-queries.txt",
+				"--ore-scheme",
+				"cryptdb",
+				"--b-plus-tree-branches",
+				"2",
+				"--cache-size",
+				"0",
+				"--seed",
+				"237975642"
 			],
 			"cwd": "${workspaceFolder}",
 			// For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

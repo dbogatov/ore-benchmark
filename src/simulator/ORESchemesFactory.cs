@@ -43,8 +43,8 @@ namespace Simulation
 					result = new CryptDBScheme(
 						Int32.MinValue,
 						Int32.MaxValue,
-						Int64.MinValue / 100,
-						Int64.MaxValue / 100,
+						unchecked((long)(Int32.MinValue * 10)), // empirical maximum
+						unchecked((long)(Int32.MaxValue * 10)),
 						entropy
 					);
 					break;

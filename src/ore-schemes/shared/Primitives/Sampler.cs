@@ -43,14 +43,33 @@ namespace ORESchemes.Shared.Primitives
 		// https://github.com/mathnet/mathnet-numerics
 		public ulong HyperGeometric(ulong population, ulong successes, ulong samples)
 		{
-			if (population >= 100)
+			ulong result = 0;
+
+			while (true)
 			{
-				return EfficientHG(population, successes, samples);
+				if (population >= 100)
+				{
+					result = EfficientHG(population, successes, samples);
+				}
+				else
+				{
+					result = NaiveHG(population, successes, samples);
+				}
+
+				// Sampler is an approximation algorithms, so it may fail
+				if (
+					result < (samples + successes > population ? samples + successes - population : 0) ||
+					result > Math.Min(samples, successes)
+				)
+				{
+					// Console.WriteLine($"Sampler returned {result} for ({population}, {successes}, {samples})");
+					continue;
+				}
+
+				break;
 			}
-			else
-			{
-				return NaiveHG(population, successes, samples);
-			}
+
+			return result;
 		}
 
 		// https://stackoverflow.com/a/6651661/1644554
@@ -244,9 +263,12 @@ namespace ORESchemes.Shared.Primitives
 				if (U > P)
 				{
 					U = U - P;
-					P = P * (N1 - IX) * (K - IX);
+					// P = P * (N1 - IX) * (K - IX);
+					// IX = IX + 1;
+					// P = P / IX / (N2 - K + IX);
+					P = (P / (IX + 1)) * ((N1 - IX) / (N2 - K + IX + 1)) * (K - IX);
 					IX = IX + 1;
-					P = P / IX / (N2 - K + IX);
+					// P = P / IX / (N2 - K + IX);
 					if (IX > MAXJX)
 						goto label10;
 					goto label20;
@@ -275,8 +297,43 @@ namespace ORESchemes.Shared.Primitives
 				A = AFC(M) + AFC(N1 - M) + AFC(K - M) + AFC(N2 - K + M);
 				RR expon = A - AFC(XL) - AFC(N1 - XL) - AFC(K - XL) - AFC(N2 - K + XL);
 
+				// Most of the time the value is negative
+				// It may happend that this value is large (say, 800)
+				// which causes overflow, so I manually handle that
+				expon = expon > 0 ? 0 : expon;
+
+				// Console.WriteLine($"inputs: {population}, {successes}, {samples}");
+				// Console.WriteLine($"M = {M}");
+				// Console.WriteLine($"D = {D}");
+				// Console.WriteLine($"S = {S}");
+				// Console.WriteLine($"XL = {XL}");
+				// Console.WriteLine($"XR = {XR}");
+				// Console.WriteLine($"N1 = {N1}");
+				// Console.WriteLine($"N2 = {M}");
+				// Console.WriteLine($"K = {M}");
+				// Console.WriteLine($"A = {M}");
+				// Console.WriteLine($"AFC(M) = {AFC(M)}");
+				// Console.WriteLine($"AFC(N1-M) = {AFC(N1 - M)}");
+				// Console.WriteLine($"AFC(K-M) = {AFC(K - M)}");
+				// Console.WriteLine($"AFC(N2-K+M) = {AFC(N2 - K + M)}");
+				// Console.WriteLine($"AFC(XL) = {AFC(XL)}");
+				// Console.WriteLine($"AFC(N1-XL) = {AFC(N1 - XL)}");
+				// Console.WriteLine($"AFC(K-XL) = {AFC(K - XL)}");
+				// Console.WriteLine($"AFC(N2 - K + XL) = {AFC(N2 - K + XL)}");
+				// Console.WriteLine($"expon = {expon}");
+
+				// Console.WriteLine();
+				// Console.WriteLine();
+
 				KL = exp(expon);
-				KR = exp(A - AFC(XR - 1) - AFC(N1 - XR + 1) - AFC(K - XR + 1) - AFC(N2 - K + XR - 1));
+
+				// Same as with expon
+				var exponR = A - AFC(XR - 1) - AFC(N1 - XR + 1) - AFC(K - XR + 1) - AFC(N2 - K + XR - 1);
+				exponR = exponR > 0 ? 0 : exponR;
+
+				KR = exp(exponR);
+
+
 				LAMDL = -log(XL * (N2 - K + XL) / (N1 - XL + 1) / (K - XL + 1));
 				LAMDR = -log((N1 - XR + 1) * (K - XR + 1) / XR / (N2 - K + XR));
 				P1 = 2 * D;

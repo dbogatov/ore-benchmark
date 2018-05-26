@@ -45,14 +45,18 @@ namespace CLI
 		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
 		public int BPlusTreeBranching { get; } = 3;
 
+		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
+		public int Seed { get; } = new Random().Next();
+
 		private int OnExecute()
 		{
+			Console.WriteLine($"Seed: {Seed}");
 			Console.WriteLine($"Inputs: dataset={Dataset}, queries={Queries}, type={QueriesType}, dataStructure={DataStruct}, scheme={OREScheme}");
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
 			var reader = new DataReader<int, string>(Dataset, Queries, QueriesType);
-			reader.Inputs .CacheSize = CacheSize;
+			reader.Inputs.CacheSize = CacheSize;
 
 			timer.Stop();
 
@@ -67,10 +71,10 @@ namespace CLI
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					report =
-						new Simulator<int, string, int>(
+						new Simulator<int, string, long>(
 							reader.Inputs,
-							new Options<int, int>(
-								new ORESchemesFactoryIntToInt().GetScheme(OREScheme),
+							new Options<int, long>(
+								new ORESchemesFactoryIntToInt().GetScheme(OREScheme, Seed),
 								BPlusTreeBranching
 							)
 						).Simulate();
@@ -80,7 +84,7 @@ namespace CLI
 						new Simulator<int, string, ORESchemes.PracticalORE.Ciphertext>(
 							reader.Inputs,
 							new Options<int, ORESchemes.PracticalORE.Ciphertext>(
-								new ORESchemesFactoryPractical().GetScheme(OREScheme),
+								new ORESchemesFactoryPractical().GetScheme(OREScheme, Seed),
 								BPlusTreeBranching
 							)
 						).Simulate();

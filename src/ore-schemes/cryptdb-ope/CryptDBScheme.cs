@@ -94,7 +94,7 @@ namespace ORESchemes.CryptDBOPE
 				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
-				if (c <= y)
+				if (c <= y && !(c == 0 && y == UInt64.MaxValue))
 				{
 					domain.To = x;
 					target.To = y;
@@ -103,6 +103,11 @@ namespace ORESchemes.CryptDBOPE
 				{
 					domain.From = x + 1;
 					target.From = y + 1;
+				}
+
+				if (domain.Size < 1)
+				{
+					throw new InvalidOperationException("Should never happen.");
 				}
 			}
 
@@ -154,7 +159,7 @@ namespace ORESchemes.CryptDBOPE
 				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
-				if (m <= x)
+				if (m <= x && !(m == 0 && x == UInt64.MaxValue))
 				{
 					domain.To = x;
 					target.To = y;
@@ -163,6 +168,11 @@ namespace ORESchemes.CryptDBOPE
 				{
 					domain.From = x + 1;
 					target.From = y + 1;
+				}
+
+				if (domain.Size < 1)
+				{
+					throw new InvalidOperationException("Should never happen.");
 				}
 			}
 
