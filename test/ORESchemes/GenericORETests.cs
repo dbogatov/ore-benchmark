@@ -10,10 +10,14 @@ namespace Test.ORESchemes
 	public abstract class GenericORETests<C>
 	{
 		protected IOREScheme<int, C> _scheme;
-		private readonly int _runs = 100;
+		protected readonly int _runs = 100;
+
+		protected const int SEED = 123456;
+		protected readonly byte[] _entropy = new byte[256 / 8];
 
 		public GenericORETests()
 		{
+			new Random(SEED).NextBytes(_entropy);
 			SetScheme();
 		}
 

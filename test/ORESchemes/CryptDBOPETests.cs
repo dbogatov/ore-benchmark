@@ -14,7 +14,7 @@ namespace Test.ORESchemes
 				Int32.MaxValue,
 				Convert.ToInt64(Int32.MinValue) * 100,
 				Convert.ToInt64(Int32.MaxValue) * 100,
-				BitConverter.GetBytes(123456)
+				_entropy
 			);
 		}
 
@@ -44,6 +44,32 @@ namespace Test.ORESchemes
 			Assert.Throws<ArgumentException>(
 				() => _scheme.Decrypt(from + 1, key)
 			);
+		}
+
+		[Fact]
+		public void OneToOneTest()
+		{
+			var generator = new Random(SEED);
+
+			var scheme = new CryptDBScheme(
+				Int16.MinValue,
+				Int16.MaxValue,
+				Int16.MinValue,
+				Int16.MaxValue,
+				_entropy
+			);
+
+			scheme.Init();
+
+			byte[] key = scheme.KeyGen();
+
+			for (int i = 0; i < _runs * 100; i++)
+			{
+				var plaintext = generator.Next(Int16.MinValue, Int16.MaxValue);
+
+				var ciphertext = scheme.Encrypt(plaintext, key);
+				Assert.Equal(plaintext, ciphertext);
+			}
 		}
 
 		[Fact]

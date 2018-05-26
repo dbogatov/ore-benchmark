@@ -7,7 +7,7 @@ namespace Test.ORESchemes
 	{
 		protected override void SetScheme()
 		{
-			_scheme = new PracticalOREScheme(BitConverter.GetBytes(123456));
+			_scheme = new PracticalOREScheme(_entropy);
 		}
 	}
 }

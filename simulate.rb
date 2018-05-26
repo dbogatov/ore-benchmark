@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
-build = 'dotnet build -c release src/cli/'
-puts ">>> #{build}"
-puts `#{build}`
-
 seed = ARGV.count == 1 ? ARGV[0].to_i : Random.new.rand(2**30)
 prng = Random.new(seed)
 
 puts "Global seed to be used: #{seed}"
+
+build = 'dotnet build -c release src/cli/'
+puts ">>> #{build}"
+puts `#{build}`
 
 Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, :cios, :avgcios, :cops, :avgcops, :ctime, :ccputime, :qcache, :qios, :avgqios, :qops, :avgqops, :qtime, :qcputime)
 
