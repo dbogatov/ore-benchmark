@@ -4,9 +4,7 @@ build = 'dotnet build -c release src/cli/'
 puts ">>> #{build}"
 puts `#{build}`
 
-seed_supplied = ARGV.count == 1
-seed = seed_supplied ? "--seed #{ARGV[0]}" : ''
-prng = Random.new
+prng = ARGV.count == 1 ? Random.new(ARGV[0].to_i) : Random.new
 
 Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, :cios, :avgcios, :cops, :avgcops, :ctime, :ccputime, :qcache, :qios, :avgqios, :qops, :avgqops, :qtime, :qcputime)
 
@@ -17,9 +15,7 @@ for scheme in %w[cryptdb practicalore noencryption] do
     for btreebranches in [2, 5, 20, 50] do
       for cache in [0, 10, 100] do
 
-        seed = seed_supplied ? seed : "--seed #{prng.rand(2**30)}"
-
-        cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache} #{seed}"
+        cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache} --seed #{prng.rand(2**30)}"
         puts ">>> #{cmd}"
         output = `#{cmd}`
 
