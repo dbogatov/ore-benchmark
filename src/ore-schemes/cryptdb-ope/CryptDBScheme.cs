@@ -156,7 +156,7 @@ namespace ORESchemes.CryptDBOPE
 
 				tape = new TapeGen(key, input);
 
-				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
+				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);				
 				ulong x = d + hg;
 
 				if (m <= x && !(m == 0 && x == UInt64.MaxValue))

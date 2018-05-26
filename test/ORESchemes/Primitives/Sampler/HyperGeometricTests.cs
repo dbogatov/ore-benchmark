@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using ORESchemes.Shared.Primitives;
@@ -8,74 +9,8 @@ using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {
-	public class CustomSamplerTests
+	public partial class SamplerTests
 	{
-		private const int SEED = 123456;
-		private readonly byte[] _entropy = new byte[256 / 8];
-
-		private const int RUNS = 1000;
-
-		public CustomSamplerTests()
-		{
-			new Random(SEED).NextBytes(_entropy);
-		}
-
-		[Fact]
-		public void UniformityTest()
-		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-
-			var values = new Dictionary<ulong, int>(RUNS);
-			for (int i = 0; i < RUNS * 100; i++)
-			{
-				var value = sampler.Uniform(0, RUNS);
-
-				if (values.ContainsKey(value))
-				{
-					values[value]++;
-				}
-				else
-				{
-					values.Add(value, 1);
-				}
-			}
-
-			var stdDev = values.Values.StdDev();
-
-			Assert.InRange(values.Values.StdDev(), 0, RUNS * 0.02);
-			Assert.InRange(values.Where(kvp => kvp.Key < 100).Select(kvp => kvp.Value).StdDev(), 0, RUNS * 0.02);
-			Assert.InRange(values.Where(kvp => kvp.Key > RUNS - 100).Select(kvp => kvp.Value).StdDev(), 0, RUNS * 0.02);
-			Assert.InRange(
-				values.Where(kvp => kvp.Key > RUNS / 2 - 50 && kvp.Key < RUNS / 2 + 50).Select(kvp => kvp.Value).StdDev(),
-				0, RUNS * 0.02
-			);
-		}
-
-		[Fact]
-		public void RangesTest()
-		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-			Random random = new Random(SEED);
-
-			for (int i = 0; i < RUNS; i++)
-			{
-				var a = (ulong)(random.NextDouble() * UInt64.MaxValue);
-				var b = (ulong)(random.NextDouble() * UInt64.MaxValue);
-
-				if (a == b)
-				{
-					continue;
-				}
-
-				var min = Math.Min(a, b);
-				var max = Math.Max(a, b);
-
-				var value = sampler.Uniform(min, max);
-
-				Assert.InRange(value, min, max);
-			}
-		}
-
 		[Theory]
 		[InlineData(99, 10, 25, 0.05)]
 		[InlineData(500, 50, 100, 0.03)]

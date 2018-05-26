@@ -24,6 +24,7 @@ namespace ORESchemes.Shared.Primitives
 	{
 		T HyperGeometric(T population, T successes, T samples);
 		T Uniform(T from, T to);
+		T Binomial(T successes, double probability);
 	}
 
 	public class CustomSampler : ISampler<ulong>
@@ -40,6 +41,29 @@ namespace ORESchemes.Shared.Primitives
 			_generator = prg;
 		}
 
+		public ulong Binomial(ulong n, double p)
+		{
+			bool reverse = false;
+			if (p > 0.5)
+			{
+				p = 1.0 - p;
+				reverse = true;
+			}
+
+			double log_q = Math.Log(1.0 - p);
+			ulong x = 0;
+			double sum = 0;
+			while (true)
+			{
+				sum += Math.Log(_generator.NextDouble(0, 1)) / (n - x);
+				if (sum < log_q)
+				{
+					return reverse ? n - x : x;
+				}
+				x++;
+			}
+		}
+
 		// https://github.com/mathnet/mathnet-numerics
 		public ulong HyperGeometric(ulong population, ulong successes, ulong samples)
 		{
@@ -51,18 +75,22 @@ namespace ORESchemes.Shared.Primitives
 				{
 					result = EfficientHG(population, successes, samples);
 				}
+				else if (population / successes > 20.0)
+				{
+					result = Binomial(successes, (double)successes / population);
+				}
 				else
 				{
 					result = NaiveHG(population, successes, samples);
 				}
 
-				// Sampler is an approximation algorithms, so it may fail
+				// Sampler is an approximation algorithm, so it may fail
 				if (
 					result < (samples + successes > population ? samples + successes - population : 0) ||
 					result > Math.Min(samples, successes)
 				)
 				{
-					// Console.WriteLine($"Sampler returned {result} for ({population}, {successes}, {samples})");
+					Console.WriteLine($"Sampler returned {result} for ({population}, {successes}, {samples})");
 					continue;
 				}
 
