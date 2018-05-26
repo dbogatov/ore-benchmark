@@ -114,7 +114,7 @@ namespace Simulation
 		private Report.SubReport QueryStage()
 		{
 			return Profile(() =>
-			{
+			{			
 				switch (_inputs.Type)
 				{
 					case QueriesType.Exact:

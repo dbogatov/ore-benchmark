@@ -1,5 +1,6 @@
 using System;
 using ORESchemes.CryptDBOPE;
+using ORESchemes.Shared;
 using Xunit;
 
 namespace Test.ORESchemes
@@ -11,8 +12,8 @@ namespace Test.ORESchemes
 			_scheme = new CryptDBScheme(
 				Int32.MinValue,
 				Int32.MaxValue,
-				unchecked((long)Int32.MinValue * 100),
-				unchecked((long)Int32.MaxValue * 100),
+				Convert.ToInt64(Int32.MinValue) * 100,
+				Convert.ToInt64(Int32.MaxValue) * 100,
 				BitConverter.GetBytes(123456)
 			);
 		}
@@ -43,6 +44,29 @@ namespace Test.ORESchemes
 			Assert.Throws<ArgumentException>(
 				() => _scheme.Decrypt(from + 1, key)
 			);
+		}
+
+		[Fact]
+		public void SpecialInputs()
+		{
+			var entropy = BitConverter.GetBytes(782797714);
+
+			var scheme = new CryptDBScheme(
+				Int32.MinValue,
+				Int32.MaxValue,
+				Convert.ToInt64(Int32.MinValue) * 100000,
+				Convert.ToInt64(Int32.MaxValue) * 100000,
+				entropy
+			);
+
+			scheme.Init();
+
+			byte[] key = scheme.KeyGen();
+
+			var from = scheme.Encrypt(5960, key);
+			var to = scheme.Encrypt(6260, key);
+
+			Assert.True(from < to);
 		}
 	}
 }
