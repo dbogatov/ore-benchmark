@@ -29,32 +29,22 @@ namespace ORESchemes.PracticalORE
 		}
 	}
 
-	public class PracticalOREScheme : IOREScheme<int, Ciphertext>
+	public class PracticalOREScheme : AbsOREScheme<Ciphertext>
 	{
-		private readonly Random _generator = new Random();
-		private readonly int _alpha = 128;
-
-		private Ciphertext maxCiphertextValue = null;
-		private Ciphertext minCiphertextValue = null;
-
 		private readonly int M = 4;
 		private readonly IPRF F;
 		private readonly byte[] IV;
 
-		public event SchemeOperationEventHandler OperationOcurred;
-
-		public PracticalOREScheme(int alpha, int seed)
+		public PracticalOREScheme(byte[] seed = null) : base(seed)
 		{
-			_generator = new Random(seed);
-			_alpha = alpha;
 			M = Convert.ToInt32(_generator.Next(4, Int32.MaxValue));
 			F = PRFFactory.GetPRF();
 
-			IV = new byte[_alpha / 8];
+			IV = new byte[128 / 8];
 			_generator.NextBytes(IV);
 		}
 
-		public int Decrypt(Ciphertext ciphertext, byte[] key)
+		public override int Decrypt(Ciphertext ciphertext, byte[] key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
@@ -66,14 +56,7 @@ namespace ORESchemes.PracticalORE
 			);
 		}
 
-		public void Destruct()
-		{
-			OnOperation(SchemeOperation.Destruct);
-
-			return;
-		}
-
-		public Ciphertext Encrypt(int plaintext, byte[] key)
+		public override Ciphertext Encrypt(int plaintext, byte[] key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
@@ -107,20 +90,7 @@ namespace ORESchemes.PracticalORE
 			return result;
 		}
 
-		public void Init()
-		{
-			OnOperation(SchemeOperation.Init);
-
-			return;
-		}
-
-		/// <summary>
-		/// Compares two values given by their ciphertexts
-		/// </summary>
-		/// <param name="ciphertextOne">The first ciphertext to compare</param>
-		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
-		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
-		private bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
+		protected override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
@@ -143,81 +113,6 @@ namespace ORESchemes.PracticalORE
 			}
 
 			return false;
-		}
-
-		public bool IsEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
-		{
-			return
-				!IsLess(ciphertextOne, ciphertextTwo) &&
-				!IsLess(ciphertextTwo, ciphertextOne);
-		}
-
-		public bool IsGreater(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
-		{
-			return
-				!IsLess(ciphertextOne, ciphertextTwo) &&
-				!IsEqual(ciphertextOne, ciphertextTwo);
-		}
-
-		public bool IsGreaterOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
-		{
-			return !IsLess(ciphertextOne, ciphertextTwo);
-		}
-
-		public bool IsLess(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
-		{
-			return Compare(ciphertextOne, ciphertextTwo);
-		}
-
-		public bool IsLessOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
-		{
-			return !IsGreater(ciphertextOne, ciphertextTwo);
-		}
-
-		public byte[] KeyGen()
-		{
-			OnOperation(SchemeOperation.KeyGen);
-
-			byte[] key = new byte[_alpha / 8];
-			_generator.NextBytes(key);
-
-			maxCiphertextValue = Encrypt(Int32.MaxValue, key);
-			minCiphertextValue = Encrypt(Int32.MinValue, key);
-
-			return key;
-		}
-
-		public Ciphertext MaxCiphertextValue()
-		{
-			if (maxCiphertextValue == null)
-			{
-				throw new InvalidOperationException("Max value is generated during KeyGen operation");
-			}
-
-			return maxCiphertextValue;
-		}
-
-		public Ciphertext MinCiphertextValue()
-		{
-			if (minCiphertextValue == null)
-			{
-				throw new InvalidOperationException("Min value is generated during KeyGen operation");
-			}
-
-			return minCiphertextValue;
-		}
-
-		/// <summary>
-		/// Emits the event that scheme performed an operation
-		/// </summary>
-		/// <param name="operation">The operation that scheme performed</param>
-		private void OnOperation(SchemeOperation operation)
-		{
-			var handler = OperationOcurred;
-			if (handler != null)
-			{
-				handler(operation);
-			}
 		}
 	}
 }

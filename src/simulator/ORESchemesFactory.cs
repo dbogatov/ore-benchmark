@@ -5,7 +5,8 @@ using ORESchemes.PracticalORE;
 
 namespace Simulation
 {
-	public abstract class ORESchemesFactory<P, C>
+	/// <typeparam name="C">Ciphertext type</typeparam>
+	public abstract class ORESchemesFactory<C>
 	{
 		/// <summary>
 		/// Returns an initialized scheme
@@ -15,26 +16,41 @@ namespace Simulation
 		/// <remarks>
 		/// Will throw exception if requested scheme is not of the proper type
 		/// </remarks>
-		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0);
+		public abstract IOREScheme<C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null);
 	}
 
-	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, int>
+	public class OPESchemesFactory : ORESchemesFactory<long>
 	{
-		public override IOREScheme<int, int> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		public override IOREScheme<long> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
-			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
+			byte[] entropy;
+			if (seed != null)
+			{
+				entropy = BitConverter.GetBytes(seed.Value);
+			}
+			else
+			{
+				entropy = new byte[256 / 8];
+				new Random().NextBytes(entropy);
+			}
 
-			IOREScheme<int, int> result;
+			IOREScheme<long> result;
 			switch (scheme)
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
-					result = new NoEncryptionScheme();
+					result = new NoEncryptionScheme(entropy);
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
-					result = new CryptDBScheme();
+					result = new CryptDBScheme(
+						Int32.MinValue,
+						Int32.MaxValue,
+						Convert.ToInt64(Int32.MinValue) * 100000, // reasonable maximum
+						Convert.ToInt64(Int32.MaxValue) * 100000, // larger numbers cause performance degradation
+						entropy
+					);
 					break;
 				default:
-					throw new ArgumentException($"{scheme} scheme is not Int to Int");
+					throw new ArgumentException($"{scheme} scheme is not an OPE scheme.");
 			}
 
 			result.Init();
@@ -42,20 +58,29 @@ namespace Simulation
 		}
 	}
 
-	public class ORESchemesFactoryPractical : ORESchemesFactory<int, ORESchemes.PracticalORE.Ciphertext>
+	public class ORESchemesFactoryPractical : ORESchemesFactory<ORESchemes.PracticalORE.Ciphertext>
 	{
-		public override IOREScheme<int, Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int alpha = 128, int seed = 0)
+		public override IOREScheme<Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
-			seed = seed == 0 ? new Random().Next(Int32.MaxValue) : seed;
-
-			IOREScheme<int, Ciphertext> result;
-			switch (scheme)
+			byte[] entropy;
+			if (seed != null)
 			{
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					result = new PracticalOREScheme(alpha, seed);
-					break;
-				default:
-					throw new ArgumentException($"{scheme} scheme is not PracticalORE");
+				entropy = BitConverter.GetBytes(seed.Value);
+			}
+			else
+			{
+				entropy = new byte[256 / 8];
+				new Random().NextBytes(entropy);
+			}
+
+			IOREScheme<Ciphertext> result;
+			if (scheme == ORESchemes.Shared.ORESchemes.PracticalORE)
+			{
+				result = new PracticalOREScheme(entropy);
+			}
+			else
+			{
+				throw new ArgumentException($"{scheme} scheme is not PracticalORE");
 			}
 
 			result.Init();

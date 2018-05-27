@@ -9,16 +9,19 @@ namespace Test.ORESchemes
 {
 	public abstract class GenericORETests<C>
 	{
-		protected IOREScheme<int, C> _scheme;
-		private readonly int _runs = 100;
+		protected IOREScheme<C> _scheme;
+		protected readonly int _runs = 100;
+
+		protected const int SEED = 123456;
+		protected readonly byte[] _entropy = new byte[256 / 8];
 
 		public GenericORETests()
 		{
+			new Random(SEED).NextBytes(_entropy);
 			SetScheme();
 		}
 
 		protected abstract void SetScheme();
-
 
 		[Fact]
 		public void InitTest()
@@ -100,14 +103,8 @@ namespace Test.ORESchemes
 			}
 		}
 
-		[Theory]
-		[InlineData(SchemeOperation.Init)]
-		[InlineData(SchemeOperation.KeyGen)]
-		[InlineData(SchemeOperation.Destruct)]
-		[InlineData(SchemeOperation.Encrypt)]
-		[InlineData(SchemeOperation.Decrypt)]
-		[InlineData(SchemeOperation.Comparison)]
-		public void EventsTest(SchemeOperation operation)
+		[Fact]
+		public void EventsTest()
 		{
 			var actual = new Dictionary<SchemeOperation, int>();
 			Enum
@@ -162,17 +159,22 @@ namespace Test.ORESchemes
 			var key = _scheme.KeyGen();
 
 			Assert.Equal(
-				Int32.MinValue,
+				_scheme.MinPlaintextValue(),
 				_scheme.Decrypt(_scheme.MinCiphertextValue(), key)
 			);
 
 			Assert.Equal(
-				Int32.MaxValue,
+				_scheme.MaxPlaintextValue(),
 				_scheme.Decrypt(_scheme.MaxCiphertextValue(), key)
 			);
 
-			new List<int> { Int32.MinValue, Int32.MinValue / 2, -1, 0, 1, Int32.MaxValue / 2, Int32.MaxValue }
-				.ForEach(
+			new List<int> {
+				_scheme.MinPlaintextValue(),
+				_scheme.MinPlaintextValue() / 2,
+				-1, 0, 1,
+				_scheme.MaxPlaintextValue() / 2,
+				_scheme.MaxPlaintextValue()
+			}.ForEach(
 					num =>
 					{
 						Assert.True(

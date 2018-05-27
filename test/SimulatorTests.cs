@@ -18,42 +18,42 @@ namespace Test
 		public void SimulatorTest(QueriesType type)
 		{
 			var max = 10000;
-			var inputs = new Inputs<int, string>
+			var inputs = new Inputs<string>
 			{
 				Type = type,
 				Dataset =
 					Enumerable
 						.Range(1, max)
-						.Select(val => new Record<int, string>(val, val.ToString()))
+						.Select(val => new Record<string>(val, val.ToString()))
 						.ToList(),
 				ExactQueries =
 					Enumerable
 						.Range(1, max / 5)
-						.Select(val => new ExactQuery<int>(val * 4))
+						.Select(val => new ExactQuery(val * 4))
 						.ToList(),
 				RangeQueries =
 					Enumerable
 						.Range(1, max / 5)
-						.Select(val => new RangeQuery<int>(val * 3, val * 4))
+						.Select(val => new RangeQuery(val * 3, val * 4))
 						.ToList(),
 				UpdateQueries =
 					Enumerable
 						.Range(1, max / 5)
-						.Select(val => new UpdateQuery<int, string>(val * 4, (val * 4 + max).ToString()))
+						.Select(val => new UpdateQuery<string>(val * 4, (val * 4 + max).ToString()))
 						.ToList(),
 				DeleteQueries =
 					Enumerable
 						.Range(1, max / 5)
-						.Select(val => new DeleteQuery<int>(val * 4))
+						.Select(val => new DeleteQuery(val * 4))
 						.ToList()
 			};
 
-			var options = new Options<int, int>(
+			var options = new Options<long>(
 				new NoEncryptionScheme(),
 				3
 			);
 
-			var simulator = new Simulator<int, string, int>(inputs, options);
+			var simulator = new Simulator<string, long>(inputs, options);
 			var report = simulator.Simulate();
 
 			Assert.Equal(type, report.QueriesType);

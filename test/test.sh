@@ -7,14 +7,16 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-dotnet restore --disable-parallel
-dotnet build --no-restore
-
 if [ -n "$1" ]
 then
+	dotnet build --no-restore
+
 	echo "Running test $1 ..."
 	dotnet test --no-build --no-restore --filter "FullyQualifiedName~$1"
 else
+	dotnet restore --disable-parallel
+	dotnet build --no-restore
+
 	echo "Running dotnet tests..."
 	dotnet test --no-build --no-restore --verbosity n
 fi

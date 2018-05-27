@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T, C, P>
+	public partial class Tree<T, C>
 	{
 		private class LeafNode : Node
 		{
-			public LeafNode(Options<P, C> options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
+			public LeafNode(Options<C> options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
 
-			public LeafNode(Options<P, C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
+			public LeafNode(Options<C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);

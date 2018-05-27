@@ -1,4 +1,5 @@
 ﻿using System;
+using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.Shared
 {
@@ -18,10 +19,13 @@ namespace ORESchemes.Shared
 
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
-	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
-	public interface IOREScheme<P, C>
+	/// <typeparam name="C">Ciphertext type</typeparam>
+	public interface IOREScheme<C>
 	{
+		/// <summary>
+		/// Event signaling that some operation has ocurred
+		/// </summary>
 		event SchemeOperationEventHandler OperationOcurred;
 
 		/// <summary>
@@ -49,7 +53,7 @@ namespace ORESchemes.Shared
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		C Encrypt(P plaintext, byte[] key);
+		C Encrypt(int plaintext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -58,7 +62,7 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		P Decrypt(C ciphertext, byte[] key);
+		int Decrypt(C ciphertext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -131,5 +135,188 @@ namespace ORESchemes.Shared
 		/// Returns the encryption of the smallest possible value
 		/// </summary>
 		C MinCiphertextValue();
+
+		/// <summary>
+		/// Returns the largest permissible plaintext value for the scheme
+		/// </summary>
+		int MaxPlaintextValue();
+
+		/// <summary>
+		/// Returns the smallest permissible plaintext value for the scheme
+		/// </summary>
+		int MinPlaintextValue();
+	}
+
+	/// <summary>
+	/// A default implementation of the interface
+	/// To be derived by ORE schemes
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
+	public abstract class AbsOREScheme<C> : IOREScheme<C>
+	{
+		public event SchemeOperationEventHandler OperationOcurred;
+
+		protected readonly IPRG _generator;
+		protected const int ALPHA = 256;
+
+		private C maxCiphertextValue = default(C);
+		private C minCiphertextValue = default(C);
+
+		/// <summary>
+		/// Entropy is required for the scheme
+		/// </summary>
+		public AbsOREScheme(byte[] seed)
+		{
+			_generator = PRGFactory.GetPRG(seed);
+		}
+
+		public abstract int Decrypt(C ciphertext, byte[] key);
+
+		public abstract C Encrypt(int plaintext, byte[] key);
+
+		public virtual void Destruct()
+		{
+			OnOperation(SchemeOperation.Destruct);
+
+			return;
+		}
+		public void Init()
+		{
+			OnOperation(SchemeOperation.Init);
+
+			return;
+		}
+
+		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return
+				!IsLess(ciphertextOne, ciphertextTwo) &&
+				!IsLess(ciphertextTwo, ciphertextOne);
+		}
+
+		public virtual bool IsGreater(C ciphertextOne, C ciphertextTwo)
+		{
+			return
+				!IsLess(ciphertextOne, ciphertextTwo) &&
+				!IsEqual(ciphertextOne, ciphertextTwo);
+		}
+
+		public virtual bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return !IsLess(ciphertextOne, ciphertextTwo);
+		}
+
+		public virtual bool IsLess(C ciphertextOne, C ciphertextTwo)
+		{
+			return Compare(ciphertextOne, ciphertextTwo);
+		}
+
+		public virtual bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			return !IsGreater(ciphertextOne, ciphertextTwo);
+		}
+
+		public byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			byte[] key = new byte[ALPHA / 8];
+			_generator.NextBytes(key);
+
+			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
+			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
+
+			return key;
+		}
+
+		public virtual int MaxPlaintextValue() => Int32.MaxValue;
+		public virtual int MinPlaintextValue() => Int32.MinValue;
+
+		public C MaxCiphertextValue()
+		{
+			if (maxCiphertextValue == null)
+			{
+				throw new InvalidOperationException("Max value is generated during KeyGen operation");
+			}
+
+			return maxCiphertextValue;
+		}
+
+		public C MinCiphertextValue()
+		{
+			if (minCiphertextValue == null)
+			{
+				throw new InvalidOperationException("Min value is generated during KeyGen operation");
+			}
+
+			return minCiphertextValue;
+		}
+
+		/// <summary>
+		/// Emits the event that scheme performed an operation
+		/// </summary>
+		/// <param name="operation">The operation that scheme performed</param>
+		protected void OnOperation(SchemeOperation operation)
+		{
+			var handler = OperationOcurred;
+			if (handler != null)
+			{
+				handler(operation);
+			}
+		}
+
+		/// <summary>
+		/// Compares two values given by their ciphertexts
+		/// </summary>
+		/// <param name="ciphertextOne">The first ciphertext to compare</param>
+		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
+		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
+		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
+	}
+
+	/// <summary>
+	/// Generic implementation of OPE scheme
+	/// To be derived by OPE schemes
+	/// </summary>
+	public abstract class AbsOPEScheme : AbsOREScheme<long>
+	{
+		public AbsOPEScheme(byte[] seed) : base(seed) { }
+
+		public override bool IsEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne == ciphertextTwo;
+		}
+
+		public override bool IsGreater(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne > ciphertextTwo;
+		}
+
+		public override bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne >= ciphertextTwo;
+		}
+
+		public override bool IsLess(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne < ciphertextTwo;
+		}
+
+		public override bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ciphertextOne <= ciphertextTwo;
+		}
+
+		sealed protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
 	}
 }
