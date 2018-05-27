@@ -44,7 +44,6 @@ namespace Test.ORESchemes.Primitives
 				var actual = (double)(values.ContainsKey((ulong)k) ? values[(ulong)k] : 0) / RUNS;
 				var expected = pmf(k);
 
-				// Console.WriteLine($"{k}: {actual.ToString("0.00")} vs {expected.ToString("0.00")}");
 				Assert.InRange(actual, expected - epsilon, expected + epsilon);
 			}
 		}

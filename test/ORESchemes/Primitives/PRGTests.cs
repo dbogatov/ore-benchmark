@@ -51,20 +51,17 @@ namespace Test.ORESchemes.Primitives
 			for (int i = 0; i < runs; i++)
 			{
 				var value = _prg.Next();
-				// Console.WriteLine($"Integer: {value.ToString().PadLeft(15)}");
 			}
 
 			for (int i = 0; i < runs; i++)
 			{
 				var value = _prg.NextLong();
-				// Console.WriteLine($"Long: {value.ToString().PadLeft(20)}");
 			}
 
 			for (int i = 0; i < runs; i++)
 			{
 				byte[] bytes = new byte[20];
 				_prg.NextBytes(bytes);
-				// Console.WriteLine($"Bytes: {bytes.Print()}");
 			}
 		}
 

@@ -6,9 +6,7 @@ using Simulation;
 
 namespace CLI
 {
-	/// <summary>
-	/// D - data type
-	/// </summary>
+	/// <typeparam name="D">Data type</typeparam>
 	public class DataReader<D>
 	{
 		public Inputs<D> Inputs = new Inputs<D>();

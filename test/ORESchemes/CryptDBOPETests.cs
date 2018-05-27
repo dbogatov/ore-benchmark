@@ -80,7 +80,7 @@ namespace Test.ORESchemes
 		/// Inputs known to trigger failures
 		/// Every bug must turn to test
 		/// </summary>
-		public void SpecialInputs()
+		public void SpecialInputsTest()
 		{
 			var entropy = BitConverter.GetBytes(782797714);
 

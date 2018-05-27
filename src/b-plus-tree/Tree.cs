@@ -4,10 +4,8 @@ using ORESchemes.Shared;
 
 namespace DataStructures.BPlusTree
 {
-	/// <summary>
-	/// T is a data in the data node type
-	/// C is a ciphertext (index) type
-	/// </summary>
+	/// <typeparam name="T">Data type</typeparam>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public partial class Tree<T, C>
 	{
 		private readonly Options<C> _options;

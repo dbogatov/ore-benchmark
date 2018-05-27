@@ -5,9 +5,7 @@ namespace DataStructures.BPlusTree
 {
 	public delegate void NodeVisitedEventHandler(int nodeHash);
 
-	/// <summary>
-	/// C - ciphertext type
-	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public class Options<C>
 	{
 		public event NodeVisitedEventHandler NodeVisited;

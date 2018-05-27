@@ -396,28 +396,6 @@ namespace ORESchemes.Shared.Primitives
 					return fallbackToUniform();
 				}
 
-				// Console.WriteLine($"inputs: {population}, {successes}, {samples}");
-				// Console.WriteLine($"M = {M}");
-				// Console.WriteLine($"D = {D}");
-				// Console.WriteLine($"S = {S}");
-				// Console.WriteLine($"XL = {XL}");
-				// Console.WriteLine($"XR = {XR}");
-				// Console.WriteLine($"N1 = {N1}");
-				// Console.WriteLine($"N2 = {M}");
-				// Console.WriteLine($"K = {M}");
-				// Console.WriteLine($"A = {M}");
-				// Console.WriteLine($"AFC(M) = {AFC(M)}");
-				// Console.WriteLine($"AFC(N1-M) = {AFC(N1 - M)}");
-				// Console.WriteLine($"AFC(K-M) = {AFC(K - M)}");
-				// Console.WriteLine($"AFC(N2-K+M) = {AFC(N2 - K + M)}");
-				// Console.WriteLine($"AFC(XL) = {AFC(XL)}");
-				// Console.WriteLine($"AFC(N1-XL) = {AFC(N1 - XL)}");
-				// Console.WriteLine($"AFC(K-XL) = {AFC(K - XL)}");
-				// Console.WriteLine($"AFC(N2 - K + XL) = {AFC(N2 - K + XL)}");
-				// Console.WriteLine($"expon = {expon}");
-				// Console.WriteLine();
-				// Console.WriteLine();
-
 				KL = exp(expon);
 
 				// Same as with expon
