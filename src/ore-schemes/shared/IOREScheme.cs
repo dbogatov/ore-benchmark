@@ -21,7 +21,7 @@ namespace ORESchemes.Shared
 	/// Defines a generic Order Preserving Encryption scheme
 	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
-	public interface IOREScheme<P, C>
+	public interface IOREScheme<C>
 	{
 		event SchemeOperationEventHandler OperationOcurred;
 
@@ -50,7 +50,7 @@ namespace ORESchemes.Shared
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		C Encrypt(P plaintext, byte[] key);
+		C Encrypt(int plaintext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -59,7 +59,7 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		P Decrypt(C ciphertext, byte[] key);
+		int Decrypt(C ciphertext, byte[] key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -138,7 +138,7 @@ namespace ORESchemes.Shared
 		int MinPlaintextValue();
 	}
 
-	public abstract class AbsOREScheme<C> : IOREScheme<int, C>
+	public abstract class AbsOREScheme<C> : IOREScheme<C>
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 

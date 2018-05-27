@@ -13,7 +13,7 @@ namespace Test
 		public void SearchRangeNotExistingTest()
 		{
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -26,8 +26,8 @@ namespace Test
 		[Fact]
 		public void SearchRangeEmptyTreeTest()
 		{
-			var result = new Tree<string, long, int>(
-				new Options<int, long>(
+			var result = new Tree<string, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				)
@@ -42,7 +42,7 @@ namespace Test
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -64,7 +64,7 @@ namespace Test
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -94,7 +94,7 @@ namespace Test
 		public void SearchRangeNonExistingMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -114,8 +114,8 @@ namespace Test
 		{
 			Assert.Throws<ArgumentException>(
 				() =>
-				new Tree<string, long, int>(
-					new Options<int, long>(
+				new Tree<string, long>(
+					new Options<long>(
 						new NoEncryptionScheme(),
 						3
 					)

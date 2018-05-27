@@ -5,7 +5,7 @@ using ORESchemes.PracticalORE;
 
 namespace Simulation
 {
-	public abstract class ORESchemesFactory<P, C>
+	public abstract class ORESchemesFactory<C>
 	{
 		/// <summary>
 		/// Returns an initialized scheme
@@ -15,12 +15,12 @@ namespace Simulation
 		/// <remarks>
 		/// Will throw exception if requested scheme is not of the proper type
 		/// </remarks>
-		public abstract IOREScheme<P, C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null);
+		public abstract IOREScheme<C> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null);
 	}
 
-	public class ORESchemesFactoryIntToInt : ORESchemesFactory<int, long>
+	public class OPESchemesFactory : ORESchemesFactory<long>
 	{
-		public override IOREScheme<int, long> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
+		public override IOREScheme<long> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
 			byte[] entropy;
 			if (seed != null)
@@ -33,7 +33,7 @@ namespace Simulation
 				new Random().NextBytes(entropy);
 			}
 
-			IOREScheme<int, long> result;
+			IOREScheme<long> result;
 			switch (scheme)
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
@@ -49,7 +49,7 @@ namespace Simulation
 					);
 					break;
 				default:
-					throw new ArgumentException($"{scheme} scheme is not Int to Long");
+					throw new ArgumentException($"{scheme} scheme is not an OPE scheme.");
 			}
 
 			result.Init();
@@ -57,9 +57,9 @@ namespace Simulation
 		}
 	}
 
-	public class ORESchemesFactoryPractical : ORESchemesFactory<int, ORESchemes.PracticalORE.Ciphertext>
+	public class ORESchemesFactoryPractical : ORESchemesFactory<ORESchemes.PracticalORE.Ciphertext>
 	{
-		public override IOREScheme<int, Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
+		public override IOREScheme<Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
 			byte[] entropy;
 			if (seed != null)
@@ -72,14 +72,14 @@ namespace Simulation
 				new Random().NextBytes(entropy);
 			}
 
-			IOREScheme<int, Ciphertext> result;
-			switch (scheme)
+			IOREScheme<Ciphertext> result;
+			if (scheme == ORESchemes.Shared.ORESchemes.PracticalORE)
 			{
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					result = new PracticalOREScheme(entropy);
-					break;
-				default:
-					throw new ArgumentException($"{scheme} scheme is not PracticalORE");
+				result = new PracticalOREScheme(entropy);
+			}
+			else
+			{
+				throw new ArgumentException($"{scheme} scheme is not PracticalORE");
 			}
 
 			result.Init();

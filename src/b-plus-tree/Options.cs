@@ -6,20 +6,19 @@ namespace DataStructures.BPlusTree
 	public delegate void NodeVisitedEventHandler(int nodeHash);
 
 	/// <summary>
-	/// P - plaintex type
 	/// C - ciphertext type
 	/// </summary>
-	public class Options<P, C>
+	public class Options<C>
 	{
 		public event NodeVisitedEventHandler NodeVisited;
 
 		public int Branching { get; private set; }
-		public IOREScheme<P, C> Scheme { get; private set; }
+		public IOREScheme<C> Scheme { get; private set; }
 
 		private int _generator = 0;
 
 		public Options(
-			IOREScheme<P, C> scheme,
+			IOREScheme<C> scheme,
 			int branching = 60
 		)
 		{

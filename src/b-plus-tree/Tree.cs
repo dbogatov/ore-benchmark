@@ -7,17 +7,16 @@ namespace DataStructures.BPlusTree
 	/// <summary>
 	/// T is a data in the data node type
 	/// C is a ciphertext (index) type
-	/// P is a plaintext (index) type
 	/// </summary>
-	public partial class Tree<T, C, P>
+	public partial class Tree<T, C>
 	{
-		private readonly Options<P, C> _options;
+		private readonly Options<C> _options;
 
 		private int _size = 0;
 
 		private Node _root;
 
-		public Tree(Options<P, C> options)
+		public Tree(Options<C> options)
 		{
 			_options = options;
 			_root = new LeafNode(options, null, null, null);

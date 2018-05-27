@@ -13,7 +13,7 @@ namespace Test
 		public void SearchNotExistingElementTest()
 		{
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -26,8 +26,8 @@ namespace Test
 		[Fact]
 		public void SearchEmptyTreeTest()
 		{
-			var result = new Tree<string, long, int>(
-				new Options<int, long>(
+			var result = new Tree<string, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				)
@@ -42,7 +42,7 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -60,7 +60,7 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),
@@ -79,7 +79,7 @@ namespace Test
 		public void SearchNonExistingElementMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<int, long>(
+				new Options<long>(
 					new NoEncryptionScheme(),
 					3
 				),

@@ -7,12 +7,11 @@ using Simulation;
 namespace CLI
 {
 	/// <summary>
-	/// I - index (plaintext) type
 	/// D - data type
 	/// </summary>
-	public class DataReader<I, D>
+	public class DataReader<D>
 	{
-		public Inputs<I, D> Inputs = new Inputs<I, D>();
+		public Inputs<D> Inputs = new Inputs<D>();
 
 		/// <summary>
 		/// Immediately populates its local lists with the data read from files
@@ -29,7 +28,7 @@ namespace CLI
 				{
 					var record = line.Split(',');
 
-					Inputs.Dataset.Add(new Record<I, D>(ConvertToType<I>(record[0]), ConvertToType<D>(record[1])));
+					Inputs.Dataset.Add(new Record<D>(ConvertToType<int>(record[0]), ConvertToType<D>(record[1])));
 				}
 			}
 
@@ -42,16 +41,16 @@ namespace CLI
 					switch (type)
 					{
 						case QueriesType.Exact:
-							Inputs.ExactQueries.Add(new ExactQuery<I>(ConvertToType<I>(line)));
+							Inputs.ExactQueries.Add(new ExactQuery(ConvertToType<int>(line)));
 							break;
 						case QueriesType.Range:
-							Inputs.RangeQueries.Add(new RangeQuery<I>(ConvertToType<I>(line.Split(',')[0]), ConvertToType<I>(line.Split(',')[1])));
+							Inputs.RangeQueries.Add(new RangeQuery(ConvertToType<int>(line.Split(',')[0]), ConvertToType<int>(line.Split(',')[1])));
 							break;
 						case QueriesType.Update:
-							Inputs.UpdateQueries.Add(new UpdateQuery<I, D>(ConvertToType<I>(line.Split(',')[0]), ConvertToType<D>(line.Split(',')[1])));
+							Inputs.UpdateQueries.Add(new UpdateQuery<D>(ConvertToType<int>(line.Split(',')[0]), ConvertToType<D>(line.Split(',')[1])));
 							break;
 						case QueriesType.Delete:
-							Inputs.DeleteQueries.Add(new DeleteQuery<I>(ConvertToType<I>(line)));
+							Inputs.DeleteQueries.Add(new DeleteQuery(ConvertToType<int>(line)));
 							break;
 						default:
 							throw new InvalidOperationException($"Type {type} is not supported");

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T, C, P>
+	public partial class Tree<T, C>
 	{
 		private struct InsertInfo
 		{
@@ -60,7 +60,7 @@ namespace DataStructures.BPlusTree
 
 		private abstract class Node
 		{
-			protected readonly Options<P, C> _options;
+			protected readonly Options<C> _options;
 			protected List<IndexValue> children;
 
 			/// <summary>
@@ -72,7 +72,7 @@ namespace DataStructures.BPlusTree
 
 			private int _id;
 
-			public Node(Options<P, C> options, Node parent, Node next, Node prev)
+			public Node(Options<C> options, Node parent, Node next, Node prev)
 			{
 				_options = options;
 

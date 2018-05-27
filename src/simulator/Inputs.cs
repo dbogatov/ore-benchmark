@@ -17,11 +17,11 @@ namespace Simulation
 	/// <summary>
 	/// I - index (plaintext) type
 	/// </summary>
-	public class ExactQuery<I>
+	public class ExactQuery
 	{
-		public I index { get; private set; }
+		public int index { get; private set; }
 
-		public ExactQuery(I index)
+		public ExactQuery(int index)
 		{
 			this.index = index;
 		}
@@ -35,12 +35,12 @@ namespace Simulation
 	/// <summary>
 	/// I - index (plaintext) type
 	/// </summary>
-	public class RangeQuery<I>
+	public class RangeQuery
 	{
-		public I from { get; private set; }
-		public I to { get; private set; }
+		public int from { get; private set; }
+		public int to { get; private set; }
 
-		public RangeQuery(I from, I to)
+		public RangeQuery(int from, int to)
 		{
 			this.from = from;
 			this.to = to;
@@ -53,15 +53,14 @@ namespace Simulation
 	}
 
 	/// <summary>
-	/// I - index (plaintext) type
 	/// D - data type
 	/// </summary>
-	public class UpdateQuery<I, D>
+	public class UpdateQuery<D>
 	{
-		public I index { get; private set; }
+		public int index { get; private set; }
 		public D value { get; private set; }
 
-		public UpdateQuery(I index, D value)
+		public UpdateQuery(int index, D value)
 		{
 			this.index = index;
 			this.value = value;
@@ -76,11 +75,11 @@ namespace Simulation
 	/// <summary>
 	/// I - index (plaintext) type
 	/// </summary>
-	public class DeleteQuery<I>
+	public class DeleteQuery
 	{
-		public I index { get; private set; }
+		public int index { get; private set; }
 
-		public DeleteQuery(I index)
+		public DeleteQuery(int index)
 		{
 			this.index = index;
 		}
@@ -92,15 +91,14 @@ namespace Simulation
 	}
 
 	/// <summary>
-	/// I - index (plaintext) type
 	/// D - data type
 	/// </summary>
-	public class Record<I, D>
+	public class Record<D>
 	{
-		public I index { get; private set; }
+		public int index { get; private set; }
 		public D value { get; private set; }
 
-		public Record(I index, D value)
+		public Record(int index, D value)
 		{
 			this.index = index;
 			this.value = value;
@@ -116,15 +114,15 @@ namespace Simulation
 	/// I - index (plaintext) type
 	/// D - data type
 	/// </summary>
-	public class Inputs<I, D>
+	public class Inputs<D>
 	{
-		public List<Record<I, D>> Dataset = new List<Record<I, D>>();
+		public List<Record<D>> Dataset = new List<Record<D>>();
 		public QueriesType Type { get; set; }
 
-		public List<ExactQuery<I>> ExactQueries = new List<ExactQuery<I>>();
-		public List<RangeQuery<I>> RangeQueries = new List<RangeQuery<I>>();
-		public List<UpdateQuery<I, D>> UpdateQueries = new List<UpdateQuery<I, D>>();
-		public List<DeleteQuery<I>> DeleteQueries = new List<DeleteQuery<I>>();
+		public List<ExactQuery> ExactQueries = new List<ExactQuery>();
+		public List<RangeQuery> RangeQueries = new List<RangeQuery>();
+		public List<UpdateQuery<D>> UpdateQueries = new List<UpdateQuery<D>>();
+		public List<DeleteQuery> DeleteQueries = new List<DeleteQuery>();
 
 		public int CacheSize { get; set; }
 

@@ -9,7 +9,7 @@ namespace Test.ORESchemes
 {
 	public abstract class GenericORETests<C>
 	{
-		protected IOREScheme<int, C> _scheme;
+		protected IOREScheme<C> _scheme;
 		protected readonly int _runs = 100;
 
 		protected const int SEED = 123456;

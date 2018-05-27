@@ -9,13 +9,13 @@ namespace Test
 {
 	public partial class BPlusTreeTests
 	{
-		private int ProfileVisitedNodes(Action<Tree<string, long, int>> routine, List<int> seeds = null)
+		private int ProfileVisitedNodes(Action<Tree<string, long>> routine, List<int> seeds = null)
 		{
-			var options = new Options<int, long>(
+			var options = new Options<long>(
 				new NoEncryptionScheme(),
 				3
 			);
-			var tree = new Tree<string, long, int>(options);
+			var tree = new Tree<string, long>(options);
 
 			if (seeds != null)
 			{

@@ -55,7 +55,7 @@ namespace CLI
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
-			var reader = new DataReader<int, string>(Dataset, Queries, QueriesType);
+			var reader = new DataReader<string>(Dataset, Queries, QueriesType);
 			reader.Inputs.CacheSize = CacheSize;
 
 			timer.Stop();
@@ -71,19 +71,19 @@ namespace CLI
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					report =
-						new Simulator<int, string, long>(
+						new Simulator<string, long>(
 							reader.Inputs,
-							new Options<int, long>(
-								new ORESchemesFactoryIntToInt().GetScheme(OREScheme, Seed),
+							new Options<long>(
+								new OPESchemesFactory().GetScheme(OREScheme, Seed),
 								BPlusTreeBranching
 							)
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
 					report =
-						new Simulator<int, string, ORESchemes.PracticalORE.Ciphertext>(
+						new Simulator<string, ORESchemes.PracticalORE.Ciphertext>(
 							reader.Inputs,
-							new Options<int, ORESchemes.PracticalORE.Ciphertext>(
+							new Options<ORESchemes.PracticalORE.Ciphertext>(
 								new ORESchemesFactoryPractical().GetScheme(OREScheme, Seed),
 								BPlusTreeBranching
 							)

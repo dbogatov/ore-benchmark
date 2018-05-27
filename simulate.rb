@@ -13,11 +13,10 @@ Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, 
 
 runs = []
 
-for scheme in %w[cryptdb practicalore noencryption] do
-  for type in ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'] do
-    for btreebranches in [2, 5, 20, 50] do
-      for cache in [0, 10, 100] do
-
+%w[cryptdb practicalore noencryption].each do |scheme|
+  ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |type|
+    [2, 5, 20, 50].each do |btreebranches|
+      [0, 10, 100].each do |cache|
         cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache} --seed #{prng.rand(2**30)}"
         puts ">>> #{cmd}"
         output = `#{cmd}`

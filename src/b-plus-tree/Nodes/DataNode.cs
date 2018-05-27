@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
-	public partial class Tree<T, C, P>
+	public partial class Tree<T, C>
 	{
 		private class DataNode : Node
 		{
 			public C key;
 			public T value;
 
-			public DataNode(Options<P, C> options, Node parent, Node next, Node prev, C key, T value) : base(options, parent, next, prev)
+			public DataNode(Options<C> options, Node parent, Node next, Node prev, C key, T value) : base(options, parent, next, prev)
 			{
 				this.key = key;
 				this.value = value;

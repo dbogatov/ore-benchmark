@@ -8,23 +8,22 @@ using System.Linq;
 namespace Simulation
 {
 	/// <summary>
-	/// I - index (plaintext) type
 	/// D - data type
 	/// C - ciphertext type
 	/// </summary>
-	public class Simulator<I, D, C>
+	public class Simulator<D, C>
 	{
 		private List<Tuple<int, long>> _cache;
 		private long _visited = 0;
 		private long _clock = 0;
 
 		private Dictionary<SchemeOperation, long> _schemeOperations = new Dictionary<SchemeOperation, long>();
-		private Inputs<I, D> _inputs;
-		private IOREScheme<I, C> _scheme;
+		private Inputs<D> _inputs;
+		private IOREScheme<C> _scheme;
 		private byte[] _key;
-		private Tree<D, C, I> _tree;
+		private Tree<D, C> _tree;
 
-		public Simulator(Inputs<I, D> inputs, Options<I, C> options)
+		public Simulator(Inputs<D> inputs, Options<C> options)
 		{
 			_inputs = inputs;
 			_scheme = options.Scheme;
@@ -41,7 +40,7 @@ namespace Simulation
 				.ToList()
 				.ForEach(val => _schemeOperations.Add(val, 0));
 
-			_tree = new Tree<D, C, I>(options);
+			_tree = new Tree<D, C>(options);
 		}
 
 		/// <summary>
