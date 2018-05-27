@@ -7,19 +7,10 @@ namespace ORESchemes.Shared
 {
 	public static class Extensions
 	{
-		// https://stackoverflow.com/a/7244316/1644554
-		public static int GetProperHashCode(this byte[] bytes)
-		{
-			var hashCode = 0;
-			for (var i = 0; i < bytes.Length; i++)
-			{
-				// Rotate by 3 bits and XOR the new value.
-				hashCode = (hashCode << 3) | (hashCode >> (29)) ^ bytes[i];
-			}
-			return hashCode;
-		}
-
 		// https://stackoverflow.com/a/38519324/1644554
+		/// <summary>
+		/// Converts byte array to a readable string
+		/// </summary>
 		public static string Print(this byte[] byteArray)
 		{
 			var sb = new StringBuilder("{ ");
@@ -37,6 +28,9 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/2253903/1644554
+		/// <summary>
+		/// Returns standard deviation of series of integers
+		/// </summary>
 		public static double StdDev(this IEnumerable<int> values)
 		{
 			double ret = 0;

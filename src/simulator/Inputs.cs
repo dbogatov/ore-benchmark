@@ -14,9 +14,6 @@ namespace Simulation
 		Exact, Range, Update, Delete
 	}
 
-	/// <summary>
-	/// I - index (plaintext) type
-	/// </summary>
 	public class ExactQuery
 	{
 		public int index { get; private set; }
@@ -32,9 +29,6 @@ namespace Simulation
 		}
 	}
 
-	/// <summary>
-	/// I - index (plaintext) type
-	/// </summary>
 	public class RangeQuery
 	{
 		public int from { get; private set; }
@@ -52,9 +46,7 @@ namespace Simulation
 		}
 	}
 
-	/// <summary>
-	/// D - data type
-	/// </summary>
+	/// <typeparam name="D">Data type</typeparam>
 	public class UpdateQuery<D>
 	{
 		public int index { get; private set; }
@@ -72,9 +64,6 @@ namespace Simulation
 		}
 	}
 
-	/// <summary>
-	/// I - index (plaintext) type
-	/// </summary>
 	public class DeleteQuery
 	{
 		public int index { get; private set; }
@@ -90,9 +79,7 @@ namespace Simulation
 		}
 	}
 
-	/// <summary>
-	/// D - data type
-	/// </summary>
+	/// <typeparam name="D">Data type</typeparam>
 	public class Record<D>
 	{
 		public int index { get; private set; }
@@ -110,10 +97,7 @@ namespace Simulation
 		}
 	}
 
-	/// <summary>
-	/// I - index (plaintext) type
-	/// D - data type
-	/// </summary>
+	/// <typeparam name="D">Data type</typeparam>
 	public class Inputs<D>
 	{
 		public List<Record<D>> Dataset = new List<Record<D>>();

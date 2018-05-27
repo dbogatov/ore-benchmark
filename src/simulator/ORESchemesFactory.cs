@@ -5,6 +5,7 @@ using ORESchemes.PracticalORE;
 
 namespace Simulation
 {
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public abstract class ORESchemesFactory<C>
 	{
 		/// <summary>

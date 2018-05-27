@@ -2,32 +2,51 @@ using System;
 
 namespace ORESchemes.Shared.Primitives
 {
-	using RR = Decimal;
+	using RR = Decimal; // needed for HG sampler
 
 	public class SamplerFactory
 	{
 		/// <summary>
-		/// Returns an initialized instance of a ISampler that works on 64 bits integers
+		/// Returns an initialized instance of a ISampler that works on 64 bits unsigned integers
+		/// Requires PRG that will be used as source of randomness
 		/// </summary>
-		public static ISampler<ulong> GetSampler(byte[] entropy = null)
-		{
-			return new CustomSampler(entropy);
-		}
-
-		public static ISampler<ulong> GetSampler(IPRG prg)
+		public static ISampler GetSampler(IPRG prg)
 		{
 			return new CustomSampler(prg);
 		}
 	}
 
-	public interface ISampler<T> where T : struct
+	public interface ISampler
 	{
-		T HyperGeometric(T population, T successes, T samples);
-		T Uniform(T from, T to);
-		T Binomial(T successes, double probability);
+		/// <summary>
+		/// Sample from hypergeometric distribution
+		/// https://en.wikipedia.org/wiki/Hypergeometric_distribution
+		/// </summary>
+		/// <param name="population">population size</param>
+		/// <param name="successes">number of objects with requested feature</param>
+		/// <param name="samples">number of draws without replacement</param>
+		/// <returns>A sample from distribution</returns>
+		ulong HyperGeometric(ulong population, ulong successes, ulong samples);
+
+		/// <summary>
+		/// Sample uniformly at random
+		/// </summary>
+		/// <param name="from">sample range minmum value</param>
+		/// <param name="to">sample range maximum value</param>
+		/// <returns>A sample from distribution</returns>
+		ulong Uniform(ulong from, ulong to);
+
+		/// <summary>
+		/// Sample from binomial distribution
+		/// https://en.wikipedia.org/wiki/Binomial_distribution
+		/// </summary>
+		/// <param name="successes">number of draws with replacement</param>
+		/// <param name="probability">probability of success</param>
+		/// <returns>A sample from distribution</returns>
+		ulong Binomial(ulong successes, double probability);
 	}
 
-	public class CustomSampler : ISampler<ulong>
+	public class CustomSampler : ISampler
 	{
 		private IPRG _generator;
 
@@ -41,6 +60,7 @@ namespace ORESchemes.Shared.Primitives
 			_generator = prg;
 		}
 
+		// https://stackoverflow.com/a/23574723/1644554
 		public ulong Binomial(ulong n, double p)
 		{
 			bool reverse = false;
@@ -64,7 +84,15 @@ namespace ORESchemes.Shared.Primitives
 			}
 		}
 
-		// https://github.com/mathnet/mathnet-numerics
+		/// <summary>
+		/// Decided, which of the three samplers to use
+		/// Naive if population size is small
+		/// Binomial if population size is much larger than number of successes
+		/// Efficient sampler otherwise
+		/// 
+		/// since samplers are approximate, if value falls out of acceptable bounds
+		/// sampler is reiterated
+		/// </summary>
 		public ulong HyperGeometric(ulong population, ulong successes, ulong samples)
 		{
 			ulong result = 0;
@@ -116,6 +144,7 @@ namespace ORESchemes.Shared.Primitives
 			return (longRand % (to - from)) + from;
 		}
 
+		// https://github.com/mathnet/mathnet-numerics
 		private ulong NaiveHG(ulong population, ulong successes, ulong samples)
 		{
 			ulong x = 0;
@@ -150,6 +179,11 @@ namespace ORESchemes.Shared.Primitives
 		/// 
 		/// It is empirically tested that the functions runs without errors (bit overflows) for parameters
 		/// UInt64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue
+		/// 
+		/// This implementation is not guaranteed to be correct or efficient
+		/// In fact, if anything bad happens - arithmetic overflow or deadlock - 
+		/// value is sampled from uniform distribution instead.
+		/// Since probability of error is very small, this solution is acceptable
 		/// </summary>
 		private ulong EfficientHG(ulong population, ulong successes, ulong samples)
 		{

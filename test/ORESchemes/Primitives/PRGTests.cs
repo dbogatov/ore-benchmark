@@ -161,6 +161,13 @@ namespace Test.ORESchemes.Primitives
 			CheckRanges<double>(random.NextDouble, _prg.NextDouble);
 		}
 
+		/// <summary>
+		/// Helper function that verifies that PRG range methods indeed return
+		/// values within requested ranges
+		/// </summary>
+		/// <param name="nextRand">Delegate that generates random number using C# built-in Random</param>
+		/// <param name="nextPrg">Delegate that generate sample from range using tested PRG</param>
+		/// <typeparam name="T">Type of the sample (number)</typeparam>
 		private void CheckRanges<T>(Func<T> nextRand, Func<T, T, T> nextPrg) where T : IComparable
 		{
 			for (int i = 0; i < _runs; i++)

@@ -8,6 +8,10 @@ namespace ORESchemes.Shared.Primitives
 {
 	public class PRGFactory
 	{
+		/// <summary>
+		/// Returns an initialized instance of AES PRG
+		/// Accepts optional entropy
+		/// </summary>
 		public static IPRG GetPRG(byte[] seed = null)
 		{
 			if (seed != null)
@@ -22,6 +26,10 @@ namespace ORESchemes.Shared.Primitives
 			}
 		}
 
+		/// <summary>
+		/// Returns an initialized instance of built-in C# PRG
+		/// Accepts optional entropy
+		/// </summary>
 		public static IPRG GetDefaultPRG(byte[] seed = null)
 		{
 			if (seed != null)
@@ -39,21 +47,72 @@ namespace ORESchemes.Shared.Primitives
 
 	public interface IPRG
 	{
+		/// <summary>
+		/// Returns a 32-bits intger from its minimum value to its possible value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		int Next();
+
+		/// <summary>
+		/// Returns a 32-bits intger from 0 to the specified value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		int Next(int max);
+
+		/// <summary>
+		/// Returns a 32-bits intger withing the specified range
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		int Next(int min, int max);
 
+		/// <summary>
+		/// Returns a 64-bits intger from its minimum value to its possible value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		long NextLong();
+
+		/// <summary>
+		/// Returns a 64-bits intger from 0 to the specified value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		long NextLong(long max);
+
+		/// <summary>
+		/// Returns a 64-bits intger withing the specified range
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		long NextLong(long min, long max);
 
+		/// <summary>
+		/// Returns a double-precision floating-point number 
+		/// from its minimum value to its possible value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		double NextDouble();
+
+		/// <summary>
+		/// Returns a double-precision floating-point number 
+		/// from 0 to the specified value
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		double NextDouble(double max);
+
+		/// <summary>
+		/// Returns a double-precision floating-point number 
+		/// withing the specified range
+		/// inclusive sampled uniformly at (pseudo)random
+		/// </summary>
 		double NextDouble(double min, double max);
 
+		/// <summary>
+		/// Populates a supplied array with (pseudo)random bytes
+		/// </summary>
 		void NextBytes(byte[] bytes);
 	}
 
+	/// <summary>
+	/// Generic PRG class to be derived by other PRGs
+	/// </summary>
 	public abstract class CustomPRG : System.Security.Cryptography.RandomNumberGenerator, IPRG
 	{
 		protected const int ALPHA = 256;
@@ -174,9 +233,12 @@ namespace ORESchemes.Shared.Primitives
 		}
 	}
 
+	/// <summary>
+	/// AES based PRG (CTR mode)
+	/// </summary>
 	public class AESPRG : CustomPRG
 	{
-		private long _counter = 0;
+		private ulong _counter = 0;
 
 		public AESPRG(byte[] seed) : base(seed) { }
 
@@ -218,6 +280,9 @@ namespace ORESchemes.Shared.Primitives
 		}
 	}
 
+	/// <summary>
+	/// Built-in C# fast but insecure PRG
+	/// </summary>
 	public class DefaultRandom : CustomPRG
 	{
 		private Random _generator;

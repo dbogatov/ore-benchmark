@@ -19,10 +19,13 @@ namespace ORESchemes.Shared
 
 	/// <summary>
 	/// Defines a generic Order Preserving Encryption scheme
-	/// T is a plaintex type, U is a ciphertext type
 	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public interface IOREScheme<C>
 	{
+		/// <summary>
+		/// Event signaling that some operation has ocurred
+		/// </summary>
 		event SchemeOperationEventHandler OperationOcurred;
 
 		/// <summary>
@@ -133,11 +136,22 @@ namespace ORESchemes.Shared
 		/// </summary>
 		C MinCiphertextValue();
 
+		/// <summary>
+		/// Returns the largest permissible plaintext value for the scheme
+		/// </summary>
 		int MaxPlaintextValue();
 
+		/// <summary>
+		/// Returns the smallest permissible plaintext value for the scheme
+		/// </summary>
 		int MinPlaintextValue();
 	}
 
+	/// <summary>
+	/// A default implementation of the interface
+	/// To be derived by ORE schemes
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public abstract class AbsOREScheme<C> : IOREScheme<C>
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
@@ -148,6 +162,9 @@ namespace ORESchemes.Shared
 		private C maxCiphertextValue = default(C);
 		private C minCiphertextValue = default(C);
 
+		/// <summary>
+		/// Entropy is required for the scheme
+		/// </summary>
 		public AbsOREScheme(byte[] seed)
 		{
 			_generator = PRGFactory.GetPRG(seed);
@@ -257,6 +274,10 @@ namespace ORESchemes.Shared
 		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
 	}
 
+	/// <summary>
+	/// Generic implementation of OPE scheme
+	/// To be derived by OPE schemes
+	/// </summary>
 	public abstract class AbsOPEScheme : AbsOREScheme<long>
 	{
 		public AbsOPEScheme(byte[] seed) : base(seed) { }

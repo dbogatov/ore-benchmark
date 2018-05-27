@@ -7,6 +7,9 @@ using System.Text;
 
 namespace ORESchemes.Shared.Primitives
 {
+	/// <summary>
+	/// TapeGen algorithms as in https://eprint.iacr.org/2012/624.pdf
+	/// </summary>
 	public class TapeGen : CustomPRG
 	{
 		private readonly IPRG _generator;

@@ -47,6 +47,9 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
+		/// <summary>
+		/// If domain is equal to range, scheme must be one to one
+		/// </summary>
 		public void OneToOneTest()
 		{
 			var generator = new Random(SEED);
@@ -73,6 +76,10 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
+		/// <summary>
+		/// Inputs known to trigger failures
+		/// Every bug must turn to test
+		/// </summary>
 		public void SpecialInputs()
 		{
 			var entropy = BitConverter.GetBytes(782797714);

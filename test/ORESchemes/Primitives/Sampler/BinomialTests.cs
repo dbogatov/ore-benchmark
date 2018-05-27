@@ -24,12 +24,10 @@ namespace Test.ORESchemes.Primitives
 					Math.Pow(p, k) *
 					Math.Pow(1 - p, n - k);
 
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS; i++)
 			{
-				var value = sampler.Binomial((ulong)n, p);
+				var value = _sampler.Binomial((ulong)n, p);
 
 				if (values.ContainsKey(value))
 				{
@@ -54,8 +52,7 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void BinomialLargeInputs()
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-			sampler.Binomial((ulong)Int32.MaxValue, 0.1 / 100000);
+			_sampler.Binomial((ulong)Int32.MaxValue, 0.1 / 100000);
 		}
 	}
 }

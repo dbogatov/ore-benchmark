@@ -6,6 +6,9 @@ using ORESchemes.Shared.Primitives;
 
 namespace ORESchemes.CryptDBOPE
 {
+	/// <summary>
+	/// Implemented as in https://eprint.iacr.org/2012/624.pdf
+	/// </summary>
 	public class CryptDBScheme : AbsOPEScheme
 	{
 		private struct Range
@@ -25,6 +28,11 @@ namespace ORESchemes.CryptDBOPE
 		private Range _domain;
 		private Range _target;
 
+		/// <summary>
+		/// Constructor requires domain, range and optionally 256 bytes of entropy.
+		/// Although domain and range are signed integers, internally, scheme will use unsigned versions.
+		/// </summary>
+		/// <returns></returns>
 		public CryptDBScheme(
 			int domainFrom,
 			int domainTo,
@@ -94,6 +102,7 @@ namespace ORESchemes.CryptDBOPE
 				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
+				// Special case when integer overflow affects the logic
 				if (c <= y && !(c == 0 && y == UInt64.MaxValue))
 				{
 					domain.To = x;
@@ -159,6 +168,7 @@ namespace ORESchemes.CryptDBOPE
 				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);				
 				ulong x = d + hg;
 
+				// Special case when integer overflow affects the logic
 				if (m <= x && !(m == 0 && x == UInt64.MaxValue))
 				{
 					domain.To = x;
@@ -182,6 +192,15 @@ namespace ORESchemes.CryptDBOPE
 		public override int MaxPlaintextValue() => ToInt((uint)_domain.To);
 		public override int MinPlaintextValue() => ToInt((uint)_domain.From);
 
+		/// <summary>
+		/// Helper function that performes a convertible operation on its inputs.
+		/// namely, concatenates them to a byte array.
+		/// </summary>
+		/// <param name="domain">Domain object</param>
+		/// <param name="target">Range object</param>
+		/// <param name="input">True, if plaintext supplied, false otherwise</param>
+		/// <param name="value">Plaintext, or other value to add to array</param>
+		/// <returns>A concatenation of inputs</returns>
 		private byte[] Concatenate(Range domain, Range target, bool input, ulong value)
 		{
 			var bytes = new List<ulong>
@@ -206,10 +225,24 @@ namespace ORESchemes.CryptDBOPE
 			return result;
 		}
 
+		/// <summary>
+		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
+		/// </summary>
 		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
+
+		/// <summary>
+		/// Transforms signed int64 to unsigned int64 by shifting the value by int64 min value
+		/// </summary>
 		private ulong ToULong(long value) => unchecked((ulong)(value + Int64.MinValue));
 
+		/// <summary>
+		/// Transforms unsigned int32 to signed int32 by shifting the value by int32 min value
+		/// </summary>
 		private int ToInt(uint value) => (int)(value - Int32.MinValue);
+
+		/// <summary>
+		/// Transforms unsigned int64 to signed int64 by shifting the value by int64 min value
+		/// </summary>
 		private long ToLong(ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
 	}
 }

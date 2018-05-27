@@ -14,12 +14,10 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void UniformityTest()
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS * 100; i++)
 			{
-				var value = sampler.Uniform(0, RUNS);
+				var value = _sampler.Uniform(0, RUNS);
 
 				if (values.ContainsKey(value))
 				{
@@ -45,7 +43,6 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void RangesTest()
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
 			Random random = new Random(SEED);
 
 			for (int i = 0; i < RUNS; i++)
@@ -61,7 +58,7 @@ namespace Test.ORESchemes.Primitives
 				var min = Math.Min(a, b);
 				var max = Math.Max(a, b);
 
-				var value = sampler.Uniform(min, max);
+				var value = _sampler.Uniform(min, max);
 
 				Assert.InRange(value, min, max);
 			}

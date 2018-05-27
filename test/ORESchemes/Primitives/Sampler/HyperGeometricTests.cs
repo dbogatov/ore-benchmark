@@ -25,12 +25,10 @@ namespace Test.ORESchemes.Primitives
 					SpecialFunctions.Binomial(N - K, n - k) /
 					SpecialFunctions.Binomial(N, n);
 
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS; i++)
 			{
-				var value = sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
+				var value = _sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
 
 				if (values.ContainsKey(value))
 				{
@@ -55,22 +53,22 @@ namespace Test.ORESchemes.Primitives
 		[Fact]
 		public void HGLargeInputsTest()
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
-			sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
+			_sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
 		}
 
 		[Fact]
+		/// <summary>
+		/// These inputs are know to cause trouble
+		/// </summary>
 		public void HGInconvenientInputsTest()
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
+			_sampler.HyperGeometric(144115188075855871, 72057594037927936, 33562748);
+			_sampler.HyperGeometric(72057594037927935, 36028797018963968, 16781410);
+			_sampler.HyperGeometric(36028797018963967, 18014398509481984, 8392237);
 
-			sampler.HyperGeometric(144115188075855871, 72057594037927936, 33562748);
-			sampler.HyperGeometric(72057594037927935, 36028797018963968, 16781410);
-			sampler.HyperGeometric(36028797018963967, 18014398509481984, 8392237);
+			_sampler.HyperGeometric(18014398509481983 / 2, 9007199254740992 / 2, 4196122 / 2);
 
-			sampler.HyperGeometric(18014398509481983 / 2, 9007199254740992 / 2, 4196122 / 2);
-
-			sampler.HyperGeometric(18014398509481983, 9007199254740992, 4196122);
+			_sampler.HyperGeometric(18014398509481983, 9007199254740992, 4196122);
 		}
 
 		[Theory]
@@ -80,12 +78,11 @@ namespace Test.ORESchemes.Primitives
 		[InlineData(500, 70, 300)]
 		public void HGCorrectnessTest(int N, int K, int n)
 		{
-			ISampler<ulong> sampler = new CustomSampler(_entropy);
 			Random random = new Random(SEED);
 
 			for (int i = 0; i < RUNS * 10; i++)
 			{
-				var value = sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
+				var value = _sampler.HyperGeometric((ulong)N, (ulong)K, (ulong)n);
 
 				Assert.InRange((int)value, Math.Max(0, n + K - N), Math.Min(n, K));
 			}

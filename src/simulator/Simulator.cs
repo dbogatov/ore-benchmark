@@ -7,10 +7,8 @@ using System.Linq;
 
 namespace Simulation
 {
-	/// <summary>
-	/// D - data type
-	/// C - ciphertext type
-	/// </summary>
+	/// <typeparam name="D">Data type</typeparam>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public class Simulator<D, C>
 	{
 		private List<Tuple<int, long>> _cache;
