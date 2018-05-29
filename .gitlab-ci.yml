@@ -15,7 +15,6 @@ build-all:
     - src/cli/dist
     - tools/data-gen/dist
     - tools/data-gen/generate.sh
-    - test/test.sh
   tags:
   - docker
 
@@ -34,8 +33,6 @@ build-docs:
 
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
-  variables:
-    GIT_STRATEGY: none
   stage: test
   script:
   - apk add --update bash
