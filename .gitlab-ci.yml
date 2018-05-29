@@ -7,13 +7,16 @@ build-all:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
+  - apk add --update bash
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
+  - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
   artifacts:
     expire_in: 1 day
     paths:
     - src/cli/dist
     - tools/data-gen/dist
+    - data
   tags:
   - docker
 
@@ -49,8 +52,6 @@ integration-tests:
     GIT_STRATEGY: none
   stage: test
   script:
-  - apk add --update bash
-  - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-0.5-queries.txt --queries-type range -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-1-queries.txt --queries-type range -v
