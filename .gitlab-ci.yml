@@ -1,6 +1,7 @@
 stages:
 - build
 - test
+- release
 
 build-all:
   image: microsoft/dotnet:2.1-sdk-alpine
@@ -9,6 +10,7 @@ build-all:
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
   artifacts:
+    expire_in: 1 day
     paths:
     - src/cli/dist
     - tools/data-gen/dist
@@ -30,15 +32,21 @@ build-docs:
 
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - apk add --update bash
   - ./test/test.sh
+  dependencies:
+  - build-all
   tags:
   - docker
 
 integration-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - apk add --update bash
@@ -50,5 +58,26 @@ integration-tests:
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-3-queries.txt --queries-type range -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
+  dependencies:
+  - build-all
   tags:
   - docker
+
+pages:
+  image: dbogatov/docker-images:alpine-extras-latest
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - mv documentation/html/ public/
+  - echo "Uploading files to pages"
+  artifacts:
+    expire_in: 30 min
+    paths:
+    - public
+  dependencies:
+  - build-docs
+  tags:
+  - docker
+  # only:
+  # - master
