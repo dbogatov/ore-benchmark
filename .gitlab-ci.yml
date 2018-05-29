@@ -20,8 +20,8 @@ build-docs:
   stage: build
   script:
   - rm -rf documentation
-	- mkdir -p documentation
-	- doxygen Doxyfile
+  - mkdir -p documentation
+  - doxygen Doxyfile
   artifacts:
     paths:
     - documentation
