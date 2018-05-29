@@ -29,6 +29,7 @@ build-docs:
   artifacts:
     paths:
     - docs/documentation
+    - docs/Dockerfile
   tags:
   - docker
 
