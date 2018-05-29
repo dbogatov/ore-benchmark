@@ -15,6 +15,19 @@ build-all:
   tags:
   - docker
 
+build-docs:
+  image: dbogatov/docker-images:doxygen-latest
+  stage: build
+  script:
+  - rm -rf documentation
+	- mkdir -p documentation
+	- doxygen Doxyfile
+  artifacts:
+    paths:
+    - documentation
+  tags:
+  - docker
+
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: test
