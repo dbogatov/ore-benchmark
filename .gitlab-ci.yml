@@ -1,27 +1,28 @@
 stages:
 - build
-- test
+# - test
 - release
 
-build-all:
-  image: microsoft/dotnet:2.1-sdk-alpine
-  stage: build
-  script:
-  - dotnet publish -c release src/cli/ -o dist/
-  - dotnet publish -c release tools/data-gen/ -o dist/
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - src/cli/dist
-    - tools/data-gen/dist
-    - tools/data-gen/generate.sh
-  tags:
-  - docker
+# build-all:
+#   image: microsoft/dotnet:2.1-sdk-alpine
+#   stage: build
+#   script:
+#   - dotnet publish -c release src/cli/ -o dist/
+#   - dotnet publish -c release tools/data-gen/ -o dist/
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - src/cli/dist
+#     - tools/data-gen/dist
+#     - tools/data-gen/generate.sh
+#   tags:
+#   - docker
 
 build-docs:
   image: dbogatov/docker-images:doxygen-latest
   stage: build
   script:
+  - cd docs
   - rm -rf documentation
   - mkdir -p documentation
   - doxygen Doxyfile
@@ -31,36 +32,49 @@ build-docs:
   tags:
   - docker
 
-unit-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
-  stage: test
-  script:
-  - apk add --update bash
-  - ./test/test.sh
-  dependencies:
-  - build-all
-  tags:
-  - docker
+# unit-tests:
+#   image: microsoft/dotnet:2.1-sdk-alpine
+#   stage: test
+#   script:
+#   - apk add --update bash
+#   - ./test/test.sh
+#   dependencies:
+#   - build-all
+#   tags:
+#   - docker
 
-integration-tests:
-  image: microsoft/dotnet:2.1-runtime-alpine
+# integration-tests:
+#   image: microsoft/dotnet:2.1-runtime-alpine
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - apk add --update bash
+#   - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-0.5-queries.txt --queries-type range -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-1-queries.txt --queries-type range -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-2-queries.txt --queries-type range -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-3-queries.txt --queries-type range -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
+#   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
+#   dependencies:
+#   - build-all
+#   tags:
+#   - docker
+
+docs-website:
+  image: dbogatov/docker-images:alpine-extras-latest
   variables:
     GIT_STRATEGY: none
-  stage: test
+  stage: release
   script:
-  - apk add --update bash
-  - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/exact-queries.txt -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-0.5-queries.txt --queries-type range -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-1-queries.txt --queries-type range -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-2-queries.txt --queries-type range -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-3-queries.txt --queries-type range -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
-  - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
+  - docker build -t registry.dbogatov.org/bu/cs-562/project-code/docs docs/
+  - docker push registry.dbogatov.org/bu/cs-562/project-code/docs
   dependencies:
-  - build-all
+  - build-docs
   tags:
-  - docker
+  - shell
 
 pages:
   image: dbogatov/docker-images:alpine-extras-latest
@@ -68,7 +82,7 @@ pages:
     GIT_STRATEGY: none
   stage: release
   script:
-  - mv documentation/html/ public/
+  - mv docs/documentation/html/ public/
   - echo "Uploading files to pages"
   artifacts:
     expire_in: 30 min
@@ -78,5 +92,5 @@ pages:
   - build-docs
   tags:
   - docker
-  # only:
-  # - master
+  only:
+  - master
