@@ -30,6 +30,7 @@ build-docs:
     paths:
     - docs/documentation
     - docs/Dockerfile
+    - docs/nginx.conf
   tags:
   - docker
 
