@@ -28,7 +28,7 @@ build-docs:
   - doxygen Doxyfile
   artifacts:
     paths:
-    - documentation
+    - docs/documentation
   tags:
   - docker
 
@@ -64,13 +64,13 @@ build-docs:
 #   - docker
 
 docs-website:
-  image: dbogatov/docker-images:alpine-extras-latest
   variables:
     GIT_STRATEGY: none
   stage: release
   script:
-  - docker build -t registry.dbogatov.org/bu/cs-562/project-code/docs docs/
-  - docker push registry.dbogatov.org/bu/cs-562/project-code/docs
+  - docker build -t registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME docs/
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
+  - docker push registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME
   dependencies:
   - build-docs
   tags:
