@@ -40,7 +40,7 @@ then
 	dotnet build -c release -o dist/
 fi
 
-mkdir -p ../../data/d
+mkdir -p ../../data
 
 set -x # echo ON
 dotnet ./dist/data-gen.dll --dataset --count $DMAX --max $DMAX --seed $SEED > ../../data/dataset.txt

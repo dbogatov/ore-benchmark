@@ -1,6 +1,7 @@
 stages:
 - build
 - test
+- release
 
 build-all:
   image: microsoft/dotnet:2.1-sdk-alpine
@@ -9,9 +10,27 @@ build-all:
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
   artifacts:
+    expire_in: 1 day
     paths:
     - src/cli/dist
     - tools/data-gen/dist
+    - tools/data-gen/generate.sh
+  tags:
+  - docker
+
+build-docs:
+  image: dbogatov/docker-images:doxygen-latest
+  stage: build
+  script:
+  - cd docs
+  - rm -rf documentation
+  - mkdir -p documentation
+  - doxygen Doxyfile
+  artifacts:
+    paths:
+    - docs/documentation
+    - docs/Dockerfile
+    - docs/nginx.conf
   tags:
   - docker
 
@@ -21,11 +40,15 @@ unit-tests:
   script:
   - apk add --update bash
   - ./test/test.sh
+  dependencies:
+  - build-all
   tags:
   - docker
 
 integration-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - apk add --update bash
@@ -37,5 +60,39 @@ integration-tests:
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/range-3-queries.txt --queries-type range -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
+  dependencies:
+  - build-all
   tags:
   - docker
+
+docs-website:
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - docker build -t registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME docs/
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
+  - docker push registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME
+  dependencies:
+  - build-docs
+  tags:
+  - shell
+
+pages:
+  image: dbogatov/docker-images:alpine-extras-latest
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - mv docs/documentation/html/ public/
+  - echo "Uploading files to pages"
+  artifacts:
+    expire_in: 30 min
+    paths:
+    - public
+  dependencies:
+  - build-docs
+  tags:
+  - docker
+  only:
+  - master
