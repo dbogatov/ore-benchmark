@@ -9,6 +9,20 @@ namespace Test.ORESchemes.Primitives
 	public class AESPRFTests : AbsPRFTests
 	{
 		public AESPRFTests() : base(new AES()) { }
+
+		[Theory]
+		[InlineData("Hello")]
+		[InlineData("World")]
+		[InlineData("")]
+		[InlineData("1305")]
+		public void StringCorrectness(string plaintext)
+		{
+			var ciphertext = _prf.PRF(_key, Encoding.Default.GetBytes(plaintext));
+
+			var decrypted = _prf.InversePRF(_key, ciphertext);
+
+			Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
+		}
 	}
 
 	[Trait("Category", "Unit")]
@@ -25,33 +39,15 @@ namespace Test.ORESchemes.Primitives
 
 	public abstract class AbsPRFTests
 	{
-		private readonly IPRF _prf;
+		protected readonly IPRF _prf;
 		private const int SEED = 123456;
-		private readonly byte[] _key = new byte[256 / 8];
+		protected readonly byte[] _key = new byte[256 / 8];
 		private const int RUNS = 100000;
 
 		public AbsPRFTests(IPRF prf)
 		{
 			new Random(SEED).NextBytes(_key);
 			_prf = prf;
-		}
-
-		[Theory]
-		[InlineData("Hello")]
-		[InlineData("World")]
-		[InlineData("")]
-		[InlineData("1305")]
-		public void StringCorrectness(string plaintext)
-		{
-			// Operation is undefined for PRPs
-			if (!(_prf is IPRP<byte[]>))
-			{
-				var ciphertext = _prf.PRF(_key, Encoding.Default.GetBytes(plaintext));
-
-				var decrypted = _prf.InversePRF(_key, ciphertext);
-
-				Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
-			}
 		}
 
 		[Fact]

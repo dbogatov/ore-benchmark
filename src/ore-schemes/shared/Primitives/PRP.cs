@@ -169,7 +169,7 @@ namespace ORESchemes.Shared.Primitives
 
 			Array.Copy(input.Item2, result.Item1, length);
 			Array.Copy(
-				Xor(input.Item1, _prf.PRF(key, input.Item2, key.Take(128 / 8).ToArray())),
+				Xor(input.Item1, _prf.PRF(key, input.Item2, new byte[] { 0x00 })),
 				result.Item2,
 				length
 			);

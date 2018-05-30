@@ -58,7 +58,9 @@ namespace ORESchemes.Shared.Primitives
 				}
 				else
 				{
-					aesAlg.IV = IV;
+					byte[] properIV = new byte[128 / 8];
+					Array.Copy(IV, properIV, Math.Min(properIV.Length, IV.Length));
+					aesAlg.IV = properIV;
 				}
 
 				aesAlg.Mode = CipherMode.CBC;
