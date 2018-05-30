@@ -51,7 +51,9 @@ build-docs:
   - docker
 
 unit-tests:
-  image: microsoft/dotnet:2.1-runtime-alpine
+  image: microsoft/dotnet:2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Unit
@@ -61,7 +63,9 @@ unit-tests:
   - docker
 
 integration-tests:
-  image: microsoft/dotnet:2.1-runtime-alpine
+  image: microsoft/dotnet:2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Integration
