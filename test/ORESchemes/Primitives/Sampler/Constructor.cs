@@ -8,6 +8,7 @@ using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {
+	[Trait("Category", "Unit")]
 	public partial class SamplerTests
 	{
 		private const int SEED = 123456;

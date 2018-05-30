@@ -7,18 +7,31 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-if [ -n "$1" ]
-then
-	dotnet build --no-restore
+usage() { echo "Usage: $0 [-c <string> -n <string>]" 1>&2; exit 1; }
 
-	echo "Running test $1 ..."
-	dotnet test --no-build --no-restore --filter "FullyQualifiedName~$1"
-else
-	dotnet restore --disable-parallel
-	dotnet build --no-restore
+NAME=""
+CATEGORY=""
 
-	echo "Running dotnet tests..."
-	dotnet test --no-build --no-restore --verbosity n
-fi
+while getopts "n:c:" o; do
+	case "${o}" in
+		n)
+			NAME="--filter FullyQualifiedName~${OPTARG}"
+			;;
+		c)
+			CATEGORY="--filter Category=${OPTARG}"
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+dotnet restore --disable-parallel
+dotnet build --no-restore
+
+echo "Running dotnet tests..."
+
+dotnet test --no-build --no-restore --verbosity n $NAME $CATEGORY
 
 echo "Testing completed!"

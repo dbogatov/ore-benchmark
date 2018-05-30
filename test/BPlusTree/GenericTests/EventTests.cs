@@ -5,21 +5,21 @@ using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Test
+namespace Test.BPlusTree
 {
-	public partial class BPlusTreeTests
+	public abstract partial class AbsBPlusTreeTests<C>
 	{
-		private int ProfileVisitedNodes(Action<Tree<string, long>> routine, List<int> seeds = null)
+		private int ProfileVisitedNodes(Action<Tree<string, C>> routine, List<int> seeds = null)
 		{
-			var options = new Options<long>(
-				new NoEncryptionScheme(),
+			var options = new Options<C>(
+				_scheme,
 				3
 			);
-			var tree = new Tree<string, long>(options);
+			var tree = new Tree<string, C>(options);
 
 			if (seeds != null)
 			{
-				seeds.ForEach(val => tree.Insert(val, val.ToString()));
+				seeds.ForEach(val => tree.Insert(_scheme.Encrypt(val, _key), val.ToString()));
 			}
 
 			var visited = new HashSet<int>();
@@ -39,7 +39,7 @@ namespace Test
 					Enumerable
 						.Range(1, 100)
 						.ToList()
-						.ForEach(val => tree.Insert(val, val.ToString()))
+						.ForEach(val => tree.Insert(_scheme.Encrypt(val, _key), val.ToString()))
 			);
 
 			Assert.InRange(visited, 100, 300);
@@ -54,7 +54,7 @@ namespace Test
 						.Range(1, 5)
 						.Select(val => val * 15)
 						.ToList()
-						.ForEach(val => tree.Insert(val, (val + 100).ToString())),
+						.ForEach(val => tree.Insert(_scheme.Encrypt(val, _key), (val + 100).ToString())),
 				Enumerable
 					.Range(1, 100)
 					.ToList()
@@ -72,7 +72,7 @@ namespace Test
 						.Range(1, 5)
 						.Select(val => val * 15)
 						.ToList()
-						.ForEach(val => tree.Delete(val)),
+						.ForEach(val => tree.Delete(_scheme.Encrypt(val, _key))),
 				Enumerable
 					.Range(1, 100)
 					.ToList()
@@ -90,7 +90,7 @@ namespace Test
 						.Range(1, 5)
 						.Select(val => val * 15)
 						.ToList()
-						.ForEach(val => tree.TryGet(val, out _)),
+						.ForEach(val => tree.TryGet(_scheme.Encrypt(val, _key), out _)),
 				Enumerable
 					.Range(1, 100)
 					.ToList()
@@ -112,7 +112,7 @@ namespace Test
 							to = val * 15
 						})
 						.ToList()
-						.ForEach(val => tree.TryRange(val.from, val.to, out _)),
+						.ForEach(val => tree.TryRange(_scheme.Encrypt(val.from, _key), _scheme.Encrypt(val.to, _key), out _)),
 				Enumerable
 					.Range(1, 100)
 					.ToList()

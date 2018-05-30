@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Test.ORESchemes.Primitives
 {
+	[Trait("Category", "Unit")]
 	public class AESTests
 	{
 		[Theory]

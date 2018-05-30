@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace Test.ORESchemes
 {
+	[Trait("Category", "Unit")]
 	public class NoEncryptionTests : GenericORETests<long>
 	{
 		protected override void SetScheme()

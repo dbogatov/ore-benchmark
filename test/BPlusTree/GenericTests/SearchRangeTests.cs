@@ -5,20 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.Shared;
 
-namespace Test
+namespace Test.BPlusTree
 {
-	public partial class BPlusTreeTests
+	public abstract partial class AbsBPlusTreeTests<C>
 	{
 		[Fact]
 		public void SearchRangeNotExistingTest()
 		{
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
-			).TryRange(5, 10, out _);
+			).TryRange(_scheme.Encrypt(5, _key), _scheme.Encrypt(10, _key), out _);
 
 			Assert.False(result);
 		}
@@ -26,12 +26,12 @@ namespace Test
 		[Fact]
 		public void SearchRangeEmptyTreeTest()
 		{
-			var result = new Tree<string, long>(
-				new Options<long>(
-					new NoEncryptionScheme(),
+			var result = new Tree<string, C>(
+				new Options<C>(
+					_scheme,
 					3
 				)
-			).TryRange(2, 3, out _);
+			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(3, _key), out _);
 
 			Assert.False(result);
 		}
@@ -42,12 +42,12 @@ namespace Test
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
-			).TryRange(2, 4, out output);
+			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(4, _key), out output);
 
 			Assert.True(result);
 
@@ -55,33 +55,48 @@ namespace Test
 		}
 
 		[Theory]
-		[InlineData(10000, 58, 6545)]
-		[InlineData(10000, 5000, 5001)]
-		[InlineData(10000, 3000, 7000)]
-		[InlineData(10000, 1, 10000)]
-		public void SearchRangeMultilevelTest(int max, int from, int to)
+		[InlineData(58, 6545)]
+		[InlineData(5000, 5050)]
+		[InlineData(3000, 7000)]
+		[InlineData(1, 10000)]
+		public void SearchRangeMultilevelTest(int from, int to)
 		{
 			List<string> output = null;
+			const int salt = 123;
+			const int originalMax = 10000;
+
+			from = (int)Math.Round(((double)from / originalMax) * _max);
+			to = (int)Math.Round(((double)to / originalMax) * _max);
+
+			if (from == to)
+			{
+				to++;
+			}
+
+			if (from == 0)
+			{
+				from++;
+			}
 
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
-					.Range(1, max)
-					.Select(val => val * 123)
+					.Range(1, _max)
+					.Select(val => val * salt)
 					.ToList(),
 				false,
 				false
-			).TryRange(from * 123, to * 123, out output);
+			).TryRange(_scheme.Encrypt(from * salt, _key), _scheme.Encrypt(to * salt, _key), out output);
 
 			Assert.True(result);
 
 			Assert.Equal(
 				Enumerable
 					.Range(from, to - from + 1)
-					.Select(val => (val * 123).ToString())
+					.Select(val => (val * salt).ToString())
 					.OrderBy(val => val)
 					.ToList(),
 				output
@@ -94,15 +109,15 @@ namespace Test
 		public void SearchRangeNonExistingMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryRange(101 * 101, 120 * 120, out _);
+			).TryRange(_scheme.Encrypt(101 * 101, _key), _scheme.Encrypt(120 * 120, _key), out _);
 
 			Assert.False(result);
 		}
@@ -114,12 +129,12 @@ namespace Test
 		{
 			Assert.Throws<ArgumentException>(
 				() =>
-				new Tree<string, long>(
-					new Options<long>(
-						new NoEncryptionScheme(),
+				new Tree<string, C>(
+					new Options<C>(
+						_scheme,
 						3
 					)
-				).TryRange(start, end, out _)
+				).TryRange(_scheme.Encrypt(start, _key), _scheme.Encrypt(end, _key), out _)
 			);
 		}
 	}

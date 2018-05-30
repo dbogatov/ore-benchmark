@@ -3,10 +3,12 @@ stages:
 - test
 - release
 
-build-all:
+build-app:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
+  - dotnet restore src/cli/ --disable-parallel 
+  - dotnet restore tools/data-gen/ --disable-parallel 
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
   artifacts:
@@ -15,6 +17,20 @@ build-all:
     - src/cli/dist
     - tools/data-gen/dist
     - tools/data-gen/generate.sh
+  tags:
+  - docker
+
+build-tests:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: build
+  script:
+  - dotnet restore --disable-parallel test/
+  - dotnet publish -c release --no-restore test/ -o dist/
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - test/dist
+    - test/test.csproj
   tags:
   - docker
 
@@ -36,16 +52,29 @@ build-docs:
 
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
-  - apk add --update bash
-  - ./test/test.sh
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Unit
   dependencies:
-  - build-all
+  - build-tests
   tags:
   - docker
 
 integration-tests:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
+  stage: test
+  script:
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Integration
+  dependencies:
+  - build-tests
+  tags:
+  - docker
+
+system-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
@@ -61,7 +90,7 @@ integration-tests:
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
   dependencies:
-  - build-all
+  - build-app
   tags:
   - docker
 
