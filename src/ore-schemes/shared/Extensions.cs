@@ -28,6 +28,9 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/623184/1644554
+		/// <summary>
+		/// Converts byte array to a hex string all upper-case no spaces
+		/// </summary>
 		public static string PrintHex(this byte[] byteArray) =>
 			BitConverter.ToString(byteArray).Replace("-", string.Empty).ToUpper();
 

@@ -19,8 +19,19 @@ namespace ORESchemes.Shared.Primitives
 
 	public interface IHash
 	{
+		/// <summary>
+		/// Returns the hash value of the input
+		/// </summary>
+		/// <param name="input">Input to hash function</param>
+		/// <returns>Hash value</returns>
 		byte[] ComputeHash(byte[] input);
 
+		/// <summary>
+		/// Returns the hash value of the input put through a PRF using the key
+		/// </summary>
+		/// <param name="input">Input to hash function</param>
+		/// <param name="key">Key to the function (source of randomness)</param>
+		/// <returns>Hash value</returns>
 		byte[] ComputeHash(byte[] input, byte[] key);
 	}
 
