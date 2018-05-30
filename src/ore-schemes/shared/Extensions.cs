@@ -27,6 +27,10 @@ namespace ORESchemes.Shared
 			return sb.ToString();
 		}
 
+		// https://stackoverflow.com/a/623184/1644554
+		public static string PrintHex(this byte[] byteArray) =>
+			BitConverter.ToString(byteArray).Replace("-", string.Empty).ToUpper();
+
 		// https://stackoverflow.com/a/2253903/1644554
 		/// <summary>
 		/// Returns standard deviation of series of integers

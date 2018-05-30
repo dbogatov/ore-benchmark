@@ -14,7 +14,7 @@ namespace ORESchemes.Shared.Primitives
 	{
 		private readonly IPRG _generator;
 
-		public TapeGen(byte[] key, byte[] entropy) : base(PRFFactory.GetPRF().PRF(key, entropy, key.Take(16).ToArray()))
+		public TapeGen(byte[] key, byte[] entropy) : base(PRFFactory.GetPRF().PRF(key, entropy, new byte[] { 0x00 }))
 		{
 			_generator = PRGFactory.GetPRG(_seed);
 		}
