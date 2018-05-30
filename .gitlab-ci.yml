@@ -58,7 +58,7 @@ unit-tests:
   script:
   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Unit
   dependencies:
-  - build-app
+  - build-tests
   tags:
   - docker
 
@@ -70,7 +70,7 @@ integration-tests:
   script:
   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Integration
   dependencies:
-  - build-app
+  - build-tests
   tags:
   - docker
 
