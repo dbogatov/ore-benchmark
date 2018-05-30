@@ -5,13 +5,13 @@ using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Test
+namespace Test.BPlusTree
 {
-	public partial class BPlusTreeTests
+	public abstract partial class AbsBPlusTreeTests<C>
 	{
-		private Tree<string, long> ConstructTree(Options<long> options, List<int> input, bool print = false, bool validate = true)
+		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true)
 		{
-			var tree = new Tree<string, long>(options);
+			var tree = new Tree<string, C>(options);
 
 			input
 				.ForEach(val =>
@@ -20,7 +20,7 @@ namespace Test
 					{
 						Console.WriteLine($"Adding {val}");
 					}
-					tree.Insert(val, val.ToString());
+					tree.Insert(_scheme.Encrypt(val, _key), val.ToString());
 					if (validate)
 					{
 						Assert.True(tree.Validate());
@@ -37,9 +37,9 @@ namespace Test
 		[Fact]
 		public void InitializeTest()
 		{
-			new Tree<string, long>(
-				new Options<long>(
-					new NoEncryptionScheme(),
+			new Tree<string, C>(
+				new Options<C>(
+					_scheme,
 					3
 				)
 			);
@@ -49,8 +49,8 @@ namespace Test
 		public void InsertSingleElementTest()
 		{
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
@@ -61,8 +61,8 @@ namespace Test
 		public void TriggerRootSplitTest()
 		{
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8 }
@@ -73,8 +73,8 @@ namespace Test
 		public void TriggerInternalSplitTest()
 		{
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8, 6 }
@@ -85,8 +85,8 @@ namespace Test
 		public void FromLectureSlidesTest()
 		{
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
@@ -97,8 +97,8 @@ namespace Test
 		public void SquaresSeriesTest()
 		{
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
@@ -111,16 +111,14 @@ namespace Test
 		[Fact]
 		public void OscillatingSeriesTest()
 		{
-			const int max = 1000;
-
 			ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					5
 				),
 				Enumerable
-					.Range(1, max)
-					.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * val + 2 * max)
+					.Range(1, _max)
+					.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * val + 2 * _max)
 					.ToList()
 			);
 		}
@@ -128,19 +126,18 @@ namespace Test
 		[Fact]
 		public void RandomSequenceTest()
 		{
-			const int max = 1000;
 			Random random = new Random(3068354); // seed is static
 
 			for (int i = 3; i < 11; i++)
 			{
 				ConstructTree(
-					new Options<long>(
-						new NoEncryptionScheme(),
+					new Options<C>(
+						_scheme,
 						i
 					),
 					Enumerable
-						.Range(1, max)
-						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
+						.Range(1, _max)
+						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(_max) + 2 * _max)
 						.ToList()
 				);
 			}

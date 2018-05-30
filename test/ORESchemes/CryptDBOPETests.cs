@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Test.ORESchemes
 {
+	[Trait("Category", "Unit")]
 	public class CryptDBOPETests : GenericORETests<long>
 	{
 		protected override void SetScheme()

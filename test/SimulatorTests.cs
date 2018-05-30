@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Test
 {
+	[Trait("Category", "Unit")]
 	public class SimulatorTests
 	{
 		[Theory]

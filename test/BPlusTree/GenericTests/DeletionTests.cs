@@ -5,24 +5,24 @@ using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Test
+namespace Test.BPlusTree
 {
-	public partial class BPlusTreeTests
+	public abstract partial class AbsBPlusTreeTests<C>
 	{
-		public Tree<string, long> DeleteAndValidate(Tree<string, long> tree, int element, bool print = false)
+		public Tree<string, C> DeleteAndValidate(Tree<string, C> tree, int element, bool print = false)
 		{
 			if (print)
 			{
 				Console.WriteLine($"Deleting {element}");
 			}
 
-			Assert.True(tree.Delete(element));
+			Assert.True(tree.Delete(_scheme.Encrypt(element, _key)));
 
 			if (print)
 			{
 				Console.WriteLine(tree.ToString());
 			}
-			Assert.False(tree.TryGet(element, out _));
+			Assert.False(tree.TryGet(_scheme.Encrypt(element, _key), out _));
 
 			Assert.True(tree.Validate());
 
@@ -33,8 +33,8 @@ namespace Test
 		public void DeleteNotExistingElementTest()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
@@ -46,22 +46,22 @@ namespace Test
 		[Fact]
 		public void DeleteEmptyTreeTest()
 		{
-			var tree = new Tree<string, long>(
-				new Options<long>(
-					new NoEncryptionScheme(),
+			var tree = new Tree<string, C>(
+				new Options<C>(
+					_scheme,
 					3
 				)
 			);
 
-			Assert.False(tree.Delete(2));
+			Assert.False(tree.Delete(_scheme.Encrypt(2, _key)));
 		}
 
 		[Fact]
 		public void DeleteSingleElementTest()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
@@ -74,8 +74,8 @@ namespace Test
 		public void DeleteMultilevelTest()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
@@ -91,8 +91,8 @@ namespace Test
 		public void DeleteThenInsertTest()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
@@ -103,8 +103,8 @@ namespace Test
 
 			DeleteAndValidate(tree, 58 * 58);
 			DeleteAndValidate(tree, 59 * 59);
-			tree.Insert(59 * 59, (59 * 59).ToString());
-			Assert.True(tree.TryGet(59 * 59, out _));
+			tree.Insert(_scheme.Encrypt(59 * 59, _key), (59 * 59).ToString());
+			Assert.True(tree.TryGet(_scheme.Encrypt(59 * 59, _key), out _));
 			DeleteAndValidate(tree, 59 * 59);
 		}
 
@@ -112,8 +112,8 @@ namespace Test
 		public void DeleteLargestElement()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11 }
@@ -126,8 +126,8 @@ namespace Test
 		public void DeleteWithMergeToRight()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, 22 }
@@ -141,8 +141,8 @@ namespace Test
 		public void DeleteWithBorrowFromLeft()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, -5, -10 }
@@ -157,8 +157,8 @@ namespace Test
 		public void DeleteWithBorrowFromRight()
 		{
 			var tree = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 }
@@ -171,20 +171,19 @@ namespace Test
 		[Fact]
 		public void DeleteRandomElementsTest()
 		{
-			const int max = 1000;
 			Random random = new Random(3068354); // seed is static
 
 			for (int i = 3; i < 11; i++)
 			{
 				var input =
 					Enumerable
-						.Range(1, max)
-						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
+						.Range(1, _max)
+						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(_max) + 2 * _max)
 						.Distinct()
 						.ToList();
 				var tree = ConstructTree(
-					new Options<long>(
-						new NoEncryptionScheme(),
+					new Options<C>(
+						_scheme,
 						i
 					),
 					input
@@ -195,7 +194,7 @@ namespace Test
 					if (j % 10 == 0)
 					{
 						// delete non existing element
-						Assert.False(tree.Delete(5 * max + random.Next(max)));
+						Assert.False(tree.Delete(_scheme.Encrypt(5 * _max + random.Next(_max), _key)));
 					}
 
 					// delete an element from the tree and validate the structure

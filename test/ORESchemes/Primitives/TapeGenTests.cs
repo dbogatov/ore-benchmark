@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Test.ORESchemes.Primitives
 {
+	[Trait("Category", "Unit")]
 	public class TapeGenTests
 	{
 		private const int SEED = 123456;

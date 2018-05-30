@@ -3,7 +3,7 @@ stages:
 - test
 - release
 
-build-all:
+build-app:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
@@ -39,13 +39,24 @@ unit-tests:
   stage: test
   script:
   - apk add --update bash
-  - ./test/test.sh
+  - ./test/test.sh -c Unit
   dependencies:
-  - build-all
+  - build-app
   tags:
   - docker
 
 integration-tests:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: test
+  script:
+  - apk add --update bash
+  - ./test/test.sh -c Integration
+  dependencies:
+  - build-app
+  tags:
+  - docker
+
+system-tests:
   image: microsoft/dotnet:2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
@@ -61,7 +72,7 @@ integration-tests:
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/update-queries.txt --queries-type update -v
   - dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/delete-queries.txt --queries-type delete -v
   dependencies:
-  - build-all
+  - build-app
   tags:
   - docker
 

@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace Test.ORESchemes.Primitives
 {
+	[Trait("Category", "Unit")]
 	public class AESPRGTests : PRGTests
 	{
 		public AESPRGTests() : base()
@@ -17,6 +18,7 @@ namespace Test.ORESchemes.Primitives
 		}
 	}
 
+	[Trait("Category", "Unit")]
 	public class DefaultRandomTests : PRGTests
 	{
 		public DefaultRandomTests() : base()

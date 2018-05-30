@@ -5,20 +5,20 @@ using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Test
+namespace Test.BPlusTree
 {
-	public partial class BPlusTreeTests
+	public abstract partial class AbsBPlusTreeTests<C>
 	{
 		[Fact]
 		public void SearchNotExistingElementTest()
 		{
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
-			).TryGet(2, out _);
+			).TryGet(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);
 		}
@@ -26,12 +26,12 @@ namespace Test
 		[Fact]
 		public void SearchEmptyTreeTest()
 		{
-			var result = new Tree<string, long>(
-				new Options<long>(
-					new NoEncryptionScheme(),
+			var result = new Tree<string, C>(
+				new Options<C>(
+					_scheme,
 					3
 				)
-			).TryGet(2, out _);
+			).TryGet(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);
 		}
@@ -42,12 +42,12 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				new List<int> { 3 }
-			).TryGet(3, out output);
+			).TryGet(_scheme.Encrypt(3, _key), out output);
 
 			Assert.True(result);
 
@@ -60,34 +60,34 @@ namespace Test
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryGet(58*58, out output);
+			).TryGet(_scheme.Encrypt(58 * 58, _key), out output);
 
 			Assert.True(result);
 
-			Assert.Equal((58*58).ToString(), output);
+			Assert.Equal((58 * 58).ToString(), output);
 		}
 
 		[Fact]
 		public void SearchNonExistingElementMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<long>(
-					new NoEncryptionScheme(),
+				new Options<C>(
+					_scheme,
 					3
 				),
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryGet(158, out _);
+			).TryGet(_scheme.Encrypt(158, _key), out _);
 
 			Assert.False(result);
 		}
