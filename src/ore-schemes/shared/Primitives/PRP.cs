@@ -7,6 +7,7 @@ using System.Text;
 
 namespace ORESchemes.Shared.Primitives
 {
+	/// <typeparam name="T">PRP input / output type</typeparam>
 	public interface IPRPFactory<T>
 	{
 		/// <summary>
@@ -40,10 +41,23 @@ namespace ORESchemes.Shared.Primitives
 		IPRP<long> IPRPFactory<long>.GetStrongPRP() => new Feistel(4);
 	}
 
+	/// <typeparam name="T">PRP input / output type</typeparam>
 	public interface IPRP<T>
 	{
+		/// <summary>
+		/// Perform a pseudo random permutation on bits of input
+		/// </summary>
+		/// <param name="input">The input to PRP</param>
+		/// <param name="key">The key to PRP (source of randomness)</param>
+		/// <returns>Permuted bits of input</returns>
 		T PRP(T input, byte[] key);
 
+		/// <summary>
+		/// Perform an inverse of pseudo random permutation on bits of input
+		/// </summary>
+		/// <param name="input">The input to inverse of PRP (output of original PRP)</param>
+		/// <param name="key">The key to PRP (source of randomness)</param>
+		/// <returns>Un-permuted bits of input</returns>
 		T InversePRP(T input, byte[] key);
 	}
 
@@ -75,6 +89,10 @@ namespace ORESchemes.Shared.Primitives
 		public byte[] InversePRF(byte[] key, byte[] input) => InversePRP(input, key);
 	}
 
+	/// <summary>
+	/// PRP based on multiple-round Feistel networks 
+	/// https://en.wikipedia.org/wiki/Feistel_cipher
+	/// </summary>
 	public class Feistel : AbsPRP
 	{
 		private readonly int _rounds;
@@ -96,7 +114,15 @@ namespace ORESchemes.Shared.Primitives
 			return Permute(input, key);
 		}
 
-		public byte[] Permute(byte[] input, byte[] key, bool inverse = false)
+		/// <summary>
+		/// Perform all round of permutation (spliting and merging inputs)
+		/// </summary>
+		/// <param name="input">Input to PRP</param>
+		/// <param name="key">Key to PRP</param>
+		/// <param name="inverse">True, if inverse of PRP requested</param>
+		/// <returns>Permuted or un-permuted bits of input</returns>
+		/// <remark>Input must be an even number of bytes</remark>
+		private byte[] Permute(byte[] input, byte[] key, bool inverse = false)
 		{
 			if (input.Length % 2 != 0)
 			{
@@ -124,6 +150,12 @@ namespace ORESchemes.Shared.Primitives
 			return Merge(round);
 		}
 
+		/// <summary>
+		/// Performa a single round of Feistel cipher
+		/// </summary>
+		/// <param name="input">Input to PRP</param>
+		/// <param name="key">Key to PRP</param>
+		/// <returns>Permuted bits of input</returns>
 		private Tuple<byte[], byte[]> Round(Tuple<byte[], byte[]> input, byte[] key)
 		{
 			if (input.Item1.Length != input.Item2.Length)
@@ -145,6 +177,10 @@ namespace ORESchemes.Shared.Primitives
 			return result;
 		}
 
+		/// <summary>
+		/// Returns result of applying XOR operation on two byte arrays
+		/// Returns the array with length minimum of two inputs
+		/// </summary>
 		private byte[] Xor(byte[] left, byte[] right)
 		{
 			var length = Math.Min(left.Length, right.Length);
@@ -158,15 +194,24 @@ namespace ORESchemes.Shared.Primitives
 			return result;
 		}
 
+		/// <summary>
+		/// Helper function that splits byte array into tuple of two byte arrays
+		/// </summary>
 		private Tuple<byte[], byte[]> Split(byte[] input) =>
 			new Tuple<byte[], byte[]>(
 				input.Take(input.Length / 2).ToArray(),
 				input.Skip(input.Length / 2).ToArray()
 			);
 
+		/// <summary>
+		/// Helper function that merges a tuple of two byte arrays into one byte array
+		/// </summary>
 		private byte[] Merge(Tuple<byte[], byte[]> input) =>
 			input.Item1.Concat(input.Item2).ToArray();
 
+		/// <summary>
+		/// Helper function that swaps two byte arrays of a tuple
+		/// </summary>
 		private Tuple<byte[], byte[]> Swap(Tuple<byte[], byte[]> input)
 		{
 			int length = input.Item1.Length;
