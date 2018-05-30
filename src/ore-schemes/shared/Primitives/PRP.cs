@@ -47,7 +47,7 @@ namespace ORESchemes.Shared.Primitives
 		T InversePRP(T input, byte[] key);
 	}
 
-	public abstract class AbsPRP : IPRP<byte[]>, IPRP<short>, IPRP<int>, IPRP<long>
+	public abstract class AbsPRP : IPRP<byte[]>, IPRP<short>, IPRP<int>, IPRP<long>, IPRF
 	{
 		public abstract byte[] InversePRP(byte[] input, byte[] key);
 		public abstract byte[] PRP(byte[] input, byte[] key);
@@ -69,6 +69,10 @@ namespace ORESchemes.Shared.Primitives
 
 		public long PRP(long input, byte[] key) =>
 			BitConverter.ToInt64(PRP(BitConverter.GetBytes(input), key), 0);
+
+		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null) => PRP(input, key);
+
+		public byte[] InversePRF(byte[] key, byte[] input) => InversePRP(input, key);
 	}
 
 	public class Feistel : AbsPRP
@@ -97,6 +101,7 @@ namespace ORESchemes.Shared.Primitives
 			if (input.Length % 2 != 0)
 			{
 				throw new ArgumentException("Input must be an even number of bytes.");
+				// input = input.Concat(new byte[] { 0x00 }).ToArray();
 			}
 
 			Tuple<byte[], byte[]> round = Split(input);

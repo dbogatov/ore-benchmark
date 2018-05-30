@@ -38,23 +38,12 @@ namespace Test.ORESchemes.Primitives
 		{
 			var set = new HashSet<int>();
 
-			for (int i = -RUNS * 100; i < RUNS * 100; i++)
+			for (int i = -RUNS; i < RUNS; i++)
 			{
 				set.Add(_prp.PRP(i, _key));
 			}
 
-			Assert.Equal(2 * RUNS * 100, set.Count);
-		}
-
-		[Fact]
-		public void CorrectnessTest()
-		{
-			for (int i = -RUNS * 100; i < RUNS * 100; i++)
-			{
-				int encrypted = _prp.PRP(i, _key);
-				int decrypted = _prp.InversePRP(encrypted, _key);
-				Assert.Equal(i, decrypted);
-			}
+			Assert.Equal(2 * RUNS, set.Count);
 		}
 	}
 }
