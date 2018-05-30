@@ -7,6 +7,8 @@ build-app:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
+  - dotnet restore src/cli/ --disable-parallel 
+  - dotnet restore tools/data-gen/ --disable-parallel 
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
   artifacts:
@@ -15,6 +17,20 @@ build-app:
     - src/cli/dist
     - tools/data-gen/dist
     - tools/data-gen/generate.sh
+  tags:
+  - docker
+
+build-tests:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: build
+  script:
+  - dotnet restore --disable-parallel
+  - dotnet publish -c release --no-restore test/ -o dist/
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - test/dist
+    - test/test.csproj
   tags:
   - docker
 
@@ -35,22 +51,20 @@ build-docs:
   - docker
 
 unit-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: microsoft/dotnet:2.1-runtime-alpine
   stage: test
   script:
-  - apk add --update bash
-  - ./test/test.sh -c Unit
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Unit
   dependencies:
   - build-app
   tags:
   - docker
 
 integration-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: microsoft/dotnet:2.1-runtime-alpine
   stage: test
   script:
-  - apk add --update bash
-  - ./test/test.sh -c Integration
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Integration
   dependencies:
   - build-app
   tags:
