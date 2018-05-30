@@ -24,7 +24,7 @@ build-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
-  - dotnet restore --disable-parallel
+  - dotnet restore --disable-parallel test/
   - dotnet publish -c release --no-restore test/ -o dist/
   artifacts:
     expire_in: 1 day
