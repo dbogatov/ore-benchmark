@@ -41,7 +41,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 		public abstract byte[] ComputeHash(byte[] input);
 
 		public virtual byte[] ComputeHash(byte[] input, byte[] key) =>
-			ComputeHash(PRFFactory.GetPRF().PRF(key, input, new byte[] { 0x00 }));
+			ComputeHash(PRFFactory.GetPRF().DeterministicPRF(key, input));
 	}
 
 	public class SHA256 : AbsHash

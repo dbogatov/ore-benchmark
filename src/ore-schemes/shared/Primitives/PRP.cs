@@ -23,7 +23,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 	}
 
-	public class PRPFactory : IPRPFactory<byte[]>, IPRPFactory<short>, IPRPFactory<int>, IPRPFactory<long>
+	public class PRPFactory : IPRPFactory<byte[]>, IPRPFactory<short>, IPRPFactory<int>, IPRPFactory<uint>, IPRPFactory<long>
 	{
 		IPRP<byte[]> IPRPFactory<byte[]>.GetPRP() => new Feistel(3);
 
@@ -36,6 +36,10 @@ namespace ORESchemes.Shared.Primitives.PRP
 		IPRP<int> IPRPFactory<int>.GetPRP() => new Feistel(3);
 
 		IPRP<int> IPRPFactory<int>.GetStrongPRP() => new Feistel(4);
+
+		IPRP<uint> IPRPFactory<uint>.GetPRP() => new Feistel(3);
+
+		IPRP<uint> IPRPFactory<uint>.GetStrongPRP() => new Feistel(4);
 
 		IPRP<long> IPRPFactory<long>.GetPRP() => new Feistel(3);
 
@@ -62,7 +66,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		T InversePRP(T input, byte[] key);
 	}
 
-	public abstract class AbsPRP : IPRP<byte[]>, IPRP<short>, IPRP<int>, IPRP<long>, IPRF
+	public abstract class AbsPRP : IPRP<byte[]>, IPRP<short>, IPRP<int>, IPRP<uint>, IPRP<long>, IPRF
 	{
 		public abstract byte[] InversePRP(byte[] input, byte[] key);
 		public abstract byte[] PRP(byte[] input, byte[] key);
@@ -79,6 +83,12 @@ namespace ORESchemes.Shared.Primitives.PRP
 		public int PRP(int input, byte[] key) =>
 			BitConverter.ToInt32(PRP(BitConverter.GetBytes(input), key), 0);
 
+		public uint InversePRP(uint input, byte[] key) =>
+			BitConverter.ToUInt32(InversePRP(BitConverter.GetBytes(input), key), 0);
+
+		public uint PRP(uint input, byte[] key) =>
+			BitConverter.ToUInt32(PRP(BitConverter.GetBytes(input), key), 0);
+
 		public long InversePRP(long input, byte[] key) =>
 			BitConverter.ToInt64(InversePRP(BitConverter.GetBytes(input), key), 0);
 
@@ -88,6 +98,8 @@ namespace ORESchemes.Shared.Primitives.PRP
 		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null) => PRP(input, key);
 
 		public byte[] InversePRF(byte[] key, byte[] input) => InversePRP(input, key);
+
+		public byte[] DeterministicPRF(byte[] key, byte[] input) => PRP(input, key);
 	}
 
 	/// <summary>
@@ -170,7 +182,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 			Array.Copy(input.Item2, result.Item1, length);
 			Array.Copy(
-				Xor(input.Item1, _prf.PRF(key, input.Item2, new byte[] { 0x00 })),
+				Xor(input.Item1, _prf.DeterministicPRF(key, input.Item2)),
 				result.Item2,
 				length
 			);
