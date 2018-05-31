@@ -4,7 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.PRF
 {
 	public class PRFFactory
 	{

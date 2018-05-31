@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ORESchemes.Shared.Primitives.PRF;
+using ORESchemes.Shared.Primitives.PRG;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.TapeGen
 {
 	/// <summary>
 	/// TapeGen algorithms as in https://eprint.iacr.org/2012/624.pdf

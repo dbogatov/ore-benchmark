@@ -5,6 +5,7 @@ using ORESchemes.Shared;
 using Xunit;
 using System.Linq;
 using MathNet.Numerics;
+using ORESchemes.Shared.Primitives.Sampler;
 
 namespace Test.ORESchemes.Primitives
 {

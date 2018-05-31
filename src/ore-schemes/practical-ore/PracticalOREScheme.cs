@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
+using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.PracticalORE
 {

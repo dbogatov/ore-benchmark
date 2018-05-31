@@ -1,5 +1,6 @@
 ﻿using System;
 using ORESchemes.Shared.Primitives;
+using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared
 {

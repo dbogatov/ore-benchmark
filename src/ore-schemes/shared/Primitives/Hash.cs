@@ -3,8 +3,9 @@ using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using ORESchemes.Shared.Primitives.PRF;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.Hash
 {
 	public class HashFactory
 	{

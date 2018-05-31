@@ -1,6 +1,7 @@
 using System;
+using ORESchemes.Shared.Primitives.PRG;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.Sampler
 {
 	using RR = Decimal; // needed for HG sampler
 

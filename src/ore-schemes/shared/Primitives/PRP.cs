@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ORESchemes.Shared.Primitives.PRF;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.PRP
 {
 	/// <typeparam name="T">PRP input / output type</typeparam>
 	public interface IPRPFactory<T>

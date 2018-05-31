@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using ORESchemes.Shared.Primitives;
+using ORESchemes.Shared.Primitives.PRF;
+using ORESchemes.Shared.Primitives.PRP;
 using Xunit;
 
 namespace Test.ORESchemes.Primitives
