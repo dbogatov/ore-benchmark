@@ -2,6 +2,7 @@ using System;
 using ORESchemes.Shared;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.PracticalORE;
+using ORESchemes.LewiORE;
 
 namespace Simulation
 {
@@ -60,7 +61,7 @@ namespace Simulation
 
 	public class ORESchemesFactoryPractical : ORESchemesFactory<ORESchemes.PracticalORE.Ciphertext>
 	{
-		public override IOREScheme<Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
+		public override IOREScheme<ORESchemes.PracticalORE.Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
 		{
 			byte[] entropy;
 			if (seed != null)
@@ -73,7 +74,7 @@ namespace Simulation
 				new Random().NextBytes(entropy);
 			}
 
-			IOREScheme<Ciphertext> result;
+			IOREScheme<ORESchemes.PracticalORE.Ciphertext> result;
 			if (scheme == ORESchemes.Shared.ORESchemes.PracticalORE)
 			{
 				result = new PracticalOREScheme(entropy);
@@ -81,6 +82,36 @@ namespace Simulation
 			else
 			{
 				throw new ArgumentException($"{scheme} scheme is not PracticalORE");
+			}
+
+			result.Init();
+			return result;
+		}
+	}
+
+	public class ORESchemesFactoryLewi : ORESchemesFactory<ORESchemes.LewiORE.Ciphertext>
+	{
+		public override IOREScheme<ORESchemes.LewiORE.Ciphertext> GetScheme(ORESchemes.Shared.ORESchemes scheme, int? seed = null)
+		{
+			byte[] entropy;
+			if (seed != null)
+			{
+				entropy = BitConverter.GetBytes(seed.Value);
+			}
+			else
+			{
+				entropy = new byte[256 / 8];
+				new Random().NextBytes(entropy);
+			}
+
+			IOREScheme<ORESchemes.LewiORE.Ciphertext> result;
+			if (scheme == ORESchemes.Shared.ORESchemes.LewiORE)
+			{
+				result = new LewiOREScheme(entropy);
+			}
+			else
+			{
+				throw new ArgumentException($"{scheme} scheme is not LewiORE");
 			}
 
 			result.Init();

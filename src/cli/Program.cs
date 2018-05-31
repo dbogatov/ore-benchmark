@@ -89,6 +89,16 @@ namespace CLI
 							)
 						).Simulate();
 					break;
+				case ORESchemes.Shared.ORESchemes.LewiORE:
+					report =
+						new Simulator<string, ORESchemes.LewiORE.Ciphertext>(
+							reader.Inputs,
+							new Options<ORESchemes.LewiORE.Ciphertext>(
+								new ORESchemesFactoryLewi().GetScheme(OREScheme, Seed),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
 				default:
 					throw new InvalidOperationException($"No such scheme: {OREScheme}");
 			}

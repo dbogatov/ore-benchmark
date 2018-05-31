@@ -7,7 +7,8 @@ namespace ORESchemes.Shared
 	{
 		NoEncryption,
 		CryptDB,
-		PracticalORE
+		PracticalORE,
+		LewiORE
 	}
 
 	public enum SchemeOperation
@@ -159,8 +160,8 @@ namespace ORESchemes.Shared
 		protected readonly IPRG _generator;
 		protected const int ALPHA = 256;
 
-		private C maxCiphertextValue = default(C);
-		private C minCiphertextValue = default(C);
+		protected C maxCiphertextValue = default(C);
+		protected C minCiphertextValue = default(C);
 
 		/// <summary>
 		/// Entropy is required for the scheme
@@ -198,7 +199,7 @@ namespace ORESchemes.Shared
 		{
 			return
 				!IsLess(ciphertextOne, ciphertextTwo) &&
-				!IsEqual(ciphertextOne, ciphertextTwo);
+				IsLess(ciphertextTwo, ciphertextOne);
 		}
 
 		public virtual bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
@@ -216,7 +217,7 @@ namespace ORESchemes.Shared
 			return !IsGreater(ciphertextOne, ciphertextTwo);
 		}
 
-		public byte[] KeyGen()
+		public virtual byte[] KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
@@ -318,5 +319,60 @@ namespace ORESchemes.Shared
 		}
 
 		sealed protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+	}
+
+	/// <summary>
+	/// Generic implementation of ORE scheme that has CMP method
+	/// that returns int (less, equal or greater)
+	/// To be derived by ORE schemes
+	/// </summary>
+	public abstract class AbsORECmpScheme<C> : AbsOREScheme<C>
+	{
+		public AbsORECmpScheme(byte[] seed) : base(seed) { }
+
+		public override bool IsEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ProperCompare(ciphertextOne, ciphertextTwo) == 0;
+		}
+
+		public override bool IsGreater(C ciphertextOne, C ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ProperCompare(ciphertextOne, ciphertextTwo) == 1;
+		}
+
+		public override bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ProperCompare(ciphertextOne, ciphertextTwo) != -1;
+		}
+
+		public override bool IsLess(C ciphertextOne, C ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ProperCompare(ciphertextOne, ciphertextTwo) == -1;
+		}
+
+		public override bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			return ProperCompare(ciphertextOne, ciphertextTwo) != 1;
+		}
+
+		sealed protected override bool Compare(C ciphertextOne, C ciphertextTwo) => ProperCompare(ciphertextOne, ciphertextTwo) == -1;
+
+		/// <summary>
+		/// CMP as defined in https://eprint.iacr.org/2016/612.pdf Remark 2.3
+		/// </summary>
+		/// <param name="ciphertextOne">First ciphertext to compare</param>
+		/// <param name="ciphertextTwo">Second ciphertext to compare</param>
+		/// <returns>-1 if first < second, 0 if equal, 1 if first > second</returns>
+		protected abstract int ProperCompare(C ciphertextOne, C ciphertextTwo);
 	}
 }

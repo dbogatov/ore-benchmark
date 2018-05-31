@@ -12,21 +12,6 @@ namespace ORESchemes.PracticalORE
 	{
 		public List<int> tuples = new List<int>();
 		public byte[] encrypted;
-
-		public override bool Equals(object obj)
-		{
-			// Check for null values and compare run-time types.
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-
-			Ciphertext c = (Ciphertext)obj;
-			return this.tuples.Zip(c.tuples, (c1, c2) => c1 == c2).All(eq => eq);
-		}
-
-		public override int GetHashCode()
-		{
-			return tuples.GetHashCode();
-		}
 	}
 
 	public class PracticalOREScheme : AbsOREScheme<Ciphertext>
