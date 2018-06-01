@@ -8,46 +8,27 @@ using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.Shared.Primitives.PRP
 {
-	/// <typeparam name="T">PRP input / output type</typeparam>
-	public interface IPRPFactory<T>
+	public class PRPFactory
 	{
 		/// <summary>
-		/// Returns an initialized instance of a PRP
+		/// Returns an initialized instance of PRP
 		/// </summary>
-		IPRP<T> GetPRP();
+		public static IPRP GetPRP()
+		{
+			return new Feistel(3);
+		}
 
 		/// <summary>
-		/// Returns an initialized instance of a strong PRP
+		/// Returns an initialized instance of strong PRP
 		/// </summary>
-		IPRP<T> GetStrongPRP();
-
+		public static IPRP GetStrongPRP()
+		{
+			return new Feistel(4);
+		}
 	}
 
-	public class PRPFactory : IPRPFactory<byte[]>, IPRPFactory<short>, IPRPFactory<int>, IPRPFactory<uint>, IPRPFactory<long>
-	{
-		IPRP<byte[]> IPRPFactory<byte[]>.GetPRP() => new Feistel(3);
 
-		IPRP<byte[]> IPRPFactory<byte[]>.GetStrongPRP() => new Feistel(4);
-
-		IPRP<short> IPRPFactory<short>.GetPRP() => new Feistel(3);
-
-		IPRP<short> IPRPFactory<short>.GetStrongPRP() => new Feistel(4);
-
-		IPRP<int> IPRPFactory<int>.GetPRP() => new Feistel(3);
-
-		IPRP<int> IPRPFactory<int>.GetStrongPRP() => new Feistel(4);
-
-		IPRP<uint> IPRPFactory<uint>.GetPRP() => new Feistel(3);
-
-		IPRP<uint> IPRPFactory<uint>.GetStrongPRP() => new Feistel(4);
-
-		IPRP<long> IPRPFactory<long>.GetPRP() => new Feistel(3);
-
-		IPRP<long> IPRPFactory<long>.GetStrongPRP() => new Feistel(4);
-	}
-
-	/// <typeparam name="T">PRP input / output type</typeparam>
-	public interface IPRP<T>
+	public interface IPRP : IPRF
 	{
 		/// <summary>
 		/// Perform a pseudo random permutation on bits of input
@@ -55,7 +36,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// <param name="input">The input to PRP</param>
 		/// <param name="key">The key to PRP (source of randomness)</param>
 		/// <returns>Permuted bits of input</returns>
-		T PRP(T input, byte[] key);
+		BitArray PRP(BitArray input, byte[] key, int? bits = null);
 
 		/// <summary>
 		/// Perform an inverse of pseudo random permutation on bits of input
@@ -63,43 +44,34 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// <param name="input">The input to inverse of PRP (output of original PRP)</param>
 		/// <param name="key">The key to PRP (source of randomness)</param>
 		/// <returns>Un-permuted bits of input</returns>
-		T InversePRP(T input, byte[] key);
+		BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
 	}
 
-	public abstract class AbsPRP : IPRP<byte[]>, IPRP<short>, IPRP<int>, IPRP<uint>, IPRP<long>, IPRF
+	public abstract class AbsPRP : IPRP
 	{
-		public abstract byte[] InversePRP(byte[] input, byte[] key);
-		public abstract byte[] PRP(byte[] input, byte[] key);
+		public byte[] DeterministicPRF(byte[] key, byte[] input) => PRF(key, input);
 
-		public short InversePRP(short input, byte[] key) =>
-			BitConverter.ToInt16(InversePRP(BitConverter.GetBytes(input), key), 0);
+		public byte[] InversePRF(byte[] key, byte[] input)
+		{
+			BitArray result = InversePRP(new BitArray(input), key);
+			byte[] bytes = new byte[(result.Length + 7) / 8];
+			result.CopyTo(bytes, 0);
+			
+			return bytes;
+		}
+		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
+		{
+			BitArray result = PRP(new BitArray(input), key);
+			byte[] bytes = new byte[(result.Length + 7) / 8];
+			result.CopyTo(bytes, 0);
+			
+			return bytes;
+		}
 
-		public short PRP(short input, byte[] key) =>
-			BitConverter.ToInt16(PRP(BitConverter.GetBytes(input), key), 0);
+		public abstract BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
 
-		public int InversePRP(int input, byte[] key) =>
-			BitConverter.ToInt32(InversePRP(BitConverter.GetBytes(input), key), 0);
 
-		public int PRP(int input, byte[] key) =>
-			BitConverter.ToInt32(PRP(BitConverter.GetBytes(input), key), 0);
-
-		public uint InversePRP(uint input, byte[] key) =>
-			BitConverter.ToUInt32(InversePRP(BitConverter.GetBytes(input), key), 0);
-
-		public uint PRP(uint input, byte[] key) =>
-			BitConverter.ToUInt32(PRP(BitConverter.GetBytes(input), key), 0);
-
-		public long InversePRP(long input, byte[] key) =>
-			BitConverter.ToInt64(InversePRP(BitConverter.GetBytes(input), key), 0);
-
-		public long PRP(long input, byte[] key) =>
-			BitConverter.ToInt64(PRP(BitConverter.GetBytes(input), key), 0);
-
-		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null) => PRP(input, key);
-
-		public byte[] InversePRF(byte[] key, byte[] input) => InversePRP(input, key);
-
-		public byte[] DeterministicPRF(byte[] key, byte[] input) => PRP(input, key);
+		public abstract BitArray PRP(BitArray input, byte[] key, int? bits = null);
 	}
 
 	/// <summary>
@@ -117,14 +89,14 @@ namespace ORESchemes.Shared.Primitives.PRP
 			_prf = PRFFactory.GetPRF();
 		}
 
-		public override byte[] InversePRP(byte[] input, byte[] key)
+		public override BitArray InversePRP(BitArray input, byte[] key, int? bits = null)
 		{
-			return Permute(input, key, true);
+			return Permute(input, key, bits ?? input.Length, true);
 		}
 
-		public override byte[] PRP(byte[] input, byte[] key)
+		public override BitArray PRP(BitArray input, byte[] key, int? bits = null)
 		{
-			return Permute(input, key);
+			return Permute(input, key, bits ?? input.Length);
 		}
 
 		/// <summary>
@@ -135,15 +107,9 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// <param name="inverse">True, if inverse of PRP requested</param>
 		/// <returns>Permuted or un-permuted bits of input</returns>
 		/// <remark>Input must be an even number of bytes</remark>
-		private byte[] Permute(byte[] input, byte[] key, bool inverse = false)
+		private BitArray Permute(BitArray input, byte[] key, int bits, bool inverse = false)
 		{
-			if (input.Length % 2 != 0)
-			{
-				throw new ArgumentException("Input must be an even number of bytes.");
-				// input = input.Concat(new byte[] { 0x00 }).ToArray();
-			}
-
-			Tuple<byte[], byte[]> round = Split(input);
+			Tuple<BitArray, BitArray> round = Split(input, input.Length / 2);
 
 			if (inverse)
 			{
@@ -169,22 +135,15 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// <param name="input">Input to PRP</param>
 		/// <param name="key">Key to PRP</param>
 		/// <returns>Permuted bits of input</returns>
-		private Tuple<byte[], byte[]> Round(Tuple<byte[], byte[]> input, byte[] key)
+		private Tuple<BitArray, BitArray> Round(Tuple<BitArray, BitArray> input, byte[] key)
 		{
-			if (input.Item1.Length != input.Item2.Length)
-			{
-				throw new ArgumentException("Lengths must be equal");
-			}
-
 			int length = input.Item1.Length;
+			byte[] bytes = new byte[(input.Item1.Length + 7) / 8];
+			input.Item1.CopyTo(bytes, 0);
 
-			Tuple<byte[], byte[]> result = new Tuple<byte[], byte[]>(new byte[length], new byte[length]);
-
-			Array.Copy(input.Item2, result.Item1, length);
-			Array.Copy(
-				Xor(input.Item1, _prf.DeterministicPRF(key, input.Item2)),
-				result.Item2,
-				length
+			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
+				Xor(input.Item2, new BitArray(_prf.DeterministicPRF(key, bytes))),
+				input.Item1
 			);
 
 			return result;
@@ -194,47 +153,36 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// Returns result of applying XOR operation on two byte arrays
 		/// Returns the array with length minimum of two inputs
 		/// </summary>
-		private byte[] Xor(byte[] left, byte[] right)
-		{
-			var length = Math.Min(left.Length, right.Length);
-			byte[] result = new byte[length];
-
-			for (int i = 0; i < length; i++)
-			{
-				result[i] = (byte)(left[i] ^ right[i]);
-			}
-
-			return result;
+		private BitArray Xor(BitArray left, BitArray right) {
+			int length = Math.Min(left.Length, right.Length);
+			
+			return new BitArray(left.Cast<bool>().Take(length).ToArray())
+			.Xor(new BitArray(right.Cast<bool>().Take(length).ToArray()));
 		}
 
 		/// <summary>
-		/// Helper function that splits byte array into tuple of two byte arrays
+		/// Helper function that splits bit array into tuple of two bit arrays
 		/// </summary>
-		private Tuple<byte[], byte[]> Split(byte[] input) =>
-			new Tuple<byte[], byte[]>(
-				input.Take(input.Length / 2).ToArray(),
-				input.Skip(input.Length / 2).ToArray()
+		private Tuple<BitArray, BitArray> Split(BitArray input, int bits)
+			=> new Tuple<BitArray, BitArray>(
+				new BitArray(input.Cast<bool>().Take(bits).ToArray()),
+				new BitArray(input.Cast<bool>().Skip(bits).ToArray())
 			);
 
 		/// <summary>
-		/// Helper function that merges a tuple of two byte arrays into one byte array
+		/// Helper function that merges a tuple of two bit arrays into one bit array
 		/// </summary>
-		private byte[] Merge(Tuple<byte[], byte[]> input) =>
-			input.Item1.Concat(input.Item2).ToArray();
+		private BitArray Merge(Tuple<BitArray, BitArray> input) =>
+			new BitArray(
+				input.Item1.Cast<bool>()
+					.Concat(input.Item2.Cast<bool>())
+					.ToArray()
+			);
 
 		/// <summary>
 		/// Helper function that swaps two byte arrays of a tuple
 		/// </summary>
-		private Tuple<byte[], byte[]> Swap(Tuple<byte[], byte[]> input)
-		{
-			int length = input.Item1.Length;
-
-			byte[] buff = new byte[length];
-			Array.Copy(input.Item1, buff, length);
-			Array.Copy(input.Item2, input.Item1, length);
-			Array.Copy(buff, input.Item2, length);
-
-			return input;
-		}
+		private Tuple<BitArray, BitArray> Swap(Tuple<BitArray, BitArray> input)
+			=> new Tuple<BitArray, BitArray>(input.Item2, input.Item1);
 	}
 }

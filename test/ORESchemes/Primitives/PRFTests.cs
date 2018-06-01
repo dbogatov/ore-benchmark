@@ -11,20 +11,6 @@ namespace Test.ORESchemes.Primitives
 	public class AESPRFTests : AbsPRFTests
 	{
 		public AESPRFTests() : base(new AES()) { }
-
-		[Theory]
-		[InlineData("Hello")]
-		[InlineData("World")]
-		[InlineData("")]
-		[InlineData("1305")]
-		public void StringCorrectness(string plaintext)
-		{
-			var ciphertext = _prf.PRF(_key, Encoding.Default.GetBytes(plaintext));
-
-			var decrypted = _prf.InversePRF(_key, ciphertext);
-
-			Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
-		}
 	}
 
 	[Trait("Category", "Unit")]
@@ -81,6 +67,20 @@ namespace Test.ORESchemes.Primitives
 					)
 				);
 			}
+		}
+
+		[Theory]
+		[InlineData("Hello")]
+		[InlineData("World")]
+		[InlineData("")]
+		[InlineData("1305")]
+		public void StringCorrectness(string plaintext)
+		{
+			var ciphertext = _prf.PRF(_key, Encoding.Default.GetBytes(plaintext));
+
+			var decrypted = _prf.InversePRF(_key, ciphertext);
+
+			Assert.Equal(plaintext, Encoding.Default.GetString(decrypted));
 		}
 	}
 }

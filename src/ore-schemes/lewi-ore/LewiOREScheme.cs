@@ -34,7 +34,7 @@ namespace ORESchemes.LewiORE
 	{
 		private readonly IPRF F;
 		private readonly IHash H;
-		private readonly IPRP<uint> P;
+		private readonly IPRP P;
 
 		/// <summary>
 		/// Number of values fit in block
@@ -51,7 +51,7 @@ namespace ORESchemes.LewiORE
 		{
 			F = PRFFactory.GetPRF();
 			H = HashFactory.GetHash();
-			P = ((IPRPFactory<uint>)new PRPFactory()).GetPRP();
+			// P = ((IPRPFactory<uint>)new PRPFactory()).GetPRP();
 
 			_bitsInBlock = (int)Math.Log(d, 2);
 		}
@@ -122,7 +122,7 @@ namespace ORESchemes.LewiORE
 				uint xi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
 				uint xtoi = input >> shift;
 
-				uint x = P.PRP(xi, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(xtoi)));
+				uint x=0;// = P.PRP(xi, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(xtoi)));
 
 				byte[] xtoix = BitConverter.GetBytes(xtoi).Concat(BitConverter.GetBytes(x)).ToArray();
 
@@ -155,7 +155,7 @@ namespace ORESchemes.LewiORE
 				for (uint j = 1; j <= d; j++)
 				{
 
-					uint js = P.InversePRP(j, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(ytoi)));
+					uint js = 0;// = P.InversePRP(j, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(ytoi)));
 
 					byte[] ytoij = BitConverter.GetBytes(ytoi).Concat(BitConverter.GetBytes(j)).ToArray();
 
