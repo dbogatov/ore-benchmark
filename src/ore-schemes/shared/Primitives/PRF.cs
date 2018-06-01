@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -67,7 +68,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 				else
 				{
 					byte[] properIV = new byte[128 / 8];
-					Array.Copy(IV, properIV, Math.Min(properIV.Length, IV.Length));
+					Array.Copy(IV, properIV, properIV.Length);
 					aesAlg.IV = properIV;
 				}
 
@@ -144,6 +145,6 @@ namespace ORESchemes.Shared.Primitives.PRF
 		}
 
 		public byte[] DeterministicPRF(byte[] key, byte[] input)
-			=> PRF(key, input, new byte[] { 0x00 });
+			=> PRF(key, input, Enumerable.Repeat((byte)0x00, 128 / 8).ToArray());
 	}
 }

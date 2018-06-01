@@ -109,6 +109,8 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// <remark>Input must be an even number of bytes</remark>
 		private BitArray Permute(BitArray input, byte[] key, int bits, bool inverse = false)
 		{
+			// TODO test that bits supplied used, not input length
+			input = new BitArray(input.Cast<bool>().Take(bits).ToArray());
 			Tuple<BitArray, BitArray> round = Split(input, input.Length / 2);
 
 			if (inverse)

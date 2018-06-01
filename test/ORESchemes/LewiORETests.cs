@@ -13,25 +13,25 @@ namespace Test.ORESchemes
 	// 	}
 	// }
 
-	// public class Lewi
-	// {
-	// 	[Fact]
-	// 	public void Correctness()
-	// 	{
-	// 		var entropy = new byte[256 / 8];
-	// 		new Random(123456).NextBytes(entropy);
-	// 		var _scheme = new LewiOREScheme(entropy);
+	public class Lewi
+	{
+		[Fact]
+		public void Correctness()
+		{
+			var entropy = new byte[256 / 8];
+			new Random(123456).NextBytes(entropy);
+			var _scheme = new LewiOREScheme(entropy);
 
-	// 		_scheme.Init();
+			_scheme.Init();
 
-	// 		var key = _scheme.KeyGen();
+			var key = _scheme.KeyGen();
 
-	// 		var c1 = _scheme.Encrypt(1935032234, key);
-	// 		var c2 = _scheme.Encrypt(1935032235, key);
+			var c1 = _scheme.Encrypt(1935032234, key);
+			var c2 = _scheme.Encrypt(1935032235, key);
 
-	// 		var r = _scheme.IsLess(c1, c2);
+			var r = _scheme.IsLess(c1, c2);
 
-	// 		Assert.True(r);
-	// 	}
-	// }
+			Assert.True(r);
+		}
+	}
 }

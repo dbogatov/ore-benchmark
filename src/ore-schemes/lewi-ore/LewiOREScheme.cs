@@ -36,6 +36,8 @@ namespace ORESchemes.LewiORE
 		private readonly IHash H;
 		private readonly IPRP P;
 
+		private readonly byte[] IV = new byte[128 / 8];
+
 		/// <summary>
 		/// Number of values fit in block
 		/// </summary>
@@ -51,9 +53,11 @@ namespace ORESchemes.LewiORE
 		{
 			F = PRFFactory.GetPRF();
 			H = HashFactory.GetHash();
-			// P = ((IPRPFactory<uint>)new PRPFactory()).GetPRP();
+			P = PRPFactory.GetPRP();
 
 			_bitsInBlock = (int)Math.Log(d, 2);
+
+			_generator.NextBytes(IV);
 		}
 
 		public override byte[] KeyGen()
@@ -98,7 +102,7 @@ namespace ORESchemes.LewiORE
 			{
 				byte[] uik = left.pairs[i].Item1;
 				int uih = (int)left.pairs[i].Item2;
-				
+
 				short z = right.shorts[i][uih];
 
 				short result = (short)((z - new BigInteger(H.ComputeHash(right.nonce, uik))) % 3);
@@ -122,7 +126,14 @@ namespace ORESchemes.LewiORE
 				uint xi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
 				uint xtoi = input >> shift;
 
-				uint x=0;// = P.PRP(xi, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(xtoi)));
+				uint x = Permute(
+					xi,
+					F.PRF(
+						key.Skip(256 / 8).ToArray(),
+						BitConverter.GetBytes(xtoi),
+						IV
+					)
+				);
 
 				byte[] xtoix = BitConverter.GetBytes(xtoi).Concat(BitConverter.GetBytes(x)).ToArray();
 
@@ -154,8 +165,13 @@ namespace ORESchemes.LewiORE
 
 				for (uint j = 1; j <= d; j++)
 				{
-
-					uint js = 0;// = P.InversePRP(j, F.DeterministicPRF(key.Skip(256 / 8).ToArray(), BitConverter.GetBytes(ytoi)));
+					uint js = Unpermute(
+						ytoi,
+						F.DeterministicPRF(
+							key.Skip(256 / 8).ToArray(),
+							BitConverter.GetBytes(ytoi)
+						)
+					);
 
 					byte[] ytoij = BitConverter.GetBytes(ytoi).Concat(BitConverter.GetBytes(j)).ToArray();
 
@@ -195,5 +211,33 @@ namespace ORESchemes.LewiORE
 		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
 		/// </summary>
 		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
+
+		private uint Permute(uint input, byte[] key)
+		{
+			BitArray permutation =
+				P.PRP(
+					new BitArray(new int[] { (int)input }),
+					key,
+					_bitsInBlock
+				);
+			int[] result = new int[1];
+			permutation.CopyTo(result, 0);
+
+			return (uint)result[0];
+		}
+
+		private uint Unpermute(uint input, byte[] key)
+		{
+			BitArray permutation =
+				P.InversePRP(
+					new BitArray(new int[] { (int)input }),
+					key,
+					_bitsInBlock
+				);
+			int[] result = new int[1];
+			permutation.CopyTo(result, 0);
+
+			return (uint)result[0];
+		}
 	}
 }
