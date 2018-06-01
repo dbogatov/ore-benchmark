@@ -67,8 +67,8 @@ namespace ORESchemes.LewiORE
 			byte[] key = new byte[2 * ALPHA / 8];
 			_generator.NextBytes(key);
 
-			// maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			// minCiphertextValue = Encrypt(MinPlaintextValue(), key);
+			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
+			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
 
 			return key;
 		}
@@ -79,19 +79,23 @@ namespace ORESchemes.LewiORE
 
 			return BitConverter.ToInt32(
 				F.InversePRF(
-					key,
+					key.Take(ALPHA / 8).ToArray(),
 					ciphertext.encrypted
 				), 0
 			);
 		}
 
 		public override Ciphertext Encrypt(int plaintext, byte[] key)
-			=> new Ciphertext
+		{
+			OnOperation(SchemeOperation.Encrypt);
+
+			return new Ciphertext
 			{
 				left = EncryptLeft(key, ToUInt(plaintext)),
 				right = EncryptRight(key, ToUInt(plaintext)),
 				encrypted = F.PRF(key.Take(ALPHA / 8).ToArray(), BitConverter.GetBytes(plaintext), IV)
 			};
+		}
 
 
 		protected override int ProperCompare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
@@ -126,9 +130,9 @@ namespace ORESchemes.LewiORE
 
 			for (int i = 0; i < n; i++)
 			{
-				int shift = (_bitsInBlock * (n - i - 1));
+				int shift = (_bitsInBlock * (n - i));
 				uint xi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
-				uint xtoi = input >> shift;
+				uint xtoi = shift > 31 ? 0 : input >> shift;
 
 				uint x = Permute(
 					xi,
@@ -164,9 +168,9 @@ namespace ORESchemes.LewiORE
 
 			for (int i = 0; i < n; i++)
 			{
-				int shift = (_bitsInBlock * (n - i - 1));
+				int shift = (_bitsInBlock * (n - i));
 				uint yi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
-				uint ytoi = input >> shift;
+				uint ytoi = shift > 31 ? 0 : input >> shift;
 
 				List<short> v = new List<short>();
 
