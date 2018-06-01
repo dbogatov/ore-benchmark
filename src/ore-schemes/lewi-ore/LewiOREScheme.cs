@@ -89,14 +89,15 @@ namespace ORESchemes.LewiORE
 			=> new Ciphertext
 			{
 				left = EncryptLeft(key, ToUInt(plaintext)),
-				right = EncryptRight(key, ToUInt(plaintext))
+				right = EncryptRight(key, ToUInt(plaintext)),
+				encrypted = F.PRF(key.Take(ALPHA / 8).ToArray(), BitConverter.GetBytes(plaintext), IV)
 			};
 
 
 		protected override int ProperCompare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			Ciphertext.Left left = ciphertextOne.left;
-			Ciphertext.Right right = ciphertextOne.right;
+			Ciphertext.Right right = ciphertextTwo.right;
 
 			for (int i = 0; i < n; i++)
 			{
@@ -105,7 +106,7 @@ namespace ORESchemes.LewiORE
 
 				short z = right.shorts[i][uih];
 
-				short result = (short)((z - new BigInteger(H.ComputeHash(right.nonce, uik))) % 3);
+				short result = (short)(z - Hash(right.nonce, uik));
 
 				if (result != 0)
 				{
@@ -120,6 +121,9 @@ namespace ORESchemes.LewiORE
 		{
 			List<Tuple<byte[], uint>> result = new List<Tuple<byte[], uint>>();
 
+			byte[] k1 = key.Take(ALPHA / 8).ToArray();
+			byte[] k2 = key.Skip(ALPHA / 8).ToArray();
+
 			for (int i = 0; i < n; i++)
 			{
 				int shift = (_bitsInBlock * (n - i - 1));
@@ -129,15 +133,15 @@ namespace ORESchemes.LewiORE
 				uint x = Permute(
 					xi,
 					F.PRF(
-						key.Skip(256 / 8).ToArray(),
+						k2,
 						BitConverter.GetBytes(xtoi),
 						IV
 					)
 				);
 
-				byte[] xtoix = BitConverter.GetBytes(xtoi).Concat(BitConverter.GetBytes(x)).ToArray();
+				byte[] xtoix = Concatenate(xtoi, x);
 
-				byte[] ui = F.DeterministicPRF(key.Take(256 / 8).ToArray(), xtoix);
+				byte[] ui = F.PRF(k1, xtoix, IV);
 
 				result.Add(new Tuple<byte[], uint>(ui, x));
 			}
@@ -155,6 +159,9 @@ namespace ORESchemes.LewiORE
 			byte[] nonce = new byte[ALPHA / 8];
 			_generator.NextBytes(nonce);
 
+			byte[] k1 = key.Take(ALPHA / 8).ToArray();
+			byte[] k2 = key.Skip(ALPHA / 8).ToArray();
+
 			for (int i = 0; i < n; i++)
 			{
 				int shift = (_bitsInBlock * (n - i - 1));
@@ -163,20 +170,23 @@ namespace ORESchemes.LewiORE
 
 				List<short> v = new List<short>();
 
-				for (uint j = 1; j <= d; j++)
+				for (uint j = 0; j < d; j++)
 				{
 					uint js = Unpermute(
-						ytoi,
-						F.DeterministicPRF(
-							key.Skip(256 / 8).ToArray(),
-							BitConverter.GetBytes(ytoi)
+						j,
+						F.PRF(
+							k2,
+							BitConverter.GetBytes(ytoi),
+							IV
 						)
 					);
 
-					byte[] ytoij = BitConverter.GetBytes(ytoi).Concat(BitConverter.GetBytes(j)).ToArray();
+					byte[] ytoij = Concatenate(ytoi, j);
 
-					short vi = (short)((CMP(js, yi) + new BigInteger(H.ComputeHash(F.DeterministicPRF(key.Take(256 / 8).ToArray(), ytoij), nonce))) % 3);
+					var cmp = CMP(js, yi);
+					var hash = Hash(nonce, F.PRF(k1, ytoij, IV));
 
+					short vi = (short)(cmp + hash);
 
 					v.Add(vi);
 				}
@@ -191,21 +201,8 @@ namespace ORESchemes.LewiORE
 			};
 		}
 
-		private short CMP(uint a, uint b)
-		{
-			if (a < b)
-			{
-				return -1;
-			}
-			else if (a == b)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-		}
+		private int CMP(uint a, uint b)
+			=> (a < b) ? -1 : ((a == b) ? 0 : 1);
 
 		/// <summary>
 		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
@@ -239,5 +236,11 @@ namespace ORESchemes.LewiORE
 
 			return (uint)result[0];
 		}
+
+		private int Hash(byte[] input, byte[] key)
+			=> (int)(BigInteger.Abs(new BigInteger(H.ComputeHash(input, key))) % 3);
+
+		private byte[] Concatenate(uint first, uint second)
+			=> BitConverter.GetBytes(first).Concat(BitConverter.GetBytes(second)).ToArray();
 	}
 }

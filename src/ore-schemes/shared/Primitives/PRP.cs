@@ -56,7 +56,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			BitArray result = InversePRP(new BitArray(input), key);
 			byte[] bytes = new byte[(result.Length + 7) / 8];
 			result.CopyTo(bytes, 0);
-			
+
 			return bytes;
 		}
 		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
@@ -64,7 +64,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			BitArray result = PRP(new BitArray(input), key);
 			byte[] bytes = new byte[(result.Length + 7) / 8];
 			result.CopyTo(bytes, 0);
-			
+
 			return bytes;
 		}
 
@@ -144,7 +144,14 @@ namespace ORESchemes.Shared.Primitives.PRP
 			input.Item1.CopyTo(bytes, 0);
 
 			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
-				Xor(input.Item2, new BitArray(_prf.DeterministicPRF(key, bytes))),
+				Xor(
+					input.Item2,
+					new BitArray(_prf.PRF(
+						key, 
+						bytes, 
+						Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()
+					).Skip(128 / 8).ToArray())
+				),
 				input.Item1
 			);
 
@@ -155,9 +162,10 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// Returns result of applying XOR operation on two byte arrays
 		/// Returns the array with length minimum of two inputs
 		/// </summary>
-		private BitArray Xor(BitArray left, BitArray right) {
+		private BitArray Xor(BitArray left, BitArray right)
+		{
 			int length = Math.Min(left.Length, right.Length);
-			
+
 			return new BitArray(left.Cast<bool>().Take(length).ToArray())
 			.Xor(new BitArray(right.Cast<bool>().Take(length).ToArray()));
 		}

@@ -26,8 +26,11 @@ namespace Test.ORESchemes
 
 			var key = _scheme.KeyGen();
 
-			var c1 = _scheme.Encrypt(1935032234, key);
-			var c2 = _scheme.Encrypt(1935032235, key);
+			// var c1 = _scheme.Encrypt(1935032234, key);
+			// var c2 = _scheme.Encrypt(1935032235, key);
+
+			var c1 = _scheme.Encrypt(1, key);
+			var c2 = _scheme.Encrypt(2, key);
 
 			var r = _scheme.IsLess(c1, c2);
 
