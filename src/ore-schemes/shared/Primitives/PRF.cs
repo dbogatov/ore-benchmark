@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.PRF
 {
 	public class PRFFactory
 	{
@@ -59,7 +60,7 @@ namespace ORESchemes.Shared.Primitives
 				else
 				{
 					byte[] properIV = new byte[128 / 8];
-					Array.Copy(IV, properIV, Math.Min(properIV.Length, IV.Length));
+					Array.Copy(IV, properIV, properIV.Length);
 					aesAlg.IV = properIV;
 				}
 

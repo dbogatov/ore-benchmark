@@ -15,13 +15,17 @@ namespace Test.ORESchemes
 		protected const int SEED = 123456;
 		protected readonly byte[] _entropy = new byte[256 / 8];
 
-		public GenericORETests()
+		public GenericORETests(int runs = 100)
 		{
+			_runs = runs;
 			new Random(SEED).NextBytes(_entropy);
+			SetParameters();
 			SetScheme();
 		}
 
 		protected abstract void SetScheme();
+
+		protected virtual void SetParameters() { }
 
 		[Fact]
 		public void InitTest()

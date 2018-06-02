@@ -69,12 +69,21 @@ namespace CLI
 			switch (OREScheme)
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
+					report =
+						new Simulator<string, long>(
+							reader.Inputs,
+							new Options<long>(
+								new NoEncryptionFactory(Seed).GetScheme(),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					report =
 						new Simulator<string, long>(
 							reader.Inputs,
 							new Options<long>(
-								new OPESchemesFactory().GetScheme(OREScheme, Seed),
+								new CryptDBOPEFactory(Seed).GetScheme(),
 								BPlusTreeBranching
 							)
 						).Simulate();
@@ -84,7 +93,17 @@ namespace CLI
 						new Simulator<string, ORESchemes.PracticalORE.Ciphertext>(
 							reader.Inputs,
 							new Options<ORESchemes.PracticalORE.Ciphertext>(
-								new ORESchemesFactoryPractical().GetScheme(OREScheme, Seed),
+								new PracticalOREFactory(Seed).GetScheme(),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
+				case ORESchemes.Shared.ORESchemes.LewiORE:
+					report =
+						new Simulator<string, ORESchemes.LewiORE.Ciphertext>(
+							reader.Inputs,
+							new Options<ORESchemes.LewiORE.Ciphertext>(
+								new LewiOREFactory(Seed).GetScheme(),
 								BPlusTreeBranching
 							)
 						).Simulate();

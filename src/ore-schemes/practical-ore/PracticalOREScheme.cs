@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
+using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.PracticalORE
 {
@@ -12,21 +13,6 @@ namespace ORESchemes.PracticalORE
 	{
 		public List<int> tuples = new List<int>();
 		public byte[] encrypted;
-
-		public override bool Equals(object obj)
-		{
-			// Check for null values and compare run-time types.
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-
-			Ciphertext c = (Ciphertext)obj;
-			return this.tuples.Zip(c.tuples, (c1, c2) => c1 == c2).All(eq => eq);
-		}
-
-		public override int GetHashCode()
-		{
-			return tuples.GetHashCode();
-		}
 	}
 
 	public class PracticalOREScheme : AbsOREScheme<Ciphertext>
@@ -63,7 +49,8 @@ namespace ORESchemes.PracticalORE
 			var result = new Ciphertext();
 			result.encrypted = F.PRF(
 				key,
-				BitConverter.GetBytes(plaintext)
+				BitConverter.GetBytes(plaintext),
+				IV
 			);
 
 			var unsignedPlaintext = unchecked((uint)plaintext + 1) + Int32.MaxValue;

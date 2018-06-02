@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ORESchemes.Shared.Primitives.PRF;
 
-namespace ORESchemes.Shared.Primitives
+namespace ORESchemes.Shared.Primitives.Hash
 {
 	public class HashFactory
 	{
@@ -40,7 +42,13 @@ namespace ORESchemes.Shared.Primitives
 		public abstract byte[] ComputeHash(byte[] input);
 
 		public virtual byte[] ComputeHash(byte[] input, byte[] key) =>
-			ComputeHash(PRFFactory.GetPRF().PRF(key, input, new byte[] { 0x00 }));
+			ComputeHash(
+				PRFFactory.GetPRF().PRF(
+					key, 
+					input, 
+					Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()
+				).Skip(128 / 8).ToArray()
+			);
 	}
 
 	public class SHA256 : AbsHash
