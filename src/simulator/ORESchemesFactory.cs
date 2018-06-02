@@ -107,7 +107,7 @@ namespace Simulation
 			IOREScheme<ORESchemes.LewiORE.Ciphertext> result;
 			if (scheme == ORESchemes.Shared.ORESchemes.LewiORE)
 			{
-				result = new LewiOREScheme(entropy);
+				result = new LewiOREScheme(16, entropy);
 			}
 			else
 			{

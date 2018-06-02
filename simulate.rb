@@ -13,7 +13,7 @@ Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, 
 
 runs = []
 
-%w[cryptdb practicalore noencryption].each do |scheme|
+%w[lewiore cryptdb practicalore noencryption].each do |scheme|
   ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |type|
     [2, 5, 20, 50].each do |btreebranches|
       [0, 10, 100].each do |cache|

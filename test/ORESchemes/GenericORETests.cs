@@ -18,10 +18,13 @@ namespace Test.ORESchemes
 		public GenericORETests()
 		{
 			new Random(SEED).NextBytes(_entropy);
+			SetParameters();
 			SetScheme();
 		}
 
 		protected abstract void SetScheme();
+
+		protected virtual void SetParameters() { }
 
 		[Fact]
 		public void InitTest()

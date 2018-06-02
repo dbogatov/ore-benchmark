@@ -39,23 +39,30 @@ namespace ORESchemes.LewiORE
 		private readonly byte[] IV = new byte[128 / 8];
 
 		/// <summary>
-		/// Number of values fit in block
+		/// Number of values that fit in a block
 		/// </summary>
-		private const int d = 4;
+		private readonly int d = 4;
 		/// <summary>
 		/// Number of blocks
 		/// </summary>
-		private const int n = 16;
+		private readonly int n = 16;
 
 		private readonly int _bitsInBlock;
 
-		public LewiOREScheme(byte[] seed = null) : base(seed)
+		public LewiOREScheme(int n = 16, byte[] seed = null) : base(seed)
 		{
+			if (!new int[] { 16, 8, 4 }.Contains(n))
+			{
+				throw new ArgumentException($"Value of n ({n}) is invalid. It must be a multiple of 32. One of [16, 8, 4].");
+			}
+
+			d = (int)Math.Pow(2, 32 / n);
+
 			F = PRFFactory.GetPRF();
 			H = HashFactory.GetHash();
 			P = PRPFactory.GetPRP();
 
-			_bitsInBlock = (int)Math.Log(d, 2);
+			_bitsInBlock = 32 / n;
 
 			_generator.NextBytes(IV);
 		}
