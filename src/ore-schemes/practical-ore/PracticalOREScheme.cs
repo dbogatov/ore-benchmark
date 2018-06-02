@@ -19,11 +19,15 @@ namespace ORESchemes.PracticalORE
 	{
 		private readonly int M = 4;
 		private readonly IPRF F;
+		private readonly byte[] IV;
 
 		public PracticalOREScheme(byte[] seed = null) : base(seed)
 		{
 			M = Convert.ToInt32(_generator.Next(4, Int32.MaxValue));
 			F = PRFFactory.GetPRF();
+
+			IV = new byte[128 / 8];
+			_generator.NextBytes(IV);
 		}
 
 		public override int Decrypt(Ciphertext ciphertext, byte[] key)
@@ -45,7 +49,8 @@ namespace ORESchemes.PracticalORE
 			var result = new Ciphertext();
 			result.encrypted = F.PRF(
 				key,
-				BitConverter.GetBytes(plaintext)
+				BitConverter.GetBytes(plaintext),
+				IV
 			);
 
 			var unsignedPlaintext = unchecked((uint)plaintext + 1) + Int32.MaxValue;
@@ -56,9 +61,10 @@ namespace ORESchemes.PracticalORE
 				var msg = shift > 31 ? 0 : (unsignedPlaintext >> shift) << shift;
 				// https://stackoverflow.com/a/7471843/1644554
 
-				var prfEnc = F.DeterministicPRF(
+				var prfEnc = F.PRF(
 					key,
-					BitConverter.GetBytes(msg)
+					BitConverter.GetBytes(msg),
+					IV
 				);
 
 				var nextBit = ((unsignedPlaintext << i) >> (8 * sizeof(int) - 1)) & 1;

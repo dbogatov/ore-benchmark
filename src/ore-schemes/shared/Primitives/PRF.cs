@@ -30,14 +30,6 @@ namespace ORESchemes.Shared.Primitives.PRF
 		byte[] PRF(byte[] key, byte[] input, byte[] IV = null);
 
 		/// <summary>
-		/// Computes the value of the pseudo random function setting IV deterministically (to 0x00)
-		/// </summary>
-		/// <param name="key">The key componenet to function</param>
-		/// <param name="input">The input value to function</param>
-		/// <returns>The value of the function of its arguments</returns>
-		byte[] DeterministicPRF(byte[] key, byte[] input);
-
-		/// <summary>
 		/// Computes the value of the inverse of pseudo random function
 		/// </summary>
 		/// <param name="key">The key componenet to function</param>
@@ -143,8 +135,5 @@ namespace ORESchemes.Shared.Primitives.PRF
 
 			return plaintext;
 		}
-
-		public byte[] DeterministicPRF(byte[] key, byte[] input)
-			=> PRF(key, input, Enumerable.Repeat((byte)0x00, 128 / 8).ToArray());
 	}
 }

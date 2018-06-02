@@ -128,6 +128,12 @@ namespace ORESchemes.LewiORE
 			return 0;
 		}
 
+		/// <summary>
+		/// Produces a left side of ciphertext as defined in paper
+		/// </summary>
+		/// <param name="key">A key with which to encrypt</param>
+		/// <param name="input">Input to encrypt</param>
+		/// <returns>A left side of ciphertext</returns>
 		private Ciphertext.Left EncryptLeft(byte[] key, uint input)
 		{
 			List<Tuple<byte[], uint>> result = new List<Tuple<byte[], uint>>();
@@ -163,6 +169,12 @@ namespace ORESchemes.LewiORE
 			};
 		}
 
+		/// <summary>
+		/// Produces a right side of ciphertext as defined in paper
+		/// </summary>
+		/// <param name="key">A key with which to encrypt</param>
+		/// <param name="input">Input to encrypt</param>
+		/// <returns>A right side of ciphertext</returns>
 		private Ciphertext.Right EncryptRight(byte[] key, uint input)
 		{
 			List<List<short>> result = new List<List<short>>();
@@ -212,6 +224,9 @@ namespace ORESchemes.LewiORE
 			};
 		}
 
+		/// <summary>
+		/// Helper function that implements CMP as defined in the paper
+		/// </summary>
 		private int CMP(uint a, uint b)
 			=> (a < b) ? -1 : ((a == b) ? 0 : 1);
 
@@ -220,6 +235,9 @@ namespace ORESchemes.LewiORE
 		/// </summary>
 		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
 
+		/// <summary>
+		/// Wrapper around PRP permute function
+		/// </summary>
 		private uint Permute(uint input, byte[] key)
 		{
 			BitArray permutation =
@@ -234,6 +252,9 @@ namespace ORESchemes.LewiORE
 			return (uint)result[0];
 		}
 
+		/// <summary>
+		/// Wrapper around PRP unpermute function
+		/// </summary>
 		private uint Unpermute(uint input, byte[] key)
 		{
 			BitArray permutation =
@@ -248,9 +269,16 @@ namespace ORESchemes.LewiORE
 			return (uint)result[0];
 		}
 
+		/// <summary>
+		/// Wrapper around Hash function
+		/// </summary>
+		/// <returns>Hash modulo 3</returns>
 		private int Hash(byte[] input, byte[] key)
 			=> (int)(BigInteger.Abs(new BigInteger(H.ComputeHash(input, key))) % 3);
 
+		/// <summary>
+		/// Helper that produces bytes concatenation of its inputs
+		/// </summary>
 		private byte[] Concatenate(uint first, uint second)
 			=> BitConverter.GetBytes(first).Concat(BitConverter.GetBytes(second)).ToArray();
 	}

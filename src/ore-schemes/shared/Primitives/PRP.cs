@@ -49,8 +49,6 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 	public abstract class AbsPRP : IPRP
 	{
-		public byte[] DeterministicPRF(byte[] key, byte[] input) => PRF(key, input);
-
 		public byte[] InversePRF(byte[] key, byte[] input)
 		{
 			BitArray result = InversePRP(new BitArray(input), key);
@@ -59,6 +57,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 			return bytes;
 		}
+
 		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
 		{
 			BitArray result = PRP(new BitArray(input), key);
@@ -69,7 +68,6 @@ namespace ORESchemes.Shared.Primitives.PRP
 		}
 
 		public abstract BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
-
 
 		public abstract BitArray PRP(BitArray input, byte[] key, int? bits = null);
 	}
@@ -131,7 +129,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		}
 
 		/// <summary>
-		/// Performa a single round of Feistel cipher
+		/// Perform a single round of Feistel cipher
 		/// </summary>
 		/// <param name="input">Input to PRP</param>
 		/// <param name="key">Key to PRP</param>
@@ -158,7 +156,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		}
 
 		/// <summary>
-		/// Returns result of applying XOR operation on two byte arrays
+		/// Returns result of applying XOR operation on two bit arrays
 		/// Returns the array with length minimum of two inputs
 		/// </summary>
 		private BitArray Xor(BitArray left, BitArray right)
@@ -189,7 +187,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			);
 
 		/// <summary>
-		/// Helper function that swaps two byte arrays of a tuple
+		/// Helper function that returns new tuple with items swapped
 		/// </summary>
 		private Tuple<BitArray, BitArray> Swap(Tuple<BitArray, BitArray> input)
 			=> new Tuple<BitArray, BitArray>(input.Item2, input.Item1);
