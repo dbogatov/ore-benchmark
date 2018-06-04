@@ -4,3 +4,5 @@
 results.*
 data/*.txt
 docs/documentation
+coverage.json
+coverage-hits.txt

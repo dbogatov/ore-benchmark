@@ -50,6 +50,14 @@ build-docs:
   tags:
   - docker
 
+coverage-report:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: test
+  script:
+  - ./tools/test-coverage/coverage.sh
+  tags:
+  - docker
+
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine
   variables:
