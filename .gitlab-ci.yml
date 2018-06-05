@@ -17,7 +17,7 @@ build-app:
     - src/cli/dist
     - tools/data-gen/dist
     - tools/data-gen/generate.sh
-    - simulate.rb
+    - tools/simulation/
   tags:
   - docker
 
