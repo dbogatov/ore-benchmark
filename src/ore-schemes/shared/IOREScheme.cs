@@ -164,7 +164,7 @@ namespace ORESchemes.Shared
 		protected C maxCiphertextValue = default(C);
 		protected C minCiphertextValue = default(C);
 
-		protected bool minMaxCiphertextsInitialized = false;
+		protected bool _minMaxCiphertextsInitialized = false;
 
 		/// <summary>
 		/// Entropy is required for the scheme
@@ -230,7 +230,7 @@ namespace ORESchemes.Shared
 			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
 			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
 
-			minMaxCiphertextsInitialized = true;
+			_minMaxCiphertextsInitialized = true;
 
 			return key;
 		}
@@ -240,12 +240,12 @@ namespace ORESchemes.Shared
 
 		public C MaxCiphertextValue()
 		{
-			if (!minMaxCiphertextsInitialized)
+			if (!_minMaxCiphertextsInitialized)
 			{
 				throw new InvalidOperationException("Max ciphertext value is generated during KeyGen operation");
 			}
 
-			return maxCiphertextValue;
+			return _maxCiphertextValue;
 		}
 
 		public C MinCiphertextValue()

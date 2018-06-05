@@ -77,6 +77,8 @@ namespace ORESchemes.LewiORE
 			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
 			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
 
+			_minMaxCiphertextsInitialized = true;
+
 			return key;
 		}
 
