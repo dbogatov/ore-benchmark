@@ -15,13 +15,16 @@ dotnet build ./../../test/
 dotnet restore
 
 # Instrument assemblies inside 'test' folder to detect hits for source files inside 'src' folder
-dotnet minicover instrument --workdir ../../ --assemblies test/**/bin/**/*.dll --sources src/**/*.cs
+dotnet minicover instrument --workdir ../../ --assemblies test/**/bin/**/*.dll --sources src/**/*.cs --sources test/**/*.cs
 
 # Reset hits count in case minicover was run for this project
 dotnet minicover reset
 
-dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Category=Unit
+dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Category=Unit || true
 
-# dotnet minicover htmlreport --workdir ../../
+# Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
+dotnet minicover uninstrument --workdir ../../
+
+dotnet minicover htmlreport --workdir ../../
 dotnet minicover report --workdir ../../
 # dotnet minicover xmlreport --workdir ../../

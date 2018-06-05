@@ -52,14 +52,14 @@ build-docs:
 
 # Minicover does not handle large number of tests yet
 # See the issue https://github.com/lucaslorentz/minicover/issues/97
-# coverage-report:
-#   image: microsoft/dotnet:2.1-sdk-alpine
-#   stage: test
-#   script:
-#   - apk add --update bash
-#   - ./tools/test-coverage/coverage.sh
-#   tags:
-#   - docker
+coverage-report:
+  image: microsoft/dotnet:2.1-sdk-alpine
+  stage: test
+  script:
+  - apk add --update bash
+  - ./tools/test-coverage/coverage.sh
+  tags:
+  - docker
 
 unit-tests:
   image: microsoft/dotnet:2.1-sdk-alpine

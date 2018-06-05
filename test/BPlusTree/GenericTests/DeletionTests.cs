@@ -173,12 +173,14 @@ namespace Test.BPlusTree
 		{
 			Random random = new Random(3068354); // seed is static
 
+			int max = _max / 10;
+
 			for (int i = 3; i < 11; i++)
 			{
 				var input =
 					Enumerable
-						.Range(1, _max)
-						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(_max) + 2 * _max)
+						.Range(1, max)
+						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
 						.Distinct()
 						.ToList();
 				var tree = ConstructTree(
@@ -194,7 +196,7 @@ namespace Test.BPlusTree
 					if (j % 10 == 0)
 					{
 						// delete non existing element
-						Assert.False(tree.Delete(_scheme.Encrypt(5 * _max + random.Next(_max), _key)));
+						Assert.False(tree.Delete(_scheme.Encrypt(5 * max + random.Next(max), _key)));
 					}
 
 					// delete an element from the tree and validate the structure

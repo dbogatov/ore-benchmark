@@ -24,7 +24,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 	}
 
-	[Trait("Category", "Unit")]
+	[Trait("Category", "Integration")]
 	public class StrongFeistelTests : AbsPRPTests
 	{
 		public StrongFeistelTests() : base(new Feistel(4)) { }
@@ -42,7 +42,7 @@ namespace Test.ORESchemes.Primitives.PRP
 
 	public abstract class AbsPRPTests
 	{
-		private const int RUNS = 1000;
+		private const int RUNS = 100;
 		private const int SEED = 123456;
 		private readonly byte[] _key = new byte[256 / 8];
 

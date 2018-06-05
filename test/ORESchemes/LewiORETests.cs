@@ -12,7 +12,7 @@ namespace Test.ORESchemes
 		protected override void SetParameters() => _n = 16;
 	}
 
-	[Trait("Category", "Unit")]
+	[Trait("Category", "Integration")]
 	public class LewiORETestsN8 : LewiORETests
 	{
 		public LewiORETestsN8() : base(50) { }
@@ -20,7 +20,7 @@ namespace Test.ORESchemes
 		protected override void SetParameters() => _n = 8;
 	}
 
-	[Trait("Category", "Unit")]
+	[Trait("Category", "Integration")]
 	public class LewiORETestsN4 : LewiORETests
 	{
 		public LewiORETestsN4() : base(30) { }
