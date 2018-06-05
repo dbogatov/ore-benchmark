@@ -6,18 +6,38 @@ using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRP;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.PRP
 {
 	[Trait("Category", "Unit")]
 	public class FeistelTests : AbsPRPTests
 	{
 		public FeistelTests() : base(new Feistel(3)) { }
+
+		[Fact]
+		public void FactoryTest()
+		{
+			var prp = PRPFactory.GetPRP();
+
+			Assert.NotNull(prp);
+			Feistel feistel = Assert.IsType<Feistel>(prp);
+			Assert.Equal(3, feistel.Rounds);
+		}
 	}
 
 	[Trait("Category", "Unit")]
 	public class StrongFeistelTests : AbsPRPTests
 	{
 		public StrongFeistelTests() : base(new Feistel(4)) { }
+
+		[Fact]
+		public void FactoryTest()
+		{
+			var prp = PRPFactory.GetStrongPRP();
+
+			Assert.NotNull(prp);
+			Feistel feistel = Assert.IsType<Feistel>(prp);
+			Assert.Equal(4, feistel.Rounds);
+		}
 	}
 
 	public abstract class AbsPRPTests

@@ -5,7 +5,7 @@ using ORESchemes.Shared.Primitives.PRF;
 using ORESchemes.Shared.Primitives.PRP;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.PRF
 {
 	[Trait("Category", "Unit")]
 	public class AESPRFTests : AbsPRFTests

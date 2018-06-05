@@ -37,10 +37,10 @@ namespace Test.BPlusTree
 					_scheme,
 					3
 				),
-				new List<int> { 3 }
+				new List<int> { 3, 5 }
 			);
 
-			DeleteAndValidate(tree, 3);
+			Assert.False(tree.Delete(_scheme.Encrypt(4, _key)));
 		}
 
 		[Fact]

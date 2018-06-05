@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.Shared.Primitives.PRG;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.PRG
 {
 	[Trait("Category", "Unit")]
 	public class AESPRGTests : PRGTests
@@ -16,6 +16,19 @@ namespace Test.ORESchemes.Primitives
 		{
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
+		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void FactoryTest(bool seed)
+		{
+			byte[] entropy = seed ? _entropy : null;
+
+			var prg = PRGFactory.GetPRG(entropy);
+
+			Assert.NotNull(prg);
+			Assert.IsType<AESPRG>(prg);
 		}
 	}
 
@@ -26,6 +39,19 @@ namespace Test.ORESchemes.Primitives
 		{
 			_prg = new DefaultRandom(_entropy);
 			_anotherPrg = new DefaultRandom(_anotherEntropy);
+		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void FactoryTest(bool seed)
+		{
+			byte[] entropy = seed ? _entropy : null;
+
+			var prg = PRGFactory.GetDefaultPRG(entropy);
+
+			Assert.NotNull(prg);
+			Assert.IsType<DefaultRandom>(prg);
 		}
 	}
 
@@ -141,24 +167,43 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
+		public void NextDoubleTest()
+		{
+			HashSet<double> set = new HashSet<double>();
+
+			for (int i = 0; i < _runs; i++)
+			{
+				set.Add(_prg.NextDouble());
+			}
+
+			Assert.Equal(_runs, set.Count);
+		}
+
+		[Fact]
 		public void RangesIntTest()
 		{
 			var random = new Random(_seed);
 			CheckRanges<int>(random.Next, _prg.Next);
+
+			CheckMax<int>(random.Next, _prg.Next, 0);
 		}
 
 		[Fact]
 		public void RangesLongTest()
 		{
 			var random = new Random(_seed);
-			CheckRanges<long>(() => (long)(random.NextDouble() * Int64.MaxValue), _prg.NextLong);
+			CheckRanges<long>((a, b) => (long)(random.NextDouble() * Int64.MaxValue), _prg.NextLong);
+
+			CheckMax<long>(a => (long)(random.NextDouble() * Int64.MaxValue), _prg.NextLong, 0);
 		}
 
 		[Fact]
 		public void RangesDoubleTest()
 		{
 			var random = new Random(_seed);
-			CheckRanges<double>(random.NextDouble, _prg.NextDouble);
+			CheckRanges<double>((a, b) => random.NextDouble(), _prg.NextDouble);
+
+			CheckMax<double>(a => random.NextDouble(), _prg.NextDouble, 0);
 		}
 
 		/// <summary>
@@ -168,12 +213,12 @@ namespace Test.ORESchemes.Primitives
 		/// <param name="nextRand">Delegate that generates random number using C# built-in Random</param>
 		/// <param name="nextPrg">Delegate that generate sample from range using tested PRG</param>
 		/// <typeparam name="T">Type of the sample (number)</typeparam>
-		private void CheckRanges<T>(Func<T> nextRand, Func<T, T, T> nextPrg) where T : IComparable
+		private void CheckRanges<T>(Func<int, int, T> nextRand, Func<T, T, T> nextPrg) where T : IComparable
 		{
 			for (int i = 0; i < _runs; i++)
 			{
-				var a = nextRand();
-				var b = nextRand();
+				var a = nextRand(Int32.MinValue, Int32.MaxValue);
+				var b = nextRand(Int32.MinValue, Int32.MaxValue);
 
 				T min, max;
 				if (a.CompareTo(b) < 0)
@@ -193,6 +238,24 @@ namespace Test.ORESchemes.Primitives
 
 				var result = nextPrg(min, max);
 				Assert.InRange(result, min, max);
+			}
+		}
+
+		/// <summary>
+		/// Helper function that verifies that PRG range methods indeed return
+		/// values within requested ranges (0 to max)
+		/// </summary>
+		/// <param name="nextRand">Delegate that generates random number using C# built-in Random</param>
+		/// <param name="nextPrg">Delegate that generate sample from range using tested PRG</param>
+		/// <typeparam name="T">Type of the sample (number)</typeparam>
+		private void CheckMax<T>(Func<int, T> nextRand, Func<T, T> nextPrg, T zero) where T : IComparable
+		{
+			for (int i = 0; i < _runs; i++)
+			{
+				var a = nextRand(Int32.MaxValue);
+
+				var result = nextPrg(a);
+				Assert.InRange(result, zero, a);
 			}
 		}
 	}

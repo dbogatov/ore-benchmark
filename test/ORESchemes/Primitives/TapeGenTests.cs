@@ -5,7 +5,7 @@ using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.TapeGen;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.LFPRF
 {
 	[Trait("Category", "Unit")]
 	public class TapeGenTests

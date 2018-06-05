@@ -78,12 +78,12 @@ namespace ORESchemes.Shared.Primitives.PRP
 	/// </summary>
 	public class Feistel : AbsPRP
 	{
-		private readonly int _rounds;
+		public readonly int Rounds;
 		private readonly IPRF _prf;
 
 		public Feistel(int rounds = 3)
 		{
-			_rounds = rounds;
+			Rounds = rounds;
 			_prf = PRFFactory.GetPRF();
 		}
 
@@ -115,7 +115,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 				round = Swap(round);
 			}
 
-			for (int i = 0; i < _rounds; i++)
+			for (int i = 0; i < Rounds; i++)
 			{
 				round = Round(round, key);
 			}
