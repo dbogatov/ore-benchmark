@@ -22,15 +22,6 @@ dotnet minicover reset
 
 dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Category=Unit
 
-# # Create HTML reports inside folder coverage-html
-# # This command returns failure if the coverage is lower than the threshold
-dotnet minicover htmlreport --workdir ../../
-
-# # Print console report
-# # This command returns failure if the coverage is lower than the threshold
-# dotnet minicover report --workdir ../../ --threshold $threshold
-
-# # Create NCover report
-# dotnet minicover xmlreport --workdir ../ --threshold $threshold
-
-# cd ..
+# dotnet minicover htmlreport --workdir ../../
+dotnet minicover report --workdir ../../
+# dotnet minicover xmlreport --workdir ../../
