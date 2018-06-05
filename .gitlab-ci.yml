@@ -58,6 +58,10 @@ coverage-report:
   script:
   - apk add --update bash
   - ./tools/test-coverage/coverage.sh
+  dependencies: []
+  artifacts:
+    paths:
+      - coverage-html/
   tags:
   - docker
 

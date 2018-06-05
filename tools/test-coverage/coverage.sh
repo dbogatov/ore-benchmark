@@ -25,6 +25,6 @@ dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Categor
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
 dotnet minicover uninstrument --workdir ../../
 
-dotnet minicover htmlreport --workdir ../../
 dotnet minicover report --workdir ../../
+dotnet minicover htmlreport --workdir ../../
 # dotnet minicover xmlreport --workdir ../../
