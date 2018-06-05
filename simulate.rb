@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 
+require 'English'
+
 seed = ARGV.count == 1 ? ARGV[0].to_i : Random.new.rand(2**30)
 prng = Random.new(seed)
 
 puts "Global seed to be used: #{seed}"
 
-build = 'dotnet build -c release src/cli/'
+build = 'dotnet build -c release src/cli/ -o dist/'
 puts ">>> #{build}"
 puts `#{build}`
 
@@ -13,13 +15,17 @@ Run = Struct.new(:setsize, :querysize, :scheme, :type, :btreebranches, :ccache, 
 
 runs = []
 
+success = true
+
 %w[lewiore cryptdb practicalore noencryption].each do |scheme|
   ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |type|
     [2, 5, 20, 50].each do |btreebranches|
       [0, 10, 100].each do |cache|
-        cmd = "dotnet src/cli/bin/release/netcoreapp2.0/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache} --seed #{prng.rand(2**30)}"
+        cmd = "dotnet src/cli/dist/cli.dll --dataset data/dataset.txt --queries data/#{type}-queries.txt --queries-type #{type.split(/-/).first} --ore-scheme #{scheme} --b-plus-tree-branches #{btreebranches} --cache-size #{cache} --seed #{prng.rand(2**30)}"
         puts ">>> #{cmd}"
         output = `#{cmd}`
+
+        success = false unless $CHILD_STATUS.success?
 
         setsize = output.scan(/Dataset of (.*) records/)
         querysize = output.scan(/Queries of (.*) queries/)
@@ -45,10 +51,6 @@ runs = []
     end
   end
 end
-
-puts 'Here are the results (also look for results.csv in you current directory)'
-
-runs.each { |run| puts run.to_h }
 
 `rm -f results.csv`
 
@@ -78,3 +80,7 @@ File.open('results.csv', 'w') do |file|
     file.puts run.values.join(',')
   end
 end
+
+puts 'Results are in results.csv in you current directory'
+
+exit(success)
