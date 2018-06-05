@@ -245,12 +245,12 @@ namespace ORESchemes.Shared
 				throw new InvalidOperationException("Max ciphertext value is generated during KeyGen operation");
 			}
 
-			return _maxCiphertextValue;
+			return maxCiphertextValue;
 		}
 
 		public C MinCiphertextValue()
 		{
-			if (!minMaxCiphertextsInitialized)
+			if (!_minMaxCiphertextsInitialized)
 			{
 				throw new InvalidOperationException("Min ciphertext value is generated during KeyGen operation");
 			}
