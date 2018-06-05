@@ -5,11 +5,7 @@ namespace ORESchemes.Shared
 {
 	public class NoEncryptionScheme : AbsOPEScheme
 	{
-		public NoEncryptionScheme(byte[] seed = null) : base(seed)
-		{
-			// Set min max ciphertet values
-			KeyGen();
-		}
+		public NoEncryptionScheme(byte[] seed = null) : base(seed) { }
 
 		public override int Decrypt(long ciphertext, byte[] key)
 		{

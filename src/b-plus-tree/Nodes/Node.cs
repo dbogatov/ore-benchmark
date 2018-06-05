@@ -11,12 +11,6 @@ namespace DataStructures.BPlusTree
 		{
 			public bool updated;
 			public Node extraNode;
-
-			public InsertInfo(bool updated = false, Node extraNode = null)
-			{
-				this.updated = updated;
-				this.extraNode = extraNode;
-			}
 		}
 
 		private struct DeleteInfo
@@ -37,13 +31,6 @@ namespace DataStructures.BPlusTree
 			/// the orphan to be removed from the parent
 			/// </summary>
 			public Node orphan;
-
-			public DeleteInfo(bool notFound = false, Node onlyChild = null, Node orphan = null)
-			{
-				this.notFound = notFound;
-				this.onlyChild = onlyChild;
-				this.orphan = orphan;
-			}
 		}
 
 		private struct IndexValue

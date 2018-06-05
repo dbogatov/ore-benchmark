@@ -46,7 +46,8 @@ namespace Test
 					Enumerable
 						.Range(1, max / 5)
 						.Select(val => new DeleteQuery(val * 4))
-						.ToList()
+						.ToList(),
+				CacheSize = 10
 			};
 
 			var options = new Options<long>(
@@ -59,10 +60,12 @@ namespace Test
 
 			Assert.Equal(type, report.QueriesType);
 
-			new List<Report.SubReport> {
+			var subreports = new List<Report.SubReport> {
 				report.Construction,
 				report.Queries
-			}.ForEach(
+			};
+
+			subreports.ForEach(
 				subreport =>
 				{
 					Assert.NotEqual(0, report.Construction.IOs);
@@ -71,6 +74,23 @@ namespace Test
 					// CPU can be zero due to rounding and inacuracy
 				}
 			);
+
+			var descriptions = new List<string> {
+				report.ToString(),
+				report.ToConciseString()
+			};
+
+			foreach (var description in descriptions)
+			{
+				foreach (var subreport in subreports)
+				{
+					Assert.Contains(subreport.IOs.ToString(), description);
+					Assert.Contains(subreport.AvgIOs.ToString(), description);
+					Assert.Contains(subreport.AvgSchemeOperations.ToString(), description);
+					Assert.Contains(subreport.CacheSize.ToString(), description);
+					Assert.Contains(subreport.SchemeOperations.ToString(), description);
+				}
+			}
 		}
 	}
 }

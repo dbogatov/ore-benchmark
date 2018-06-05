@@ -190,5 +190,17 @@ namespace Test.ORESchemes
 					}
 				);
 		}
+
+		[Fact]
+		public void MinMaxGenerationTest()
+		{
+			Assert.Throws<InvalidOperationException>(
+				() => _scheme.MinCiphertextValue()
+			);
+
+			Assert.Throws<InvalidOperationException>(
+				() => _scheme.MaxCiphertextValue()
+			);
+		}
 	}
 }

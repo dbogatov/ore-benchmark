@@ -128,6 +128,8 @@ namespace Test.BPlusTree
 		{
 			Random random = new Random(3068354); // seed is static
 
+			int max = _max / 10;
+
 			for (int i = 3; i < 11; i++)
 			{
 				ConstructTree(
@@ -136,8 +138,8 @@ namespace Test.BPlusTree
 						i
 					),
 					Enumerable
-						.Range(1, _max)
-						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(_max) + 2 * _max)
+						.Range(1, max)
+						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)
 						.ToList()
 				);
 			}

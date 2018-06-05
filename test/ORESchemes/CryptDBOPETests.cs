@@ -20,7 +20,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void MalformedCiphertext()
+		public void MalformedCiphertextTest()
 		{
 			_scheme.Init();
 
@@ -44,6 +44,38 @@ namespace Test.ORESchemes
 
 			Assert.Throws<ArgumentException>(
 				() => _scheme.Decrypt(from + 1, key)
+			);
+		}
+
+		[Fact]
+		public void InputOutOfRangeTest()
+		{
+			var scheme = new CryptDBScheme(
+				Int16.MinValue,
+				Int16.MaxValue,
+				Int16.MinValue,
+				Int16.MaxValue,
+				_entropy
+			);
+
+			scheme.Init();
+
+			byte[] key = scheme.KeyGen();
+
+			Assert.Throws<ArgumentException>(
+				() => scheme.Encrypt((int)(Int16.MinValue - 10), key)
+			);
+
+			Assert.Throws<ArgumentException>(
+				() => scheme.Encrypt((int)(Int16.MaxValue + 10), key)
+			);
+
+			Assert.Throws<ArgumentException>(
+				() => scheme.Decrypt((int)(Int16.MinValue - 10), key)
+			);
+
+			Assert.Throws<ArgumentException>(
+				() => scheme.Decrypt((int)(Int16.MaxValue + 10), key)
 			);
 		}
 

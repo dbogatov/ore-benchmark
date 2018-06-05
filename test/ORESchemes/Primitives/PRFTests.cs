@@ -5,7 +5,7 @@ using ORESchemes.Shared.Primitives.PRF;
 using ORESchemes.Shared.Primitives.PRP;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.PRF
 {
 	[Trait("Category", "Unit")]
 	public class AESPRFTests : AbsPRFTests
@@ -19,7 +19,7 @@ namespace Test.ORESchemes.Primitives
 		public FeistelPRFTests() : base(new Feistel(3)) { }
 	}
 
-	[Trait("Category", "Unit")]
+	[Trait("Category", "Integration")]
 	public class FeistelStrongPRFTests : AbsPRFTests
 	{
 		public FeistelStrongPRFTests() : base(new Feistel(4)) { }
@@ -30,7 +30,7 @@ namespace Test.ORESchemes.Primitives
 		protected readonly IPRF _prf;
 		private const int SEED = 123456;
 		protected readonly byte[] _key = new byte[256 / 8];
-		private const int RUNS = 100000;
+		private const int RUNS = 1000;
 
 		public AbsPRFTests(IPRF prf)
 		{

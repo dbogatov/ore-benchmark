@@ -125,17 +125,23 @@ namespace Test.BPlusTree
 		[Theory]
 		[InlineData(3, 2)]
 		[InlineData(2, 2)]
-		public void SearchRangeEndBeforeStartTest(int start, int end)
+		public void SearchRangeImproperTest(int start, int end)
 		{
-			Assert.Throws<ArgumentException>(
-				() =>
-				new Tree<string, C>(
-					new Options<C>(
-						_scheme,
-						3
-					)
-				).TryRange(_scheme.Encrypt(start, _key), _scheme.Encrypt(end, _key), out _)
+			var tree = new Tree<string, C>(
+				new Options<C>(
+					_scheme,
+					3
+				)
 			);
+
+			var startCipher = _scheme.Encrypt(start, _key);
+			var endCipher = _scheme.Encrypt(end, _key);
+
+			var exception = Assert.Throws<ArgumentException>(
+				() => tree.TryRange(startCipher, endCipher, out _)
+			);
+
+			Assert.Equal("Improper range", exception.Message);
 		}
 	}
 }

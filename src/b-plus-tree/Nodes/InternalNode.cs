@@ -9,8 +9,6 @@ namespace DataStructures.BPlusTree
 
 		private class InternalNode : Node
 		{
-			public InternalNode(Options<C> options, Node parent, Node next, Node prev) : base(options, parent, next, prev) { }
-
 			public InternalNode(Options<C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
 			{
 				this.children = children;

@@ -81,11 +81,6 @@ namespace ORESchemes.PracticalORE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.tuples.Count != ciphertextTwo.tuples.Count)
-			{
-				throw new InvalidOperationException("Malformed ciphertexts");
-			}
-
 			var length = ciphertextOne.tuples.Count;
 
 			for (int i = 0; i < length; i++)

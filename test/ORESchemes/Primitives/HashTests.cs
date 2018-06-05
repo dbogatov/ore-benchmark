@@ -6,7 +6,7 @@ using ORESchemes.Shared;
 using Xunit;
 using ORESchemes.Shared.Primitives.Hash;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.ORESchemes.Primitives.Hash
 {
 	[Trait("Category", "Unit")]
 	public class SHA256Tests : AbsHashTests
