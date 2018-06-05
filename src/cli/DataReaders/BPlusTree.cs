@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Simulation;
+using Simulation.BPlusTree;
 
-namespace CLI
+namespace CLI.DataReaders
 {
 	/// <typeparam name="D">Data type</typeparam>
-	public class DataReader<D>
+	public class BPlusTree<D>
 	{
 		public Inputs<D> Inputs = new Inputs<D>();
 
 		/// <summary>
 		/// Immediately populates its local lists with the data read from files
 		/// </summary>
-		public DataReader(string dataset, string queries, QueriesType type)
+		public BPlusTree(string dataset, string queries, QueriesType type)
 		{
 			Inputs.Type = type;
 

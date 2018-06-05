@@ -129,6 +129,18 @@ namespace ORESchemes.Shared
 		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
 
 		/// <summary>
+		/// Compares two values given by their ciphertexts
+		/// </summary>
+		/// <remark>
+		/// This is a generic comparison method.
+		/// Other comraisons will call this method.
+		/// </remark>
+		/// <param name="ciphertextOne">The first ciphertext to compare</param>
+		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
+		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
+		bool Compare(C ciphertextOne, C ciphertextTwo);
+
+		/// <summary>
 		/// Returns the encryption of the greatest possible value
 		/// </summary>
 		C MaxCiphertextValue();
@@ -271,13 +283,7 @@ namespace ORESchemes.Shared
 			}
 		}
 
-		/// <summary>
-		/// Compares two values given by their ciphertexts
-		/// </summary>
-		/// <param name="ciphertextOne">The first ciphertext to compare</param>
-		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
-		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
-		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
+		public abstract bool Compare(C ciphertextOne, C ciphertextTwo);
 	}
 
 	/// <summary>
@@ -323,7 +329,7 @@ namespace ORESchemes.Shared
 			return ciphertextOne <= ciphertextTwo;
 		}
 
-		sealed protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+		sealed public override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
 	}
 
 	/// <summary>
@@ -370,7 +376,7 @@ namespace ORESchemes.Shared
 			return ProperCompare(ciphertextOne, ciphertextTwo) != 1;
 		}
 
-		sealed protected override bool Compare(C ciphertextOne, C ciphertextTwo) => ProperCompare(ciphertextOne, ciphertextTwo) == -1;
+		sealed public override bool Compare(C ciphertextOne, C ciphertextTwo) => ProperCompare(ciphertextOne, ciphertextTwo) == -1;
 
 		/// <summary>
 		/// CMP as defined in https://eprint.iacr.org/2016/612.pdf Remark 2.3
