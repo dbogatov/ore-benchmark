@@ -50,7 +50,7 @@ puts 'Here are the results (also look for results.csv in you current directory)'
 
 runs.each { |run| puts run.to_h }
 
-`rm results.csv`
+`rm -f results.csv`
 
 File.open('results.csv', 'w') do |file|
   file.puts [
