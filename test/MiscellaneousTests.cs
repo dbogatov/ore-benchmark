@@ -40,7 +40,7 @@ namespace Test
 					case QueriesType.Exact:
 						var exactIndex = generator.Next();
 						ExactQuery exact = new ExactQuery(exactIndex);
-						Assert.Contains(exactIndex.ToString(), exactIndex.ToString());
+						Assert.Contains(exactIndex.ToString(), exact.ToString());
 						break;
 					case QueriesType.Delete:
 						var deleteIndex = generator.Next();

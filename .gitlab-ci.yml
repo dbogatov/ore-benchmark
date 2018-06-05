@@ -50,8 +50,6 @@ build-docs:
   tags:
   - docker
 
-# Minicover does not handle large number of tests yet
-# See the issue https://github.com/lucaslorentz/minicover/issues/97
 coverage-report:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: test

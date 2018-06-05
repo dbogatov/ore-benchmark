@@ -7,6 +7,8 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
+# See https://github.com/lucaslorentz/minicover
+
 rm -rf ../../coverage*
 
 dotnet restore ./../../test/
@@ -27,4 +29,3 @@ dotnet minicover uninstrument --workdir ../../
 
 dotnet minicover report --workdir ../../
 dotnet minicover htmlreport --workdir ../../
-# dotnet minicover xmlreport --workdir ../../
