@@ -4,6 +4,18 @@ require 'English'
 
 Dir.chdir File.dirname(__FILE__)
 
+def run(input, scheme, seed, lewioren, cryptdbrange)
+  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} scheme --lewi-ore-n #{lewioren} --cryptdb-range #{cryptdbrange}"
+  puts ">>> #{cmd}"
+  output = `#{cmd}`
+
+  open('../../results/schemes.csv', 'a') do |f|
+    f << output
+  end
+
+  $CHILD_STATUS.success?
+end
+
 seed = ARGV.count == 1 ? ARGV[0].to_i : Random.new.rand(2**30)
 prng = Random.new(seed)
 
@@ -13,47 +25,59 @@ build = 'dotnet build -c release ../../src/cli/ -o dist/'
 puts ">>> #{build}"
 puts `#{build}`
 
-Run = Struct.new(:setsize, :scheme, :qops, :avgqops, :qtime, :qcputime)
-
-runs = []
-
 success = true
-
-%w[lewiore cryptdb practicalore noencryption].each do |scheme|
-  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/exact-queries.txt --ore-scheme #{scheme} --seed #{prng.rand(2**30)} scheme"
-  puts ">>> #{cmd}"
-  output = `#{cmd}`
-
-  success = false unless $CHILD_STATUS.success?
-
-  setsize = output.scan(/Dataset of (.*) records/)
-
-  ops = output.scan(/OPs: (.*)/)
-  avgops = output.scan(/AvgOPs: (.*)/)
-  time = output.scan(/Time: (.*)/)
-  cputime = output.scan(/CPUTime: (.*)/)
-
-  runs.push(Run.new(setsize, scheme, ops, avgops, time, cputime))
-end
 
 `rm -f ../../results/schemes.csv`
 `mkdir -p ../../results/`
 
-File.open('../../results/schemes.csv', 'w') do |file|
-  file.puts [
-    'Dataset size',
-    'ORE scheme',
-    'Scheme OPs',
-    'Scheme AvgOPs',
-    'Observed time (ms)',
-    'CPU time (ms)'
-  ].join(',')
-  runs.each do |run|
-    file.puts run.values.join(',')
+`touch ../../results/schemes.csv`
+
+names = []
+
+names.push('Seed')
+names.push('LewiORE N')
+names.push('CryptDB Range')
+names.push('Scheme')
+
+%w[Encryption Decryption Comparison].each do |operation|
+  names.push("#{operation} operations number")
+
+  %w[PRF PRG Hash LFPRF PRP HGSampler UniformSampler BinomialSampler PPH].each do |primitive|
+    %w[impure pure].each do |purity|
+      %w[total average].each do |number|
+        names.push("#{operation} #{primitive} usage #{number} (#{purity})")
+      end
+    end
+  end
+
+  names.push("#{operation} observable time (ms)")
+  names.push("#{operation} CPU time (ms)")
+end
+
+open('../../results/schemes.csv', 'a') do |f|
+  f << names.join(',')
+  f << "\n"
+end
+
+%w[lewiore cryptdb practicalore noencryption].each do |scheme|
+  case scheme
+
+  when 'lewiore'
+    [4, 8, 16].each do |lewioren|
+      success = false unless run('exact-queries', scheme, prng.rand(2**30), lewioren, 48)
+    end
+
+  when 'cryptdb'
+    [32, 36, 40, 44, 48].each do |cryptdbrange|
+      success = false unless run('exact-queries', scheme, prng.rand(2**30), 16, cryptdbrange)
+    end
+
+  else
+    success = false unless run('exact-queries', scheme, prng.rand(2**30), 16, 48)
   end
 end
 
-puts 'Results are in results/tree.csv in you current directory'
+puts 'Results are in results/schemes.csv in you current directory'
 
 `rm -rf ../../src/**/dist`
 

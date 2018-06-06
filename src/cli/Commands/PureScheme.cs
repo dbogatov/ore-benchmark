@@ -72,6 +72,11 @@ namespace CLI
 					throw new InvalidOperationException($"No such scheme: {Parent.OREScheme}");
 			}
 
+			if (!Parent.Verbose)
+			{
+				System.Console.Write($"{Parent.Seed},{LewiOREN},{CryptDBRange},{Parent.OREScheme},");
+			}
+
 			System.Console.WriteLine(Parent.Verbose ? report.ToString() : report.ToConciseString());
 
 			return 0;
