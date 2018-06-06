@@ -54,11 +54,11 @@ namespace Simulation.PureSchemes
 		/// given function. Records times and number of events.
 		/// </summary>
 		/// <param name="routine">Function to profile</param>
-		private Report Profile(Action routine)
+		private Report.Subreport Profile(Action routine)
 		{
 			var currentProcess = Process.GetCurrentProcess();
 			_primitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
-			_purePrimitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
+			_purePrimitiveUsage.Keys.ToList().ForEach(key => _purePrimitiveUsage[key] = 0);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 			var processStartTime = currentProcess.UserProcessorTime;
@@ -71,12 +71,12 @@ namespace Simulation.PureSchemes
 			// for some reason this value is off by exactly hundred
 			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
 
-			return new Report
+			return new Report.Subreport
 			{
 				CPUTime = procTime,
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
-				TotalPrimitiveOperations = _primitiveUsage,
-				PurePrimitiveOperations = _purePrimitiveUsage,
+				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
+				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
 				OperationsNumber = _dataset.Count
 			};
 		}
@@ -85,21 +85,47 @@ namespace Simulation.PureSchemes
 		/// Runs simulation for the dataset and schemes provided through the constructor.
 		/// </summary>
 		/// <returns>A final report</returns>
-		public Report Simulate() =>
-			Profile(
-				() =>
-				{
-					for (int i = 1; i < _dataset.Count; i++)
+		public Report Simulate()
+		{
+			List<C> ciphertexts = new List<C>();
+
+			return new Report
+			{
+				Encryptions = Profile(() =>
 					{
-						int a = _dataset[i - 1];
-						int b = _dataset[i];
-
-						C ca = _scheme.Encrypt(a, _key);
-						C cb = _scheme.Encrypt(b, _key);
-
-						_scheme.Compare(ca, ca);
+						for (int i = 0; i < _dataset.Count; i++)
+						{
+							ciphertexts.Add(_scheme.Encrypt(_dataset[i], _key));
+						}
 					}
-				}
-			);
+				),
+				Decryptions = Profile(() =>
+					{
+						for (int i = 0; i < _dataset.Count; i++)
+						{
+							_scheme.Decrypt(ciphertexts[i], _key);
+						}
+					}
+				),
+				Comparisons = Profile(() =>
+					{
+						int length = _dataset.Count;
+						for (int i = 0; i < length; i++)
+						{
+							_scheme.Compare(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+						}
+					}
+				)
+			};
+		}
+
+		private Dictionary<Primitive, long> CloneDictionary(Dictionary<Primitive, long> original)
+		{
+			Dictionary<Primitive, long> copy = new Dictionary<Primitive, long>();
+
+			original.Keys.ToList().ForEach(key => copy.Add(key, original[key]));
+
+			return copy;
+		}
 	}
 }
