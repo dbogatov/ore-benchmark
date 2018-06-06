@@ -68,7 +68,7 @@ namespace ORESchemes.LewiORE
 
 			_bitsInBlock = 32 / n;
 
-			_generator.NextBytes(IV);
+			G.NextBytes(IV);
 		}
 
 		public override byte[] KeyGen()
@@ -76,7 +76,7 @@ namespace ORESchemes.LewiORE
 			OnOperation(SchemeOperation.KeyGen);
 
 			byte[] key = new byte[2 * ALPHA / 8];
-			_generator.NextBytes(key);
+			G.NextBytes(key);
 
 			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
 			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
@@ -186,7 +186,7 @@ namespace ORESchemes.LewiORE
 			List<List<short>> result = new List<List<short>>();
 
 			byte[] nonce = new byte[ALPHA / 8];
-			_generator.NextBytes(nonce);
+			G.NextBytes(nonce);
 
 			byte[] k1 = key.Take(ALPHA / 8).ToArray();
 			byte[] k2 = key.Skip(ALPHA / 8).ToArray();

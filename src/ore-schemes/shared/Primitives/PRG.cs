@@ -301,18 +301,18 @@ namespace ORESchemes.Shared.Primitives.PRG
 	/// </summary>
 	public class DefaultRandom : CustomPRG
 	{
-		private Random _generator;
+		private Random G;
 
 		public DefaultRandom(byte[] seed) : base(seed)
 		{
-			_generator = new Random(BitConverter.ToInt32(seed, 0));
+			G = new Random(BitConverter.ToInt32(seed, 0));
 		}
 
 		public override void GetBytes(byte[] data)
 		{
 			OnUse(Primitive.PRG);
 
-			_generator.NextBytes(data);
+			G.NextBytes(data);
 		}
 	}
 }

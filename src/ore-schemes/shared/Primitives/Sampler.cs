@@ -49,22 +49,22 @@ namespace ORESchemes.Shared.Primitives.Sampler
 
 	public class CustomSampler : AbsPrimitive, ISampler
 	{
-		private IPRG _generator;
+		private IPRG G;
 
 		public CustomSampler(byte[] entropy = null)
 		{
-			_generator = PRGFactory.GetPRG(entropy);
+			G = PRGFactory.GetPRG(entropy);
 
-			_generator.PrimitiveUsed += new PrimitiveUsageEventHandler(
+			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
 			);
 		}
 
 		public CustomSampler(IPRG prg)
 		{
-			_generator = prg;
+			G = prg;
 
-			_generator.PrimitiveUsed += new PrimitiveUsageEventHandler(
+			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
 			);
 		}
@@ -86,7 +86,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			double sum = 0;
 			while (true)
 			{
-				sum += Math.Log(_generator.NextDouble(0, 1)) / (n - x);
+				sum += Math.Log(G.NextDouble(0, 1)) / (n - x);
 				if (sum < log_q)
 				{
 					return reverse ? n - x : x;
@@ -152,7 +152,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			}
 
 			byte[] buffer = new byte[sizeof(ulong)];
-			_generator.NextBytes(buffer);
+			G.NextBytes(buffer);
 
 			ulong longRand = BitConverter.ToUInt64(buffer, 0);
 
@@ -167,7 +167,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			do
 			{
 				var p = (double)successes / population;
-				var r = _generator.NextDouble(0, 1);
+				var r = G.NextDouble(0, 1);
 				if (r < p)
 				{
 					x++;
@@ -225,7 +225,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			Func<RR, RR> log = (value) => Convert.ToDecimal(Math.Log((double)value));
 			Func<RR, RR> round = (value) => Math.Round(value, MidpointRounding.ToEven);
 			Func<RR, long> to_int = (value) => Convert.ToInt64(value);
-			Func<RR> RAND = () => Convert.ToDecimal(_generator.NextDouble(0, 1));
+			Func<RR> RAND = () => Convert.ToDecimal(G.NextDouble(0, 1));
 			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double)Math.Abs(value)));
 			Func<RR, RR> trunc = (value) => Math.Truncate(value);
 			Func<RR, ulong> to_ZZ = (value) => Convert.ToUInt64(value);

@@ -79,15 +79,14 @@ namespace ORESchemes.Shared.Primitives.PRP
 	public class Feistel : AbsPRP
 	{
 		public readonly int Rounds;
-		// TODO: rename all PRFs to F, and all generators to G
-		private readonly IPRF _prf;
+		private readonly IPRF F;
 
 		public Feistel(int rounds = 3)
 		{
 			Rounds = rounds;
-			_prf = PRFFactory.GetPRF();
+			F = PRFFactory.GetPRF();
 
-			_prf.PrimitiveUsed += new PrimitiveUsageEventHandler(
+			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
 			);
 		}
@@ -152,7 +151,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
 				Xor(
 					input.Item2,
-					new BitArray(_prf.PRF(
+					new BitArray(F.PRF(
 						key, 
 						bytes, 
 						Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()

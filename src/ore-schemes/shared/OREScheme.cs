@@ -177,7 +177,7 @@ namespace ORESchemes.Shared
 
 		public event PrimitiveUsageEventHandler PrimitiveUsed;
 
-		protected readonly IPRG _generator;
+		protected readonly IPRG G;
 		protected const int ALPHA = 256;
 
 		protected C maxCiphertextValue = default(C);
@@ -190,9 +190,9 @@ namespace ORESchemes.Shared
 		/// </summary>
 		public AbsOREScheme(byte[] seed)
 		{
-			_generator = PRGFactory.GetPRG(seed);
+			G = PRGFactory.GetPRG(seed);
 
-			SubscribePrimitive(_generator);
+			SubscribePrimitive(G);
 		}
 
 		public abstract int Decrypt(C ciphertext, byte[] key);
@@ -248,7 +248,7 @@ namespace ORESchemes.Shared
 			OnOperation(SchemeOperation.KeyGen);
 
 			byte[] key = new byte[ALPHA / 8];
-			_generator.NextBytes(key);
+			G.NextBytes(key);
 
 			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
 			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
