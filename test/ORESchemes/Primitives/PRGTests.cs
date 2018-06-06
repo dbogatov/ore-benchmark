@@ -10,7 +10,7 @@ using ORESchemes.Shared.Primitives.PRG;
 namespace Test.ORESchemes.Primitives.PRG
 {
 	[Trait("Category", "Unit")]
-	public class AESPRGTests : PRGTests
+	public class AESPRGTests : AbsPRGTests
 	{
 		public AESPRGTests() : base()
 		{
@@ -33,7 +33,7 @@ namespace Test.ORESchemes.Primitives.PRG
 	}
 
 	[Trait("Category", "Unit")]
-	public class DefaultRandomTests : PRGTests
+	public class DefaultRandomTests : AbsPRGTests
 	{
 		public DefaultRandomTests() : base()
 		{
@@ -55,7 +55,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 	}
 
-	public abstract class PRGTests
+	public abstract class AbsPRGTests
 	{
 		protected const int _seed = 132456;
 		protected readonly byte[] _entropy = new byte[256 / 8];
@@ -66,7 +66,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		protected IPRG _prg;
 		protected IPRG _anotherPrg;
 
-		public PRGTests()
+		public AbsPRGTests()
 		{
 			new Random(_seed).NextBytes(_entropy);
 			new Random(_seed + 1).NextBytes(_anotherEntropy);
@@ -204,6 +204,37 @@ namespace Test.ORESchemes.Primitives.PRG
 			CheckRanges<double>((a, b) => random.NextDouble(), _prg.NextDouble);
 
 			CheckMax<double>(a => random.NextDouble(), _prg.NextDouble, 0);
+		}
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRG>(
+				_prg,
+				(G) =>
+				{
+					byte[] bytes = new byte[10];
+					G.NextBytes(bytes);
+
+					G.Next();
+					G.Next(10);
+					G.Next(10, 20);
+
+					G.NextLong();
+					G.NextLong(10);
+					G.NextLong(10, 20);
+
+					G.NextDouble();
+					G.NextDouble(10);
+					G.NextDouble(10, 20);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				}
+			);
 		}
 
 		/// <summary>
