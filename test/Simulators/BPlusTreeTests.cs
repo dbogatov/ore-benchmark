@@ -7,10 +7,10 @@ using DataStructures.BPlusTree;
 using System.Collections.Generic;
 using Simulation.BPlusTree;
 
-namespace Test
+namespace Test.Simulators
 {
 	[Trait("Category", "Unit")]
-	public class SimulatorTests
+	public class BPlusTreeTests
 	{
 		[Theory]
 		[InlineData(QueriesType.Exact)]
