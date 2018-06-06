@@ -7,7 +7,7 @@ build-app:
   image: microsoft/dotnet:2.1-sdk-alpine
   stage: build
   script:
-  - printf "namespace CLI{public static class GlobalVar{public static readonly string Version = "%s";}}" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
+  - printf "namespace CLI{public static class GlobalVar{public static readonly string Version = \"%s\";}}" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
   - dotnet restore src/cli/ --disable-parallel 
   - dotnet restore tools/data-gen/ --disable-parallel 
   - dotnet publish -c release src/cli/ -o dist/
