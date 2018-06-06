@@ -8,7 +8,7 @@ namespace CLI.DataReaders
 		public List<int> Dataset = new List<int>();
 
 		/// <summary>
-		/// Immediately populates its local lists with the data read from files
+		/// Immediately populates its local dataset list with the data read from file
 		/// </summary>
 		public PureScheme(string dataset)
 		{

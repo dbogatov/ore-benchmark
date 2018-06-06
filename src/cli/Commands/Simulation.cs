@@ -8,8 +8,15 @@ using Simulation;
 namespace CLI
 {
 	[HelpOption("--help")]
+	/// <summary>
+	/// Abstract out common logic for all commands
+	/// </summary>
 	public abstract class CommandBase
 	{
+		/// <summary>
+		/// Main comand's action
+		/// </summary>
+		/// <returns>Exit code</returns>
 		protected abstract int OnExecute(CommandLineApplication app);
 	}
 
@@ -19,7 +26,7 @@ namespace CLI
 	[Subcommand("scheme", typeof(PureSchemeCommand))]
 	public class SimulatorCommand : CommandBase
 	{
-		private static string Version() => "dev";
+		private static string Version() => GlobalVar.Version;
 
 		[Option("--verbose|-v", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
