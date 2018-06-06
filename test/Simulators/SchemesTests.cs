@@ -15,7 +15,7 @@ namespace Test.Simulators
 		[Fact]
 		public void SimulatorTest()
 		{
-			var max = 10000;
+			var max = 1000000;
 			var dataset =
 				Enumerable
 					.Range(-max, max)

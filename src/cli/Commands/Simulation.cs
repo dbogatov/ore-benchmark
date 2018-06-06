@@ -18,6 +18,14 @@ namespace CLI
 		/// </summary>
 		/// <returns>Exit code</returns>
 		protected abstract int OnExecute(CommandLineApplication app);
+
+		protected void PutToConsole(string output, bool verbose)
+		{
+			if (verbose)
+			{
+				System.Console.WriteLine(output);
+			}
+		}
 	}
 
 	[Command(Name = "ore-benchamark", Description = "An ORE schemes benchmark", ThrowOnUnexpectedArgument = true)]
@@ -45,7 +53,7 @@ namespace CLI
 		protected override int OnExecute(CommandLineApplication app)
 		{
 			app.ShowHelp();
-			
+
 			return 1;
 		}
 	}

@@ -29,7 +29,7 @@ namespace Simulation.PureSchemes
 			/// </summary>
 			/// <param name="queryStage">The stage for which this sub-report was generated</param>
 			public string ToConciseString() =>
-				$@"{OperationsNumber},{PrintPrimitiveUsageConcise()}{ObservedTime.TotalMilliseconds}{CPUTime.TotalMilliseconds}";
+				$@"{OperationsNumber},{PrintPrimitiveUsageConcise()}{ObservedTime.TotalMilliseconds},{CPUTime.TotalMilliseconds}";
 
 			private string PrintPrimitiveUsage()
 			{
@@ -84,6 +84,6 @@ Simulation report
 {Comparisons}
 				";
 
-		public string ToConciseString() => $@"{Encryptions},{Decryptions},{Comparisons}";
+		public string ToConciseString() => $@"{Encryptions.ToConciseString()},{Decryptions.ToConciseString()},{Comparisons.ToConciseString()}";
 	}
 }
