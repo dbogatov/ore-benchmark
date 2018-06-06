@@ -77,7 +77,7 @@ namespace ORESchemes.PracticalORE
 			return result;
 		}
 
-		protected override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
+		public override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 

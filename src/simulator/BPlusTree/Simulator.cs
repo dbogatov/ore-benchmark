@@ -5,7 +5,7 @@ using DataStructures.BPlusTree;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Simulation
+namespace Simulation.BPlusTree
 {
 	/// <typeparam name="D">Data type</typeparam>
 	/// <typeparam name="C">Ciphertext type</typeparam>

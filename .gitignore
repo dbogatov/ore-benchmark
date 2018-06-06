@@ -1,10 +1,15 @@
 **/obj/
 **/bin/
 **/dist/
-results.*
-data/*.txt
+
+results/
+
+data/
+
 docs/documentation
 
 coverage.json
 coverage-hits.txt
 coverage-html/
+
+results/
