@@ -55,7 +55,7 @@ end
   ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |queries|
     [2, 5, 20, 50].each do |btreebranches|
       [0, 10, 100].each do |cache|
-        success = false unless run('dataset', queries, queries.split(/-/).first, scheme, seed, cache, btreebranches)
+        success = false unless run('dataset', queries, queries.split(/-/).first, scheme, prng.rand(2**30), cache, btreebranches)
       end
     end
   end
