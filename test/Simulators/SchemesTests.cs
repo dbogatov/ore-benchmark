@@ -24,7 +24,7 @@ namespace Test.Simulators
 			var simulator = new Simulator<long>(dataset, new NoEncryptionScheme());
 			var report = simulator.Simulate();
 
-			Assert.NotEqual(0, report.SchemeOperations);
+			Assert.NotEqual(0, report.OperationsNumber);
 			Assert.NotEqual(new TimeSpan(0).Ticks, report.ObservedTime.Ticks);
 		}
 	}
