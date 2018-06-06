@@ -32,20 +32,7 @@ namespace Simulation.BPlusTree
 			/// Returns the string representation of the object in a concise manner
 			/// </summary>
 			/// <param name="queryStage">The stage for which this sub-report was generated</param>
-			public string ToConciseString(bool queryStage)
-			{
-				var stage = queryStage ? "Query" : "Construction";
-
-				return $@"
-{stage} CacheSize: {CacheSize}
-{stage} IOs: {IOs}
-{stage} AvgIOs: {AvgIOs}
-{stage} OPs: {SchemeOperations}
-{stage} AvgOPs: {AvgSchemeOperations}
-{stage} Time: {ObservedTime.TotalMilliseconds}
-{stage} CPUTime: {CPUTime.TotalMilliseconds}
-";
-			}
+			public string ToConciseString() => $@"{IOs},{AvgIOs},{SchemeOperations},{AvgSchemeOperations},{ObservedTime.TotalMilliseconds},{CPUTime.TotalMilliseconds}";
 		}
 
 		public SubReport Construction;
@@ -53,25 +40,17 @@ namespace Simulation.BPlusTree
 		public QueriesType QueriesType;
 
 		public override string ToString()
-		{
-			return $@"
+			=> $@"
 Report for {QueriesType} queries simulation:
 	Construction stage report:
 {Construction}
 	{QueriesType} queries stage report:
 {Queries}
 ";
-		}
 
 		/// <summary>
 		/// Returns the string representation of the object in a concise manner
 		/// </summary>
-		public string ToConciseString()
-		{
-			return $@"
-{Construction.ToConciseString(false)}
-{Queries.ToConciseString(true)}
-";
-		}
+		public string ToConciseString() => $@"{Construction.ToConciseString()},{Queries.ToConciseString()}";
 	}
 }
