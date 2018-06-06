@@ -24,8 +24,11 @@ namespace Test.Simulators
 			var simulator = new Simulator<long>(dataset, new NoEncryptionScheme());
 			var report = simulator.Simulate();
 
-			Assert.NotEqual(0, report.OperationsNumber);
-			Assert.NotEqual(new TimeSpan(0).Ticks, report.ObservedTime.Ticks);
+			foreach (var subreport in new List<Report.Subreport> { report.Encryptions, report.Decryptions, report.Comparisons })
+			{
+				Assert.NotEqual(0, subreport.OperationsNumber);
+				Assert.NotEqual(new TimeSpan(0).Ticks, subreport.ObservedTime.Ticks);
+			}
 		}
 	}
 }

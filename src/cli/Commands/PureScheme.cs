@@ -10,6 +10,8 @@ namespace CLI
 	[Command(Description = "Run plain encryptions, decryptions and comparisons on a scheme")]
 	public class PureSchemeCommand : CommandBase
 	{
+		
+
 		private SimulatorCommand Parent { get; set; }
 
 		protected override int OnExecute(CommandLineApplication app)
