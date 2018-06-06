@@ -19,7 +19,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 		}
 	}
 
-	public interface IHash
+	public interface IHash : IPrimitive
 	{
 		/// <summary>
 		/// Returns the hash value of the input
@@ -37,15 +37,26 @@ namespace ORESchemes.Shared.Primitives.Hash
 		byte[] ComputeHash(byte[] input, byte[] key);
 	}
 
-	public abstract class AbsHash : IHash
+	public abstract class AbsHash : AbsPrimitive, IHash
 	{
+		IPRF F;
+
+		public AbsHash()
+		{
+			F = PRFFactory.GetPRF();
+
+			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
+		}
+
 		public abstract byte[] ComputeHash(byte[] input);
 
 		public virtual byte[] ComputeHash(byte[] input, byte[] key) =>
 			ComputeHash(
-				PRFFactory.GetPRF().PRF(
-					key, 
-					input, 
+				F.PRF(
+					key,
+					input,
 					Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()
 				).Skip(128 / 8).ToArray()
 			);
@@ -53,7 +64,11 @@ namespace ORESchemes.Shared.Primitives.Hash
 
 	public class SHA256 : AbsHash
 	{
-		public override byte[] ComputeHash(byte[] input) =>
-			new SHA256Managed().ComputeHash(input);
+		public override byte[] ComputeHash(byte[] input)
+		{
+			OnUse(Primitive.Hash);
+
+			return new SHA256Managed().ComputeHash(input);
+		}
 	}
 }

@@ -45,7 +45,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 		}
 	}
 
-	public interface IPRG
+	public interface IPRG : IPrimitive
 	{
 		/// <summary>
 		/// Returns a 32-bits intger from its minimum value to its possible value
@@ -130,6 +130,20 @@ namespace ORESchemes.Shared.Primitives.PRG
 			else
 			{
 				Array.Copy(seed, 0, _seed, 0, _seed.Length);
+			}
+		}
+
+		public event PrimitiveUsageEventHandler PrimitiveUsed;
+
+		/// <summary>
+		/// Emits the event that the primitive was used
+		/// </summary>
+		protected void OnUse(Primitive primitive, bool impure = false)
+		{
+			var handler = PrimitiveUsed;
+			if (handler != null)
+			{
+				handler(primitive, impure);
 			}
 		}
 
@@ -244,6 +258,8 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		public override void GetBytes(byte[] data)
 		{
+			OnUse(Primitive.PRG);
+
 			byte[] encrypted;
 
 			using (Aes aesAlg = Aes.Create())
@@ -294,6 +310,8 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		public override void GetBytes(byte[] data)
 		{
+			OnUse(Primitive.PRG);
+
 			_generator.NextBytes(data);
 		}
 	}

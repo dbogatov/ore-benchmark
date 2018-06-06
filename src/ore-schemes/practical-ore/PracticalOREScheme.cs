@@ -26,6 +26,8 @@ namespace ORESchemes.PracticalORE
 			M = Convert.ToInt32(_generator.Next(4, Int32.MaxValue));
 			F = PRFFactory.GetPRF();
 
+			SubscribePrimitive(F);
+
 			IV = new byte[128 / 8];
 			_generator.NextBytes(IV);
 		}

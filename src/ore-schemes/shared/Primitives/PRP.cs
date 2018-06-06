@@ -47,7 +47,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
 	}
 
-	public abstract class AbsPRP : IPRP
+	public abstract class AbsPRP : AbsPrimitive, IPRP
 	{
 		public byte[] InversePRF(byte[] key, byte[] input)
 		{
@@ -79,21 +79,30 @@ namespace ORESchemes.Shared.Primitives.PRP
 	public class Feistel : AbsPRP
 	{
 		public readonly int Rounds;
+		// TODO: rename all PRFs to F, and all generators to G
 		private readonly IPRF _prf;
 
 		public Feistel(int rounds = 3)
 		{
 			Rounds = rounds;
 			_prf = PRFFactory.GetPRF();
+
+			_prf.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		public override BitArray InversePRP(BitArray input, byte[] key, int? bits = null)
 		{
+			OnUse(Primitive.PRP);
+
 			return Permute(input, key, bits ?? input.Length, true);
 		}
 
 		public override BitArray PRP(BitArray input, byte[] key, int? bits = null)
 		{
+			OnUse(Primitive.PRP);
+
 			return Permute(input, key, bits ?? input.Length);
 		}
 

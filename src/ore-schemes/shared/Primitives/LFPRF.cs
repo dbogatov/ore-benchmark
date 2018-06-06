@@ -20,10 +20,16 @@ namespace ORESchemes.Shared.Primitives.TapeGen
 			base(PRFFactory.GetPRF().PRF(key, entropy, Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()))
 		{
 			_generator = PRGFactory.GetPRG(_seed);
+
+			_generator.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		public override void GetBytes(byte[] data)
 		{
+			OnUse(Primitive.LFPRF);
+
 			_generator.NextBytes(data);
 		}
 	}

@@ -17,7 +17,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		}
 	}
 
-	public interface ISampler
+	public interface ISampler : IPrimitive
 	{
 		/// <summary>
 		/// Sample from hypergeometric distribution
@@ -47,23 +47,33 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		ulong Binomial(ulong successes, double probability);
 	}
 
-	public class CustomSampler : ISampler
+	public class CustomSampler : AbsPrimitive, ISampler
 	{
 		private IPRG _generator;
 
 		public CustomSampler(byte[] entropy = null)
 		{
 			_generator = PRGFactory.GetPRG(entropy);
+
+			_generator.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		public CustomSampler(IPRG prg)
 		{
 			_generator = prg;
+
+			_generator.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		// https://stackoverflow.com/a/23574723/1644554
 		public ulong Binomial(ulong n, double p)
 		{
+			OnUse(Primitive.BinomialSampler);
+
 			bool reverse = false;
 			if (p > 0.5)
 			{
@@ -96,6 +106,8 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		/// </summary>
 		public ulong HyperGeometric(ulong population, ulong successes, ulong samples)
 		{
+			OnUse(Primitive.HGSampler);
+
 			ulong result = 0;
 
 			while (true)
@@ -132,6 +144,8 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		// https://stackoverflow.com/a/6651661/1644554
 		public ulong Uniform(ulong from, ulong to)
 		{
+			OnUse(Primitive.UniformSampler);
+
 			if (from == to)
 			{
 				return from;
@@ -193,7 +207,8 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			ulong? deadlockCheckResult = null;
 
 			Func<ulong> fallbackToUniform = () => Uniform((samples + successes > population ? samples + successes - population : 0), Math.Min(successes, samples));
-			Func<uint, ulong?> checkDeadlock = (labelId) => {
+			Func<uint, ulong?> checkDeadlock = (labelId) =>
+			{
 				deadlockCounters[labelId]++;
 				if (deadlockCounters[labelId] > deadlockThresholds[labelId])
 				{

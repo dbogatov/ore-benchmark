@@ -62,6 +62,10 @@ namespace ORESchemes.LewiORE
 			H = HashFactory.GetHash();
 			P = PRPFactory.GetPRP();
 
+			SubscribePrimitive(F);
+			SubscribePrimitive(H);
+			SubscribePrimitive(P);
+
 			_bitsInBlock = 32 / n;
 
 			_generator.NextBytes(IV);

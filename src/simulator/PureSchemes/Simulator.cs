@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using ORESchemes.Shared;
 using System.Diagnostics;
 using System.Linq;
+using ORESchemes.Shared.Primitives;
 
 namespace Simulation.PureSchemes
 {
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	public class Simulator<C>
 	{
-		private Dictionary<SchemeOperation, long> _schemeOperations = new Dictionary<SchemeOperation, long>();
+		private Dictionary<Primitive, long> _primitiveUsage = new Dictionary<Primitive, long>();
+		private Dictionary<Primitive, long> _purePrimitiveUsage = new Dictionary<Primitive, long>();
+
 		private IOREScheme<C> _scheme;
 		private List<int> _dataset;
 		private byte[] _key;
@@ -20,20 +23,31 @@ namespace Simulation.PureSchemes
 			_scheme = scheme;
 			_key = scheme.KeyGen();
 
-			scheme.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
+			scheme.PrimitiveUsed += new PrimitiveUsageEventHandler(RecordPrimitiveUsage);
 
 			Enum
-				.GetValues(typeof(SchemeOperation))
-				.OfType<SchemeOperation>()
+				.GetValues(typeof(Primitive))
+				.OfType<Primitive>()
 				.ToList()
-				.ForEach(val => _schemeOperations.Add(val, 0));
+				.ForEach(val =>
+				{
+					_primitiveUsage.Add(val, 0);
+					_purePrimitiveUsage.Add(val, 0);
+				});
 		}
 
 		/// <summary>
-		/// Handler for the event that the scheme has performed an operation
+		/// Handler for the event that the primitive has been used
 		/// </summary>
-		/// <param name="operation">Performed operation</param>
-		void RecordSchemeOperation(SchemeOperation operation) => _schemeOperations[operation]++;
+		/// <param name="operation">Primitive used</param>
+		void RecordPrimitiveUsage(Primitive primitive, bool impure)
+		{
+			_primitiveUsage[primitive]++;
+			if (!impure)
+			{
+				_purePrimitiveUsage[primitive]++;
+			}
+		}
 
 		/// <summary>
 		/// Generates a report filled with data gathered during the execution of 
@@ -43,7 +57,8 @@ namespace Simulation.PureSchemes
 		private Report Profile(Action routine)
 		{
 			var currentProcess = Process.GetCurrentProcess();
-			_schemeOperations.Keys.ToList().ForEach(key => _schemeOperations[key] = 0);
+			_primitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
+			_purePrimitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 			var processStartTime = currentProcess.UserProcessorTime;
@@ -60,9 +75,9 @@ namespace Simulation.PureSchemes
 			{
 				CPUTime = procTime,
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
-
-				SchemeOperations = _schemeOperations.Values.Sum(),
-				AvgSchemeOperations = _schemeOperations.Values.Sum() / _dataset.Count
+				TotalPrimitiveOperations = _primitiveUsage,
+				PurePrimitiveOperations = _purePrimitiveUsage,
+				OperationsNumber = _dataset.Count
 			};
 		}
 

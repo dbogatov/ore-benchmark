@@ -31,6 +31,11 @@ namespace ORESchemes.Shared
 		event SchemeOperationEventHandler OperationOcurred;
 
 		/// <summary>
+		/// Event signaling that some primitive has been used
+		/// </summary>
+		event PrimitiveUsageEventHandler PrimitiveUsed;
+
+		/// <summary>
 		/// Performs some work on initializing the scheme
 		/// Eq. sets up some internal data, sample distributions, generates 
 		/// internal keys
@@ -170,6 +175,8 @@ namespace ORESchemes.Shared
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
+		public event PrimitiveUsageEventHandler PrimitiveUsed;
+
 		protected readonly IPRG _generator;
 		protected const int ALPHA = 256;
 
@@ -184,6 +191,8 @@ namespace ORESchemes.Shared
 		public AbsOREScheme(byte[] seed)
 		{
 			_generator = PRGFactory.GetPRG(seed);
+
+			SubscribePrimitive(_generator);
 		}
 
 		public abstract int Decrypt(C ciphertext, byte[] key);
@@ -193,6 +202,8 @@ namespace ORESchemes.Shared
 		public virtual void Destruct()
 		{
 			OnOperation(SchemeOperation.Destruct);
+
+			PrimitiveUsed = null;
 
 			return;
 		}
@@ -281,6 +292,26 @@ namespace ORESchemes.Shared
 			{
 				handler(operation);
 			}
+		}
+
+		/// <summary>
+		/// Subscribe schemes primitive usage event to primitive's usage event.
+		/// This way the delegate set to listen for scheme's event will be called
+		/// each time primitive event fires up.
+		/// </summary>
+		/// <param name="primitive">Primitive which to subscribe</param>
+		protected void SubscribePrimitive(IPrimitive primitive)
+		{
+			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) =>
+				{
+					var handler = PrimitiveUsed;
+					if (handler != null)
+					{
+						handler(prim, impure);
+					}
+				}
+			);
 		}
 
 		public abstract bool Compare(C ciphertextOne, C ciphertextTwo);
