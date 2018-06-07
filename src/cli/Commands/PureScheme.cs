@@ -10,12 +10,20 @@ namespace CLI
 	[Command(Description = "Run plain encryptions, decryptions and comparisons on a scheme")]
 	public class PureSchemeCommand : CommandBase
 	{
+		[AllowedValues("4", "8", "16")]
+		[Option("--lewi-ore-n <number>", Description = "Parameter N for LewiORE. Must be one of [4, 8, 16]. Default 16.")]
+		public int LewiOREN { get; } = 16;
+
+		[Range(32, 48)]
+		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (eq. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
+		public int CryptDBRange { get; } = 48;
+
 		private SimulatorCommand Parent { get; set; }
 
 		protected override int OnExecute(CommandLineApplication app)
 		{
-			Console.WriteLine($"Seed: {Parent.Seed}");
-			Console.WriteLine($"Inputs: dataset={Parent.Dataset}, scheme={Parent.OREScheme}");
+			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
+			PutToConsole($"Inputs: dataset={Parent.Dataset}, scheme={Parent.OREScheme}", Parent.Verbose);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -23,8 +31,8 @@ namespace CLI
 
 			timer.Stop();
 
-			Console.WriteLine($"Dataset of {reader.Dataset.Count} records.");
-			Console.WriteLine($"Inputs read in {timer.ElapsedMilliseconds} ms.");
+			PutToConsole($"Dataset of {reader.Dataset.Count} records.", Parent.Verbose);
+			PutToConsole($"Inputs read in {timer.ElapsedMilliseconds} ms.", Parent.Verbose);
 
 			Report report;
 
@@ -38,10 +46,11 @@ namespace CLI
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
+					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(-Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
 					report =
 						new Simulator<long>(
 							reader.Dataset,
-							new CryptDBOPEFactory(Parent.Seed).GetScheme()
+							new CryptDBOPEFactory(Parent.Seed).GetScheme(CryptDBRange)
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
@@ -52,14 +61,20 @@ namespace CLI
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.LewiORE:
+					PutToConsole($"LewiORE N = {LewiOREN}", Parent.Verbose);
 					report =
 						new Simulator<ORESchemes.LewiORE.Ciphertext>(
 							reader.Dataset,
-							new LewiOREFactory(Parent.Seed).GetScheme()
+							new LewiOREFactory(Parent.Seed).GetScheme(LewiOREN)
 						).Simulate();
 					break;
 				default:
 					throw new InvalidOperationException($"No such scheme: {Parent.OREScheme}");
+			}
+
+			if (!Parent.Verbose)
+			{
+				System.Console.Write($"{Parent.Seed},{LewiOREN},{CryptDBRange},{Parent.OREScheme},");
 			}
 
 			System.Console.WriteLine(Parent.Verbose ? report.ToString() : report.ToConciseString());

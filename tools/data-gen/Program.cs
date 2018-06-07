@@ -21,6 +21,9 @@ namespace DataGen
 		[Option("--dataset", "If present, dataset will be generated.", CommandOptionType.NoValue)]
 		public bool Dataset { get; } = false;
 
+		[Option("--for-schemes", "If present, dataset will be generated for schemes.", CommandOptionType.NoValue)]
+		public bool Schemes { get; } = false;
+
 		[Option("--queries-type <enum>", Description = "Type of queries (eq. Exact).")]
 		public QueriesType QueriesType { get; } = QueriesType.Exact;
 
@@ -50,7 +53,7 @@ namespace DataGen
 
 				if (Dataset)
 				{
-					Console.WriteLine($"{first},\"{first}\"");
+					Console.WriteLine(Schemes ? $"{first}" : $"{first},\"{first}\"");
 					continue;
 				}
 

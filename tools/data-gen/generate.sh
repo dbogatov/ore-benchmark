@@ -11,11 +11,15 @@ usage() { echo "Usage: $0 [-d <number> -q <number> -s <number> -n]" 1>&2; exit 1
 
 SEED=$RANDOM
 DMAX=100
+TMAX=1000
 QMAX=100
 BUILD=true
 
-while getopts "d:q:s:n" o; do
+while getopts "d:q:s:nt:" o; do
 	case "${o}" in
+		t)
+			TMAX=${OPTARG}
+			;;
 		d)
 			DMAX=${OPTARG}
 			;;
@@ -44,6 +48,8 @@ mkdir -p ../../data
 
 set -x # echo ON
 dotnet ./dist/data-gen.dll --dataset --count $DMAX --max $DMAX --seed $SEED > ../../data/dataset.txt
+
+dotnet ./dist/data-gen.dll --dataset --for-schemes --count $TMAX --max $TMAX --seed $SEED > ../../data/schemes-dataset.txt
 
 queries=( exact update delete )
 for query in "${queries[@]}"

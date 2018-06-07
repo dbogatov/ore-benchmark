@@ -6,46 +6,9 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class CryptDBOPETests : GenericORETests<long>
+	public class CryptDBOPERange48Tests : AbsCryptDBOPETests
 	{
-		protected override void SetScheme()
-		{
-			_scheme = new CryptDBScheme(
-				Int32.MinValue,
-				Int32.MaxValue,
-				Convert.ToInt64(Int32.MinValue) * 100,
-				Convert.ToInt64(Int32.MaxValue) * 100,
-				_entropy
-			);
-		}
-
-		[Fact]
-		public void MalformedCiphertextTest()
-		{
-			_scheme.Init();
-
-			byte[] key = _scheme.KeyGen();
-
-			long from = 0;
-			long to = 0;
-
-			for (int i = 0; i < 10; i++)
-			{
-				from = _scheme.Encrypt(50 + i, key);
-				to = _scheme.Encrypt(51 + i, key);
-
-				if (to - from > 1)
-				{
-					break;
-				}
-			}
-
-			Assert.True(to - from > 1);
-
-			Assert.Throws<ArgumentException>(
-				() => _scheme.Decrypt(from + 1, key)
-			);
-		}
+		protected override void SetParameters() => rangeBits = 48;
 
 		[Fact]
 		public void InputOutOfRangeTest()
@@ -133,6 +96,74 @@ namespace Test.ORESchemes
 			var to = scheme.Encrypt(6260, key);
 
 			Assert.True(from < to);
+		}
+	}
+
+	[Trait("Category", "Integration")]
+	public class CryptDBOPERange44Tests : AbsCryptDBOPETests
+	{
+		protected override void SetParameters() => rangeBits = 44;
+	}
+
+	[Trait("Category", "Integration")]
+	public class CryptDBOPERange40Tests : AbsCryptDBOPETests
+	{
+		protected override void SetParameters() => rangeBits = 40;
+	}
+
+	[Trait("Category", "Integration")]
+	public class CryptDBOPERange36Tests : AbsCryptDBOPETests
+	{
+		protected override void SetParameters() => rangeBits = 36;
+	}
+
+	[Trait("Category", "Integration")]
+	public class CryptDBOPERange32Tests : AbsCryptDBOPETests
+	{
+		protected override void SetParameters() => rangeBits = 32;
+	}
+
+	public abstract class AbsCryptDBOPETests : GenericORETests<long>
+	{
+		protected int rangeBits = 48;
+
+		protected override void SetScheme()
+		{
+			_scheme = new CryptDBScheme(
+				Int32.MinValue,
+				Int32.MaxValue,
+				Convert.ToInt64(-Math.Pow(2, rangeBits)),
+				Convert.ToInt64(Math.Pow(2, rangeBits)),
+				_entropy
+			);
+		}
+
+		[Fact]
+		public void MalformedCiphertextTest()
+		{
+			_scheme.Init();
+
+			byte[] key = _scheme.KeyGen();
+
+			long from = 0;
+			long to = 0;
+
+			for (int i = 0; i < 10; i++)
+			{
+				from = _scheme.Encrypt(50 + i, key);
+				to = _scheme.Encrypt(51 + i, key);
+
+				if (to - from > 1)
+				{
+					break;
+				}
+			}
+
+			Assert.True(to - from > 1);
+
+			Assert.Throws<ArgumentException>(
+				() => _scheme.Decrypt(from + 1, key)
+			);
 		}
 	}
 }

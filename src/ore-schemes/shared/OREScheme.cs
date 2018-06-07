@@ -31,6 +31,11 @@ namespace ORESchemes.Shared
 		event SchemeOperationEventHandler OperationOcurred;
 
 		/// <summary>
+		/// Event signaling that some primitive has been used
+		/// </summary>
+		event PrimitiveUsageEventHandler PrimitiveUsed;
+
+		/// <summary>
 		/// Performs some work on initializing the scheme
 		/// Eq. sets up some internal data, sample distributions, generates 
 		/// internal keys
@@ -170,7 +175,9 @@ namespace ORESchemes.Shared
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
-		protected readonly IPRG _generator;
+		public event PrimitiveUsageEventHandler PrimitiveUsed;
+
+		protected readonly IPRG G;
 		protected const int ALPHA = 256;
 
 		protected C maxCiphertextValue = default(C);
@@ -183,7 +190,9 @@ namespace ORESchemes.Shared
 		/// </summary>
 		public AbsOREScheme(byte[] seed)
 		{
-			_generator = PRGFactory.GetPRG(seed);
+			G = PRGFactory.GetPRG(seed);
+
+			SubscribePrimitive(G);
 		}
 
 		public abstract int Decrypt(C ciphertext, byte[] key);
@@ -193,6 +202,8 @@ namespace ORESchemes.Shared
 		public virtual void Destruct()
 		{
 			OnOperation(SchemeOperation.Destruct);
+
+			PrimitiveUsed = null;
 
 			return;
 		}
@@ -237,7 +248,7 @@ namespace ORESchemes.Shared
 			OnOperation(SchemeOperation.KeyGen);
 
 			byte[] key = new byte[ALPHA / 8];
-			_generator.NextBytes(key);
+			G.NextBytes(key);
 
 			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
 			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
@@ -281,6 +292,26 @@ namespace ORESchemes.Shared
 			{
 				handler(operation);
 			}
+		}
+
+		/// <summary>
+		/// Subscribe schemes primitive usage event to primitive's usage event.
+		/// This way the delegate set to listen for scheme's event will be called
+		/// each time primitive event fires up.
+		/// </summary>
+		/// <param name="primitive">Primitive which to subscribe</param>
+		protected void SubscribePrimitive(IPrimitive primitive)
+		{
+			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) =>
+				{
+					var handler = PrimitiveUsed;
+					if (handler != null)
+					{
+						handler(prim, impure);
+					}
+				}
+			);
 		}
 
 		public abstract bool Compare(C ciphertextOne, C ciphertextTwo);

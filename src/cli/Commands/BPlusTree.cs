@@ -32,8 +32,8 @@ namespace CLI
 
 		protected override int OnExecute(CommandLineApplication app)
 		{
-			Console.WriteLine($"Seed: {Parent.Seed}");
-			Console.WriteLine($"Inputs: dataset={Parent.Dataset}, queries={Queries}, type={QueriesType}, scheme={Parent.OREScheme}");
+			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
+			PutToConsole($"Inputs: dataset={Parent.Dataset}, queries={Queries}, type={QueriesType}, scheme={Parent.OREScheme}, B+tree-branches={BPlusTreeBranching}", Parent.Verbose);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -42,9 +42,9 @@ namespace CLI
 
 			timer.Stop();
 
-			Console.WriteLine($"Dataset of {reader.Inputs.Dataset.Count} records.");
-			Console.WriteLine($"Queries of {reader.Inputs.QueriesCount()} queries.");
-			Console.WriteLine($"Inputs read in {timer.ElapsedMilliseconds} ms.");
+			PutToConsole($"Dataset of {reader.Inputs.Dataset.Count} records.", Parent.Verbose);
+			PutToConsole($"Queries of {reader.Inputs.QueriesCount()} queries.", Parent.Verbose);
+			PutToConsole($"Inputs read in {timer.ElapsedMilliseconds} ms.", Parent.Verbose);
 
 			Report report;
 
@@ -92,6 +92,11 @@ namespace CLI
 					break;
 				default:
 					throw new InvalidOperationException($"No such scheme: {Parent.OREScheme}");
+			}
+
+			if (!Parent.Verbose)
+			{
+				System.Console.Write($"{Parent.Seed},{Parent.OREScheme},{QueriesType},{CacheSize},{BPlusTreeBranching},");
 			}
 
 			System.Console.WriteLine(Parent.Verbose ? report.ToString() : report.ToConciseString());

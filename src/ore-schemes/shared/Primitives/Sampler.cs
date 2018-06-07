@@ -17,7 +17,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		}
 	}
 
-	public interface ISampler
+	public interface ISampler : IPrimitive
 	{
 		/// <summary>
 		/// Sample from hypergeometric distribution
@@ -47,23 +47,33 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		ulong Binomial(ulong successes, double probability);
 	}
 
-	public class CustomSampler : ISampler
+	public class CustomSampler : AbsPrimitive, ISampler
 	{
-		private IPRG _generator;
+		private IPRG G;
 
 		public CustomSampler(byte[] entropy = null)
 		{
-			_generator = PRGFactory.GetPRG(entropy);
+			G = PRGFactory.GetPRG(entropy);
+
+			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		public CustomSampler(IPRG prg)
 		{
-			_generator = prg;
+			G = prg;
+
+			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		// https://stackoverflow.com/a/23574723/1644554
 		public ulong Binomial(ulong n, double p)
 		{
+			OnUse(Primitive.BinomialSampler);
+
 			bool reverse = false;
 			if (p > 0.5)
 			{
@@ -76,7 +86,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			double sum = 0;
 			while (true)
 			{
-				sum += Math.Log(_generator.NextDouble(0, 1)) / (n - x);
+				sum += Math.Log(G.NextDouble(0, 1)) / (n - x);
 				if (sum < log_q)
 				{
 					return reverse ? n - x : x;
@@ -96,6 +106,8 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		/// </summary>
 		public ulong HyperGeometric(ulong population, ulong successes, ulong samples)
 		{
+			OnUse(Primitive.HGSampler);
+
 			ulong result = 0;
 
 			while (true)
@@ -132,13 +144,15 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		// https://stackoverflow.com/a/6651661/1644554
 		public ulong Uniform(ulong from, ulong to)
 		{
+			OnUse(Primitive.UniformSampler);
+
 			if (from == to)
 			{
 				return from;
 			}
 
 			byte[] buffer = new byte[sizeof(ulong)];
-			_generator.NextBytes(buffer);
+			G.NextBytes(buffer);
 
 			ulong longRand = BitConverter.ToUInt64(buffer, 0);
 
@@ -153,7 +167,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			do
 			{
 				var p = (double)successes / population;
-				var r = _generator.NextDouble(0, 1);
+				var r = G.NextDouble(0, 1);
 				if (r < p)
 				{
 					x++;
@@ -193,7 +207,8 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			ulong? deadlockCheckResult = null;
 
 			Func<ulong> fallbackToUniform = () => Uniform((samples + successes > population ? samples + successes - population : 0), Math.Min(successes, samples));
-			Func<uint, ulong?> checkDeadlock = (labelId) => {
+			Func<uint, ulong?> checkDeadlock = (labelId) =>
+			{
 				deadlockCounters[labelId]++;
 				if (deadlockCounters[labelId] > deadlockThresholds[labelId])
 				{
@@ -210,7 +225,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			Func<RR, RR> log = (value) => Convert.ToDecimal(Math.Log((double)value));
 			Func<RR, RR> round = (value) => Math.Round(value, MidpointRounding.ToEven);
 			Func<RR, long> to_int = (value) => Convert.ToInt64(value);
-			Func<RR> RAND = () => Convert.ToDecimal(_generator.NextDouble(0, 1));
+			Func<RR> RAND = () => Convert.ToDecimal(G.NextDouble(0, 1));
 			Func<RR, RR> sqr = (value) => Convert.ToDecimal(Math.Sqrt((double)Math.Abs(value)));
 			Func<RR, RR> trunc = (value) => Math.Truncate(value);
 			Func<RR, ulong> to_ZZ = (value) => Convert.ToUInt64(value);

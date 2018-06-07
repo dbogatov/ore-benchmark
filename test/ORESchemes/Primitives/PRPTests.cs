@@ -22,6 +22,30 @@ namespace Test.ORESchemes.Primitives.PRP
 			Feistel feistel = Assert.IsType<Feistel>(prp);
 			Assert.Equal(3, feistel.Rounds);
 		}
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRP>(
+				_prp,
+				(P) =>
+				{
+					for (int i = 0; i < 8; i++)
+					{
+						var input = new BitArray(new int[] { i });
+						P.PRP(input, _key, 3);
+						P.InversePRP(input, _key, 3);
+					}
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 48 },
+					{ Primitive.PRP, 16 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 16 }
+				}
+			);
+		}
 	}
 
 	[Trait("Category", "Integration")]
@@ -38,15 +62,39 @@ namespace Test.ORESchemes.Primitives.PRP
 			Feistel feistel = Assert.IsType<Feistel>(prp);
 			Assert.Equal(4, feistel.Rounds);
 		}
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRP>(
+				_prp,
+				(P) =>
+				{
+					for (int i = 0; i < 8; i++)
+					{
+						var input = new BitArray(new int[] { i });
+						P.PRP(input, _key, 3);
+						P.InversePRP(input, _key, 3);
+					}
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 64 },
+					{ Primitive.PRP, 16 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 16 }
+				}
+			);
+		}
 	}
 
 	public abstract class AbsPRPTests
 	{
 		private const int RUNS = 100;
 		private const int SEED = 123456;
-		private readonly byte[] _key = new byte[256 / 8];
+		protected readonly byte[] _key = new byte[256 / 8];
 
-		private readonly IPRP _prp;
+		protected readonly IPRP _prp;
 
 		public AbsPRPTests(IPRP prp)
 		{

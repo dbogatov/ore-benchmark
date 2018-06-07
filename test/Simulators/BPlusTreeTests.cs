@@ -88,7 +88,6 @@ namespace Test.Simulators
 					Assert.Contains(subreport.IOs.ToString(), description);
 					Assert.Contains(subreport.AvgIOs.ToString(), description);
 					Assert.Contains(subreport.AvgSchemeOperations.ToString(), description);
-					Assert.Contains(subreport.CacheSize.ToString(), description);
 					Assert.Contains(subreport.SchemeOperations.ToString(), description);
 				}
 			}

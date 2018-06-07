@@ -18,7 +18,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 		}
 	}
 
-	public interface IPRF
+	public interface IPRF: IPrimitive
 	{
 		/// <summary>
 		/// Computes the value of the pseudo random function
@@ -38,13 +38,15 @@ namespace ORESchemes.Shared.Primitives.PRF
 		byte[] InversePRF(byte[] key, byte[] input);
 	}
 
-	public class AES : IPRF
+	public class AES : AbsPrimitive, IPRF
 	{
 		private const int ALPHA = 256;
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
 		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
 		{
+			OnUse(Primitive.PRF);
+
 			byte[] encrypted;
 
 			using (Aes aesAlg = Aes.Create())
@@ -91,6 +93,8 @@ namespace ORESchemes.Shared.Primitives.PRF
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
 		public byte[] InversePRF(byte[] key, byte[] input)
 		{
+			OnUse(Primitive.PRF);
+
 			// Declare the string used to hold the decrypted text
 			byte[] plaintext = null;
 

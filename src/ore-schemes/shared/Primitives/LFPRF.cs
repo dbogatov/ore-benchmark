@@ -14,17 +14,31 @@ namespace ORESchemes.Shared.Primitives.TapeGen
 	/// </summary>
 	public class TapeGen : CustomPRG
 	{
-		private readonly IPRG _generator;
+		private readonly IPRG G;
+
+		private bool _used = false;
 
 		public TapeGen(byte[] key, byte[] entropy) :
 			base(PRFFactory.GetPRF().PRF(key, entropy, Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()))
 		{
-			_generator = PRGFactory.GetPRG(_seed);
+			G = PRGFactory.GetPRG(_seed);
+
+			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => base.OnUse(prim, true)
+			);
 		}
 
 		public override void GetBytes(byte[] data)
 		{
-			_generator.NextBytes(data);
+			if (!_used)
+			{
+				base.OnUse(Primitive.PRF, true);
+				_used = true;
+			}
+
+			OnUse(Primitive.LFPRF);
+
+			G.NextBytes(data);
 		}
 	}
 }

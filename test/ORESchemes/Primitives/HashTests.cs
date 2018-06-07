@@ -5,6 +5,7 @@ using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared;
 using Xunit;
 using ORESchemes.Shared.Primitives.Hash;
+using System.Linq;
 
 namespace Test.ORESchemes.Primitives.Hash
 {
@@ -19,6 +20,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		[InlineData("1305", "C7F4F146491D27EED1CD4D422C9B3FEC37006C606B17DABBFEBEF85845F3CBC1")]
 		public void CorrectnessTest(string input, string output) =>
 			Assert.Equal(output, _hash.ComputeHash(Encoding.Default.GetBytes(input)).PrintHex());
+
 	}
 
 	public abstract class AbsHashTests
@@ -85,6 +87,26 @@ namespace Test.ORESchemes.Primitives.Hash
 					_hash.ComputeHash(BitConverter.GetBytes(i), _anotherKey)
 				);
 			}
+		}
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IHash>(
+				_hash,
+				(H) =>
+				{
+					H.ComputeHash(new byte[] { 0x00 }, _key);
+					H.ComputeHash(new byte[] { 0x00 });
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.Hash, 2 },
+					{ Primitive.PRF, 1 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.Hash, 2 }
+				}
+			);
 		}
 	}
 }

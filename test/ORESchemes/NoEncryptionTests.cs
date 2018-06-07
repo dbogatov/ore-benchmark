@@ -14,5 +14,8 @@ namespace Test.ORESchemes
 		{
 			_scheme = new NoEncryptionScheme();
 		}
+
+		[Fact(Skip="Does not apply")]
+		public override void PrimitivesEventsTest() { }
 	}
 }

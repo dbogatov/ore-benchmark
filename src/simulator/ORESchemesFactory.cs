@@ -31,33 +31,34 @@ namespace Simulation
 		/// <summary>
 		/// Returns an initialized scheme with default / suggested parameters
 		/// </summary>
-		public abstract S GetScheme();
+		/// <param name="parameter">Optional numeric parameter to the scheme</param>
+		public abstract S GetScheme(int parameter = 0);
 	}
 
 	public class NoEncryptionFactory : ORESchemesFactory<NoEncryptionScheme, long>
 	{
 		public NoEncryptionFactory(int? seed = null) : base(seed) { }
 
-		public override NoEncryptionScheme GetScheme() => new NoEncryptionScheme(_entropy);
+		public override NoEncryptionScheme GetScheme(int parameter = 0) => new NoEncryptionScheme(_entropy);
 	}
 
 	public class PracticalOREFactory : ORESchemesFactory<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext>
 	{
 		public PracticalOREFactory(int? seed = null) : base(seed) { }
 
-		public override PracticalOREScheme GetScheme() => new PracticalOREScheme(_entropy);
+		public override PracticalOREScheme GetScheme(int parameter = 0) => new PracticalOREScheme(_entropy);
 	}
 
 	public class CryptDBOPEFactory : ORESchemesFactory<CryptDBScheme, long>
 	{
 		public CryptDBOPEFactory(int? seed = null) : base(seed) { }
 
-		public override CryptDBScheme GetScheme() =>
+		public override CryptDBScheme GetScheme(int parameter = 48) =>
 			new CryptDBScheme(
 				Int32.MinValue,
 				Int32.MaxValue,
-				Convert.ToInt64(Int32.MinValue) * 100000, // reasonable maximum
-				Convert.ToInt64(Int32.MaxValue) * 100000, // larger numbers cause performance degradation
+				Convert.ToInt64(-Math.Pow(2, parameter)),
+				Convert.ToInt64(Math.Pow(2, parameter)),
 				_entropy
 			);
 	}
@@ -66,7 +67,7 @@ namespace Simulation
 	{
 		public LewiOREFactory(int? seed = null) : base(seed) { }
 
-		public override LewiOREScheme GetScheme() => new LewiOREScheme(16, _entropy);
+		public override LewiOREScheme GetScheme(int parameter = 16) => new LewiOREScheme(parameter, _entropy);
 	}
 }
 

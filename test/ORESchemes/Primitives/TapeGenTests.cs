@@ -13,22 +13,24 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		private const int SEED = 123456;
 		private const int RUNS = 1000;
 
-		[Fact]
-		public void DifferentSeedsTest()
+		private byte[] seedOne = new byte[256 / 8];
+		private byte[] seedTwo = new byte[256 / 8];
+		private byte[] keyOne = new byte[256 / 8];
+		private byte[] keyTwo = new byte[256 / 8];
+
+		public TapeGenTests()
 		{
-			byte[] seedOne = new byte[256 / 8];
-			byte[] seedTwo = new byte[256 / 8];
-
-			byte[] keyOne = new byte[256 / 8];
-			byte[] keyTwo = new byte[256 / 8];
-
 			Random random = new Random(SEED);
 
 			random.NextBytes(seedOne);
 			random.NextBytes(seedTwo);
 			random.NextBytes(keyOne);
 			random.NextBytes(keyTwo);
+		}
 
+		[Fact]
+		public void DifferentSeedsTest()
+		{
 			var tapes = new List<TapeGen>() {
 				new TapeGen(keyOne, seedOne),
 				new TapeGen(keyOne, seedTwo),
@@ -40,9 +42,42 @@ namespace Test.ORESchemes.Primitives.LFPRF
 			{
 				Assert.Equal(
 					tapes.Count,
-					tapes.Select(tape => tape.Next()).Distinct().Count() 
+					tapes.Select(tape => tape.Next()).Distinct().Count()
 				);
 			}
+		}
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<TapeGen>(
+				new TapeGen(keyOne, seedOne),
+				(T) =>
+				{
+					byte[] bytes = new byte[10];
+					T.NextBytes(bytes);
+
+					T.Next();
+					T.Next(10);
+					T.Next(10, 20);
+
+					T.NextLong();
+					T.NextLong(10);
+					T.NextLong(10, 20);
+
+					T.NextDouble();
+					T.NextDouble(10);
+					T.NextDouble(10, 20);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 1 },
+					{ Primitive.PRG, 10 },
+					{ Primitive.LFPRF, 10 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.LFPRF, 10 }
+				}
+			);
 		}
 	}
 }

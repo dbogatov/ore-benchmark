@@ -30,6 +30,34 @@ namespace ORESchemes.CryptDBOPE
 		private Range _domain;
 		private Range _target;
 
+		private ISampler _s;
+		private ISampler S
+		{
+			get
+			{
+				return _s;
+			}
+			set
+			{
+				SubscribePrimitive(value);
+				_s = value;
+			}
+		}
+
+		private TapeGen _t;
+		private TapeGen T
+		{
+			get
+			{
+				return _t;
+			}
+			set
+			{
+				SubscribePrimitive(value);
+				_t = value;
+			}
+		}
+
 		/// <summary>
 		/// Constructor requires domain, range and optionally 256 bytes of entropy.
 		/// Although domain and range are signed integers, internally, scheme will use unsigned versions.
@@ -75,7 +103,6 @@ namespace ORESchemes.CryptDBOPE
 				ulong y = r + (ulong)Math.Ceiling(N / 2.0M);
 
 				byte[] input;
-				TapeGen tape;
 
 				if (M == 1)
 				{
@@ -83,9 +110,10 @@ namespace ORESchemes.CryptDBOPE
 
 					input = Concatenate(domain, target, true, (ulong)m);
 
-					tape = new TapeGen(key, input);
+					T = new TapeGen(key, input);
 
-					ulong uniform = SamplerFactory.GetSampler(tape).Uniform(target.From, target.To);
+					S = SamplerFactory.GetSampler(T);
+					ulong uniform = S.Uniform(target.From, target.To);
 
 					if (uniform == c)
 					{
@@ -99,9 +127,10 @@ namespace ORESchemes.CryptDBOPE
 
 				input = Concatenate(domain, target, false, y);
 
-				tape = new TapeGen(key, input);
+				T = new TapeGen(key, input);
 
-				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
+				S = SamplerFactory.GetSampler(T);
+				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
 				// Special case when integer overflow affects the logic
@@ -150,24 +179,25 @@ namespace ORESchemes.CryptDBOPE
 				ulong y = r + (ulong)Math.Ceiling(N / 2.0M);
 
 				byte[] input;
-				TapeGen tape;
 
 				if (M == 1)
 				{
 					input = Concatenate(domain, target, true, (ulong)m);
 
-					tape = new TapeGen(key, input);
+					T = new TapeGen(key, input);
 
-					ulong uniform = SamplerFactory.GetSampler(tape).Uniform(target.From, target.To);
+					S = SamplerFactory.GetSampler(T);
+					ulong uniform = S.Uniform(target.From, target.To);
 
 					return ToLong(uniform);
 				}
 
 				input = Concatenate(domain, target, false, y);
 
-				tape = new TapeGen(key, input);
+				T = new TapeGen(key, input);
 
-				ulong hg = SamplerFactory.GetSampler(tape).HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);				
+				S = SamplerFactory.GetSampler(T);
+				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
 				// Special case when integer overflow affects the logic

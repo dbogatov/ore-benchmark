@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRF;
@@ -11,18 +12,77 @@ namespace Test.ORESchemes.Primitives.PRF
 	public class AESPRFTests : AbsPRFTests
 	{
 		public AESPRFTests() : base(new AES()) { }
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRF>(
+				_prf,
+				(F) =>
+				{
+					var c = F.PRF(_key, new byte[] { 0x00 });
+					F.InversePRF(_key, c);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 2 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 2 }
+				}
+			);
+		}
 	}
 
 	[Trait("Category", "Unit")]
 	public class FeistelPRFTests : AbsPRFTests
 	{
 		public FeistelPRFTests() : base(new Feistel(3)) { }
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRF>(
+				_prf,
+				(F) =>
+				{
+					var c = F.PRF(_key, new byte[] { 0x00 });
+					F.InversePRF(_key, c);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 6 },
+					{ Primitive.PRP, 2 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 2 }
+				}
+			);
+		}
 	}
 
 	[Trait("Category", "Integration")]
 	public class FeistelStrongPRFTests : AbsPRFTests
 	{
 		public FeistelStrongPRFTests() : base(new Feistel(4)) { }
+
+		[Fact]
+		public void EventsTest()
+		{
+			EventsTestsShared.EventsTests<IPRF>(
+				_prf,
+				(F) =>
+				{
+					var c = F.PRF(_key, new byte[] { 0x00 });
+					F.InversePRF(_key, c);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRF, 8 },
+					{ Primitive.PRP, 2 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 2 }
+				}
+			);
+		}
 	}
 
 	public abstract class AbsPRFTests
