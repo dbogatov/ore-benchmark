@@ -5,27 +5,27 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class LewiORETestsN16 : LewiORETests
+	public class LewiORETestsN16 : AbsLewiORETests
 	{
 		public LewiORETestsN16() : base(100) { }
 
-		protected override void SetParameters() => _n = 16;
+		protected override void SetParameters() => n = 16;
 	}
 
 	[Trait("Category", "Integration")]
-	public class LewiORETestsN8 : LewiORETests
+	public class LewiORETestsN8 : AbsLewiORETests
 	{
 		public LewiORETestsN8() : base(50) { }
 
-		protected override void SetParameters() => _n = 8;
+		protected override void SetParameters() => n = 8;
 	}
 
 	[Trait("Category", "Integration")]
-	public class LewiORETestsN4 : LewiORETests
+	public class LewiORETestsN4 : AbsLewiORETests
 	{
 		public LewiORETestsN4() : base(30) { }
 
-		protected override void SetParameters() => _n = 4;
+		protected override void SetParameters() => n = 4;
 	}
 
 	[Trait("Category", "Unit")]
@@ -42,15 +42,15 @@ namespace Test.ORESchemes
 			);
 	}
 
-	public abstract class LewiORETests : GenericORETests<Ciphertext>
+	public abstract class AbsLewiORETests : GenericORETests<Ciphertext>
 	{
-		protected int _n;
+		protected int n = 16;
 
-		public LewiORETests(int runs) : base(runs) { }
+		public AbsLewiORETests(int runs) : base(runs) { }
 
 		protected override void SetScheme()
 		{
-			_scheme = new LewiOREScheme(_n, _entropy);
+			_scheme = new LewiOREScheme(n, _entropy);
 		}
 	}
 }
