@@ -9,6 +9,14 @@ namespace Test.ORESchemes.Primitives
 {
 	public static class EventsTestsShared
 	{
+		/// <summary>
+		/// Runs primitive events test for given parameters
+		/// </summary>
+		/// <param name="prim">The instance of primitive to test</param>
+		/// <param name="routine">An action that runs the primitive (taken as parameter)</param>
+		/// <param name="expectedTotal">The dictionary with expected total primitive usage</param>
+		/// <param name="expectedPure">The dictionary with expected pure primitive usage</param>
+		/// <typeparam name="T">Type of the primitive</typeparam>
 		public static void EventsTests<T>(
 			T prim,
 			Action<T> routine,

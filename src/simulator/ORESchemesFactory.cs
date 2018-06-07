@@ -31,6 +31,7 @@ namespace Simulation
 		/// <summary>
 		/// Returns an initialized scheme with default / suggested parameters
 		/// </summary>
+		/// <param name="parameter">Optional numeric parameter to the scheme</param>
 		public abstract S GetScheme(int parameter = 0);
 	}
 

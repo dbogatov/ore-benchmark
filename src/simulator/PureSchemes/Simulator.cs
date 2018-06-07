@@ -119,6 +119,10 @@ namespace Simulation.PureSchemes
 			};
 		}
 
+		/// <summary>
+		/// Produce a deep (not shallow) copy of its argument
+		/// </summary>
+		/// <param name="original">Dictionary to copy</param>
 		private Dictionary<Primitive, long> CloneDictionary(Dictionary<Primitive, long> original)
 		{
 			Dictionary<Primitive, long> copy = new Dictionary<Primitive, long>();
