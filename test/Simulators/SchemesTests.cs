@@ -48,8 +48,6 @@ namespace Test.Simulators
 				foreach (var subreport in subreports)
 				{
 					Assert.Contains(subreport.OperationsNumber.ToString(), description);
-					Assert.Contains(subreport.ObservedTime.TotalMilliseconds.ToString(), description);
-					Assert.Contains(subreport.CPUTime.TotalMilliseconds.ToString(), description);
 				}
 			}
 		}
