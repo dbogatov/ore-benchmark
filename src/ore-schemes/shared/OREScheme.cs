@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
@@ -416,5 +417,12 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertextTwo">Second ciphertext to compare</param>
 		/// <returns>-1 if first < second, 0 if equal, 1 if first > second</returns>
 		protected abstract int ProperCompare(C ciphertextOne, C ciphertextTwo);
+	}
+
+	public abstract class AbsStatefulOPEScheme<S> : AbsOPEScheme
+	{
+		public Dictionary<byte[], S> States { get; protected set; }
+
+		public AbsStatefulOPEScheme(byte[] seed) : base(seed) { }
 	}
 }
