@@ -4,7 +4,7 @@ stages:
 - release
 
 build-app:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
   - printf "namespace CLI{public static class GlobalVar{public static readonly string Version = \"%s\";}}" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
@@ -23,7 +23,7 @@ build-app:
   - docker
 
 build-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
   - dotnet restore --disable-parallel test/
@@ -53,7 +53,7 @@ build-docs:
   - docker
 
 coverage-report:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: test
   script:
   - apk add --update bash
@@ -66,7 +66,7 @@ coverage-report:
   - docker
 
 unit-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -78,7 +78,7 @@ unit-tests:
   - docker
 
 integration-tests:
-  image: microsoft/dotnet:2.1-sdk-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -90,7 +90,7 @@ integration-tests:
   - docker
 
 system-btree-tests:
-  image: microsoft/dotnet:2.1-runtime-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -107,7 +107,7 @@ system-btree-tests:
   - docker
 
 system-schemes-tests:
-  image: microsoft/dotnet:2.1-runtime-alpine
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
   stage: test
