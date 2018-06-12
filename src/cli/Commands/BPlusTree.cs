@@ -90,8 +90,18 @@ namespace CLI
 							)
 						).Simulate();
 					break;
+				case ORESchemes.Shared.ORESchemes.FHOPE:
+					report =
+						new Simulator<string, long>(
+							reader.Inputs,
+							new Options<long>(
+								new FHOPEFactory(Parent.Seed).GetScheme(),
+								BPlusTreeBranching
+							)
+						).Simulate();
+					break;
 				default:
-					throw new InvalidOperationException($"No such scheme: {Parent.OREScheme}");
+					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
 
 			if (!Parent.Verbose)

@@ -55,5 +55,25 @@ namespace ORESchemes.Shared
 			}
 			return ret;
 		}
+
+		/// <summary>
+		/// Transforms signed int64 to unsigned int64 by shifting the value by int64 min value
+		/// </summary>
+		public static ulong ToULong(this long value) => unchecked((ulong)(value + Int64.MinValue));
+
+		/// <summary>
+		/// Transforms unsigned int64 to signed int64 by shifting the value by int64 min value
+		/// </summary>
+		public static long ToLong(this ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
+
+		/// <summary>
+		/// Transforms unsigned int32 to signed int32 by shifting the value by int32 min value
+		/// </summary>
+		public static int ToInt(this uint value) => (int)(value - Int32.MinValue);
+
+		/// <summary>
+		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
+		/// </summary>
+		public static uint ToUInt(this int value) => unchecked((uint)(value + Int32.MinValue));
 	}
 }

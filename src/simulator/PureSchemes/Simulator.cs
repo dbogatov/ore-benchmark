@@ -112,7 +112,11 @@ namespace Simulation.PureSchemes
 						int length = _dataset.Count;
 						for (int i = 0; i < length; i++)
 						{
-							_scheme.Compare(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+							_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+							_scheme.IsLessOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+							_scheme.IsGreater(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+							_scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+							_scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
 						}
 					}
 				)

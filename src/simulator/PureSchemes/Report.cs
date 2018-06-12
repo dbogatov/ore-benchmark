@@ -17,7 +17,7 @@ namespace Simulation.PureSchemes
 
 			public override string ToString() =>
 				$@"
-		Primitive usage for {OperationsNumber} operations:
+		Primitive usage for input of size {OperationsNumber}:
 
 {PrintPrimitiveUsage()}
 		Observable time elapsed: {ObservedTime}

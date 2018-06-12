@@ -71,22 +71,22 @@ namespace ORESchemes.CryptDBOPE
 			byte[] entropy = null
 		) : base(entropy)
 		{
-			_domain.From = ToUInt(domainFrom);
-			_domain.To = ToUInt(domainTo);
+			_domain.From = domainFrom.ToUInt();
+			_domain.To = domainTo.ToUInt();
 
-			_target.From = ToULong(targetFrom);
-			_target.To = ToULong(targetTo);
+			_target.From = targetFrom.ToULong();
+			_target.To = targetTo.ToULong();
 		}
 
 		public override int Decrypt(long ciphertext, byte[] key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
-			ulong c = ToULong(ciphertext);
+			ulong c = ciphertext.ToULong();
 
 			if (c > _target.To || c < _target.From)
 			{
-				throw new ArgumentException($"Scheme was initialized with range [{ToLong(_target.From)}, {ToLong(_target.To)}]");
+				throw new ArgumentException($"Scheme was initialized with range [{(_target.From).ToLong()}, {(_target.To).ToLong()}]");
 			}
 
 			Range domain = _domain;
@@ -117,7 +117,7 @@ namespace ORESchemes.CryptDBOPE
 
 					if (uniform == c)
 					{
-						return ToInt((uint)m);
+						return ((uint)m).ToInt();
 					}
 					else
 					{
@@ -158,11 +158,11 @@ namespace ORESchemes.CryptDBOPE
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
-			uint m = ToUInt(plaintext);
+			uint m = plaintext.ToUInt();
 
 			if (m > _domain.To || m < _domain.From)
 			{
-				throw new ArgumentException($"Scheme was initialized with domain [{ToInt((uint)_domain.From)}, {ToInt((uint)_domain.To)}]");
+				throw new ArgumentException($"Scheme was initialized with domain [{((uint)_domain.From).ToInt()}, {((uint)_domain.To).ToInt()}]");
 			}
 
 			Range domain = _domain;
@@ -189,7 +189,7 @@ namespace ORESchemes.CryptDBOPE
 					S = SamplerFactory.GetSampler(T);
 					ulong uniform = S.Uniform(target.From, target.To);
 
-					return ToLong(uniform);
+					return uniform.ToLong();
 				}
 
 				input = Concatenate(domain, target, false, y);
@@ -221,8 +221,8 @@ namespace ORESchemes.CryptDBOPE
 			throw new InvalidOperationException("Should never reach this.");
 		}
 
-		public override int MaxPlaintextValue() => ToInt((uint)_domain.To);
-		public override int MinPlaintextValue() => ToInt((uint)_domain.From);
+		public override int MaxPlaintextValue() => ((uint)_domain.To).ToInt();
+		public override int MinPlaintextValue() => ((uint)_domain.From).ToInt();
 
 		/// <summary>
 		/// Helper function that performes a convertible operation on its inputs.
@@ -256,25 +256,5 @@ namespace ORESchemes.CryptDBOPE
 
 			return result;
 		}
-
-		/// <summary>
-		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
-		/// </summary>
-		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
-
-		/// <summary>
-		/// Transforms signed int64 to unsigned int64 by shifting the value by int64 min value
-		/// </summary>
-		private ulong ToULong(long value) => unchecked((ulong)(value + Int64.MinValue));
-
-		/// <summary>
-		/// Transforms unsigned int32 to signed int32 by shifting the value by int32 min value
-		/// </summary>
-		private int ToInt(uint value) => (int)(value - Int32.MinValue);
-
-		/// <summary>
-		/// Transforms unsigned int64 to signed int64 by shifting the value by int64 min value
-		/// </summary>
-		private long ToLong(ulong value) => (long)(value - unchecked((ulong)Int64.MinValue));
 	}
 }

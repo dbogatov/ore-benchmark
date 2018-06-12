@@ -16,6 +16,7 @@ namespace Test.ORESchemes
 		[InlineData(global::ORESchemes.Shared.ORESchemes.LewiORE)]
 		[InlineData(global::ORESchemes.Shared.ORESchemes.NoEncryption)]
 		[InlineData(global::ORESchemes.Shared.ORESchemes.PracticalORE)]
+		[InlineData(global::ORESchemes.Shared.ORESchemes.FHOPE)]
 		public void SchemeFactoryTests(global::ORESchemes.Shared.ORESchemes scheme)
 		{
 			bool useSeed = true;
@@ -49,6 +50,11 @@ namespace Test.ORESchemes
 						var noEncryption = new NoEncryptionFactory(seed).GetScheme();
 						Assert.NotNull(noEncryption);
 						Assert.IsType<global::ORESchemes.Shared.NoEncryptionScheme>(noEncryption);
+						break;
+					case global::ORESchemes.Shared.ORESchemes.FHOPE:
+						var fhope = new FHOPEFactory(seed).GetScheme();
+						Assert.NotNull(fhope);
+						Assert.IsType<global::ORESchemes.FHOPE.FHOPEScheme>(fhope);
 						break;
 				}
 

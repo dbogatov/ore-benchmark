@@ -59,11 +59,11 @@ open('../../results/schemes.csv', 'a') do |f|
   f << "\n"
 end
 
-%w[lewiore cryptdb practicalore noencryption].each do |scheme|
+%w[fhope lewiore cryptdb practicalore noencryption].each do |scheme|
   case scheme
 
   when 'lewiore'
-    [4, 8, 16].each do |lewioren|
+    [16, 8, 4].each do |lewioren|
       success = false unless run('schemes-dataset', scheme, prng.rand(2**30), lewioren, 48)
     end
 

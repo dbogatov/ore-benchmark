@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
@@ -9,7 +10,8 @@ namespace ORESchemes.Shared
 		NoEncryption,
 		CryptDB,
 		PracticalORE,
-		LewiORE
+		LewiORE,
+		FHOPE
 	}
 
 	public enum SchemeOperation
@@ -40,7 +42,8 @@ namespace ORESchemes.Shared
 		/// Eq. sets up some internal data, sample distributions, generates 
 		/// internal keys
 		/// </summary>
-		void Init();
+		/// <returns>Self. Syntactic sugar to allow chaining.</returns>
+		IOREScheme<C> Init();
 
 		/// <summary>
 		/// Releases all resources created and managed by the scheme
@@ -134,18 +137,6 @@ namespace ORESchemes.Shared
 		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
 
 		/// <summary>
-		/// Compares two values given by their ciphertexts
-		/// </summary>
-		/// <remark>
-		/// This is a generic comparison method.
-		/// Other comraisons will call this method.
-		/// </remark>
-		/// <param name="ciphertextOne">The first ciphertext to compare</param>
-		/// <param name="ciphertextTwo">The second ciphertext to compare</param>
-		/// <returns>True, if the first plaintext was less than the second, false otherwise</returns>
-		bool Compare(C ciphertextOne, C ciphertextTwo);
-
-		/// <summary>
 		/// Returns the encryption of the greatest possible value
 		/// </summary>
 		C MaxCiphertextValue();
@@ -207,11 +198,11 @@ namespace ORESchemes.Shared
 
 			return;
 		}
-		public void Init()
+		public virtual IOREScheme<C> Init()
 		{
 			OnOperation(SchemeOperation.Init);
 
-			return;
+			return this;
 		}
 
 		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
@@ -300,18 +291,21 @@ namespace ORESchemes.Shared
 		/// each time primitive event fires up.
 		/// </summary>
 		/// <param name="primitive">Primitive which to subscribe</param>
-		protected void SubscribePrimitive(IPrimitive primitive)
+		protected void SubscribePrimitive(IPrimitive primitive) =>
+			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(OnPrimitive);
+
+		/// <summary>
+		/// Emits the event that some primitive was used
+		/// </summary>
+		/// <param name="prim">Primitive that was used</param>
+		/// <param name="impure">True, if primitive was used from within another primitive</param>
+		protected void OnPrimitive(Primitive prim, bool impure = false)
 		{
-			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) =>
-				{
-					var handler = PrimitiveUsed;
-					if (handler != null)
-					{
-						handler(prim, impure);
-					}
-				}
-			);
+			var handler = PrimitiveUsed;
+			if (handler != null)
+			{
+				handler(prim, impure);
+			}
 		}
 
 		public abstract bool Compare(C ciphertextOne, C ciphertextTwo);
@@ -360,7 +354,7 @@ namespace ORESchemes.Shared
 			return ciphertextOne <= ciphertextTwo;
 		}
 
-		sealed public override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+		public override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
 	}
 
 	/// <summary>
@@ -416,5 +410,12 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertextTwo">Second ciphertext to compare</param>
 		/// <returns>-1 if first < second, 0 if equal, 1 if first > second</returns>
 		protected abstract int ProperCompare(C ciphertextOne, C ciphertextTwo);
+	}
+
+	public abstract class AbsStatefulOPEScheme<S> : AbsOPEScheme
+	{
+		public S State { get; protected set; }
+
+		public AbsStatefulOPEScheme(byte[] seed) : base(seed) { }
 	}
 }
