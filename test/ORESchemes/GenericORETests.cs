@@ -16,12 +16,19 @@ namespace Test.ORESchemes
 		protected const int SEED = 123456;
 		protected readonly byte[] _entropy = new byte[256 / 8];
 
+		protected Dictionary<SchemeOperation, Tuple<int, int>> _expectedEvents = null;
+
 		public GenericORETests(int runs = 100)
 		{
 			_runs = runs;
 			new Random(SEED).NextBytes(_entropy);
 			SetParameters();
 			SetScheme();
+		}
+
+		~GenericORETests()
+		{
+			_scheme.Destruct();
 		}
 
 		protected abstract void SetScheme();
@@ -42,7 +49,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void KeyGenTest()
+		public virtual void KeyGenTest()
 		{
 			var keyOne = _scheme.KeyGen();
 			var keyTwo = _scheme.KeyGen();
@@ -141,7 +148,7 @@ namespace Test.ORESchemes
 
 			_scheme.Destruct();
 
-			var expected = new Dictionary<SchemeOperation, Tuple<int, int>>
+			var expected = _expectedEvents ?? new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
 				{ SchemeOperation.Init, new Tuple<int, int>(1, 1)} ,
 				{ SchemeOperation.KeyGen, new Tuple<int, int>(1, 1) },
@@ -234,7 +241,7 @@ namespace Test.ORESchemes
 				}
 			);
 
-			_scheme.Compare(
+			_scheme.IsLess(
 				_scheme.Encrypt(10, key),
 				_scheme.Encrypt(20, key)
 			);

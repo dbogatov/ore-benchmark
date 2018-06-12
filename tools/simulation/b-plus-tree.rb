@@ -51,7 +51,7 @@ open('../../results/tree.csv', 'a') do |f|
   f << "\n"
 end
 
-%w[lewiore cryptdb practicalore noencryption].each do |scheme|
+%w[fhope lewiore cryptdb practicalore noencryption].each do |scheme|
   ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |queries|
     [2, 5, 20, 50].each do |btreebranches|
       [0, 10, 100].each do |cache|

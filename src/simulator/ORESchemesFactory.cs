@@ -3,6 +3,7 @@ using ORESchemes.Shared;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.PracticalORE;
 using ORESchemes.LewiORE;
+using ORESchemes.FHOPE;
 
 namespace Simulation
 {
@@ -69,5 +70,12 @@ namespace Simulation
 
 		public override LewiOREScheme GetScheme(int parameter = 16) => new LewiOREScheme(parameter, _entropy);
 	}
-}
 
+	public class FHOPEFactory : ORESchemesFactory<FHOPEScheme, long>
+	{
+		public FHOPEFactory(int? seed = null) : base(seed) { }
+
+		public override FHOPEScheme GetScheme(int parameter = 0) =>
+			(FHOPEScheme)new FHOPEScheme(long.MinValue, long.MaxValue, _entropy).Init();
+	}
+}

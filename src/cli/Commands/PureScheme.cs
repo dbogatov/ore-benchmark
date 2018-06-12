@@ -68,8 +68,15 @@ namespace CLI
 							new LewiOREFactory(Parent.Seed).GetScheme(LewiOREN)
 						).Simulate();
 					break;
+				case ORESchemes.Shared.ORESchemes.FHOPE:
+					report =
+						new Simulator<long>(
+							reader.Dataset,
+							new FHOPEFactory(Parent.Seed).GetScheme()
+						).Simulate();
+					break;
 				default:
-					throw new InvalidOperationException($"No such scheme: {Parent.OREScheme}");
+					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
 
 			if (!Parent.Verbose)

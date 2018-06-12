@@ -11,39 +11,127 @@ namespace ORESchemes.FHOPE
 {
 	public class FHOPEScheme : AbsStatefulOPEScheme<State>
 	{
-		private long min;
-		private long max;
+		private ulong min;
+		private ulong max;
 
 		public FHOPEScheme(long min, long max, byte[] seed = null) : base(seed)
 		{
-			this.min = min;
-			this.max = max;
-
-			States = new Dictionary<byte[], State>();
+			this.min = min.ToULong();
+			this.max = max.ToULong();
 		}
 
-		public override int Decrypt(long ciphertext, byte[] key)
+		public override IOREScheme<long> Init()
 		{
-			if (!States.ContainsKey(key))
-			{
-				throw new InvalidOperationException($"Scheme has never been used with the supplied key.");
-			}
+			OnOperation(SchemeOperation.Init);
 
-			return States[key].Get(ciphertext);
+			byte[] entropy = new byte[266 / 8];
+			G.NextBytes(entropy);
+
+			IPRG prg = PRGFactory.GetPRG(entropy);
+			SubscribePrimitive(prg);
+
+			State = new State(prg, this.min, this.max);
+
+			maxCiphertextValue = Encrypt(MaxPlaintextValue());
+			minCiphertextValue = Encrypt(MinPlaintextValue());
+
+			_minMaxCiphertextsInitialized = true;
+
+			return this;
 		}
 
-		public override long Encrypt(int plaintext, byte[] key)
+		public override void Destruct()
 		{
-			if (!States.ContainsKey(key))
-			{
-				byte[] entropy = new byte[256 / 8];
-				G.NextBytes(entropy);
-				IPRG prg = PRGFactory.GetPRG(entropy);
+			OnOperation(SchemeOperation.Destruct);
 
-				States.Add(key, new State(prg, min, max));
-			}
+			State = null;
+		}
 
-			return States[key].Insert(plaintext);
+		public override byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			return null;
+		}
+
+		public override int Decrypt(long ciphertext, byte[] key = null)
+		{
+			OnOperation(SchemeOperation.Decrypt);
+			OnPrimitive(Primitive.TreeTraversal);
+
+			return State.Get(ciphertext.ToULong());
+		}
+
+		public override long Encrypt(int plaintext, byte[] key = null)
+		{
+			OnOperation(SchemeOperation.Encrypt);
+			OnPrimitive(Primitive.TreeTraversal);
+
+			return State.Insert(plaintext).ToLong();
+		}
+
+		private long MinCiphertext(int plaintext)
+		{
+			OnPrimitive(Primitive.TreeTraversal);
+
+			return State.GetMinMaxCipher(plaintext, min: true).ToLong();
+		}
+
+		private long MaxCiphertext(int plaintext)
+		{
+			OnPrimitive(Primitive.TreeTraversal);
+
+			return State.GetMinMaxCipher(plaintext, min: false).ToLong();
+		}
+
+		public override bool Compare(long ciphertextOne, long ciphertextTwo) 
+			=> throw new InvalidOperationException($"Must not be called on {this.GetType()}");
+
+		public override bool IsEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			var plaintextTwo = Decrypt(ciphertextTwo);
+
+			return
+				ciphertextOne >= MinCiphertext(plaintextTwo) &&
+				ciphertextOne <= MaxCiphertext(plaintextTwo);
+		}
+
+		public override bool IsGreater(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			var plaintextTwo = Decrypt(ciphertextTwo);
+
+			return ciphertextOne > MaxCiphertext(plaintextTwo);
+		}
+
+		public override bool IsLess(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			var plaintextTwo = Decrypt(ciphertextTwo);
+
+			return ciphertextOne < MinCiphertext(plaintextTwo);
+		}
+
+		public override bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			var plaintextTwo = Decrypt(ciphertextTwo);
+
+			return ciphertextOne >= MinCiphertext(plaintextTwo);
+		}
+
+		public override bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
+		{
+			OnOperation(SchemeOperation.Comparison);
+
+			var plaintextTwo = Decrypt(ciphertextTwo);
+
+			return ciphertextOne <= MaxCiphertext(plaintextTwo);
 		}
 	}
 }

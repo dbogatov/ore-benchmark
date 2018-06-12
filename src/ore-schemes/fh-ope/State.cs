@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.FHOPE
@@ -6,38 +8,56 @@ namespace ORESchemes.FHOPE
 	public class State
 	{
 		internal IPRG _G;
-		private long min;
-		private long max;
+		private ulong min;
+		private ulong max;
+
+		private Dictionary<int, Tuple<ulong, ulong>> _minMax;
 
 		private Node _root = null;
 
-		public State(IPRG prg, long min, long max)
+		public State(IPRG prg, ulong min, ulong max)
 		{
 			_G = prg;
 			this.min = min;
 			this.max = max;
+
+			_minMax = new Dictionary<int, Tuple<ulong, ulong>>();
 		}
 
-		internal long Insert(int plaintext)
+		internal ulong Insert(int plaintext)
 		{
+			ulong result;
+
 			if (_root == null)
 			{
-				var newCipher = min + (long)Math.Ceiling(0.5 * (max - min));
+				var newCipher = (ulong)Math.Ceiling(0.5 * min) + (ulong)Math.Ceiling(0.5 * max);
 				_root = new Node(_G, plaintext, newCipher);
 
-				return newCipher;
+				result = newCipher;
 			}
 			else
 			{
-				return _root.Insert(plaintext, min, max);
+				result = _root.Insert(plaintext, min, max) ?? Rebalance(plaintext);
 			}
+
+			if (!_minMax.ContainsKey(plaintext))
+			{
+				_minMax.Add(plaintext, new Tuple<ulong, ulong>(result, result));
+			}
+			else
+			{
+				var current = _minMax[plaintext];
+				_minMax[plaintext] = new Tuple<ulong, ulong>(Math.Min(result, current.Item1), Math.Max(result, current.Item2));
+			}
+
+			return result;
 		}
 
-		internal int Get(long input)
+		internal int Get(ulong input)
 		{
 			if (_root == null)
 			{
-				throw new InvalidOperationException($"Plaintext {input} was never encrypted.");
+				throw new InvalidOperationException($"Ciphertext {input} was never produced.");
 			}
 			else
 			{
@@ -45,11 +65,63 @@ namespace ORESchemes.FHOPE
 			}
 		}
 
+		internal ulong GetMinMaxCipher(int plaintext, bool min)
+		{
+			if (_root == null || !_minMax.ContainsKey(plaintext))
+			{
+				throw new InvalidOperationException($"Plaintext {plaintext} was never encrypted.");
+			}
+			else
+			{
+				return min ? _minMax[plaintext].Item1 : _minMax[plaintext].Item2;
+			}
+		}
+
+		private ulong Rebalance(int input)
+		{
+			var plaintexts = new List<int>();
+			_root.GetAll(plaintexts);
+
+			plaintexts.Add(input);
+			plaintexts.OrderBy(p => p);
+
+			_root = null;
+
+			var insertQueue = new Queue<Tuple<int, int>>();
+
+			Action<int, int> insert =
+				(from, to) =>
+				{
+					var index = (int)Math.Ceiling((to + from) * 0.5);
+					Insert(plaintexts[index]);
+
+					if (from != index)
+					{
+						insertQueue.Enqueue(new Tuple<int, int>(from, index - 1));
+					}
+
+					if (to != index)
+					{
+						insertQueue.Enqueue(new Tuple<int, int>(index + 1, to));
+					}
+				};
+
+			insert(0, plaintexts.Count - 1);
+
+			while (insertQueue.Count > 0)
+			{
+				var tuple = insertQueue.Dequeue();
+				insert(tuple.Item1, tuple.Item2);
+			}
+
+			return _root.Insert(input, min, max, get: true).Value;
+		}
+
 		private class Node
 		{
 			private IPRG _G;
 
-			public Node(IPRG prg, int plaintext, long ciphertext)
+			public Node(IPRG prg, int plaintext, ulong ciphertext)
 			{
 				_G = prg;
 				this.plaintext = plaintext;
@@ -60,18 +132,25 @@ namespace ORESchemes.FHOPE
 			private Node right = null;
 
 			private int plaintext;
-			private long ciphertext;
+			private ulong ciphertext;
 
-			public long Insert(int input, long min, long max)
+			public ulong? Insert(int input, ulong min, ulong max, bool get = false)
 			{
 				bool? coin = null;
 
-				if (input == this.plaintext)
+				if (input == plaintext)
 				{
+					if (get)
+					{
+						return ciphertext;
+					}
 					coin = _G.Next() % 2 == 1;
 				}
 
-				if (input > this.plaintext || coin.Value == true)
+				if (
+					input > plaintext ||
+					(coin.HasValue && coin.Value == true)
+				)
 				{
 					if (right != null)
 					{
@@ -81,17 +160,20 @@ namespace ORESchemes.FHOPE
 					{
 						if (max - ciphertext < 2)
 						{
-							throw new NotImplementedException("Rebalancing needed");
+							return null;
 						}
 					}
 
-					var newCipher = ciphertext + (long)Math.Ceiling(0.5 * (max - ciphertext));
+					var newCipher = (ulong)Math.Ceiling(0.5 * ciphertext) + (ulong)Math.Ceiling(0.5 * max);
 					right = new Node(_G, input, newCipher);
 
 					return newCipher;
 				}
 
-				if (input < this.plaintext || coin.Value == false)
+				if (
+					input < plaintext ||
+					(coin.HasValue && coin.Value == false)
+				)
 				{
 					if (left != null)
 					{
@@ -101,11 +183,11 @@ namespace ORESchemes.FHOPE
 					{
 						if (ciphertext - min < 2)
 						{
-							throw new NotImplementedException("Rebalancing needed");
+							return null;
 						}
 					}
 
-					var newCipher = min + (long)Math.Ceiling(0.5 * (ciphertext - min));
+					var newCipher = (ulong)Math.Ceiling(0.5 * min) + (ulong)Math.Ceiling(0.5 * ciphertext);
 					left = new Node(_G, input, newCipher);
 
 					return newCipher;
@@ -114,13 +196,13 @@ namespace ORESchemes.FHOPE
 				throw new InvalidOperationException("Should never be here.");
 			}
 
-			public int Get(long input)
+			public int Get(ulong input)
 			{
 				if (input > ciphertext)
 				{
 					if (right == null)
 					{
-						throw new InvalidOperationException($"Plaintext {input} was never encrypted.");
+						throw new InvalidOperationException($"Ciphertext {input} was never produced.");
 					}
 					return right.Get(input);
 				}
@@ -128,12 +210,29 @@ namespace ORESchemes.FHOPE
 				{
 					if (left == null)
 					{
-						throw new InvalidOperationException($"Plaintext {input} was never encrypted.");
+						throw new InvalidOperationException($"Ciphertext {input} was never produced.");
 					}
 					return left.Get(input);
 				}
 
 				return plaintext;
+			}
+
+			public void GetAll(List<int> result)
+			{
+				result = result ?? new List<int>();
+
+				if (left != null)
+				{
+					left.GetAll(result);
+				}
+
+				result.Add(plaintext);
+
+				if (right != null)
+				{
+					right.GetAll(result);
+				}
 			}
 		}
 	}

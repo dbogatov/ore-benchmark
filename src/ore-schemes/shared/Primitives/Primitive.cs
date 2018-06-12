@@ -3,7 +3,7 @@ namespace ORESchemes.Shared.Primitives
 
 	public enum Primitive
 	{
-		PRF, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH
+		PRF, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal
 	}
 
 
