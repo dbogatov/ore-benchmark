@@ -47,6 +47,10 @@ namespace ORESchemes.FHOPE
 			State = null;
 		}
 
+		/// <summary>
+		/// This scheme is keyless
+		/// State is supposed to be the key
+		/// </summary>
 		public override byte[] KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
@@ -84,6 +88,9 @@ namespace ORESchemes.FHOPE
 			return State.GetMinMaxCipher(plaintext, min: false).ToLong();
 		}
 
+		/// <summary>
+		/// Comparison mechanisms are implemented without a call to generic method
+		/// </summary>
 		public override bool Compare(long ciphertextOne, long ciphertextTwo) 
 			=> throw new InvalidOperationException($"Must not be called on {this.GetType()}");
 

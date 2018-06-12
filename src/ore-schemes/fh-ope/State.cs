@@ -24,6 +24,11 @@ namespace ORESchemes.FHOPE
 			_minMax = new Dictionary<int, Tuple<ulong, ulong>>();
 		}
 
+		/// <summary>
+		/// Adds a plaintext to the structure
+		/// </summary>
+		/// <param name="plaintext">Plaintex to insert</param>
+		/// <returns>A ciphertext generated during insertion</returns>
 		internal ulong Insert(int plaintext)
 		{
 			ulong result;
@@ -53,6 +58,9 @@ namespace ORESchemes.FHOPE
 			return result;
 		}
 
+		/// <summary>
+		/// Retrives plaintext for given ciphertext from data structure
+		/// </summary>
 		internal int Get(ulong input)
 		{
 			if (_root == null)
@@ -65,6 +73,12 @@ namespace ORESchemes.FHOPE
 			}
 		}
 
+		/// <summary>
+		/// Returns the minimal or maximal ciphertex for the given plaintext
+		/// </summary>
+		/// <param name="plaintext">Plaintext for which to return ciphertexts</param>
+		/// <param name="min">True, if mimimal is requested</param>
+		/// <returns>Corresponding ciphertext</returns>
 		internal ulong GetMinMaxCipher(int plaintext, bool min)
 		{
 			if (_root == null || !_minMax.ContainsKey(plaintext))
@@ -77,6 +91,14 @@ namespace ORESchemes.FHOPE
 			}
 		}
 
+		/// <summary>
+		/// Recreates the whole tree making it balanced.
+		/// Regenerates ciphertexts.
+		/// </summary>
+		/// <param name="input">One more plaintext to insert to the rebalanced tree</param>
+		/// <returns>
+		/// The ciphertext from the new rebalanced tree corresponding to the supplied plaintext
+		/// </returns>
 		private ulong Rebalance(int input)
 		{
 			var plaintexts = new List<int>();
@@ -134,6 +156,17 @@ namespace ORESchemes.FHOPE
 			private int plaintext;
 			private ulong ciphertext;
 
+			/// <summary>
+			/// Adds input as a plaintex to data structure
+			/// </summary>
+			/// <param name="input">Plaintext to add</param>
+			/// <param name="min">Minimal possible value of ciphertext</param>
+			/// <param name="max">Maximal possible value of ciphertext</param>
+			/// <param name="get">If true, when same plaintext is found, its ciphertext is returned</param>
+			/// <returns>
+			/// Ciphertext corresponding to the plaintext inserted.
+			/// Null, if tree needs rebalancing (plaintext is not inserted).
+			/// </returns>
 			public ulong? Insert(int input, ulong min, ulong max, bool get = false)
 			{
 				bool? coin = null;
@@ -196,6 +229,9 @@ namespace ORESchemes.FHOPE
 				throw new InvalidOperationException("Should never be here.");
 			}
 
+			/// <summary>
+			/// Mirrors <see cref="State"/> corresponding method.
+			/// </summary>
 			public int Get(ulong input)
 			{
 				if (input > ciphertext)
@@ -218,6 +254,11 @@ namespace ORESchemes.FHOPE
 				return plaintext;
 			}
 
+			/// <summary>
+			/// Traverses the nodes in in-order fashion.
+			/// Puts plaintext values in result parameter.
+			/// </summary>
+			/// <param name="result">List to populate with node's plaintext.</param>
 			public void GetAll(List<int> result)
 			{
 				result = result ?? new List<int>();

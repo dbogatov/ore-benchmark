@@ -42,6 +42,7 @@ namespace ORESchemes.Shared
 		/// Eq. sets up some internal data, sample distributions, generates 
 		/// internal keys
 		/// </summary>
+		/// <returns>Self. Syntactic sugar to allow chaining.</returns>
 		IOREScheme<C> Init();
 
 		/// <summary>
@@ -293,6 +294,11 @@ namespace ORESchemes.Shared
 		protected void SubscribePrimitive(IPrimitive primitive) =>
 			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(OnPrimitive);
 
+		/// <summary>
+		/// Emits the event that some primitive was used
+		/// </summary>
+		/// <param name="prim">Primitive that was used</param>
+		/// <param name="impure">True, if primitive was used from within another primitive</param>
 		protected void OnPrimitive(Primitive prim, bool impure = false)
 		{
 			var handler = PrimitiveUsed;
