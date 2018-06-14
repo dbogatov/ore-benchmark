@@ -27,10 +27,6 @@ namespace ORESchemes.FHOPE
 			this.max = max.ToULong();
 		}
 
-		/// <summary>
-		/// This scheme is keyless
-		/// State is supposed to be the key
-		/// </summary>
 		public override State KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
@@ -62,6 +58,9 @@ namespace ORESchemes.FHOPE
 			return new Ciphertext { value = key.Insert(plaintext).ToLong() };
 		}
 
+		/// <summary>
+		/// Returns the smallest ciphertext from the state for the given plaintext
+		/// </summary>
 		public long MinCiphertext(int plaintext, State key)
 		{
 			OnPrimitive(Primitive.TreeTraversal);
@@ -69,6 +68,9 @@ namespace ORESchemes.FHOPE
 			return key.GetMinMaxCipher(plaintext, min: true).ToLong();
 		}
 
+		/// <summary>
+		/// Returns the largest ciphertext from the state for the given plaintext
+		/// </summary>
 		public long MaxCiphertext(int plaintext, State key)
 		{
 			OnPrimitive(Primitive.TreeTraversal);

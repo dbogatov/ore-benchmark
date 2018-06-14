@@ -35,6 +35,10 @@ namespace Test.ORESchemes
 
 		protected virtual void SetParameters() { }
 
+		/// <summary>
+		/// Sometimes (eq. FH-OPE) ciphertext needs contain some more information
+		/// before comparsions
+		/// </summary>
 		protected virtual C ConfigureCiphertext(C cipher, K key) => cipher;
 
 		[Fact]

@@ -21,6 +21,9 @@ namespace ORESchemes.Shared
 
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
 
+	/// <summary>
+	/// Base functionality for ORE operations
+	/// </summary>
 	public interface IBaseORE
 	{
 		/// <summary>
@@ -35,9 +38,10 @@ namespace ORESchemes.Shared
 	}
 
 	/// <summary>
-	/// Defines a generic Order Preserving Encryption scheme
+	/// Defines a encryption portion of ORE
 	/// </summary>
 	/// <typeparam name="C">Ciphertext type</typeparam>
+	/// <typeparam name="K">Key type</typeparam>
 	public interface IOREEncryption<C, K> : IBaseORE
 	{
 		/// <summary>
@@ -78,6 +82,10 @@ namespace ORESchemes.Shared
 		int Decrypt(C ciphertext, K key);
 	}
 
+	/// <summary>
+	/// Defines a comparison portion of ORE
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	public interface IOREComparator<C> : IBaseORE
 	{
 		/// <summary>
@@ -143,6 +151,11 @@ namespace ORESchemes.Shared
 		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
 	}
 
+	/// <summary>
+	/// Defines a generic Order Preserving Encryption scheme
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
+	/// <typeparam name="K">Key type</typeparam>
 	public interface IOREScheme<C, K> : IOREEncryption<C, K>, IOREComparator<C> { }
 
 	/// <summary>
