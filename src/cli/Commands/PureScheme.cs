@@ -40,7 +40,7 @@ namespace CLI
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
 					report =
-						new Simulator<long>(
+						new Simulator<long, object>(
 							reader.Dataset,
 							new NoEncryptionFactory(Parent.Seed).GetScheme()
 						).Simulate();
@@ -48,14 +48,14 @@ namespace CLI
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(-Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
 					report =
-						new Simulator<long>(
+						new Simulator<long, byte[]>(
 							reader.Dataset,
 							new CryptDBOPEFactory(Parent.Seed).GetScheme(CryptDBRange)
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
 					report =
-						new Simulator<ORESchemes.PracticalORE.Ciphertext>(
+						new Simulator<ORESchemes.PracticalORE.Ciphertext, byte[]>(
 							reader.Dataset,
 							new PracticalOREFactory(Parent.Seed).GetScheme()
 						).Simulate();
@@ -63,14 +63,14 @@ namespace CLI
 				case ORESchemes.Shared.ORESchemes.LewiORE:
 					PutToConsole($"LewiORE N = {LewiOREN}", Parent.Verbose);
 					report =
-						new Simulator<ORESchemes.LewiORE.Ciphertext>(
+						new Simulator<ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>(
 							reader.Dataset,
 							new LewiOREFactory(Parent.Seed).GetScheme(LewiOREN)
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.FHOPE:
 					report =
-						new Simulator<long>(
+						new Simulator<ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>(
 							reader.Dataset,
 							new FHOPEFactory(Parent.Seed).GetScheme()
 						).Simulate();

@@ -9,7 +9,14 @@ using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.FHOPE
 {
-	public class FHOPEScheme : AbsStatefulOPEScheme<State>
+	public class Ciphertext
+	{
+		public long min;
+		public long max;
+		public long value;
+	}
+
+	public class FHOPEScheme : AbsOREScheme<Ciphertext, State>
 	{
 		private ulong min;
 		private ulong max;
@@ -20,125 +27,108 @@ namespace ORESchemes.FHOPE
 			this.max = max.ToULong();
 		}
 
-		public override IOREScheme<long> Init()
+		/// <summary>
+		/// This scheme is keyless
+		/// State is supposed to be the key
+		/// </summary>
+		public override State KeyGen()
 		{
-			OnOperation(SchemeOperation.Init);
+			OnOperation(SchemeOperation.KeyGen);
 
-			byte[] entropy = new byte[266 / 8];
+			byte[] entropy = new byte[256 / 8];
 			G.NextBytes(entropy);
 
 			IPRG prg = PRGFactory.GetPRG(entropy);
 			SubscribePrimitive(prg);
 
-			State = new State(prg, this.min, this.max);
+			State state = new State(prg, this.min, this.max);
 
-			maxCiphertextValue = Encrypt(MaxPlaintextValue());
-			minCiphertextValue = Encrypt(MinPlaintextValue());
+			maxCiphertextValue = Encrypt(MaxPlaintextValue(), state);
+			minCiphertextValue = Encrypt(MinPlaintextValue(), state);
 
 			_minMaxCiphertextsInitialized = true;
 
-			return this;
+			return state;
 		}
 
-		public override void Destruct()
-		{
-			OnOperation(SchemeOperation.Destruct);
-
-			State = null;
-		}
-
-		/// <summary>
-		/// This scheme is keyless
-		/// State is supposed to be the key
-		/// </summary>
-		public override byte[] KeyGen()
-		{
-			OnOperation(SchemeOperation.KeyGen);
-
-			return null;
-		}
-
-		public override int Decrypt(long ciphertext, byte[] key = null)
+		public override int Decrypt(Ciphertext ciphertext, State key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 			OnPrimitive(Primitive.TreeTraversal);
 
-			return State.Get(ciphertext.ToULong());
+			return key.Get(ciphertext.value.ToULong());
 		}
 
-		public override long Encrypt(int plaintext, byte[] key = null)
+		public override Ciphertext Encrypt(int plaintext, State key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 			OnPrimitive(Primitive.TreeTraversal);
 
-			return State.Insert(plaintext).ToLong();
+			var cipher = key.Insert(plaintext).ToLong();
+
+			return new Ciphertext
+			{
+				value = cipher,
+				max = key.GetMinMaxCipher(plaintext, min: false).ToLong(),
+				min = key.GetMinMaxCipher(plaintext, min: true).ToLong()
+			};
 		}
 
-		private long MinCiphertext(int plaintext)
+		public long MinCiphertext(int plaintext, State key)
 		{
 			OnPrimitive(Primitive.TreeTraversal);
 
-			return State.GetMinMaxCipher(plaintext, min: true).ToLong();
+			return key.GetMinMaxCipher(plaintext, min: true).ToLong();
 		}
 
-		private long MaxCiphertext(int plaintext)
+		public long MaxCiphertext(int plaintext, State key)
 		{
 			OnPrimitive(Primitive.TreeTraversal);
 
-			return State.GetMinMaxCipher(plaintext, min: false).ToLong();
+			return key.GetMinMaxCipher(plaintext, min: false).ToLong();
 		}
 
 		/// <summary>
 		/// Comparison mechanisms are implemented without a call to generic method
 		/// </summary>
-		public override bool Compare(long ciphertextOne, long ciphertextTwo) 
+		protected override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 			=> throw new InvalidOperationException($"Must not be called on {this.GetType()}");
 
-		public override bool IsEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
-
-			var plaintextTwo = Decrypt(ciphertextTwo);
 
 			return
-				ciphertextOne >= MinCiphertext(plaintextTwo) &&
-				ciphertextOne <= MaxCiphertext(plaintextTwo);
+				ciphertextOne.value >= ciphertextTwo.min &&
+				ciphertextOne.value <= ciphertextTwo.max;
 		}
 
-		public override bool IsGreater(long ciphertextOne, long ciphertextTwo)
+		public override bool IsGreater(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			var plaintextTwo = Decrypt(ciphertextTwo);
-
-			return ciphertextOne > MaxCiphertext(plaintextTwo);
+			return ciphertextOne.value > ciphertextTwo.max;
 		}
 
-		public override bool IsLess(long ciphertextOne, long ciphertextTwo)
+		public override bool IsLess(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			var plaintextTwo = Decrypt(ciphertextTwo);
-
-			return ciphertextOne < MinCiphertext(plaintextTwo);
+			return ciphertextOne.value < ciphertextTwo.min;
 		}
 
-		public override bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsGreaterOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			var plaintextTwo = Decrypt(ciphertextTwo);
-
-			return ciphertextOne >= MinCiphertext(plaintextTwo);
+			return ciphertextOne.value >= ciphertextTwo.min;
 		}
 
-		public override bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsLessOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			var plaintextTwo = Decrypt(ciphertextTwo);
-
-			return ciphertextOne <= MaxCiphertext(plaintextTwo);
+			return ciphertextOne.value <= ciphertextTwo.max;
 		}
 	}
 }

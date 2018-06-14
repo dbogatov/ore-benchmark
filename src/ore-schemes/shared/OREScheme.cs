@@ -21,11 +21,7 @@ namespace ORESchemes.Shared
 
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
 
-	/// <summary>
-	/// Defines a generic Order Preserving Encryption scheme
-	/// </summary>
-	/// <typeparam name="C">Ciphertext type</typeparam>
-	public interface IOREScheme<C>
+	public interface IBaseORE
 	{
 		/// <summary>
 		/// Event signaling that some operation has ocurred
@@ -36,14 +32,21 @@ namespace ORESchemes.Shared
 		/// Event signaling that some primitive has been used
 		/// </summary>
 		event PrimitiveUsageEventHandler PrimitiveUsed;
+	}
 
+	/// <summary>
+	/// Defines a generic Order Preserving Encryption scheme
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
+	public interface IOREEncryption<C, K> : IBaseORE
+	{
 		/// <summary>
 		/// Performs some work on initializing the scheme
 		/// Eq. sets up some internal data, sample distributions, generates 
 		/// internal keys
 		/// </summary>
 		/// <returns>Self. Syntactic sugar to allow chaining.</returns>
-		IOREScheme<C> Init();
+		void Init();
 
 		/// <summary>
 		/// Releases all resources created and managed by the scheme
@@ -54,7 +57,7 @@ namespace ORESchemes.Shared
 		/// Randomized routine that generates a valid encryption key
 		/// </summary>
 		/// <returns>A valid encryption key</returns>
-		byte[] KeyGen();
+		K KeyGen();
 
 		/// <summary>
 		/// Possibly randomized routine.
@@ -63,7 +66,7 @@ namespace ORESchemes.Shared
 		/// <param name="plaintext">The value to encrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The ciphertext of plaintext using key</returns>
-		C Encrypt(int plaintext, byte[] key);
+		C Encrypt(int plaintext, K key);
 
 		/// <summary>
 		/// Deterministic routine.
@@ -72,8 +75,11 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertext">The ciphertext to decrypt</param>
 		/// <param name="key">The key to use in encryption</param>
 		/// <returns>The plaintext of ciphertext using key</returns>
-		int Decrypt(C ciphertext, byte[] key);
+		int Decrypt(C ciphertext, K key);
+	}
 
+	public interface IOREComparator<C> : IBaseORE
+	{
 		/// <summary>
 		/// Deterministic routine.
 		/// Tests two plaintexts given their encryptions produced with the same 
@@ -157,12 +163,14 @@ namespace ORESchemes.Shared
 		int MinPlaintextValue();
 	}
 
+	public interface IOREScheme<C, K> : IOREEncryption<C, K>, IOREComparator<C> { }
+
 	/// <summary>
 	/// A default implementation of the interface
 	/// To be derived by ORE schemes
 	/// </summary>
 	/// <typeparam name="C">Ciphertext type</typeparam>
-	public abstract class AbsOREScheme<C> : IOREScheme<C>
+	public abstract class AbsOREScheme<C, K> : IOREScheme<C, K>
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
@@ -186,23 +194,24 @@ namespace ORESchemes.Shared
 			SubscribePrimitive(G);
 		}
 
-		public abstract int Decrypt(C ciphertext, byte[] key);
+		public abstract int Decrypt(C ciphertext, K key);
 
-		public abstract C Encrypt(int plaintext, byte[] key);
+		public abstract C Encrypt(int plaintext, K key);
 
 		public virtual void Destruct()
 		{
 			OnOperation(SchemeOperation.Destruct);
 
 			PrimitiveUsed = null;
+			OperationOcurred = null;
 
 			return;
 		}
-		public virtual IOREScheme<C> Init()
+		public virtual void Init()
 		{
 			OnOperation(SchemeOperation.Init);
 
-			return this;
+			return;
 		}
 
 		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
@@ -234,20 +243,7 @@ namespace ORESchemes.Shared
 			return !IsGreater(ciphertextOne, ciphertextTwo);
 		}
 
-		public virtual byte[] KeyGen()
-		{
-			OnOperation(SchemeOperation.KeyGen);
-
-			byte[] key = new byte[ALPHA / 8];
-			G.NextBytes(key);
-
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
-
-			_minMaxCiphertextsInitialized = true;
-
-			return key;
-		}
+		public abstract K KeyGen();
 
 		public virtual int MaxPlaintextValue() => Int32.MaxValue;
 		public virtual int MinPlaintextValue() => Int32.MinValue;
@@ -308,14 +304,14 @@ namespace ORESchemes.Shared
 			}
 		}
 
-		public abstract bool Compare(C ciphertextOne, C ciphertextTwo);
+		protected abstract bool Compare(C ciphertextOne, C ciphertextTwo);
 	}
 
 	/// <summary>
 	/// Generic implementation of OPE scheme
 	/// To be derived by OPE schemes
 	/// </summary>
-	public abstract class AbsOPEScheme : AbsOREScheme<long>
+	public abstract class AbsOPEScheme<K> : AbsOREScheme<long, K>
 	{
 		public AbsOPEScheme(byte[] seed) : base(seed) { }
 
@@ -354,7 +350,7 @@ namespace ORESchemes.Shared
 			return ciphertextOne <= ciphertextTwo;
 		}
 
-		public override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+		protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
 	}
 
 	/// <summary>
@@ -362,7 +358,7 @@ namespace ORESchemes.Shared
 	/// that returns int (less, equal or greater)
 	/// To be derived by ORE schemes
 	/// </summary>
-	public abstract class AbsORECmpScheme<C> : AbsOREScheme<C>
+	public abstract class AbsORECmpScheme<C, K> : AbsOREScheme<C, K>
 	{
 		public AbsORECmpScheme(byte[] seed) : base(seed) { }
 
@@ -401,7 +397,7 @@ namespace ORESchemes.Shared
 			return ProperCompare(ciphertextOne, ciphertextTwo) != 1;
 		}
 
-		sealed public override bool Compare(C ciphertextOne, C ciphertextTwo) => ProperCompare(ciphertextOne, ciphertextTwo) == -1;
+		sealed protected override bool Compare(C ciphertextOne, C ciphertextTwo) => ProperCompare(ciphertextOne, ciphertextTwo) == -1;
 
 		/// <summary>
 		/// CMP as defined in https://eprint.iacr.org/2016/612.pdf Remark 2.3
@@ -410,12 +406,5 @@ namespace ORESchemes.Shared
 		/// <param name="ciphertextTwo">Second ciphertext to compare</param>
 		/// <returns>-1 if first < second, 0 if equal, 1 if first > second</returns>
 		protected abstract int ProperCompare(C ciphertextOne, C ciphertextTwo);
-	}
-
-	public abstract class AbsStatefulOPEScheme<S> : AbsOPEScheme
-	{
-		public S State { get; protected set; }
-
-		public AbsStatefulOPEScheme(byte[] seed) : base(seed) { }
 	}
 }

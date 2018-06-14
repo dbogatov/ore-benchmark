@@ -11,12 +11,12 @@ namespace DataStructures.BPlusTree
 		public event NodeVisitedEventHandler NodeVisited;
 
 		public int Branching { get; private set; }
-		public IOREScheme<C> Scheme { get; private set; }
+		public IOREComparator<C> Comparator { get; private set; }
 
 		private int _generator = 0;
 
 		public Options(
-			IOREScheme<C> scheme,
+			IOREComparator<C> comparator,
 			int branching = 60
 		)
 		{
@@ -27,7 +27,7 @@ namespace DataStructures.BPlusTree
 
 			Branching = branching;
 
-			Scheme = scheme;
+			Comparator = comparator;
 		}
 
 		/// <summary>

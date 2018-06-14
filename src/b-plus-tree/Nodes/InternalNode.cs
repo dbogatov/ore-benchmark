@@ -26,7 +26,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
+					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
 						insertedIndex = i;
 						prevNode = children[i].node;
@@ -98,7 +98,7 @@ namespace DataStructures.BPlusTree
 							children.Skip(1),
 							(a, b) => new { a, b }
 						)
-						.All(pair => _options.Scheme.IsLess(pair.a.index, pair.b.index));
+						.All(pair => _options.Comparator.IsLess(pair.a.index, pair.b.index));
 
 				return
 					childrenOrdered &&

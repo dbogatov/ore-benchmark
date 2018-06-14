@@ -8,16 +8,17 @@ using ORESchemes.Shared.Primitives;
 namespace Simulation.PureSchemes
 {
 	/// <typeparam name="C">Ciphertext type</typeparam>
-	public class Simulator<C>
+	/// <typeparam name="K">Key type</typeparam>
+	public class Simulator<C, K>
 	{
 		private Dictionary<Primitive, long> _primitiveUsage = new Dictionary<Primitive, long>();
 		private Dictionary<Primitive, long> _purePrimitiveUsage = new Dictionary<Primitive, long>();
 
-		private IOREScheme<C> _scheme;
+		private IOREScheme<C, K> _scheme;
 		private List<int> _dataset;
-		private byte[] _key;
+		private K _key;
 
-		public Simulator(List<int> dataset, IOREScheme<C> scheme)
+		public Simulator(List<int> dataset, IOREScheme<C, K> scheme)
 		{
 			_dataset = dataset;
 			_scheme = scheme;

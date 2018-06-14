@@ -21,7 +21,7 @@ namespace DataStructures.BPlusTree
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				if (_options.Scheme.IsEqual(this.key, key))
+				if (_options.Comparator.IsEqual(this.key, key))
 				{
 					value = this.value;
 					return true;
@@ -48,7 +48,7 @@ namespace DataStructures.BPlusTree
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				if (_options.Scheme.IsEqual(this.key, key))
+				if (_options.Comparator.IsEqual(this.key, key))
 				{
 					ConnectNeighbors();
 

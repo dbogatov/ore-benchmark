@@ -11,7 +11,7 @@ namespace ORESchemes.CryptDBOPE
 	/// <summary>
 	/// Implemented as in https://eprint.iacr.org/2012/624.pdf
 	/// </summary>
-	public class CryptDBScheme : AbsOPEScheme
+	public class CryptDBScheme : AbsOPEScheme<byte[]>
 	{
 		private struct Range
 		{
@@ -255,6 +255,21 @@ namespace ORESchemes.CryptDBOPE
 			}
 
 			return result;
+		}
+
+		public override byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			byte[] key = new byte[ALPHA / 8];
+			G.NextBytes(key);
+
+			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
+			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
+
+			_minMaxCiphertextsInitialized = true;
+
+			return key;
 		}
 	}
 }

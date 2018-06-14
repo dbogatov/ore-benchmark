@@ -12,7 +12,8 @@ namespace Simulation
 	/// </summary>
 	/// <typeparam name="S">Scheme type</typeparam>
 	/// <typeparam name="C">Scheme's ciphertext type</typeparam>
-	public abstract class ORESchemesFactory<S, C> where S : IOREScheme<C>
+	/// <typeparam name="K">Scheme's key type</typeparam>
+	public abstract class ORESchemesFactory<S>
 	{
 		protected readonly byte[] _entropy;
 
@@ -36,21 +37,21 @@ namespace Simulation
 		public abstract S GetScheme(int parameter = 0);
 	}
 
-	public class NoEncryptionFactory : ORESchemesFactory<NoEncryptionScheme, long>
+	public class NoEncryptionFactory : ORESchemesFactory<NoEncryptionScheme>
 	{
 		public NoEncryptionFactory(int? seed = null) : base(seed) { }
 
 		public override NoEncryptionScheme GetScheme(int parameter = 0) => new NoEncryptionScheme(_entropy);
 	}
 
-	public class PracticalOREFactory : ORESchemesFactory<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext>
+	public class PracticalOREFactory : ORESchemesFactory<PracticalOREScheme>
 	{
 		public PracticalOREFactory(int? seed = null) : base(seed) { }
 
 		public override PracticalOREScheme GetScheme(int parameter = 0) => new PracticalOREScheme(_entropy);
 	}
 
-	public class CryptDBOPEFactory : ORESchemesFactory<CryptDBScheme, long>
+	public class CryptDBOPEFactory : ORESchemesFactory<CryptDBScheme>
 	{
 		public CryptDBOPEFactory(int? seed = null) : base(seed) { }
 
@@ -64,18 +65,17 @@ namespace Simulation
 			);
 	}
 
-	public class LewiOREFactory : ORESchemesFactory<LewiOREScheme, ORESchemes.LewiORE.Ciphertext>
+	public class LewiOREFactory : ORESchemesFactory<LewiOREScheme>
 	{
 		public LewiOREFactory(int? seed = null) : base(seed) { }
 
 		public override LewiOREScheme GetScheme(int parameter = 16) => new LewiOREScheme(parameter, _entropy);
 	}
 
-	public class FHOPEFactory : ORESchemesFactory<FHOPEScheme, long>
+	public class FHOPEFactory : ORESchemesFactory<FHOPEScheme>
 	{
 		public FHOPEFactory(int? seed = null) : base(seed) { }
 
-		public override FHOPEScheme GetScheme(int parameter = 0) =>
-			(FHOPEScheme)new FHOPEScheme(long.MinValue, long.MaxValue, _entropy).Init();
+		public override FHOPEScheme GetScheme(int parameter = 0) => new FHOPEScheme(long.MinValue, long.MaxValue, _entropy);
 	}
 }
