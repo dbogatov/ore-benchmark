@@ -111,6 +111,20 @@ namespace Simulation.PureSchemes
 				Comparisons = Profile(() =>
 					{
 						int length = _dataset.Count;
+
+						// TODO: This hack will be fixed in #30
+						if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
+						{
+							var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;
+							ciphertexts.ForEach(
+								c => {
+									int plaintext = _scheme.Decrypt(c, _key);
+									((ORESchemes.FHOPE.Ciphertext)(object)c).max = scheme.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+									((ORESchemes.FHOPE.Ciphertext)(object)c).min = scheme.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+								}
+							);
+						}
+
 						for (int i = 0; i < length; i++)
 						{
 							_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
