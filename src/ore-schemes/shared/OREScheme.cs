@@ -141,26 +141,6 @@ namespace ORESchemes.Shared
 		/// and false otherwise
 		/// </returns>
 		bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo);
-
-		/// <summary>
-		/// Returns the encryption of the greatest possible value
-		/// </summary>
-		C MaxCiphertextValue();
-
-		/// <summary>
-		/// Returns the encryption of the smallest possible value
-		/// </summary>
-		C MinCiphertextValue();
-
-		/// <summary>
-		/// Returns the largest permissible plaintext value for the scheme
-		/// </summary>
-		int MaxPlaintextValue();
-
-		/// <summary>
-		/// Returns the smallest permissible plaintext value for the scheme
-		/// </summary>
-		int MinPlaintextValue();
 	}
 
 	public interface IOREScheme<C, K> : IOREEncryption<C, K>, IOREComparator<C> { }
@@ -178,11 +158,6 @@ namespace ORESchemes.Shared
 
 		protected readonly IPRG G;
 		protected const int ALPHA = 256;
-
-		protected C maxCiphertextValue = default(C);
-		protected C minCiphertextValue = default(C);
-
-		protected bool _minMaxCiphertextsInitialized = false;
 
 		/// <summary>
 		/// Entropy is required for the scheme
@@ -244,29 +219,6 @@ namespace ORESchemes.Shared
 		}
 
 		public abstract K KeyGen();
-
-		public virtual int MaxPlaintextValue() => Int32.MaxValue;
-		public virtual int MinPlaintextValue() => Int32.MinValue;
-
-		public C MaxCiphertextValue()
-		{
-			if (!_minMaxCiphertextsInitialized)
-			{
-				throw new InvalidOperationException("Max ciphertext value is generated during KeyGen operation");
-			}
-
-			return maxCiphertextValue;
-		}
-
-		public C MinCiphertextValue()
-		{
-			if (!_minMaxCiphertextsInitialized)
-			{
-				throw new InvalidOperationException("Min ciphertext value is generated during KeyGen operation");
-			}
-
-			return minCiphertextValue;
-		}
 
 		/// <summary>
 		/// Emits the event that scheme performed an operation

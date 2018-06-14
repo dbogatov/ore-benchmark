@@ -221,9 +221,6 @@ namespace ORESchemes.CryptDBOPE
 			throw new InvalidOperationException("Should never reach this.");
 		}
 
-		public override int MaxPlaintextValue() => ((uint)_domain.To).ToInt();
-		public override int MinPlaintextValue() => ((uint)_domain.From).ToInt();
-
 		/// <summary>
 		/// Helper function that performes a convertible operation on its inputs.
 		/// namely, concatenates them to a byte array.
@@ -263,11 +260,6 @@ namespace ORESchemes.CryptDBOPE
 
 			byte[] key = new byte[ALPHA / 8];
 			G.NextBytes(key);
-
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
-
-			_minMaxCiphertextsInitialized = true;
 
 			return key;
 		}

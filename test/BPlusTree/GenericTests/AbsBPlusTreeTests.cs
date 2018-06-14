@@ -7,14 +7,28 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
-		protected readonly IOREScheme<C> _scheme;
-		protected readonly byte[] _key;
+		protected readonly IOREScheme<C, K> _scheme;
+		protected readonly K _key;
 
 		protected readonly int _max;
 
-		public AbsBPlusTreeTests(IOREScheme<C> scheme, int max = 1000)
+		protected Options<C> _defaultOptions
+		{
+			get
+			{
+				return new Options<C>(
+					_scheme,
+					_scheme.MinCiphertextValue(_key),
+					_scheme.MaxCiphertextValue(_key),
+					3
+				);
+			}
+			private set { }
+		}
+
+		public AbsBPlusTreeTests(IOREScheme<C, K> scheme, int max = 1000)
 		{
 			_max = max;
 

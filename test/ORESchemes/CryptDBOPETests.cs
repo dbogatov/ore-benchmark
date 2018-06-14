@@ -123,7 +123,7 @@ namespace Test.ORESchemes
 		protected override void SetParameters() => rangeBits = 32;
 	}
 
-	public abstract class AbsCryptDBOPETests : GenericORETests<long>
+	public abstract class AbsCryptDBOPETests : GenericORETests<long, byte[]>
 	{
 		protected int rangeBits = 48;
 

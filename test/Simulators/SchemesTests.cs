@@ -25,7 +25,7 @@ namespace Test.Simulators
 					.Range(-max, max)
 					.ToList();
 
-			var simulator = new Simulator<Ciphertext>(dataset, new LewiOREScheme(16, entropy));
+			var simulator = new Simulator<Ciphertext, Key>(dataset, new LewiOREScheme(16, entropy));
 			var report = simulator.Simulate();
 
 			var subreports = new List<Report.Subreport> { report.Encryptions, report.Decryptions, report.Comparisons };

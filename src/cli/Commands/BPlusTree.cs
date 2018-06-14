@@ -54,55 +54,40 @@ namespace CLI
 					report =
 						new Simulator<string, long, object>(
 							reader.Inputs,
-							new Options<long>(
-								new NoEncryptionFactory(Parent.Seed).GetScheme(),
-								BPlusTreeBranching
-							),
-							new NoEncryptionFactory(Parent.Seed).GetScheme()
+							new NoEncryptionFactory(Parent.Seed).GetScheme(),
+							BPlusTreeBranching
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					report =
 						new Simulator<string, long, byte[]>(
 							reader.Inputs,
-							new Options<long>(
-								new CryptDBOPEFactory(Parent.Seed).GetScheme(),
-								BPlusTreeBranching
-							),
-							new CryptDBOPEFactory(Parent.Seed).GetScheme()
+							new CryptDBOPEFactory(Parent.Seed).GetScheme(),
+							BPlusTreeBranching
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
 					report =
 						new Simulator<string, ORESchemes.PracticalORE.Ciphertext, byte[]>(
 							reader.Inputs,
-							new Options<ORESchemes.PracticalORE.Ciphertext>(
-								new PracticalOREFactory(Parent.Seed).GetScheme(),
-								BPlusTreeBranching
-							),
-							new PracticalOREFactory(Parent.Seed).GetScheme()
+							new PracticalOREFactory(Parent.Seed).GetScheme(),
+							BPlusTreeBranching
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.LewiORE:
 					report =
 						new Simulator<string, ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>(
 							reader.Inputs,
-							new Options<ORESchemes.LewiORE.Ciphertext>(
-								new LewiOREFactory(Parent.Seed).GetScheme(),
-								BPlusTreeBranching
-							),
-							new LewiOREFactory(Parent.Seed).GetScheme()
+							new LewiOREFactory(Parent.Seed).GetScheme(),
+							BPlusTreeBranching
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.FHOPE:
 					report =
 						new Simulator<string, ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>(
 							reader.Inputs,
-							new Options<ORESchemes.FHOPE.Ciphertext>(
-								new FHOPEFactory(Parent.Seed).GetScheme(),
-								BPlusTreeBranching
-							),
-							new FHOPEFactory(Parent.Seed).GetScheme()
+							new FHOPEFactory(Parent.Seed).GetScheme(),
+							BPlusTreeBranching
 						).Simulate();
 					break;
 				default:

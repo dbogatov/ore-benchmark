@@ -11,8 +11,8 @@ namespace ORESchemes.FHOPE
 {
 	public class Ciphertext
 	{
-		public long min;
-		public long max;
+		public long? min = null;
+		public long? max = null;
 		public long value;
 	}
 
@@ -43,11 +43,6 @@ namespace ORESchemes.FHOPE
 
 			State state = new State(prg, this.min, this.max);
 
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), state);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), state);
-
-			_minMaxCiphertextsInitialized = true;
-
 			return state;
 		}
 
@@ -64,14 +59,7 @@ namespace ORESchemes.FHOPE
 			OnOperation(SchemeOperation.Encrypt);
 			OnPrimitive(Primitive.TreeTraversal);
 
-			var cipher = key.Insert(plaintext).ToLong();
-
-			return new Ciphertext
-			{
-				value = cipher,
-				max = key.GetMinMaxCipher(plaintext, min: false).ToLong(),
-				min = key.GetMinMaxCipher(plaintext, min: true).ToLong()
-			};
+			return new Ciphertext { value = key.Insert(plaintext).ToLong() };
 		}
 
 		public long MinCiphertext(int plaintext, State key)
@@ -98,6 +86,8 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
+			CiphertextCheck(ciphertextTwo);
+
 			return
 				ciphertextOne.value >= ciphertextTwo.min &&
 				ciphertextOne.value <= ciphertextTwo.max;
@@ -107,12 +97,16 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
+			CiphertextCheck(ciphertextTwo);
+
 			return ciphertextOne.value > ciphertextTwo.max;
 		}
 
 		public override bool IsLess(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
+
+			CiphertextCheck(ciphertextTwo);
 
 			return ciphertextOne.value < ciphertextTwo.min;
 		}
@@ -121,6 +115,8 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
+			CiphertextCheck(ciphertextTwo);
+
 			return ciphertextOne.value >= ciphertextTwo.min;
 		}
 
@@ -128,7 +124,17 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
+			CiphertextCheck(ciphertextTwo);
+
 			return ciphertextOne.value <= ciphertextTwo.max;
+		}
+
+		private void CiphertextCheck(Ciphertext cipher)
+		{
+			if (!cipher.min.HasValue || !cipher.max.HasValue)
+			{
+				throw new ArgumentNullException("Ciphertext's min and max must be set for comparison");
+			}
 		}
 	}
 }

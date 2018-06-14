@@ -51,12 +51,7 @@ namespace Test.Simulators
 				CacheSize = 10
 			};
 
-			var options = new Options<long>(
-				new NoEncryptionScheme(),
-				3
-			);
-
-			var simulator = new Simulator<string, long>(inputs, options);
+			var simulator = new Simulator<string, long, object>(inputs, new NoEncryptionScheme(), 3);
 			var report = simulator.Simulate();
 
 			Assert.Equal(type, report.QueriesType);

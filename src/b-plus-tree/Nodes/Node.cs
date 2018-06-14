@@ -98,7 +98,7 @@ namespace DataStructures.BPlusTree
 						acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
 						return acc;
 					}) :
-					_options.Comparator.MaxCiphertextValue();
+					_options.MaxCipher;
 			}
 
 			/// <summary>
@@ -429,7 +429,7 @@ namespace DataStructures.BPlusTree
 
 				result += $"{(last ? "└" : "├")}";
 
-				result += $"─[<= { (_options.Comparator.IsEqual(index, _options.Comparator.MaxCiphertextValue()) ? "∞" : $"{index}").PadRight(3) }]";
+				result += $"─[<= { (_options.Comparator.IsEqual(index, _options.MaxCipher) ? "∞" : $"{index}").PadRight(3) }]";
 
 				result += $"──({TypeString()} {children.Count}|{ Math.Round(100.0 * children.Count / _options.Branching) }%)\n";
 
@@ -485,7 +485,7 @@ namespace DataStructures.BPlusTree
 			/// <returns>True, if check is passed, false otherwise</returns>
 			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
-				var thisNextLink = (this.next != null || _options.Comparator.IsEqual(this.children.Last().index, _options.Comparator.MaxCiphertextValue()));
+				var thisNextLink = (this.next != null || _options.Comparator.IsEqual(this.children.Last().index, _options.MaxCipher));
 				var siblingsChain = (this.next == null || this.next.CheckNeighborLinks());
 				var thisPrevLink = (leftMost == (this.prev == null));
 				var thisParentLink = (isRoot == (this.parent == null));

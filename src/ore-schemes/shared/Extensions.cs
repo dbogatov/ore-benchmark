@@ -75,5 +75,8 @@ namespace ORESchemes.Shared
 		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
 		/// </summary>
 		public static uint ToUInt(this int value) => unchecked((uint)(value + Int32.MinValue));
+
+		public static C MaxCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) => scheme.Encrypt(int.MaxValue, key);
+		public static C MinCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) => scheme.Encrypt(int.MinValue, key);
 	}
 }

@@ -106,11 +106,6 @@ namespace ORESchemes.PracticalORE
 			byte[] key = new byte[ALPHA / 8];
 			G.NextBytes(key);
 
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
-
-			_minMaxCiphertextsInitialized = true;
-
 			return key;
 		}
 	}

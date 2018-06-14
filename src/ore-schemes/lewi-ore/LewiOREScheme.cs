@@ -85,11 +85,6 @@ namespace ORESchemes.LewiORE
 			G.NextBytes(key.left);
 			G.NextBytes(key.right);
 
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
-
-			_minMaxCiphertextsInitialized = true;
-
 			return key;
 		}
 

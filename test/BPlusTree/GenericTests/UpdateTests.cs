@@ -7,16 +7,13 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		[Fact]
 		public void InsertNotUpdate()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, 4, 5 }
 			);
 
@@ -27,10 +24,7 @@ namespace Test.BPlusTree
 		public void UpdateNotInsert()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, 4, 5 }
 			);
 

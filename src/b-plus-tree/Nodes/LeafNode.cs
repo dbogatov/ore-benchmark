@@ -42,7 +42,7 @@ namespace DataStructures.BPlusTree
 					LeafNode nextLeaf = (LeafNode)next;
 					while (nextLeaf != null)
 					{
-						nextLeaf = nextLeaf.ReturnRange(_options.Comparator.MinCiphertextValue(), end, values);
+						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values);
 					}
 				}
 
@@ -94,7 +94,7 @@ namespace DataStructures.BPlusTree
 				if (children.Count == 0)
 				{
 					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
-					children.Add(new IndexValue(_options.Comparator.MaxCiphertextValue(), null));
+					children.Add(new IndexValue(_options.MaxCipher, null));
 
 					return new InsertInfo();
 				}

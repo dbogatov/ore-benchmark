@@ -85,7 +85,7 @@ namespace DataStructures.BPlusTree
 					null,
 					new List<IndexValue> {
 						new IndexValue(prevRoot.LargestIndex(), prevRoot),
-						new IndexValue(_options.Comparator.MaxCiphertextValue(), extraNode)
+						new IndexValue(_options.MaxCipher, extraNode)
 					}
 				);
 			}
@@ -136,7 +136,7 @@ namespace DataStructures.BPlusTree
 
 		public override string ToString()
 		{
-			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.Comparator.MinCiphertextValue());
+			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
 		}
 
 		/// <summary>

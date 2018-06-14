@@ -21,11 +21,18 @@ namespace Simulation.BPlusTree
 		private K _key;
 		private Tree<D, C> _tree;
 
-		public Simulator(Inputs<D> inputs, Options<C> options, IOREScheme<C, K> scheme)
+		public Simulator(Inputs<D> inputs, IOREScheme<C, K> scheme, int branches)
 		{
 			_inputs = inputs;
 			_scheme = scheme;
 			_key = scheme.KeyGen();
+
+			var options = new Options<C>(
+				scheme,
+				scheme.MinCiphertextValue(_key),
+				scheme.MaxCiphertextValue(_key),
+				branches
+			);
 
 			options.NodeVisited += new NodeVisitedEventHandler(RecordNodeVisit);
 			options.Comparator.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);

@@ -13,10 +13,15 @@ namespace DataStructures.BPlusTree
 		public int Branching { get; private set; }
 		public IOREComparator<C> Comparator { get; private set; }
 
+		public C MaxCipher { get; private set; }
+		public C MinCipher { get; private set; }
+
 		private int _generator = 0;
 
 		public Options(
 			IOREComparator<C> comparator,
+			C minCipher,
+			C maxCipher,
 			int branching = 60
 		)
 		{
@@ -28,6 +33,9 @@ namespace DataStructures.BPlusTree
 			Branching = branching;
 
 			Comparator = comparator;
+
+			MinCipher = minCipher;
+			MaxCipher = maxCipher;
 		}
 
 		/// <summary>
