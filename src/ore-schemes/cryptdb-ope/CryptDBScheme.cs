@@ -11,7 +11,7 @@ namespace ORESchemes.CryptDBOPE
 	/// <summary>
 	/// Implemented as in https://eprint.iacr.org/2012/624.pdf
 	/// </summary>
-	public class CryptDBScheme : AbsOPEScheme
+	public class CryptDBScheme : AbsOPEScheme<byte[]>
 	{
 		private struct Range
 		{
@@ -221,9 +221,6 @@ namespace ORESchemes.CryptDBOPE
 			throw new InvalidOperationException("Should never reach this.");
 		}
 
-		public override int MaxPlaintextValue() => ((uint)_domain.To).ToInt();
-		public override int MinPlaintextValue() => ((uint)_domain.From).ToInt();
-
 		/// <summary>
 		/// Helper function that performes a convertible operation on its inputs.
 		/// namely, concatenates them to a byte array.
@@ -255,6 +252,16 @@ namespace ORESchemes.CryptDBOPE
 			}
 
 			return result;
+		}
+
+		public override byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			byte[] key = new byte[ALPHA / 8];
+			G.NextBytes(key);
+
+			return key;
 		}
 	}
 }

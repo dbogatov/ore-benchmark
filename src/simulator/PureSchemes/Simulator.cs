@@ -8,16 +8,17 @@ using ORESchemes.Shared.Primitives;
 namespace Simulation.PureSchemes
 {
 	/// <typeparam name="C">Ciphertext type</typeparam>
-	public class Simulator<C>
+	/// <typeparam name="K">Key type</typeparam>
+	public class Simulator<C, K>
 	{
 		private Dictionary<Primitive, long> _primitiveUsage = new Dictionary<Primitive, long>();
 		private Dictionary<Primitive, long> _purePrimitiveUsage = new Dictionary<Primitive, long>();
 
-		private IOREScheme<C> _scheme;
+		private IOREScheme<C, K> _scheme;
 		private List<int> _dataset;
-		private byte[] _key;
+		private K _key;
 
-		public Simulator(List<int> dataset, IOREScheme<C> scheme)
+		public Simulator(List<int> dataset, IOREScheme<C, K> scheme)
 		{
 			_dataset = dataset;
 			_scheme = scheme;
@@ -110,6 +111,20 @@ namespace Simulation.PureSchemes
 				Comparisons = Profile(() =>
 					{
 						int length = _dataset.Count;
+
+						// TODO: This hack will be fixed in #30
+						if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
+						{
+							var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;
+							ciphertexts.ForEach(
+								c => {
+									int plaintext = _scheme.Decrypt(c, _key);
+									((ORESchemes.FHOPE.Ciphertext)(object)c).max = scheme.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+									((ORESchemes.FHOPE.Ciphertext)(object)c).min = scheme.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+								}
+							);
+						}
+
 						for (int i = 0; i < length; i++)
 						{
 							_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);

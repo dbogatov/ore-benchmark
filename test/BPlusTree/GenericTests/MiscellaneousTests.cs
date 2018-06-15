@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 
 		[Fact]
@@ -15,10 +15,7 @@ namespace Test.BPlusTree
 		{
 			var input = new List<int> { 3, -2, 8 };
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				input,
 				false, false
 			);
@@ -36,7 +33,11 @@ namespace Test.BPlusTree
 		public void MalformedOptionsTest(int branches)
 		{
 			Assert.Throws<ArgumentException>(
-				() => new Options<C>(_scheme, branches)
+				() => new Options<C>(
+					_scheme,
+					_scheme.MinCiphertextValue(_key),
+					_scheme.MaxCiphertextValue(_key),
+					branches)
 			);
 		}
 
@@ -48,10 +49,7 @@ namespace Test.BPlusTree
 		public void SizeTest(int expected)
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				expected > 0 ?
 					Enumerable
 						.Range(1, expected)

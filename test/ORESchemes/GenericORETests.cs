@@ -8,9 +8,9 @@ using ORESchemes.Shared.Primitives;
 
 namespace Test.ORESchemes
 {
-	public abstract class GenericORETests<C>
+	public abstract class GenericORETests<C, K>
 	{
-		protected IOREScheme<C> _scheme;
+		protected IOREScheme<C, K> _scheme;
 		protected readonly int _runs = 100;
 
 		protected const int SEED = 123456;
@@ -34,6 +34,12 @@ namespace Test.ORESchemes
 		protected abstract void SetScheme();
 
 		protected virtual void SetParameters() { }
+
+		/// <summary>
+		/// Sometimes (eq. FH-OPE) ciphertext needs contain some more information
+		/// before comparsions
+		/// </summary>
+		protected virtual C ConfigureCiphertext(C cipher, K key) => cipher;
 
 		[Fact]
 		public void InitTest()
@@ -93,7 +99,7 @@ namespace Test.ORESchemes
 		[InlineData(1, 2)]
 		[InlineData(-2, -1)]
 		[InlineData(-1, -2)]
-		public void OrderCorrectnessTest(int plaintextOne, int plaintextTwo)
+		public virtual void OrderCorrectnessTest(int plaintextOne, int plaintextTwo)
 		{
 			_scheme.Init();
 
@@ -106,6 +112,9 @@ namespace Test.ORESchemes
 
 				var ciphertextOne = _scheme.Encrypt(pOne, key);
 				var ciphertextTwo = _scheme.Encrypt(pTwo, key);
+
+				ciphertextOne = ConfigureCiphertext(ciphertextOne, key);
+				ciphertextTwo = ConfigureCiphertext(ciphertextTwo, key);
 
 				Assert.Equal(pOne > pTwo, _scheme.IsGreater(ciphertextOne, ciphertextTwo));
 				Assert.Equal(pOne < pTwo, _scheme.IsLess(ciphertextOne, ciphertextTwo));
@@ -135,6 +144,8 @@ namespace Test.ORESchemes
 					.Range(1, 10)
 					.Select(val => _scheme.Encrypt(val, key))
 					.ToList();
+
+			ciphertexts.Select(c => ConfigureCiphertext(c, key)).ToList();
 
 			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsGreater(first, second)).ToList();
 			ciphertexts.Zip(ciphertexts.Skip(1), (first, second) => _scheme.IsGreaterOrEqual(first, second)).ToList();
@@ -171,44 +182,36 @@ namespace Test.ORESchemes
 			var key = _scheme.KeyGen();
 
 			Assert.Equal(
-				_scheme.MinPlaintextValue(),
-				_scheme.Decrypt(_scheme.MinCiphertextValue(), key)
+				int.MinValue,
+				_scheme.Decrypt(_scheme.MinCiphertextValue<C, K>(key), key)
 			);
 
 			Assert.Equal(
-				_scheme.MaxPlaintextValue(),
-				_scheme.Decrypt(_scheme.MaxCiphertextValue(), key)
+				int.MaxValue,
+				_scheme.Decrypt(_scheme.MaxCiphertextValue<C, K>(key), key)
 			);
 
 			new List<int> {
-				_scheme.MinPlaintextValue(),
-				_scheme.MinPlaintextValue() / 2,
+				int.MinValue,
+				int.MinValue / 2,
 				-1, 0, 1,
-				_scheme.MaxPlaintextValue() / 2,
-				_scheme.MaxPlaintextValue()
+				int.MaxValue / 2,
+				int.MaxValue
 			}.ForEach(
 					num =>
 					{
 						Assert.True(
-							_scheme.IsLessOrEqual(_scheme.MinCiphertextValue(), _scheme.Encrypt(num, key))
+							_scheme.IsLessOrEqual(
+								ConfigureCiphertext(_scheme.MinCiphertextValue<C, K>(key), key),
+								ConfigureCiphertext(_scheme.Encrypt(num, key), key))
 						);
 						Assert.True(
-							_scheme.IsGreaterOrEqual(_scheme.MaxCiphertextValue(), _scheme.Encrypt(num, key))
+							_scheme.IsGreaterOrEqual(
+								ConfigureCiphertext(_scheme.MaxCiphertextValue<C, K>(key), key),
+								ConfigureCiphertext(_scheme.Encrypt(num, key), key))
 						);
 					}
 				);
-		}
-
-		[Fact]
-		public void MinMaxGenerationTest()
-		{
-			Assert.Throws<InvalidOperationException>(
-				() => _scheme.MinCiphertextValue()
-			);
-
-			Assert.Throws<InvalidOperationException>(
-				() => _scheme.MaxCiphertextValue()
-			);
 		}
 
 		[Fact]
@@ -242,8 +245,8 @@ namespace Test.ORESchemes
 			);
 
 			_scheme.IsLess(
-				_scheme.Encrypt(10, key),
-				_scheme.Encrypt(20, key)
+				ConfigureCiphertext(_scheme.Encrypt(10, key), key),
+				ConfigureCiphertext(_scheme.Encrypt(20, key), key)
 			);
 
 			Assert.NotEqual(0, primitiveUsage.Values.Sum());

@@ -7,16 +7,13 @@ using ORESchemes.Shared;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		[Fact]
 		public void SearchRangeNotExistingTest()
 		{
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			).TryRange(_scheme.Encrypt(5, _key), _scheme.Encrypt(10, _key), out _);
 
@@ -27,10 +24,7 @@ namespace Test.BPlusTree
 		public void SearchRangeEmptyTreeTest()
 		{
 			var result = new Tree<string, C>(
-				new Options<C>(
-					_scheme,
-					3
-				)
+				_defaultOptions
 			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(3, _key), out _);
 
 			Assert.False(result);
@@ -42,10 +36,7 @@ namespace Test.BPlusTree
 			List<string> output = null;
 
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(4, _key), out output);
 
@@ -79,10 +70,7 @@ namespace Test.BPlusTree
 			}
 
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, _max)
 					.Select(val => val * salt)
@@ -109,10 +97,7 @@ namespace Test.BPlusTree
 		public void SearchRangeNonExistingMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -127,12 +112,7 @@ namespace Test.BPlusTree
 		[InlineData(2, 2)]
 		public void SearchRangeImproperTest(int start, int end)
 		{
-			var tree = new Tree<string, C>(
-				new Options<C>(
-					_scheme,
-					3
-				)
-			);
+			var tree = new Tree<string, C>(_defaultOptions);
 
 			var startCipher = _scheme.Encrypt(start, _key);
 			var endCipher = _scheme.Encrypt(end, _key);

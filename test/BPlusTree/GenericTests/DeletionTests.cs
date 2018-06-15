@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		public Tree<string, C> DeleteAndValidate(Tree<string, C> tree, int element, bool print = false)
 		{
@@ -33,10 +33,7 @@ namespace Test.BPlusTree
 		public void DeleteNotExistingElementTest()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, 5 }
 			);
 
@@ -47,10 +44,7 @@ namespace Test.BPlusTree
 		public void DeleteEmptyTreeTest()
 		{
 			var tree = new Tree<string, C>(
-				new Options<C>(
-					_scheme,
-					3
-				)
+				_defaultOptions
 			);
 
 			Assert.False(tree.Delete(_scheme.Encrypt(2, _key)));
@@ -60,10 +54,7 @@ namespace Test.BPlusTree
 		public void DeleteSingleElementTest()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			);
 
@@ -74,10 +65,7 @@ namespace Test.BPlusTree
 		public void DeleteMultilevelTest()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -91,10 +79,7 @@ namespace Test.BPlusTree
 		public void DeleteThenInsertTest()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -112,10 +97,7 @@ namespace Test.BPlusTree
 		public void DeleteLargestElement()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8, 6, 20, 21, 11 }
 			);
 
@@ -126,10 +108,7 @@ namespace Test.BPlusTree
 		public void DeleteWithMergeToRight()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, 22 }
 			);
 
@@ -141,10 +120,7 @@ namespace Test.BPlusTree
 		public void DeleteWithBorrowFromLeft()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8, 6, 20, 21, 11, 12, -5, -10 }
 			);
 
@@ -157,10 +133,7 @@ namespace Test.BPlusTree
 		public void DeleteWithBorrowFromRight()
 		{
 			var tree = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8, 6, 20, 21, 22, 23, 11, 12 }
 			);
 
@@ -186,6 +159,8 @@ namespace Test.BPlusTree
 				var tree = ConstructTree(
 					new Options<C>(
 						_scheme,
+						_scheme.MinCiphertextValue(_key),
+						_scheme.MaxCiphertextValue(_key),
 						i
 					),
 					input

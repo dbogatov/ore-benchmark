@@ -42,7 +42,7 @@ namespace Test.ORESchemes
 			);
 	}
 
-	public abstract class AbsLewiORETests : GenericORETests<Ciphertext>
+	public abstract class AbsLewiORETests : GenericORETests<Ciphertext, Key>
 	{
 		protected int n = 16;
 

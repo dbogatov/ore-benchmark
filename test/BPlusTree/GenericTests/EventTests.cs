@@ -7,14 +7,11 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		private int ProfileVisitedNodes(Action<Tree<string, C>> routine, List<int> seeds = null)
 		{
-			var options = new Options<C>(
-				_scheme,
-				3
-			);
+			var options = _defaultOptions;
 			var tree = new Tree<string, C>(options);
 
 			if (seeds != null)

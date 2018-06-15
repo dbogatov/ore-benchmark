@@ -5,7 +5,7 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class PracticalORETests : GenericORETests<Ciphertext>
+	public class PracticalORETests : GenericORETests<Ciphertext, byte[]>
 	{
 		protected override void SetScheme()
 		{

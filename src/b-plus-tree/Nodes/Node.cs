@@ -95,10 +95,10 @@ namespace DataStructures.BPlusTree
 					children.Count > 0 ?
 					children.Select(ch => ch.index).Aggregate((acc, next) =>
 					{
-						acc = _options.Scheme.IsGreater(next, acc) ? next : acc;
+						acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
 						return acc;
 					}) :
-					_options.Scheme.MaxCiphertextValue();
+					_options.MaxCipher;
 			}
 
 			/// <summary>
@@ -117,7 +117,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
+					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
 						return children[i].node != null ? children[i].node.TryGet(key, out value) : false;
 					}
@@ -136,7 +136,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (_options.Scheme.IsLessOrEqual(start, children[i].index))
+					if (_options.Comparator.IsLessOrEqual(start, children[i].index))
 					{
 						if (children[i].node == null)
 						{
@@ -177,7 +177,7 @@ namespace DataStructures.BPlusTree
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
+					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
 						// last node and still not found
 						if (children[i].node == null)
@@ -336,7 +336,7 @@ namespace DataStructures.BPlusTree
 					// shadow infinity node
 					if (children[i].node != null)
 					{
-						if (!_options.Scheme.IsEqual(children[i].index, children[i].node.LargestIndex()))
+						if (!_options.Comparator.IsEqual(children[i].index, children[i].node.LargestIndex()))
 						{
 							children[i] = new IndexValue
 							{
@@ -429,7 +429,7 @@ namespace DataStructures.BPlusTree
 
 				result += $"{(last ? "└" : "├")}";
 
-				result += $"─[<= { (_options.Scheme.IsEqual(index, _options.Scheme.MaxCiphertextValue()) ? "∞" : $"{index}").PadRight(3) }]";
+				result += $"─[<= { (_options.Comparator.IsEqual(index, _options.MaxCipher) ? "∞" : $"{index}").PadRight(3) }]";
 
 				result += $"──({TypeString()} {children.Count}|{ Math.Round(100.0 * children.Count / _options.Branching) }%)\n";
 
@@ -472,7 +472,7 @@ namespace DataStructures.BPlusTree
 			public virtual bool CheckIndexes()
 			{
 				return
-					children.Where(ch => ch.node != null).All(ch => _options.Scheme.IsEqual(ch.index, ch.node.LargestIndex())) &&
+					children.Where(ch => ch.node != null).All(ch => _options.Comparator.IsEqual(ch.index, ch.node.LargestIndex())) &&
 					children.Where(ch => ch.node != null).All(ch => ch.node.CheckIndexes());
 			}
 
@@ -485,7 +485,7 @@ namespace DataStructures.BPlusTree
 			/// <returns>True, if check is passed, false otherwise</returns>
 			public virtual bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{
-				var thisNextLink = (this.next != null || _options.Scheme.IsEqual(this.children.Last().index, _options.Scheme.MaxCiphertextValue()));
+				var thisNextLink = (this.next != null || _options.Comparator.IsEqual(this.children.Last().index, _options.MaxCipher));
 				var siblingsChain = (this.next == null || this.next.CheckNeighborLinks());
 				var thisPrevLink = (leftMost == (this.prev == null));
 				var thisParentLink = (isRoot == (this.parent == null));

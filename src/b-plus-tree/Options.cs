@@ -11,12 +11,17 @@ namespace DataStructures.BPlusTree
 		public event NodeVisitedEventHandler NodeVisited;
 
 		public int Branching { get; private set; }
-		public IOREScheme<C> Scheme { get; private set; }
+		public IOREComparator<C> Comparator { get; private set; }
+
+		public C MaxCipher { get; private set; }
+		public C MinCipher { get; private set; }
 
 		private int _generator = 0;
 
 		public Options(
-			IOREScheme<C> scheme,
+			IOREComparator<C> comparator,
+			C minCipher,
+			C maxCipher,
 			int branching = 60
 		)
 		{
@@ -27,7 +32,10 @@ namespace DataStructures.BPlusTree
 
 			Branching = branching;
 
-			Scheme = scheme;
+			Comparator = comparator;
+
+			MinCipher = minCipher;
+			MaxCipher = maxCipher;
 		}
 
 		/// <summary>

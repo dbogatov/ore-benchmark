@@ -7,16 +7,13 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		[Fact]
 		public void SearchNotExistingElementTest()
 		{
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			).TryGet(_scheme.Encrypt(2, _key), out _);
 
@@ -27,10 +24,7 @@ namespace Test.BPlusTree
 		public void SearchEmptyTreeTest()
 		{
 			var result = new Tree<string, C>(
-				new Options<C>(
-					_scheme,
-					3
-				)
+				_defaultOptions
 			).TryGet(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);
@@ -42,10 +36,7 @@ namespace Test.BPlusTree
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			).TryGet(_scheme.Encrypt(3, _key), out output);
 
@@ -60,10 +51,7 @@ namespace Test.BPlusTree
 			var output = "";
 
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -79,10 +67,7 @@ namespace Test.BPlusTree
 		public void SearchNonExistingElementMultilevelTest()
 		{
 			var result = ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)

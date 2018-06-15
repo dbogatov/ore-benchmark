@@ -9,7 +9,7 @@ namespace Simulation.BPlusTree
 {
 	/// <typeparam name="D">Data type</typeparam>
 	/// <typeparam name="C">Ciphertext type</typeparam>
-	public class Simulator<D, C>
+	public class Simulator<D, C, K>
 	{
 		private List<Tuple<int, long>> _cache;
 		private long _visited = 0;
@@ -17,18 +17,26 @@ namespace Simulation.BPlusTree
 
 		private Dictionary<SchemeOperation, long> _schemeOperations = new Dictionary<SchemeOperation, long>();
 		private Inputs<D> _inputs;
-		private IOREScheme<C> _scheme;
-		private byte[] _key;
+		private IOREScheme<C, K> _scheme;
+		private K _key;
 		private Tree<D, C> _tree;
 
-		public Simulator(Inputs<D> inputs, Options<C> options)
+		public Simulator(Inputs<D> inputs, IOREScheme<C, K> scheme, int branches)
 		{
 			_inputs = inputs;
-			_scheme = options.Scheme;
-			_key = options.Scheme.KeyGen();
+			_scheme = scheme;
+			_key = scheme.KeyGen();
+
+			var options = new Options<C>(
+				scheme,
+				scheme.MinCiphertextValue(_key),
+				scheme.MaxCiphertextValue(_key),
+				branches
+			);
 
 			options.NodeVisited += new NodeVisitedEventHandler(RecordNodeVisit);
-			options.Scheme.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
+			options.Comparator.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
+			scheme.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
 
 			_cache = new List<Tuple<int, long>>(inputs.CacheSize);
 			_cache.Clear();

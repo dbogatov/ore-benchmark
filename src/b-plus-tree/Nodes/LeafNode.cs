@@ -25,8 +25,8 @@ namespace DataStructures.BPlusTree
 				for (int i = 0; i < children.Count; i++)
 				{
 					if (
-						_options.Scheme.IsLessOrEqual(start, children[i].index) &&
-						_options.Scheme.IsGreaterOrEqual(end, children[i].index) &&
+						_options.Comparator.IsLessOrEqual(start, children[i].index) &&
+						_options.Comparator.IsGreaterOrEqual(end, children[i].index) &&
 						children[i].node != null)
 					{
 						found = true;
@@ -42,7 +42,7 @@ namespace DataStructures.BPlusTree
 					LeafNode nextLeaf = (LeafNode)next;
 					while (nextLeaf != null)
 					{
-						nextLeaf = nextLeaf.ReturnRange(_options.Scheme.MinCiphertextValue(), end, values);
+						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values);
 					}
 				}
 
@@ -66,8 +66,8 @@ namespace DataStructures.BPlusTree
 				for (int i = 0; i < children.Count; i++)
 				{
 					if (
-						_options.Scheme.IsLessOrEqual(start, children[i].index) &&
-						_options.Scheme.IsGreaterOrEqual(end, children[i].index) &&
+						_options.Comparator.IsLessOrEqual(start, children[i].index) &&
+						_options.Comparator.IsGreaterOrEqual(end, children[i].index) &&
 						children[i].node != null)
 					{
 						found = true;
@@ -94,17 +94,17 @@ namespace DataStructures.BPlusTree
 				if (children.Count == 0)
 				{
 					children.Add(new IndexValue(key, new DataNode(_options, this, null, null, key, value)));
-					children.Add(new IndexValue(_options.Scheme.MaxCiphertextValue(), null));
+					children.Add(new IndexValue(_options.MaxCipher, null));
 
 					return new InsertInfo();
 				}
 
 				for (int i = 0; i < children.Count; i++)
 				{
-					if (_options.Scheme.IsLessOrEqual(key, children[i].index))
+					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
 						// Update then
-						if (_options.Scheme.IsEqual(key, children[i].index))
+						if (_options.Comparator.IsEqual(key, children[i].index))
 						{
 							children[i].node.Insert(key, value);
 							updated = true;
@@ -193,7 +193,7 @@ namespace DataStructures.BPlusTree
 							children.Skip(1),
 							(a, b) => new { a, b }
 						)
-						.All(pair => _options.Scheme.IsLess(pair.a.index, pair.b.index));
+						.All(pair => _options.Comparator.IsLess(pair.a.index, pair.b.index));
 
 				return
 					atLeastOneChild &&

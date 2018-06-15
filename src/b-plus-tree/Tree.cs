@@ -49,7 +49,7 @@ namespace DataStructures.BPlusTree
 		{
 			values = new List<T>();
 
-			if (_options.Scheme.IsGreaterOrEqual(start, end))
+			if (_options.Comparator.IsGreaterOrEqual(start, end))
 			{
 				throw new ArgumentException("Improper range");
 			}
@@ -85,7 +85,7 @@ namespace DataStructures.BPlusTree
 					null,
 					new List<IndexValue> {
 						new IndexValue(prevRoot.LargestIndex(), prevRoot),
-						new IndexValue(_options.Scheme.MaxCiphertextValue(), extraNode)
+						new IndexValue(_options.MaxCipher, extraNode)
 					}
 				);
 			}
@@ -136,7 +136,7 @@ namespace DataStructures.BPlusTree
 
 		public override string ToString()
 		{
-			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.Scheme.MinCiphertextValue());
+			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
 		}
 
 		/// <summary>

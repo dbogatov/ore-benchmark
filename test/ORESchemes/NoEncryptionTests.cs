@@ -9,7 +9,7 @@ using ORESchemes.Shared.Primitives;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class NoEncryptionTests : GenericORETests<long>
+	public class NoEncryptionTests : GenericORETests<long, object>
 	{
 		protected override void SetScheme()
 		{

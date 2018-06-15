@@ -12,6 +12,12 @@ using ORESchemes.Shared.Primitives.PRP;
 
 namespace ORESchemes.LewiORE
 {
+	public class Key
+	{
+		public byte[] left = new byte[256 / 8];
+		public byte[] right = new byte[256 / 8];
+	}
+
 	public class Ciphertext
 	{
 		public class Left
@@ -30,7 +36,7 @@ namespace ORESchemes.LewiORE
 		public Right right;
 	}
 
-	public class LewiOREScheme : AbsORECmpScheme<Ciphertext>
+	public class LewiOREScheme : AbsORECmpScheme<Ciphertext, Key>
 	{
 		private readonly IPRF F;
 		private readonly IHash H;
@@ -71,42 +77,38 @@ namespace ORESchemes.LewiORE
 			G.NextBytes(IV);
 		}
 
-		public override byte[] KeyGen()
+		public override Key KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
-			byte[] key = new byte[2 * ALPHA / 8];
-			G.NextBytes(key);
-
-			maxCiphertextValue = Encrypt(MaxPlaintextValue(), key);
-			minCiphertextValue = Encrypt(MinPlaintextValue(), key);
-
-			_minMaxCiphertextsInitialized = true;
+			Key key = new Key();
+			G.NextBytes(key.left);
+			G.NextBytes(key.right);
 
 			return key;
 		}
 
-		public override int Decrypt(Ciphertext ciphertext, byte[] key)
+		public override int Decrypt(Ciphertext ciphertext, Key key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
 			return BitConverter.ToInt32(
 				F.InversePRF(
-					key.Take(ALPHA / 8).ToArray(),
+					key.left,
 					ciphertext.encrypted
 				), 0
 			);
 		}
 
-		public override Ciphertext Encrypt(int plaintext, byte[] key)
+		public override Ciphertext Encrypt(int plaintext, Key key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
 			return new Ciphertext
 			{
-				left = EncryptLeft(key, ToUInt(plaintext)),
-				right = EncryptRight(key, ToUInt(plaintext)),
-				encrypted = F.PRF(key.Take(ALPHA / 8).ToArray(), BitConverter.GetBytes(plaintext), IV)
+				left = EncryptLeft(key.left, key.right, ToUInt(plaintext)),
+				right = EncryptRight(key.left, key.right, ToUInt(plaintext)),
+				encrypted = F.PRF(key.left, BitConverter.GetBytes(plaintext), IV)
 			};
 		}
 
@@ -140,12 +142,9 @@ namespace ORESchemes.LewiORE
 		/// <param name="key">A key with which to encrypt</param>
 		/// <param name="input">Input to encrypt</param>
 		/// <returns>A left side of ciphertext</returns>
-		private Ciphertext.Left EncryptLeft(byte[] key, uint input)
+		private Ciphertext.Left EncryptLeft(byte[] leftKey, byte[] rightKey, uint input)
 		{
 			List<Tuple<byte[], uint>> result = new List<Tuple<byte[], uint>>();
-
-			byte[] k1 = key.Take(ALPHA / 8).ToArray();
-			byte[] k2 = key.Skip(ALPHA / 8).ToArray();
 
 			for (int i = 0; i < n; i++)
 			{
@@ -156,7 +155,7 @@ namespace ORESchemes.LewiORE
 				uint x = Permute(
 					xi,
 					F.PRF(
-						k2,
+						rightKey,
 						BitConverter.GetBytes(xtoi),
 						IV
 					)
@@ -164,7 +163,7 @@ namespace ORESchemes.LewiORE
 
 				byte[] xtoix = Concatenate(xtoi, x);
 
-				byte[] ui = F.PRF(k1, xtoix, IV);
+				byte[] ui = F.PRF(leftKey, xtoix, IV);
 
 				result.Add(new Tuple<byte[], uint>(ui, x));
 			}
@@ -181,15 +180,12 @@ namespace ORESchemes.LewiORE
 		/// <param name="key">A key with which to encrypt</param>
 		/// <param name="input">Input to encrypt</param>
 		/// <returns>A right side of ciphertext</returns>
-		private Ciphertext.Right EncryptRight(byte[] key, uint input)
+		private Ciphertext.Right EncryptRight(byte[] leftKey, byte[] rightKey, uint input)
 		{
 			List<List<short>> result = new List<List<short>>();
 
 			byte[] nonce = new byte[ALPHA / 8];
 			G.NextBytes(nonce);
-
-			byte[] k1 = key.Take(ALPHA / 8).ToArray();
-			byte[] k2 = key.Skip(ALPHA / 8).ToArray();
 
 			for (int i = 0; i < n; i++)
 			{
@@ -204,7 +200,7 @@ namespace ORESchemes.LewiORE
 					uint js = Unpermute(
 						j,
 						F.PRF(
-							k2,
+							rightKey,
 							BitConverter.GetBytes(ytoi),
 							IV
 						)
@@ -213,7 +209,7 @@ namespace ORESchemes.LewiORE
 					byte[] ytoij = Concatenate(ytoi, j);
 
 					var cmp = CMP(js, yi);
-					var hash = Hash(nonce, F.PRF(k1, ytoij, IV));
+					var hash = Hash(nonce, F.PRF(leftKey, ytoij, IV));
 
 					short vi = (short)(cmp + hash);
 

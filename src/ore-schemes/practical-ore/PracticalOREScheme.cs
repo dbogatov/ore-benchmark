@@ -15,7 +15,7 @@ namespace ORESchemes.PracticalORE
 		public byte[] encrypted;
 	}
 
-	public class PracticalOREScheme : AbsOREScheme<Ciphertext>
+	public class PracticalOREScheme : AbsOREScheme<Ciphertext, byte[]>
 	{
 		private readonly int M = 4;
 		private readonly IPRF F;
@@ -79,7 +79,7 @@ namespace ORESchemes.PracticalORE
 			return result;
 		}
 
-		public override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
+		protected override bool Compare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
@@ -97,6 +97,16 @@ namespace ORESchemes.PracticalORE
 			}
 
 			return false;
+		}
+
+		public override byte[] KeyGen()
+		{
+			OnOperation(SchemeOperation.KeyGen);
+
+			byte[] key = new byte[ALPHA / 8];
+			G.NextBytes(key);
+
+			return key;
 		}
 	}
 }

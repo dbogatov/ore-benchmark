@@ -5,9 +5,13 @@ using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.FHOPE
 {
+	public delegate void MutationEventHandler();
+
 	public class State
 	{
-		internal IPRG _G;
+		public event MutationEventHandler MutationOcurred;
+
+		private IPRG _G;
 		private ulong min;
 		private ulong max;
 
@@ -101,6 +105,14 @@ namespace ORESchemes.FHOPE
 		/// </returns>
 		private ulong Rebalance(int input)
 		{
+			var handler = MutationOcurred;
+			if (handler != null)
+			{
+				handler();
+			}
+
+			_minMax.Clear();
+
 			var plaintexts = new List<int>();
 			_root.GetAll(plaintexts);
 
@@ -197,7 +209,7 @@ namespace ORESchemes.FHOPE
 						}
 					}
 
-					var newCipher = (ulong)Math.Ceiling(0.5 * ciphertext) + (ulong)Math.Ceiling(0.5 * max);
+					var newCipher = DivisionHelper(ciphertext, max);
 					right = new Node(_G, input, newCipher);
 
 					return newCipher;
@@ -220,7 +232,7 @@ namespace ORESchemes.FHOPE
 						}
 					}
 
-					var newCipher = (ulong)Math.Ceiling(0.5 * min) + (ulong)Math.Ceiling(0.5 * ciphertext);
+					var newCipher = DivisionHelper(min, ciphertext);
 					left = new Node(_G, input, newCipher);
 
 					return newCipher;
@@ -274,6 +286,14 @@ namespace ORESchemes.FHOPE
 				{
 					right.GetAll(result);
 				}
+			}
+
+			private ulong DivisionHelper(ulong min, ulong max)
+			{
+				ulong diff = max - min;
+				ulong add = (diff / 2) + (diff % 2);
+
+				return min + add;
 			}
 		}
 	}

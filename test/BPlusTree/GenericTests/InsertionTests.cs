@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C>
+	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
 		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true)
 		{
@@ -38,10 +38,7 @@ namespace Test.BPlusTree
 		public void InitializeTest()
 		{
 			new Tree<string, C>(
-				new Options<C>(
-					_scheme,
-					3
-				)
+				_defaultOptions
 			);
 		}
 
@@ -49,10 +46,7 @@ namespace Test.BPlusTree
 		public void InsertSingleElementTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3 }
 			);
 		}
@@ -61,10 +55,7 @@ namespace Test.BPlusTree
 		public void TriggerRootSplitTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8 }
 			);
 		}
@@ -73,10 +64,7 @@ namespace Test.BPlusTree
 		public void TriggerInternalSplitTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 3, -2, 8, 6 }
 			);
 		}
@@ -85,10 +73,7 @@ namespace Test.BPlusTree
 		public void FromLectureSlidesTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
 			);
 		}
@@ -97,10 +82,7 @@ namespace Test.BPlusTree
 		public void SquaresSeriesTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					3
-				),
+				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
@@ -114,6 +96,8 @@ namespace Test.BPlusTree
 			ConstructTree(
 				new Options<C>(
 					_scheme,
+					_scheme.MinCiphertextValue(_key),
+					_scheme.MaxCiphertextValue(_key),
 					5
 				),
 				Enumerable
@@ -135,6 +119,8 @@ namespace Test.BPlusTree
 				ConstructTree(
 					new Options<C>(
 						_scheme,
+						_scheme.MinCiphertextValue(_key),
+						_scheme.MaxCiphertextValue(_key),
 						i
 					),
 					Enumerable
