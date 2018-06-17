@@ -9,11 +9,8 @@ namespace Simulation.PureSchemes
 {
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	/// <typeparam name="K">Key type</typeparam>
-	public class Simulator<C, K>
+	public class Simulator<C, K> : AbsSimulator<Stages>
 	{
-		private Dictionary<Primitive, long> _primitiveUsage = new Dictionary<Primitive, long>();
-		private Dictionary<Primitive, long> _purePrimitiveUsage = new Dictionary<Primitive, long>();
-
 		private IOREScheme<C, K> _scheme;
 		private List<int> _dataset;
 		private K _key;
@@ -25,29 +22,6 @@ namespace Simulation.PureSchemes
 			_key = scheme.KeyGen();
 
 			scheme.PrimitiveUsed += new PrimitiveUsageEventHandler(RecordPrimitiveUsage);
-
-			Enum
-				.GetValues(typeof(Primitive))
-				.OfType<Primitive>()
-				.ToList()
-				.ForEach(val =>
-				{
-					_primitiveUsage.Add(val, 0);
-					_purePrimitiveUsage.Add(val, 0);
-				});
-		}
-
-		/// <summary>
-		/// Handler for the event that the primitive has been used
-		/// </summary>
-		/// <param name="operation">Primitive used</param>
-		void RecordPrimitiveUsage(Primitive primitive, bool impure)
-		{
-			_primitiveUsage[primitive]++;
-			if (!impure)
-			{
-				_purePrimitiveUsage[primitive]++;
-			}
 		}
 
 		/// <summary>
@@ -78,77 +52,62 @@ namespace Simulation.PureSchemes
 				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
 				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
 				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
-				OperationsNumber = _dataset.Count
+				SchemeOperations = _dataset.Count
 			};
 		}
 
-		/// <summary>
-		/// Runs simulation for the dataset and schemes provided through the constructor.
-		/// </summary>
-		/// <returns>A final report</returns>
-		public Report Simulate()
+		public override AbsReport<Stages> Simulate()
 		{
 			List<C> ciphertexts = new List<C>();
 
-			return new Report
-			{
-				Encryptions = Profile(() =>
+			var result = new Report();
+
+			result.Stages[Stages.Encrypt] = Profile(() =>
+				{
+					for (int i = 0; i < _dataset.Count; i++)
 					{
-						for (int i = 0; i < _dataset.Count; i++)
-						{
-							ciphertexts.Add(_scheme.Encrypt(_dataset[i], _key));
-						}
+						ciphertexts.Add(_scheme.Encrypt(_dataset[i], _key));
 					}
-				),
-				Decryptions = Profile(() =>
+				}
+			);
+			result.Stages[Stages.Decrypt] = Profile(() =>
+				{
+					for (int i = 0; i < _dataset.Count; i++)
 					{
-						for (int i = 0; i < _dataset.Count; i++)
-						{
-							_scheme.Decrypt(ciphertexts[i], _key);
-						}
+						_scheme.Decrypt(ciphertexts[i], _key);
 					}
-				),
-				Comparisons = Profile(() =>
+				}
+			);
+			result.Stages[Stages.Compare] = Profile(() =>
+				{
+					int length = _dataset.Count;
+
+					// TODO: This hack will be fixed in #30
+					if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
 					{
-						int length = _dataset.Count;
-
-						// TODO: This hack will be fixed in #30
-						if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
-						{
-							var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;
-							ciphertexts.ForEach(
-								c => {
-									int plaintext = _scheme.Decrypt(c, _key);
-									((ORESchemes.FHOPE.Ciphertext)(object)c).max = scheme.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
-									((ORESchemes.FHOPE.Ciphertext)(object)c).min = scheme.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
-								}
-							);
-						}
-
-						for (int i = 0; i < length; i++)
-						{
-							_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-							_scheme.IsLessOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-							_scheme.IsGreater(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-							_scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-							_scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-						}
+						var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;
+						ciphertexts.ForEach(
+							c =>
+							{
+								int plaintext = _scheme.Decrypt(c, _key);
+								((ORESchemes.FHOPE.Ciphertext)(object)c).max = scheme.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+								((ORESchemes.FHOPE.Ciphertext)(object)c).min = scheme.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
+							}
+						);
 					}
-				)
-			};
-		}
 
-		/// <summary>
-		/// Produce a deep (not shallow) copy of its argument
-		/// </summary>
-		/// <param name="original">Dictionary to copy</param>
-		private Dictionary<Primitive, long> CloneDictionary(Dictionary<Primitive, long> original)
-		{
-			Dictionary<Primitive, long> copy = new Dictionary<Primitive, long>();
+					for (int i = 0; i < length; i++)
+					{
+						_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+						_scheme.IsLessOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+						_scheme.IsGreater(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+						_scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+						_scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+					}
+				}
+			);
 
-			original.Keys.ToList().ForEach(key => copy.Add(key, original[key]));
-
-			return copy;
+			return result;
 		}
 	}
 }

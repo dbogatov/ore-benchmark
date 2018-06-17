@@ -89,40 +89,39 @@ integration-tests:
   tags:
   - docker
 
-# Fix in #30
-# system-btree-tests:
-#   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
-#   variables:
-#     GIT_STRATEGY: none
-#   stage: test
-#   script:
-#   - apk add --update bash ruby ruby-bundler
-#   - ./tools/data-gen/generate.sh -d 20 -q 20 -s 1305 -n
-#   - ./tools/simulation/b-plus-tree.rb
-#   artifacts:
-#     paths:
-#       - results/tree.csv
-#   dependencies:
-#   - build-app
-#   tags:
-#   - docker
+system-btree-tests:
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
+  variables:
+    GIT_STRATEGY: none
+  stage: test
+  script:
+  - apk add --update bash ruby ruby-bundler
+  - ./tools/data-gen/generate.sh -d 20 -q 20 -s 1305 -n
+  - ./tools/simulation/b-plus-tree.rb
+  artifacts:
+    paths:
+      - results/tree.csv
+  dependencies:
+  - build-app
+  tags:
+  - docker
 
-# system-schemes-tests:
-#   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
-#   variables:
-#     GIT_STRATEGY: none
-#   stage: test
-#   script:
-#   - apk add --update bash ruby ruby-bundler
-#   - ./tools/data-gen/generate.sh -t 20 -s 1305 -n
-#   - ./tools/simulation/pure-schemes.rb
-#   artifacts:
-#     paths:
-#       - results/schemes.csv
-#   dependencies:
-#   - build-app
-#   tags:
-#   - docker
+system-schemes-tests:
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
+  variables:
+    GIT_STRATEGY: none
+  stage: test
+  script:
+  - apk add --update bash ruby ruby-bundler
+  - ./tools/data-gen/generate.sh -t 20 -s 1305 -n
+  - ./tools/simulation/pure-schemes.rb
+  artifacts:
+    paths:
+      - results/schemes.csv
+  dependencies:
+  - build-app
+  tags:
+  - docker
 
 docs-website:
   variables:

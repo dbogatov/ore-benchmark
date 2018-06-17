@@ -1,5 +1,4 @@
 ﻿using System;
-using Simulation.BPlusTree;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 using DataStructures.BPlusTree;
@@ -35,7 +34,7 @@ namespace CLI
 
 	[Command(Name = "ore-benchamark", Description = "An ORE schemes benchmark", ThrowOnUnexpectedArgument = true)]
 	[VersionOptionFromMember("--version", MemberName = nameof(Version))]
-	[Subcommand("tree", typeof(BPlusTreeCommand))]
+	[Subcommand("protocol", typeof(ProtocolCommand))]
 	[Subcommand("scheme", typeof(PureSchemeCommand))]
 	public class SimulatorCommand : CommandBase
 	{

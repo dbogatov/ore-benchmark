@@ -34,7 +34,7 @@ namespace CLI
 			PutToConsole($"Dataset of {reader.Dataset.Count} records.", Parent.Verbose);
 			PutToConsole($"Inputs read in {timer.ElapsedMilliseconds} ms.", Parent.Verbose);
 
-			Report report;
+			AbsReport<Stages> report;
 
 			switch (Parent.OREScheme)
 			{

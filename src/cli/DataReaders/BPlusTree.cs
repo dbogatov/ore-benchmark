@@ -2,22 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Simulation.BPlusTree;
+using Simulation.Protocol;
 
 namespace CLI.DataReaders
 {
-	/// <typeparam name="D">Data type</typeparam>
-	public class BPlusTree<D>
+	public class BPlusTree
 	{
-		public Inputs<D> Inputs = new Inputs<D>();
+		public Inputs Inputs = new Inputs();
 
 		/// <summary>
 		/// Immediately populates its local lists with the data read from files
 		/// </summary>
-		public BPlusTree(string dataset, string queries, QueriesType type)
+		public BPlusTree(string dataset, string queries)
 		{
-			Inputs.Type = type;
-
 			using (StreamReader sr = File.OpenText(dataset))
 			{
 				string line;
@@ -26,7 +23,7 @@ namespace CLI.DataReaders
 				{
 					var record = line.Split(',');
 
-					Inputs.Dataset.Add(new Record<D>(ConvertToType<int>(record[0]), ConvertToType<D>(record[1])));
+					Inputs.Dataset.Add(new Record(int.Parse(record[0]), record[1]));
 				}
 			}
 
@@ -36,42 +33,10 @@ namespace CLI.DataReaders
 
 				while ((line = sr.ReadLine()) != null)
 				{
-					switch (type)
-					{
-						case QueriesType.Exact:
-							Inputs.ExactQueries.Add(new ExactQuery(ConvertToType<int>(line)));
-							break;
-						case QueriesType.Range:
-							Inputs.RangeQueries.Add(new RangeQuery(ConvertToType<int>(line.Split(',')[0]), ConvertToType<int>(line.Split(',')[1])));
-							break;
-						case QueriesType.Update:
-							Inputs.UpdateQueries.Add(new UpdateQuery<D>(ConvertToType<int>(line.Split(',')[0]), ConvertToType<D>(line.Split(',')[1])));
-							break;
-						case QueriesType.Delete:
-							Inputs.DeleteQueries.Add(new DeleteQuery(ConvertToType<int>(line)));
-							break;
-						default:
-							throw new InvalidOperationException($"Type {type} is not supported");
-					}
-				}
-			}
-		}
+					var record = line.Split(',');
 
-		/// <summary>
-		/// Converts string value to the specified type
-		/// </summary>
-		/// <param name="value">Value to convert</param>
-		/// <returns>The input value but of a proper type</returns>
-		private T ConvertToType<T>(string value)
-		{
-			switch (Type.GetTypeCode(typeof(T)))
-			{
-				case TypeCode.String:
-					return (T)(object)value;
-				case TypeCode.Int32:
-					return (T)(object)int.Parse(value);
-				default:
-					throw new NotImplementedException($"Type {value.GetType()} is not implemented");
+					Inputs.Queries.Add(new RangeQuery(int.Parse(record[0]), int.Parse(record[1])));
+				}
 			}
 		}
 	}
