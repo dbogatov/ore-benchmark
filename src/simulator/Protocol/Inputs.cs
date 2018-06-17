@@ -4,21 +4,6 @@ using System.Linq;
 
 namespace Simulation.Protocol
 {
-	// public class ExactQuery
-	// {
-	// 	public int index { get; private set; }
-
-	// 	public ExactQuery(int index)
-	// 	{
-	// 		this.index = index;
-	// 	}
-
-	// 	public override string ToString()
-	// 	{
-	// 		return $"{{ {index} }}";
-	// 	}
-	// }
-
 	public class RangeQuery
 	{
 		public int from { get; private set; }
@@ -35,39 +20,6 @@ namespace Simulation.Protocol
 			return $"{{ {from} - {to} }}";
 		}
 	}
-
-	// /// <typeparam name="D">Data type</typeparam>
-	// public class UpdateQuery<D>
-	// {
-	// 	public int index { get; private set; }
-	// 	public D value { get; private set; }
-
-	// 	public UpdateQuery(int index, D value)
-	// 	{
-	// 		this.index = index;
-	// 		this.value = value;
-	// 	}
-
-	// 	public override string ToString()
-	// 	{
-	// 		return $"{{ {index} <- \"{value}\" }}";
-	// 	}
-	// }
-
-	// public class DeleteQuery
-	// {
-	// 	public int index { get; private set; }
-
-	// 	public DeleteQuery(int index)
-	// 	{
-	// 		this.index = index;
-	// 	}
-
-	// 	public override string ToString()
-	// 	{
-	// 		return $"{{ !{index}! }}";
-	// 	}
-	// }
 
 	public class Record
 	{

@@ -5,6 +5,9 @@ using DataStructures.BPlusTree;
 using Simulation;
 using CLI.DataReaders;
 using Simulation.Protocol;
+using ORESchemes.PracticalORE;
+using ORESchemes.CryptDBOPE;
+using ORESchemes.Shared;
 
 namespace CLI
 {
@@ -50,10 +53,26 @@ namespace CLI
 
 			switch (Parent.OREScheme)
 			{
-				// case ORESchemes.Shared.ORESchemes.NoEncryption:
-				// case ORESchemes.Shared.ORESchemes.CryptDB:
+				case ORESchemes.Shared.ORESchemes.NoEncryption:
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, long, object>(
+							new Options<long>(
+								new NoEncryptionFactory().GetScheme(),
+								BPlusTreeBranching
+							),
+							new NoEncryptionFactory(Parent.Seed).GetScheme()
+						);
+					break;
+				case ORESchemes.Shared.ORESchemes.CryptDB:
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, long, byte[]>(
+							new Options<long>(
+								new CryptDBOPEFactory().GetScheme(),
+								BPlusTreeBranching
+							),
+							new CryptDBOPEFactory(Parent.Seed).GetScheme()
+						);
+					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					protocol = new Simulation.Protocol.PracticalORE.Protocol(
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, Ciphertext, byte[]>(
 						new Options<ORESchemes.PracticalORE.Ciphertext>(
 							new PracticalOREFactory().GetScheme(),
 							BPlusTreeBranching

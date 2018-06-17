@@ -5,7 +5,7 @@ using ORESchemes.PracticalORE;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
 
-namespace Simulation.Protocol.PracticalORE
+namespace Simulation.Protocol.SimpleORE
 {
 	public enum Messages
 	{
@@ -38,16 +38,16 @@ namespace Simulation.Protocol.PracticalORE
 		}
 	}
 
-	public class Server : AbsParty<Messages>
+	public class Server<C> : AbsParty<Messages>
 	{
-		private readonly Options<Ciphertext> _options;
-		private readonly Tree<string, Ciphertext> _tree;
+		private readonly Options<C> _options;
+		private readonly Tree<string, C> _tree;
 
 
-		public Server(Options<Ciphertext> options)
+		public Server(Options<C> options)
 		{
 			_options = options;
-			_tree = new Tree<string, Ciphertext>(_options);
+			_tree = new Tree<string, C>(_options);
 
 			_options.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
 		}
@@ -58,21 +58,21 @@ namespace Simulation.Protocol.PracticalORE
 			{
 				case Messages.Insert:
 					_tree.Insert(
-						(Ciphertext)(message).Unpack(),
+						(C)(message).Unpack(),
 						""
 					);
 					break;
 				case Messages.Query:
 					List<string> result = new List<string>();
 					_tree.TryRange(
-						((Tuple<Ciphertext, Ciphertext>)message.Unpack()).Item1,
-						((Tuple<Ciphertext, Ciphertext>)message.Unpack()).Item2,
+						((Tuple<C, C>)message.Unpack()).Item1,
+						((Tuple<C, C>)message.Unpack()).Item2,
 						out result
 					);
 					return new Message(result, Messages.QueryResult);
 				case Messages.MinMax:
-					_options.MinCipher = ((Tuple<Ciphertext, Ciphertext>)message.Unpack()).Item1;
-					_options.MaxCipher = ((Tuple<Ciphertext, Ciphertext>)message.Unpack()).Item2;
+					_options.MinCipher = ((Tuple<C, C>)message.Unpack()).Item1;
+					_options.MaxCipher = ((Tuple<C, C>)message.Unpack()).Item2;
 					break;
 			}
 
@@ -80,12 +80,12 @@ namespace Simulation.Protocol.PracticalORE
 		}
 	}
 
-	public class Client : AbsClient<Messages>
+	public class Client<S, C, K> : AbsClient<Messages> where S : IOREScheme<C, K>
 	{
-		private PracticalOREScheme _scheme;
-		private byte[] _key;
+		private S _scheme;
+		private K _key;
 
-		public Client(PracticalOREScheme scheme)
+		public Client(S scheme)
 		{
 			_scheme = scheme;
 
@@ -121,7 +121,7 @@ namespace Simulation.Protocol.PracticalORE
 		{
 			_mediator.SendToServer(
 				new Message(
-					new Tuple<Ciphertext, Ciphertext>(
+					new Tuple<C, C>(
 						_scheme.MinCiphertextValue(_key),
 						_scheme.MaxCiphertextValue(_key)
 					),
@@ -136,7 +136,7 @@ namespace Simulation.Protocol.PracticalORE
 			{
 				_mediator.SendToServer(
 					new Message(
-						new Tuple<Ciphertext, Ciphertext>(
+						new Tuple<C, C>(
 							_scheme.Encrypt(query.from, _key),
 							_scheme.Encrypt(query.to, _key)
 						),
@@ -147,15 +147,15 @@ namespace Simulation.Protocol.PracticalORE
 		}
 	}
 
-	public class Protocol : AbsProtocol<Messages>
+	public class Protocol<S, C, K> : AbsProtocol<Messages> where S : IOREScheme<C, K>
 	{
 		public Protocol(
-			Options<Ciphertext> options,
-			PracticalOREScheme scheme
+			Options<C> options,
+			S scheme
 		)
 		{
-			_client = new Client(scheme);
-			_server = new Server(options);
+			_client = new Client<S, C, K>(scheme);
+			_server = new Server<C>(options);
 
 			SetupProtocol();
 		}
