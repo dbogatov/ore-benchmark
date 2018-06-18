@@ -23,6 +23,8 @@ namespace Simulation.Protocol
 		public abstract void RunHandshake();
 		public abstract void RunConstruction(List<Record> input);
 		public abstract void RunSearch(List<RangeQuery> input);
+
+		public abstract void RecordStorage(long extra = 0);
 	}
 
 	public abstract class AbsMessage<T>
@@ -49,10 +51,10 @@ namespace Simulation.Protocol
 
 	public class Mediator : AbsEventHandler
 	{
-		private AbsParty _client;
+		private AbsClient _client;
 		private AbsParty _server;
 
-		public Mediator(AbsParty client, AbsParty server)
+		public Mediator(AbsClient client, AbsParty server)
 		{
 			_client = client;
 			_server = server;
@@ -73,7 +75,10 @@ namespace Simulation.Protocol
 		{
 			OnMessageSent(message.GetSize());
 
-			return _server.AcceptMessage<MQ, TQ, MR, TR>(message);
+			var response = _server.AcceptMessage<MQ, TQ, MR, TR>(message);
+			_client.RecordStorage(response.GetSize());
+
+			return response;
 		}
 
 		public MR SendToClient<MQ, TQ, MR, TR>(MQ message) 
@@ -81,6 +86,7 @@ namespace Simulation.Protocol
 			where MR : AbsMessage<TR>
 		{
 			OnMessageSent(message.GetSize());
+			_client.RecordStorage(message.GetSize());
 
 			return _client.AcceptMessage<MQ, TQ, MR, TR>(message);
 		}

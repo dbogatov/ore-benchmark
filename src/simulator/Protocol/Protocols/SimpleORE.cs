@@ -130,6 +130,8 @@ namespace Simulation.Protocol.SimpleORE
 			return (MR)(object)new FinishMessage();
 		}
 
+		public override void RecordStorage(long extra = 0) => OnClientStorage(_key.GetSize() + extra);
+
 		public override void RunConstruction(List<Record> input)
 		{
 			foreach (var record in input)

@@ -159,7 +159,7 @@ namespace ORESchemes.FHOPE
 		}
 
 		// TODO: implement compressions
-		public int GetSize() => (int)size * sizeof(byte);
+		public int GetSize() => (int)size * sizeof(byte) * 8;
 
 		private class Node
 		{
