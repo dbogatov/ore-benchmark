@@ -6,54 +6,58 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol
 {
-	public abstract class AbsParty<E> : AbsEventHandler where E : Enum // where E : System.Enum
+	public abstract class AbsParty : AbsEventHandler
 	{
-		protected Mediator<E> _mediator;
+		protected Mediator _mediator;
 
-		public void SetMediator(Mediator<E> mediator) => _mediator = mediator;
+		public void SetMediator(Mediator mediator) => _mediator = mediator;
 
-		public abstract AbsMessage<E> AcceptMessage(AbsMessage<E> message);
+		public abstract MR AcceptMessage<MQ, TQ, MR, TR>(MQ message) 
+			where MQ : AbsMessage<TQ>
+			where MR : AbsMessage<TR>
+		;
 	}
 
-	public abstract class AbsClient<E> : AbsParty<E> where E : Enum
+	public abstract class AbsClient : AbsParty
 	{
 		public abstract void RunHandshake();
 		public abstract void RunConstruction(List<Record> input);
 		public abstract void RunSearch(List<RangeQuery> input);
 	}
 
-	public abstract class AbsMessage<E> where E : Enum
+	public abstract class AbsMessage<T>
 	{
-		protected object _content;
-		public readonly E Type;
+		protected T _content;
 
-		public AbsMessage(E type)
-		{
-			Type = type;
-		}
-
-		public AbsMessage(object content, E type)
+		public AbsMessage(T content)
 		{
 			_content = content;
-			Type = type;
 		}
 
-		public object Unpack() => _content;
+		public T Unpack() => _content;
 
 		public abstract int GetSize();
 	}
 
-	public class Mediator<E> : AbsEventHandler where E : Enum
+	public class FinishMessage : AbsMessage<object>
 	{
-		private AbsParty<E> _client;
-		private AbsParty<E> _server;
+		public FinishMessage() : base(null) { }
+		public FinishMessage(object content) : base(content) { }
 
-		public Mediator(AbsParty<E> client, AbsParty<E> server)
+		public override int GetSize() => 0;
+	}
+
+	public class Mediator : AbsEventHandler
+	{
+		private AbsParty _client;
+		private AbsParty _server;
+
+		public Mediator(AbsParty client, AbsParty server)
 		{
 			_client = client;
 			_server = server;
 
-			foreach (var party in new AbsParty<E>[] { _client, _server })
+			foreach (var party in new AbsParty[] { _client, _server })
 			{
 				party.MessageSent += new MessageSentEventHandler(OnMessageSent);
 				party.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
@@ -63,18 +67,22 @@ namespace Simulation.Protocol
 			}
 		}
 
-		public AbsMessage<E> SendToServer(AbsMessage<E> message)
+		public MR SendToServer<MQ, TQ, MR, TR>(MQ message) 
+			where MQ : AbsMessage<TQ>
+			where MR : AbsMessage<TR>
 		{
 			OnMessageSent(message.GetSize());
 
-			return _server.AcceptMessage(message);
+			return _server.AcceptMessage<MQ, TQ, MR, TR>(message);
 		}
 
-		public AbsMessage<E> SendToClient(AbsMessage<E> message)
+		public MR SendToClient<MQ, TQ, MR, TR>(MQ message) 
+			where MQ : AbsMessage<TQ>
+			where MR : AbsMessage<TR>
 		{
 			OnMessageSent(message.GetSize());
 
-			return _client.AcceptMessage(message);
+			return _client.AcceptMessage<MQ, TQ, MR, TR>(message);
 		}
 	}
 
@@ -91,12 +99,12 @@ namespace Simulation.Protocol
 		void RunHandshake();
 	}
 
-	public abstract class AbsProtocol<E> : AbsEventHandler, IProtocol where E : Enum
+	public abstract class AbsProtocol : AbsEventHandler, IProtocol
 	{
-		protected AbsClient<E> _client;
-		protected AbsParty<E> _server;
+		protected AbsClient _client;
+		protected AbsParty _server;
 
-		protected Mediator<E> _mediator;
+		protected Mediator _mediator;
 
 		protected void SetupProtocol()
 		{
@@ -105,7 +113,7 @@ namespace Simulation.Protocol
 				throw new InvalidOperationException();
 			}
 
-			_mediator = new Mediator<E>(_client, _server);
+			_mediator = new Mediator(_client, _server);
 
 			_client.SetMediator(_mediator);
 			_client.SetMediator(_mediator);

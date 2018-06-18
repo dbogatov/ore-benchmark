@@ -12,33 +12,47 @@ namespace Simulation.Protocol.SimpleORE
 		Finish, Insert, Query, QueryResult, MinMax
 	}
 
-	public class Message : AbsMessage<Messages>
+	public class InsertMessage<C> : AbsMessage<C>
 	{
-		public Message() : base(Messages.Finish) { }
-		public Message(object content, Messages type) : base(content, type) { }
+		public InsertMessage(C content) : base(content) { }
 
-		// TODO
 		public override int GetSize()
 		{
-			switch (Type)
-			{
-				case Messages.Insert:
-
-					return 5;
-				case Messages.Query:
-
-					return 10;
-				case Messages.QueryResult:
-
-					return 20;
-				default:
-					return 0;
-			}
-
+			return 1;
 		}
 	}
 
-	public class Server<C> : AbsParty<Messages>
+	public class QueryMessage<C> : AbsMessage<Tuple<C, C>>
+	{
+		public QueryMessage(Tuple<C, C> content) : base(content) { }
+
+		public override int GetSize()
+		{
+			return 1;
+		}
+	}
+
+	public class QueryResultMessage : AbsMessage<List<string>>
+	{
+		public QueryResultMessage(List<string> content) : base(content) { }
+
+		public override int GetSize()
+		{
+			return 1;
+		}
+	}
+
+	public class MinMaxMessage<C> : AbsMessage<Tuple<C, C>>
+	{
+		public MinMaxMessage(Tuple<C, C> content) : base(content) { }
+
+		public override int GetSize()
+		{
+			return 1;
+		}
+	}
+
+	public class Server<C> : AbsParty
 	{
 		private readonly Options<C> _options;
 		private readonly Tree<string, C> _tree;
@@ -52,35 +66,60 @@ namespace Simulation.Protocol.SimpleORE
 			_options.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
 		}
 
-		public override AbsMessage<Messages> AcceptMessage(AbsMessage<Messages> message)
+		private FinishMessage AcceptMessage(InsertMessage<C> message)
 		{
-			switch (message.Type)
+			_tree.Insert(
+				message.Unpack(),
+				""
+			);
+
+			return new FinishMessage();
+		}
+
+		private QueryResultMessage AcceptMessage(QueryMessage<C> message)
+		{
+			List<string> result = new List<string>();
+			_tree.TryRange(
+				message.Unpack().Item1,
+				message.Unpack().Item2,
+				out result
+			);
+			
+			return new QueryResultMessage(result);
+		}
+
+		private FinishMessage AcceptMessage(MinMaxMessage<C> message)
+		{
+			_options.MinCipher = message.Unpack().Item1;
+			_options.MaxCipher = message.Unpack().Item2;
+			
+			return new FinishMessage();
+		}
+
+		public override MR AcceptMessage<MQ, TQ, MR, TR>(MQ message)
+		{
+			var msgType = message.GetType();
+			
+			if (msgType == typeof(InsertMessage<C>))
 			{
-				case Messages.Insert:
-					_tree.Insert(
-						(C)(message).Unpack(),
-						""
-					);
-					break;
-				case Messages.Query:
-					List<string> result = new List<string>();
-					_tree.TryRange(
-						((Tuple<C, C>)message.Unpack()).Item1,
-						((Tuple<C, C>)message.Unpack()).Item2,
-						out result
-					);
-					return new Message(result, Messages.QueryResult);
-				case Messages.MinMax:
-					_options.MinCipher = ((Tuple<C, C>)message.Unpack()).Item1;
-					_options.MaxCipher = ((Tuple<C, C>)message.Unpack()).Item2;
-					break;
+				return (MR)(object)AcceptMessage((InsertMessage<C>)(object)message);
 			}
 
-			return new Message();
+			if (msgType == typeof(QueryMessage<C>))
+			{
+				return (MR)(object)AcceptMessage((QueryMessage<C>)(object)message);
+			}
+
+			if (msgType == typeof(MinMaxMessage<C>))
+			{
+				return (MR)(object)AcceptMessage((MinMaxMessage<C>)(object)message);
+			}
+
+			return (MR)(object)new FinishMessage();
 		}
 	}
 
-	public class Client<S, C, K> : AbsClient<Messages> where S : IOREScheme<C, K>
+	public class Client<S, C, K> : AbsClient where S : IOREScheme<C, K>
 	{
 		private S _scheme;
 		private K _key;
@@ -99,19 +138,20 @@ namespace Simulation.Protocol.SimpleORE
 			OnClientStorage(2 * 32 + 256);
 		}
 
-		public override AbsMessage<Messages> AcceptMessage(AbsMessage<Messages> message)
+		public override MR AcceptMessage<MQ, TQ, MR, TR>(MQ message)
 		{
-			return new Message();
+			return (MR)(object)new FinishMessage();
 		}
 
 		public override void RunConstruction(List<Record> input)
 		{
 			foreach (var record in input)
 			{
-				_mediator.SendToServer(
-					new Message(
-						_scheme.Encrypt(record.index, _key),
-						Messages.Insert
+				_mediator.SendToServer<
+					InsertMessage<C>, C,
+					FinishMessage, object>(
+					new InsertMessage<C>(
+						_scheme.Encrypt(record.index, _key)
 					)
 				);
 			}
@@ -119,13 +159,14 @@ namespace Simulation.Protocol.SimpleORE
 
 		public override void RunHandshake()
 		{
-			_mediator.SendToServer(
-				new Message(
+			_mediator.SendToServer<
+				MinMaxMessage<C>, Tuple<C,C>,
+				FinishMessage, object>(
+				new MinMaxMessage<C>(
 					new Tuple<C, C>(
 						_scheme.MinCiphertextValue(_key),
 						_scheme.MaxCiphertextValue(_key)
-					),
-					Messages.MinMax
+					)
 				)
 			);
 		}
@@ -134,20 +175,21 @@ namespace Simulation.Protocol.SimpleORE
 		{
 			foreach (var query in input)
 			{
-				_mediator.SendToServer(
-					new Message(
+				_mediator.SendToServer<
+					QueryMessage<C>, Tuple<C,C>,
+					QueryResultMessage, List<string>>(
+					new QueryMessage<C>(
 						new Tuple<C, C>(
 							_scheme.Encrypt(query.from, _key),
 							_scheme.Encrypt(query.to, _key)
-						),
-						Messages.Query
+						)
 					)
 				);
 			}
 		}
 	}
 
-	public class Protocol<S, C, K> : AbsProtocol<Messages> where S : IOREScheme<C, K>
+	public class Protocol<S, C, K> : AbsProtocol where S : IOREScheme<C, K>
 	{
 		public Protocol(
 			Options<C> options,
