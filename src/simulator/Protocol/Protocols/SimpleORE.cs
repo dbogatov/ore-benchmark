@@ -7,11 +7,6 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol.SimpleORE
 {
-	public enum Messages
-	{
-		Finish, Insert, Query, QueryResult, MinMax
-	}
-
 	public class InsertMessage<C> : AbsMessage<C> where C : IGetSize
 	{
 		public InsertMessage(C content) : base(content) { }
@@ -42,8 +37,8 @@ namespace Simulation.Protocol.SimpleORE
 
 	public class Server<C> : AbsParty where C : IGetSize
 	{
-		private readonly Options<C> _options;
-		private readonly Tree<string, C> _tree;
+		protected readonly Options<C> _options;
+		protected readonly Tree<string, C> _tree;
 
 
 		public Server(Options<C> options)
@@ -54,7 +49,7 @@ namespace Simulation.Protocol.SimpleORE
 			_options.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
 		}
 
-		private FinishMessage AcceptMessage(InsertMessage<C> message)
+		protected virtual FinishMessage AcceptMessage(InsertMessage<C> message)
 		{
 			_tree.Insert(
 				message.Unpack(),
@@ -64,7 +59,7 @@ namespace Simulation.Protocol.SimpleORE
 			return new FinishMessage();
 		}
 
-		private QueryResultMessage AcceptMessage(QueryMessage<C> message)
+		protected virtual QueryResultMessage AcceptMessage(QueryMessage<C> message)
 		{
 			List<string> result = new List<string>();
 			_tree.TryRange(
@@ -76,7 +71,7 @@ namespace Simulation.Protocol.SimpleORE
 			return new QueryResultMessage(result);
 		}
 
-		private FinishMessage AcceptMessage(MinMaxMessage<C> message)
+		protected virtual FinishMessage AcceptMessage(MinMaxMessage<C> message)
 		{
 			_options.MinCipher = message.Unpack().Item1;
 			_options.MaxCipher = message.Unpack().Item2;
@@ -112,8 +107,8 @@ namespace Simulation.Protocol.SimpleORE
 		where C : IGetSize
 		where K : IGetSize
 	{
-		private S _scheme;
-		private K _key;
+		protected S _scheme;
+		protected K _key;
 
 		public Client(S scheme)
 		{

@@ -15,7 +15,7 @@
 				"--dataset",
 				"./data/dataset.txt",
 				"--ore-scheme",
-				"noencryption",
+				"LewiORE",
 				"--seed",
 				"782797714",
 				"-v",

@@ -17,11 +17,11 @@ namespace DataStructures.BPlusTree
 				this.value = value;
 			}
 
-			public override bool TryGet(C key, out T value)
+			public override bool TryGet(C key, out T value, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				if (_options.Comparator.IsEqual(this.key, key))
+				if (checkValue && _options.Comparator.IsEqual(this.key, key))
 				{
 					value = this.value;
 					return true;

@@ -21,10 +21,6 @@ namespace CLI
 		[Option("--queries <FILE>", Description = "Required. Path to queries file.")]
 		public string Queries { get; }
 
-		// [Required]
-		// [Option("--queries-type <enum>", Description = "Type of queries (eq. Exact).")]
-		// public QueriesType QueriesType { get; }
-
 		[Range(0, Int32.MaxValue)]
 		[Option("--cache-size <number>", Description = "Cache size for node of data structure. 0 means no cache. Default 100.")]
 		public int CacheSize { get; } = 100;
@@ -80,13 +76,15 @@ namespace CLI
 						new PracticalOREFactory(Parent.Seed).GetScheme()
 					);
 					break;
-				// case ORESchemes.Shared.ORESchemes.LewiORE:
-				// 	report =
-				// 		new Simulator<string, ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>(
-				// 			reader.Inputs,
-				// 			new LewiOREFactory(Parent.Seed).GetScheme(),
-				// 			BPlusTreeBranching
-				// 		).Simulate();
+				case ORESchemes.Shared.ORESchemes.LewiORE:
+					protocol = new Simulation.Protocol.LewiORE.Protocol(
+						new Options<ORESchemes.LewiORE.Ciphertext>(
+							new LewiOREFactory().GetScheme(),
+							BPlusTreeBranching
+						),
+						new LewiOREFactory(Parent.Seed).GetScheme()
+					);
+					break;
 				// 	break;
 				// case ORESchemes.Shared.ORESchemes.FHOPE:
 				// 	report =

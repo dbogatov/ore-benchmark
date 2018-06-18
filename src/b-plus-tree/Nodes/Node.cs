@@ -70,7 +70,7 @@ namespace DataStructures.BPlusTree
 				Initialize();
 
 				_id = options.GetNextId();
-				
+
 				options.OnVisit(this.GetHashCode());
 			}
 
@@ -93,18 +93,19 @@ namespace DataStructures.BPlusTree
 
 				return
 					children.Count > 0 ?
-					children.Select(ch => ch.index).Aggregate((acc, next) =>
-					{
-						acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
-						return acc;
-					}) :
+					children.Last().index :
+					// children.Select(ch => ch.index).Aggregate((acc, next) =>
+					// {
+					// 	acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
+					// 	return acc;
+					// }) :
 					_options.MaxCipher;
 			}
 
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryGet(C key, out T value)
+			public virtual bool TryGet(C key, out T value, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
 

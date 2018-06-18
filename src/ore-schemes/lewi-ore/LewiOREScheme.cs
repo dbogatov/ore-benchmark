@@ -39,9 +39,11 @@ namespace ORESchemes.LewiORE
 
 		public int GetSize() =>
 			// encrypted.Length + sizeof(byte) * 8 +
-			left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(byte)) +
-			right.nonce.Length * sizeof(byte) * 8 +
-			right.shorts.Sum(s => s.Count) * 2;
+			(left != null ? left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(byte)) : 0) +
+			(right != null ?
+				right.nonce.Length * sizeof(byte) * 8 +
+				right.shorts.Sum(s => s.Count) * 2
+			: 0);
 	}
 
 	public class LewiOREScheme : AbsORECmpScheme<Ciphertext, Key>
@@ -110,8 +112,6 @@ namespace ORESchemes.LewiORE
 
 		public override Ciphertext Encrypt(int plaintext, Key key)
 		{
-			OnOperation(SchemeOperation.Encrypt);
-
 			return new Ciphertext
 			{
 				left = EncryptLeft(key.left, key.right, ToUInt(plaintext)),
@@ -123,8 +123,26 @@ namespace ORESchemes.LewiORE
 
 		protected override int ProperCompare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
-			Ciphertext.Left left = ciphertextOne.left;
-			Ciphertext.Right right = ciphertextTwo.right;
+			bool invert = false;
+
+			Ciphertext.Left left;
+			Ciphertext.Right right;
+
+			if (ciphertextOne.left != null && ciphertextTwo.right != null)
+			{
+				left = ciphertextOne.left;
+				right = ciphertextTwo.right;
+			}
+			else if (ciphertextOne.right != null && ciphertextTwo.left != null)
+			{
+				left = ciphertextTwo.left;
+				right = ciphertextOne.right;
+				invert = true;
+			}
+			else
+			{
+				throw new InvalidOperationException($"One of the ciphers must have left part, another must have right part.");
+			}
 
 			for (int i = 0; i < n; i++)
 			{
@@ -137,6 +155,11 @@ namespace ORESchemes.LewiORE
 
 				if (result != 0)
 				{
+					if (invert)
+					{
+						// Flip sign if inverted
+						result *= -1;
+					}
 					return result;
 				}
 			}
@@ -150,8 +173,10 @@ namespace ORESchemes.LewiORE
 		/// <param name="key">A key with which to encrypt</param>
 		/// <param name="input">Input to encrypt</param>
 		/// <returns>A left side of ciphertext</returns>
-		private Ciphertext.Left EncryptLeft(byte[] leftKey, byte[] rightKey, uint input)
+		public Ciphertext.Left EncryptLeft(byte[] leftKey, byte[] rightKey, uint input)
 		{
+			OnOperation(SchemeOperation.Encrypt);
+
 			List<Tuple<byte[], uint>> result = new List<Tuple<byte[], uint>>();
 
 			for (int i = 0; i < n; i++)
@@ -188,8 +213,10 @@ namespace ORESchemes.LewiORE
 		/// <param name="key">A key with which to encrypt</param>
 		/// <param name="input">Input to encrypt</param>
 		/// <returns>A right side of ciphertext</returns>
-		private Ciphertext.Right EncryptRight(byte[] leftKey, byte[] rightKey, uint input)
+		public Ciphertext.Right EncryptRight(byte[] leftKey, byte[] rightKey, uint input)
 		{
+			OnOperation(SchemeOperation.Encrypt);
+
 			List<List<short>> result = new List<List<short>>();
 
 			byte[] nonce = new byte[ALPHA / 8];

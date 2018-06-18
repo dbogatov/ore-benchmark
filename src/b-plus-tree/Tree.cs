@@ -49,10 +49,10 @@ namespace DataStructures.BPlusTree
 		{
 			values = new List<T>();
 
-			if (_options.Comparator.IsGreaterOrEqual(start, end))
-			{
-				throw new ArgumentException("Improper range");
-			}
+			// if (_options.Comparator.IsGreaterOrEqual(start, end))
+			// {
+			// 	throw new ArgumentException("Improper range");
+			// }
 
 			if (_size == 0)
 			{
