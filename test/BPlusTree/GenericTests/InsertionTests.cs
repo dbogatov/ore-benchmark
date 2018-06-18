@@ -94,12 +94,7 @@ namespace Test.BPlusTree
 		public void OscillatingSeriesTest()
 		{
 			ConstructTree(
-				new Options<C>(
-					_scheme,
-					_scheme.MinCiphertextValue(_key),
-					_scheme.MaxCiphertextValue(_key),
-					5
-				),
+				OptionsWithBranching(5),
 				Enumerable
 					.Range(1, _max)
 					.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * val + 2 * _max)
@@ -117,12 +112,7 @@ namespace Test.BPlusTree
 			for (int i = 3; i < 11; i++)
 			{
 				ConstructTree(
-					new Options<C>(
-						_scheme,
-						_scheme.MinCiphertextValue(_key),
-						_scheme.MaxCiphertextValue(_key),
-						i
-					),
+					OptionsWithBranching(i),
 					Enumerable
 						.Range(1, max)
 						.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * random.Next(max) + 2 * max)

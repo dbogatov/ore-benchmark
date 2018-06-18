@@ -9,6 +9,8 @@ using ORESchemes.Shared.Primitives;
 namespace Test.ORESchemes
 {
 	public abstract class GenericORETests<C, K>
+		where C : IGetSize
+		where K : IGetSize
 	{
 		protected IOREScheme<C, K> _scheme;
 		protected readonly int _runs = 100;
@@ -164,7 +166,7 @@ namespace Test.ORESchemes
 				{ SchemeOperation.Init, new Tuple<int, int>(1, 1)} ,
 				{ SchemeOperation.KeyGen, new Tuple<int, int>(1, 1) },
 				{ SchemeOperation.Destruct, new Tuple<int, int>(1, 1) },
-				{ SchemeOperation.Encrypt, new Tuple<int, int>(10, 15) },
+				{ SchemeOperation.Encrypt, new Tuple<int, int>(10, 20) },
 				{ SchemeOperation.Decrypt, new Tuple<int, int>(10, 15) },
 				{ SchemeOperation.Comparison, new Tuple<int, int>(9 * 5, 9 * 5 * 4) },
 			};
@@ -200,16 +202,16 @@ namespace Test.ORESchemes
 			}.ForEach(
 					num =>
 					{
-						Assert.True(
-							_scheme.IsLessOrEqual(
-								ConfigureCiphertext(_scheme.MinCiphertextValue<C, K>(key), key),
-								ConfigureCiphertext(_scheme.Encrypt(num, key), key))
-						);
-						Assert.True(
-							_scheme.IsGreaterOrEqual(
-								ConfigureCiphertext(_scheme.MaxCiphertextValue<C, K>(key), key),
-								ConfigureCiphertext(_scheme.Encrypt(num, key), key))
-						);
+						var min = _scheme.MinCiphertextValue<C, K>(key);
+						var max = _scheme.MaxCiphertextValue<C, K>(key);
+						var @this = _scheme.Encrypt(num, key);
+
+						min = ConfigureCiphertext(min, key);
+						max = ConfigureCiphertext(max, key);
+						@this = ConfigureCiphertext(@this, key);
+
+						Assert.True(_scheme.IsLessOrEqual(min, @this));
+						Assert.True(_scheme.IsGreaterOrEqual(max, @this));
 					}
 				);
 		}

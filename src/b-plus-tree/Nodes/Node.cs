@@ -94,11 +94,6 @@ namespace DataStructures.BPlusTree
 				return
 					children.Count > 0 ?
 					children.Last().index :
-					// children.Select(ch => ch.index).Aggregate((acc, next) =>
-					// {
-					// 	acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
-					// 	return acc;
-					// }) :
 					_options.MaxCipher;
 			}
 
@@ -205,7 +200,7 @@ namespace DataStructures.BPlusTree
 				// Merge ocurred
 				if (result.orphan != null)
 				{
-					children.Remove(children.First(ch => ch.node == result.orphan));
+					children.RemoveAll(ch => ch.node == result.orphan);
 
 					this.RebuildIndices(true);
 				}

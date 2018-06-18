@@ -93,7 +93,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			if (!(ciphertextOne.min.HasValue && ciphertextOne.max.HasValue))
 			{
 				CiphertextCheck(ciphertextTwo);
 
@@ -106,8 +106,8 @@ namespace ORESchemes.FHOPE
 				CiphertextCheck(ciphertextOne);
 
 				return
-					ciphertextTwo.value >= ciphertextOne.min &&
-					ciphertextTwo.value <= ciphertextOne.max;
+					ciphertextOne.min <= ciphertextTwo.value &&
+					ciphertextOne.max >= ciphertextTwo.value;
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			if (!(ciphertextOne.min.HasValue && ciphertextOne.max.HasValue))
 			{
 				CiphertextCheck(ciphertextTwo);
 
@@ -133,7 +133,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			if (!(ciphertextOne.min.HasValue && ciphertextOne.max.HasValue))
 			{
 				CiphertextCheck(ciphertextTwo);
 
@@ -151,7 +151,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			if (!(ciphertextOne.min.HasValue && ciphertextOne.max.HasValue))
 			{
 				CiphertextCheck(ciphertextTwo);
 
@@ -161,7 +161,7 @@ namespace ORESchemes.FHOPE
 			{
 				CiphertextCheck(ciphertextOne);
 
-				return ciphertextOne.min >= ciphertextTwo.value;
+				return ciphertextOne.max >= ciphertextTwo.value;
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			if (!(ciphertextOne.min.HasValue && ciphertextOne.max.HasValue))
 			{
 				CiphertextCheck(ciphertextTwo);
 
@@ -179,7 +179,7 @@ namespace ORESchemes.FHOPE
 			{
 				CiphertextCheck(ciphertextOne);
 
-				return ciphertextOne.max <= ciphertextTwo.value;
+				return ciphertextOne.min <= ciphertextTwo.value;
 			}
 		}
 

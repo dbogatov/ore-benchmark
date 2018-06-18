@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.FHOPE;
@@ -67,22 +68,20 @@ namespace Test.ORESchemes
 			);
 		}
 
-		#pragma warning disable xUnit1026
+#pragma warning disable xUnit1026
 		[Theory(Skip = "Not applicable")]
 		[InlineData(-10, -10)]
-		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) {}
+		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) { }
+
+		[Fact]
+		public void TestName()
+		{
+			base.MinMaxTest();
+		}
 
 		[Theory]
-		[InlineData(0, 0)]
-		[InlineData(1, 1)]
-		[InlineData(-1, -1)]
-		[InlineData(-1, 1)]
-		[InlineData(1, -1)]
-		[InlineData(2, 1)]
-		[InlineData(1, 2)]
-		[InlineData(-2, -1)]
-		[InlineData(-1, -2)]
-		public void FHOPEOrderCorrectnessTest(int plaintextOne, int plaintextTwo)
+		[ClassData(typeof(OrderCorrectnessTestData))]
+		public void FHOPEOrderCorrectnessTest(int plaintextOne, int plaintextTwo, bool configureFirst)
 		{
 			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
 
@@ -109,16 +108,45 @@ namespace Test.ORESchemes
 						continue;
 					}
 
-					ciphertextOne = ConfigureCiphertext(ciphertextOne, key);
-					ciphertextTwo = ConfigureCiphertext(ciphertextTwo, key);
+					if (configureFirst)
+					{
+						ciphertextOne = ConfigureCiphertext(ciphertextOne, key);
+					}
+					else
+					{
+						ciphertextTwo = ConfigureCiphertext(ciphertextTwo, key);
+					}
 
 					Assert.Equal(pOne > pTwo, scheme.IsGreater(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne < pTwo, scheme.IsLess(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne >= pTwo, scheme.IsGreaterOrEqual(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne <= pTwo, scheme.IsLessOrEqual(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne == pTwo, scheme.IsEqual(ciphertextOne, ciphertextTwo));
+
 				} while (false);
 			}
+		}
+
+		private class OrderCorrectnessTestData : IEnumerable<object[]>
+		{
+			public IEnumerator<object[]> GetEnumerator()
+			{
+				for (int i = -2; i <= 2; i++)
+				{
+					for (int j = -2; j <= 2; j++)
+					{
+						for (int k = 0; k < 2; k++)
+						{
+							if (i * j != 0 && Math.Abs(i) != Math.Abs(j))
+							{
+								yield return new object[] { i, j, k == 0 };
+							}
+						}
+					}
+				}
+			}
+
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		}
 	}
 }

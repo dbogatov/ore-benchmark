@@ -21,7 +21,14 @@ namespace DataStructures.BPlusTree
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				if (checkValue && _options.Comparator.IsEqual(this.key, key))
+				bool found = true;
+
+				if (checkValue)
+				{
+					found = _options.Comparator.IsEqual(this.key, key);
+				}
+
+				if (found)
 				{
 					value = this.value;
 					return true;

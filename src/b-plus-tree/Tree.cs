@@ -45,14 +45,14 @@ namespace DataStructures.BPlusTree
 		/// <param name="end">Key for end of the range</param>
 		/// <param name="values">The list to put found value to</param>
 		/// <returns>True if at least element found, false otherwise</returns>
-		public bool TryRange(C start, C end, out List<T> values)
+		public bool TryRange(C start, C end, out List<T> values, bool checkRanges = true)
 		{
 			values = new List<T>();
 
-			// if (_options.Comparator.IsGreaterOrEqual(start, end))
-			// {
-			// 	throw new ArgumentException("Improper range");
-			// }
+			if (checkRanges && _options.Comparator.IsGreaterOrEqual(start, end))
+			{
+				throw new ArgumentException("Improper range");
+			}
 
 			if (_size == 0)
 			{

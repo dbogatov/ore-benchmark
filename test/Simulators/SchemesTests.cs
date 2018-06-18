@@ -28,11 +28,11 @@ namespace Test.Simulators
 			var simulator = new Simulator<Ciphertext, Key>(dataset, new LewiOREScheme(16, entropy));
 			var report = simulator.Simulate();
 
-			var subreports = new List<Report.Subreport> { report.Encryptions, report.Decryptions, report.Comparisons };
+			var subreports = report.Stages.Values;
 
 			foreach (var subreport in subreports)
 			{
-				Assert.NotEqual(0, subreport.OperationsNumber);
+				Assert.NotEqual(0, subreport.SchemeOperations);
 				Assert.NotEqual(new TimeSpan(0).Ticks, subreport.ObservedTime.Ticks);
 				Assert.NotEqual(0, subreport.PurePrimitiveOperations.Values.Sum());
 				Assert.NotEqual(0, subreport.TotalPrimitiveOperations.Values.Sum());
@@ -47,7 +47,7 @@ namespace Test.Simulators
 			{
 				foreach (var subreport in subreports)
 				{
-					Assert.Contains(subreport.OperationsNumber.ToString(), description);
+					Assert.Contains(subreport.SchemeOperations.ToString(), description);
 				}
 			}
 		}
