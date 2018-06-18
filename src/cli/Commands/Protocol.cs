@@ -85,15 +85,15 @@ namespace CLI
 						new LewiOREFactory(Parent.Seed).GetScheme()
 					);
 					break;
-				// 	break;
-				// case ORESchemes.Shared.ORESchemes.FHOPE:
-				// 	report =
-				// 		new Simulator<string, ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>(
-				// 			reader.Inputs,
-				// 			new FHOPEFactory(Parent.Seed).GetScheme(),
-				// 			BPlusTreeBranching
-				// 		).Simulate();
-				// 	break;
+				case ORESchemes.Shared.ORESchemes.FHOPE:
+					protocol = new Simulation.Protocol.FHOPE.Protocol(
+						new Options<ORESchemes.FHOPE.Ciphertext>(
+							new FHOPEFactory().GetScheme(),
+							BPlusTreeBranching
+						),
+						new FHOPEFactory(Parent.Seed).GetScheme()
+					);
+					break;
 				default:
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}

@@ -16,7 +16,7 @@ namespace ORESchemes.FHOPE
 		public long value;
 
 		public int GetSize() =>
-			sizeof(long) + 
+			sizeof(long) +
 			(min.HasValue ? 0 : sizeof(long)) +
 			(max.HasValue ? 0 : sizeof(long));
 	}
@@ -93,47 +93,94 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			CiphertextCheck(ciphertextTwo);
+			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			{
+				CiphertextCheck(ciphertextTwo);
 
-			return
-				ciphertextOne.value >= ciphertextTwo.min &&
-				ciphertextOne.value <= ciphertextTwo.max;
+				return
+					ciphertextOne.value >= ciphertextTwo.min &&
+					ciphertextOne.value <= ciphertextTwo.max;
+			}
+			else
+			{
+				CiphertextCheck(ciphertextOne);
+
+				return
+					ciphertextTwo.value >= ciphertextOne.min &&
+					ciphertextTwo.value <= ciphertextOne.max;
+			}
 		}
 
 		public override bool IsGreater(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			CiphertextCheck(ciphertextTwo);
+			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			{
+				CiphertextCheck(ciphertextTwo);
 
-			return ciphertextOne.value > ciphertextTwo.max;
+				return ciphertextOne.value > ciphertextTwo.max;
+			}
+			else
+			{
+				CiphertextCheck(ciphertextOne);
+
+				return ciphertextOne.min > ciphertextTwo.value;
+			}
 		}
 
 		public override bool IsLess(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			CiphertextCheck(ciphertextTwo);
+			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			{
+				CiphertextCheck(ciphertextTwo);
 
-			return ciphertextOne.value < ciphertextTwo.min;
+				return ciphertextOne.value < ciphertextTwo.min;
+			}
+			else
+			{
+				CiphertextCheck(ciphertextOne);
+
+				return ciphertextOne.max < ciphertextTwo.value;
+			}
 		}
 
 		public override bool IsGreaterOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			CiphertextCheck(ciphertextTwo);
+			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			{
+				CiphertextCheck(ciphertextTwo);
 
-			return ciphertextOne.value >= ciphertextTwo.min;
+				return ciphertextOne.value >= ciphertextTwo.min;
+			}
+			else
+			{
+				CiphertextCheck(ciphertextOne);
+
+				return ciphertextOne.min >= ciphertextTwo.value;
+			}
 		}
 
 		public override bool IsLessOrEqual(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
-			CiphertextCheck(ciphertextTwo);
+			if (ciphertextOne.min == null || ciphertextOne.max == null)
+			{
+				CiphertextCheck(ciphertextTwo);
 
-			return ciphertextOne.value <= ciphertextTwo.max;
+				return ciphertextOne.value <= ciphertextTwo.max;
+			}
+			else
+			{
+				CiphertextCheck(ciphertextOne);
+
+				return ciphertextOne.max <= ciphertextTwo.value;
+			}
 		}
 
 		private void CiphertextCheck(Ciphertext cipher)

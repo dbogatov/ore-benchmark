@@ -138,7 +138,7 @@ namespace Simulation.Protocol.SimpleORE
 					InsertMessage<C>, C,
 					FinishMessage, object>(
 					new InsertMessage<C>(
-						_scheme.Encrypt(record.index, _key)
+						EncryptForConstruction(record.index)
 					)
 				);
 			}
@@ -167,13 +167,16 @@ namespace Simulation.Protocol.SimpleORE
 					QueryResultMessage, List<string>>(
 					new QueryMessage<C>(
 						new Tuple<C, C>(
-							_scheme.Encrypt(query.from, _key),
-							_scheme.Encrypt(query.to, _key)
+							EncryptForSearch(query.from),
+							EncryptForSearch(query.to)
 						)
 					)
 				);
 			}
 		}
+
+		protected virtual C EncryptForConstruction(int plaintext) => _scheme.Encrypt(plaintext, _key);
+		protected virtual C EncryptForSearch(int plaintext) => _scheme.Encrypt(plaintext, _key);
 	}
 
 	public class Protocol<S, C, K> : AbsProtocol

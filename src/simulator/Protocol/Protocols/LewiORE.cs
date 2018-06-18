@@ -24,40 +24,14 @@ namespace Simulation.Protocol.LewiORE
 
 			return new FinishMessage();
 		}
-
-		protected override SimpleORE.QueryResultMessage AcceptMessage(SimpleORE.QueryMessage<Ciphertext> message)
-		{
-			List<string> result = new List<string>();
-			_tree.TryRange(
-				message.Unpack().Item1,
-				message.Unpack().Item2,
-				out result
-			);
-
-			return new SimpleORE.QueryResultMessage(result);
-		}
 	}
 
 	public class Client : SimpleORE.Client<LewiOREScheme, Ciphertext, Key>
 	{
 		public Client(LewiOREScheme scheme) : base(scheme) { }
 
-		public override void RunSearch(List<RangeQuery> input)
-		{
-			foreach (var query in input)
-			{
-				_mediator.SendToServer<
-					SimpleORE.QueryMessage<Ciphertext>, Tuple<Ciphertext, Ciphertext>,
-					SimpleORE.QueryResultMessage, List<string>>(
-					new SimpleORE.QueryMessage<Ciphertext>(
-						new Tuple<Ciphertext, Ciphertext>(
-							new Ciphertext { left = _scheme.EncryptLeft(_key.left, _key.right, query.from.ToUInt()) },
-							new Ciphertext { left = _scheme.EncryptLeft(_key.left, _key.right, query.to.ToUInt()) }
-						)
-					)
-				);
-			}
-		}
+		protected override Ciphertext EncryptForSearch(int plaintext) =>
+			new Ciphertext { left = _scheme.EncryptLeft(_key.left, _key.right, plaintext.ToUInt()) };
 	}
 
 	public class Protocol : SimpleORE.Protocol<LewiOREScheme, Ciphertext, Key>

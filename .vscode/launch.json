@@ -15,7 +15,7 @@
 				"--dataset",
 				"./data/dataset.txt",
 				"--ore-scheme",
-				"LewiORE",
+				"fhope",
 				"--seed",
 				"782797714",
 				"-v",
