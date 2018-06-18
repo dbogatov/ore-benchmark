@@ -10,6 +10,8 @@ namespace Simulation.PureSchemes
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	/// <typeparam name="K">Key type</typeparam>
 	public class Simulator<C, K> : AbsSimulator<Stages>
+		where C : IGetSize
+		where K : IGetSize
 	{
 		private IOREScheme<C, K> _scheme;
 		private List<int> _dataset;

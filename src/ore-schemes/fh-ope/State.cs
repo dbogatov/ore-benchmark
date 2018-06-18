@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.FHOPE
 {
 	public delegate void MutationEventHandler();
 
-	public class State
+	public class State : IGetSize
 	{
 		public event MutationEventHandler MutationOcurred;
 
 		private IPRG _G;
 		private ulong min;
 		private ulong max;
+
+		private long size = 0;
 
 		private Dictionary<int, Tuple<ulong, ulong>> _minMax;
 
@@ -58,6 +61,8 @@ namespace ORESchemes.FHOPE
 				var current = _minMax[plaintext];
 				_minMax[plaintext] = new Tuple<ulong, ulong>(Math.Min(result, current.Item1), Math.Max(result, current.Item2));
 			}
+
+			size++;
 
 			return result;
 		}
@@ -105,6 +110,8 @@ namespace ORESchemes.FHOPE
 		/// </returns>
 		private ulong Rebalance(int input)
 		{
+			size = 0;
+
 			var handler = MutationOcurred;
 			if (handler != null)
 			{
@@ -150,6 +157,9 @@ namespace ORESchemes.FHOPE
 
 			return _root.Insert(input, min, max, get: true).Value;
 		}
+
+		// TODO: implement compressions
+		public int GetSize() => (int)size * sizeof(byte);
 
 		private class Node
 		{

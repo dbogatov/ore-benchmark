@@ -4,6 +4,7 @@ using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 using Simulation;
 using CLI.DataReaders;
+using ORESchemes.Shared;
 
 namespace CLI
 {
@@ -40,7 +41,7 @@ namespace CLI
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
 					report =
-						new Simulator<long, object>(
+						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
 							new NoEncryptionFactory(Parent.Seed).GetScheme()
 						).Simulate();
@@ -48,14 +49,14 @@ namespace CLI
 				case ORESchemes.Shared.ORESchemes.CryptDB:
 					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(-Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
 					report =
-						new Simulator<long, byte[]>(
+						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
 							new CryptDBOPEFactory(Parent.Seed).GetScheme(CryptDBRange)
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
 					report =
-						new Simulator<ORESchemes.PracticalORE.Ciphertext, byte[]>(
+						new Simulator<ORESchemes.PracticalORE.Ciphertext, BytesKey>(
 							reader.Dataset,
 							new PracticalOREFactory(Parent.Seed).GetScheme()
 						).Simulate();

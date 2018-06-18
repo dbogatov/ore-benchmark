@@ -12,13 +12,15 @@ using ORESchemes.Shared.Primitives.PRP;
 
 namespace ORESchemes.LewiORE
 {
-	public class Key
+	public class Key : IGetSize
 	{
 		public byte[] left = new byte[256 / 8];
 		public byte[] right = new byte[256 / 8];
+
+		public int GetSize() => (left.Length + right.Length) * sizeof(byte) * 8;
 	}
 
-	public class Ciphertext
+	public class Ciphertext : IGetSize
 	{
 		public class Left
 		{
@@ -34,6 +36,12 @@ namespace ORESchemes.LewiORE
 		public byte[] encrypted;
 		public Left left;
 		public Right right;
+
+		public int GetSize() =>
+			// encrypted.Length + sizeof(byte) * 8 +
+			left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(byte)) +
+			right.nonce.Length * sizeof(byte) * 8 +
+			right.shorts.Sum(s => s.Count) * 2;
 	}
 
 	public class LewiOREScheme : AbsORECmpScheme<Ciphertext, Key>

@@ -9,11 +9,16 @@ using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.FHOPE
 {
-	public class Ciphertext
+	public class Ciphertext : IGetSize
 	{
 		public long? min = null;
 		public long? max = null;
 		public long value;
+
+		public int GetSize() =>
+			sizeof(long) + 
+			(min.HasValue ? 0 : sizeof(long)) +
+			(max.HasValue ? 0 : sizeof(long));
 	}
 
 	public class FHOPEScheme : AbsOREScheme<Ciphertext, State>

@@ -15,7 +15,7 @@
 				"--dataset",
 				"./data/dataset.txt",
 				"--ore-scheme",
-				"PracticalORE",
+				"noencryption",
 				"--seed",
 				"782797714",
 				"-v",

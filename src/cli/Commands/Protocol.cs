@@ -54,8 +54,8 @@ namespace CLI
 			switch (Parent.OREScheme)
 			{
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, long, object>(
-							new Options<long>(
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
+							new Options<OPECipher>(
 								new NoEncryptionFactory().GetScheme(),
 								BPlusTreeBranching
 							),
@@ -63,8 +63,8 @@ namespace CLI
 						);
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, long, byte[]>(
-							new Options<long>(
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, OPECipher, BytesKey>(
+							new Options<OPECipher>(
 								new CryptDBOPEFactory().GetScheme(),
 								BPlusTreeBranching
 							),
@@ -72,7 +72,7 @@ namespace CLI
 						);
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, Ciphertext, byte[]>(
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, Ciphertext, BytesKey>(
 						new Options<ORESchemes.PracticalORE.Ciphertext>(
 							new PracticalOREFactory().GetScheme(),
 							BPlusTreeBranching

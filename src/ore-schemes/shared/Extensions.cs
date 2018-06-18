@@ -80,12 +80,18 @@ namespace ORESchemes.Shared
 		/// Returns the largest possible ciphertext value possible as an encryption of largest
 		/// possible plaintext, which is assumed to be max int32.
 		/// </summary>
-		public static C MaxCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) => scheme.Encrypt(int.MaxValue, key);
+		public static C MaxCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key)
+			where C : IGetSize
+			where K : IGetSize
+		=> scheme.Encrypt(int.MaxValue, key);
 
 		/// <summary>
 		/// Returns the smallest possible ciphertext value possible as an encryption of smallest
 		/// possible plaintext, which is assumed to be min int32.
 		/// </summary>
-		public static C MinCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) => scheme.Encrypt(int.MinValue, key);
+		public static C MinCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) 
+			where C : IGetSize
+			where K : IGetSize
+		=> scheme.Encrypt(int.MinValue, key);
 	}
 }
