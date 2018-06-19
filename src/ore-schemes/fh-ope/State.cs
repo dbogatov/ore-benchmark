@@ -196,7 +196,6 @@ namespace ORESchemes.FHOPE
 				{
 					_options.Density.Add(plaintext, (1, 1));
 				}
-
 			}
 
 			private Node left = null;

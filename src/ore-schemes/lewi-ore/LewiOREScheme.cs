@@ -38,7 +38,6 @@ namespace ORESchemes.LewiORE
 		public Right right;
 
 		public int GetSize() =>
-			// encrypted.Length + sizeof(byte) * 8 +
 			(left != null ? left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(byte)) : 0) +
 			(right != null ?
 				right.nonce.Length * sizeof(byte) * 8 +
@@ -72,6 +71,7 @@ namespace ORESchemes.LewiORE
 				throw new ArgumentException($"Value of n ({n}) is invalid. It must be a multiple of 32. One of [16, 8, 4].");
 			}
 
+			this.n = n;
 			d = (int)Math.Pow(2, 32 / n);
 
 			F = PRFFactory.GetPRF();

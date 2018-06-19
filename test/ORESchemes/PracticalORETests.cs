@@ -12,5 +12,7 @@ namespace Test.ORESchemes
 		{
 			_scheme = new PracticalOREScheme(_entropy);
 		}
+
+		public override int CipherSize() => 32 * 2;
 	}
 }

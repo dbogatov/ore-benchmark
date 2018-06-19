@@ -10,6 +10,8 @@ namespace Test.ORESchemes
 		public LewiORETestsN16() : base(100) { }
 
 		protected override void SetParameters() => n = 16;
+
+		public override int CipherSize() => 4496;
 	}
 
 	[Trait("Category", "Integration")]
@@ -18,6 +20,8 @@ namespace Test.ORESchemes
 		public LewiORETestsN8() : base(50) { }
 
 		protected override void SetParameters() => n = 8;
+
+		public override int CipherSize() => 2568;
 	}
 
 	[Trait("Category", "Integration")]
@@ -26,6 +30,8 @@ namespace Test.ORESchemes
 		public LewiORETestsN4() : base(30) { }
 
 		protected override void SetParameters() => n = 4;
+
+		public override int CipherSize() => 3332;
 	}
 
 	[Trait("Category", "Unit")]
@@ -52,5 +58,7 @@ namespace Test.ORESchemes
 		{
 			_scheme = new LewiOREScheme(n, _entropy);
 		}
+
+		public override int KeySize() => 512;
 	}
 }

@@ -254,5 +254,24 @@ namespace Test.ORESchemes
 			Assert.NotEqual(0, primitiveUsage.Values.Sum());
 			Assert.NotEqual(0, purePrimitiveUsage.Values.Sum());
 		}
+
+		[Fact]
+		public void KeySizeTest()
+		{
+			var key = _scheme.KeyGen();
+			Assert.Equal(KeySize(), key.GetSize());
+		}
+
+		[Fact]
+		public void CipherSizeTest()
+		{
+			var key = _scheme.KeyGen();
+			var cipher = _scheme.Encrypt(50, key);
+
+			Assert.Equal(CipherSize(), cipher.GetSize());
+		}
+
+		public virtual int KeySize() => 256;
+		public virtual int CipherSize() => 8;
 	}
 }

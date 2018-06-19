@@ -181,5 +181,8 @@ namespace Test.ORESchemes
 
 			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		}
+
+		public override int KeySize() => 0;
+		public override int CipherSize() => 24;
 	}
 }

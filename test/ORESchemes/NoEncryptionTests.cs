@@ -54,5 +54,7 @@ namespace Test.ORESchemes
 			Assert.Equal(0, primitiveUsage.Values.Sum());
 			Assert.Equal(0, purePrimitiveUsage.Values.Sum());
 		}
+		
+		public override int KeySize() => 0;
 	}
 }
