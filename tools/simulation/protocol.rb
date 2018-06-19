@@ -4,10 +4,11 @@ require 'English'
 
 Dir.chdir File.dirname(__FILE__)
 
-def run(input, queries, type, scheme, seed, cache, branching)
-  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} tree --queries ../../data/#{queries}-queries.txt --queries-type #{type} --cache-size #{cache} --b-plus-tree-branches #{branching}"
+def run(input, queries, scheme, seed, cache, branching)
+  cmd = "dotnet ../../src/cli/dist/cli.dll -v --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} protocol --queries ../../data/#{queries}-queries.txt --cache-size #{cache} --b-plus-tree-branches #{branching}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
+  puts output
 
   open('../../results/tree.csv', 'a') do |f|
     f << output
@@ -52,10 +53,10 @@ open('../../results/tree.csv', 'a') do |f|
 end
 
 %w[fhope lewiore cryptdb practicalore noencryption].each do |scheme|
-  ['exact', 'range-0.5', 'range-1', 'range-2', 'range-3', 'update', 'delete'].each do |queries|
+  ['range-0.5', 'range-1', 'range-2', 'range-3'].each do |queries|
     [2, 5, 20, 50].each do |btreebranches|
       [0, 10, 100].each do |cache|
-        success = false unless run('dataset', queries, queries.split(/-/).first, scheme, prng.rand(2**30), cache, btreebranches)
+        success = false unless run('dataset', queries, scheme, prng.rand(2**30), cache, btreebranches)
       end
     end
   end

@@ -31,7 +31,7 @@ namespace Simulation.Protocol
 		Number of I/O operations (for cache size {CacheSize}): {IOs} | {AvgIOs} per query
 		Number of ORE scheme operations performed: {SchemeOperations} | {AvgSchemeOperations} per query
 		Sent {MessagesSent} messages, {CommunicationVolume} bits communication ({AvgMessageSize} bits per message)
-		Client storage went to max of {MaxClientStorage} bits
+		Client storage went to max of {MaxClientStorage / 8} bits
 		
 {PrintPrimitiveUsage()}
 		Observable time elapsed: {ObservedTime}
