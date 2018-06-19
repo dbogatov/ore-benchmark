@@ -76,6 +76,6 @@ namespace Simulation
 	{
 		public FHOPEFactory(int? seed = null) : base(seed) { }
 
-		public override FHOPEScheme GetScheme(int parameter = 0) => new FHOPEScheme(long.MinValue, long.MaxValue, _entropy);
+		public override FHOPEScheme GetScheme(int parameter = 0) => new FHOPEScheme(long.MinValue, long.MaxValue, 10, parameter * 0.01, _entropy);
 	}
 }

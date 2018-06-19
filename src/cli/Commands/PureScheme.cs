@@ -19,6 +19,10 @@ namespace CLI
 		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (eq. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
 		public int CryptDBRange { get; } = 48;
 
+		[Range(0, 100)]
+		[Option("--fhope-p <number>", Description = "For imperfect FH-OPE, probability to generate new ciphertext. 0 means using perfect FH-OPE. Must be in range [0, 100]. Default 0.")]
+		public int FHOPEP { get; } = 0;
+
 		private SimulatorCommand Parent { get; set; }
 
 		protected override int OnExecute(CommandLineApplication app)
@@ -70,10 +74,11 @@ namespace CLI
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.FHOPE:
+					PutToConsole($"FH-OPE p = {FHOPEP}", Parent.Verbose);
 					report =
 						new Simulator<ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>(
 							reader.Dataset,
-							new FHOPEFactory(Parent.Seed).GetScheme()
+							new FHOPEFactory(Parent.Seed).GetScheme(FHOPEP)
 						).Simulate();
 					break;
 				default:

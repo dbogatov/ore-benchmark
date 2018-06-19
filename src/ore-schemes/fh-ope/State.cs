@@ -12,23 +12,30 @@ namespace ORESchemes.FHOPE
 	{
 		public event MutationEventHandler MutationOcurred;
 
-		private IPRG _G;
+		private readonly NodeOptions _options;
+
 		private ulong min;
 		private ulong max;
-
-		private long size = 0;
 
 		private Dictionary<int, Tuple<ulong, ulong>> _minMax;
 
 		private Node _root = null;
 
-		public State(IPRG prg, ulong min, ulong max)
+		public State(IPRG prg, ulong min, ulong max, int r = 10, double p = 0.0)
 		{
-			_G = prg;
 			this.min = min;
 			this.max = max;
 
 			_minMax = new Dictionary<int, Tuple<ulong, ulong>>();
+
+			_options = new NodeOptions
+			{
+				G = prg,
+				Imperfect = p != 0.0,
+				p = p,
+				r = r,
+				Density = new Dictionary<int, ValueTuple<ulong, ulong>>()
+			};
 		}
 
 		/// <summary>
@@ -43,7 +50,7 @@ namespace ORESchemes.FHOPE
 			if (_root == null)
 			{
 				var newCipher = (ulong)Math.Ceiling(0.5 * min) + (ulong)Math.Ceiling(0.5 * max);
-				_root = new Node(_G, plaintext, newCipher);
+				_root = new Node(_options, plaintext, newCipher);
 
 				result = newCipher;
 			}
@@ -61,8 +68,6 @@ namespace ORESchemes.FHOPE
 				var current = _minMax[plaintext];
 				_minMax[plaintext] = new Tuple<ulong, ulong>(Math.Min(result, current.Item1), Math.Max(result, current.Item2));
 			}
-
-			size++;
 
 			return result;
 		}
@@ -110,8 +115,6 @@ namespace ORESchemes.FHOPE
 		/// </returns>
 		private ulong Rebalance(int input)
 		{
-			size = 0;
-
 			var handler = MutationOcurred;
 			if (handler != null)
 			{
@@ -158,18 +161,39 @@ namespace ORESchemes.FHOPE
 			return _root.Insert(input, min, max, get: true).Value;
 		}
 
-		// TODO: implement compressions
-		public int GetSize() => (int)size * sizeof(byte) * 8;
+		public int GetSize() => _root == null ? 0 : _root.GetSize().Item1;
+
+		private class NodeOptions
+		{
+			public Dictionary<int, ValueTuple<ulong, ulong>> Density;
+			public IPRG G;
+			public bool Imperfect;
+			public int r;
+			public double p;
+		}
 
 		private class Node
 		{
-			private IPRG _G;
+			private NodeOptions _options;
 
-			public Node(IPRG prg, int plaintext, ulong ciphertext)
+			public Node(NodeOptions options, int plaintext, ulong ciphertext)
 			{
-				_G = prg;
+				_options = options;
 				this.plaintext = plaintext;
 				this.ciphertext = ciphertext;
+
+				if (_options.Density.ContainsKey(plaintext))
+				{
+					_options.Density[plaintext] = (
+						_options.Density[plaintext].Item1 + 1,
+						_options.Density[plaintext].Item2 + 2
+					);
+				}
+				else
+				{
+					_options.Density.Add(plaintext, (1, 1));
+				}
+
 			}
 
 			private Node left = null;
@@ -199,7 +223,34 @@ namespace ORESchemes.FHOPE
 					{
 						return ciphertext;
 					}
-					coin = _G.Next() % 2 == 1;
+
+					bool generate = true;
+
+					if (_options.Imperfect)
+					{
+						if (_options.Density[input].Item2 != 0)
+						{
+							var left = (double)(_options.Density[input].Item1 + 1) / _options.Density[input].Item2;
+							var right = _options.r * (_options.Density.Values.Sum(v => (double)v.Item1)) / (_options.Density.Values.Sum(v => (double)v.Item2));
+
+							if (left > right)
+							{
+								generate = true;
+							}
+							else
+							{
+								generate = _options.G.NextDouble(1) <= _options.p;
+							}
+						}
+					}
+
+					if (!generate)
+					{
+						// Not entirely uniform, but will work
+						return ciphertext;
+					}
+
+					coin = _options.G.Next() % 2 == 1;
 				}
 
 				if (
@@ -220,7 +271,7 @@ namespace ORESchemes.FHOPE
 					}
 
 					var newCipher = DivisionHelper(ciphertext, max);
-					right = new Node(_G, input, newCipher);
+					right = new Node(_options, input, newCipher);
 
 					return newCipher;
 				}
@@ -243,7 +294,7 @@ namespace ORESchemes.FHOPE
 					}
 
 					var newCipher = DivisionHelper(min, ciphertext);
-					left = new Node(_G, input, newCipher);
+					left = new Node(_options, input, newCipher);
 
 					return newCipher;
 				}
@@ -296,6 +347,32 @@ namespace ORESchemes.FHOPE
 				{
 					right.GetAll(result);
 				}
+			}
+
+			public ValueTuple<int, int, bool> GetSize()
+			{
+				int size = sizeof(int) + 2 * sizeof(long);
+				int number = 1;
+				bool cluster = true;
+
+				foreach (var child in new Node[] { left, right })
+				{
+					if (child != null)
+					{
+						var (childSize, childNumber, childCluster) = child.GetSize();
+
+						size += childSize;
+						number += childNumber;
+						cluster &= childCluster;
+					}
+				}
+
+				if (cluster)
+				{
+					return (number * sizeof(int) + sizeof(int), number, cluster);
+				}
+
+				return (size, number, cluster);
 			}
 
 			private ulong DivisionHelper(ulong min, ulong max)

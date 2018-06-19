@@ -65,7 +65,8 @@ namespace Simulation.Protocol.SimpleORE
 			_tree.TryRange(
 				message.Unpack().Item1,
 				message.Unpack().Item2,
-				out result
+				out result,
+				checkRanges: false
 			);
 
 			return new QueryResultMessage(result);
@@ -81,24 +82,17 @@ namespace Simulation.Protocol.SimpleORE
 
 		public override MR AcceptMessage<MQ, TQ, MR, TR>(MQ message)
 		{
-			var msgType = message.GetType();
-
-			if (msgType == typeof(InsertMessage<C>))
+			switch (message)
 			{
-				return (MR)(object)AcceptMessage((InsertMessage<C>)(object)message);
+				case InsertMessage<C> insert:
+					return (MR)(object)AcceptMessage(insert);
+				case QueryMessage<C> query:
+					return (MR)(object)AcceptMessage(query);
+				case MinMaxMessage<C> minMax:
+					return (MR)(object)AcceptMessage(minMax);
+				default:
+					return (MR)(object)new FinishMessage();
 			}
-
-			if (msgType == typeof(QueryMessage<C>))
-			{
-				return (MR)(object)AcceptMessage((QueryMessage<C>)(object)message);
-			}
-
-			if (msgType == typeof(MinMaxMessage<C>))
-			{
-				return (MR)(object)AcceptMessage((MinMaxMessage<C>)(object)message);
-			}
-
-			return (MR)(object)new FinishMessage();
 		}
 	}
 

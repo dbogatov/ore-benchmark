@@ -26,10 +26,16 @@ namespace ORESchemes.FHOPE
 		private ulong min;
 		private ulong max;
 
-		public FHOPEScheme(long min, long max, byte[] seed = null) : base(seed)
+		private int r;
+		private double p;
+
+		public FHOPEScheme(long min, long max, int r = 10, double p = 0.0, byte[] seed = null) : base(seed)
 		{
 			this.min = min.ToULong();
 			this.max = max.ToULong();
+
+			this.p = p;
+			this.r = r;
 		}
 
 		public override State KeyGen()
@@ -42,7 +48,7 @@ namespace ORESchemes.FHOPE
 			IPRG prg = PRGFactory.GetPRG(entropy);
 			SubscribePrimitive(prg);
 
-			State state = new State(prg, this.min, this.max);
+			State state = new State(prg, this.min, this.max, r, p);
 
 			return state;
 		}

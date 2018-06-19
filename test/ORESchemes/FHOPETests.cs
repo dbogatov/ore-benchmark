@@ -14,7 +14,7 @@ namespace Test.ORESchemes
 	{
 		protected override void SetScheme()
 		{
-			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, _entropy);
+			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
 
 			_expectedEvents = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
