@@ -10,11 +10,44 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class FHOPETests : GenericORETests<Ciphertext, State>
+	public class PerfectFHOPETests : AbsFHOPETests
 	{
+		public override double GetP() => 0;
+	}
+
+	[Trait("Category", "Integration")]
+	public class ImperfectFHOPETests : AbsFHOPETests
+	{
+		public override double GetP() => 0.5;
+
+		[Fact]
+		public void PerfectVsImperfect()
+		{
+			Random random = new Random(SEED);
+
+			var key = _scheme.KeyGen();
+
+			var perfect = new FHOPEScheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
+			var pKey = perfect.KeyGen();
+
+			for (int i = 0; i < _runs; i++)
+			{
+				var plaintext = random.Next(0, _runs / 10);
+				_scheme.Encrypt(plaintext, key);
+				perfect.Encrypt(plaintext, pKey);
+			}
+
+			Assert.True(key.GetSize() < pKey.GetSize());
+		}
+	}
+
+	public abstract class AbsFHOPETests : GenericORETests<Ciphertext, State>
+	{
+		public abstract double GetP();
+
 		protected override void SetScheme()
 		{
-			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
+			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, 10, GetP(), _entropy);
 
 			_expectedEvents = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{

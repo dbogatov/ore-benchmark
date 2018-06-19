@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
+
+[assembly: InternalsVisibleTo("test")]
 
 namespace ORESchemes.FHOPE
 {
@@ -161,7 +164,7 @@ namespace ORESchemes.FHOPE
 			return _root.Insert(input, min, max, get: true).Value;
 		}
 
-		public int GetSize() => _root == null ? 0 : _root.GetSize().Item1;
+		public int GetSize() => _root == null ? 0 : 8 * _root.GetSize().Item1;
 
 		private class NodeOptions
 		{
@@ -246,6 +249,10 @@ namespace ORESchemes.FHOPE
 
 					if (!generate)
 					{
+						_options.Density[input] = (
+							_options.Density[input].Item1 + 1,
+							_options.Density[input].Item2
+						);
 						// Not entirely uniform, but will work
 						return ciphertext;
 					}
@@ -351,7 +358,7 @@ namespace ORESchemes.FHOPE
 
 			public ValueTuple<int, int, bool> GetSize()
 			{
-				int size = sizeof(int) + 2 * sizeof(long);
+				int size = sizeof(int);
 				int number = 1;
 				bool cluster = true;
 
@@ -359,17 +366,22 @@ namespace ORESchemes.FHOPE
 				{
 					if (child != null)
 					{
+						// for pointer to child
+						size += sizeof(long);
+
 						var (childSize, childNumber, childCluster) = child.GetSize();
 
 						size += childSize;
 						number += childNumber;
+
 						cluster &= childCluster;
+						cluster &= child.plaintext == plaintext;
 					}
 				}
 
 				if (cluster)
 				{
-					return (number * sizeof(int) + sizeof(int), number, cluster);
+					return (number * sizeof(int) + (number == 1 ? 0 : sizeof(int)), number, cluster);
 				}
 
 				return (size, number, cluster);
