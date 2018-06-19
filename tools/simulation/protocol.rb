@@ -5,7 +5,7 @@ require 'English'
 Dir.chdir File.dirname(__FILE__)
 
 def run(input, queries, scheme, seed, cache, branching)
-  cmd = "dotnet ../../src/cli/dist/cli.dll -v --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} protocol --queries ../../data/#{queries}-queries.txt --cache-size #{cache} --b-plus-tree-branches #{branching}"
+  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} protocol --queries ../../data/#{queries}-queries.txt --cache-size #{cache} --b-plus-tree-branches #{branching}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
   puts output
