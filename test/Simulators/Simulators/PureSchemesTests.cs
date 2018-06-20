@@ -11,7 +11,7 @@ using ORESchemes.LewiORE;
 namespace Test.Simulators
 {
 	[Trait("Category", "Unit")]
-	public class SchemesTests
+	public class PureSchemesTests
 	{
 		[Fact]
 		public void SimulatorTest()

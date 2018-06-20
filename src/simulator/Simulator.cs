@@ -36,6 +36,7 @@ namespace Simulation
 
 		protected void ClearTrackers()
 		{
+			_visited = 0;
 			_cache = new List<Tuple<int, long>>(_cacheSize);
 			_cache.Clear();
 

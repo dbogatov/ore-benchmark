@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ORESchemes.Shared.Primitives;
-
 namespace Simulation.Protocol
 {
 	public enum Stages
 	{
-		Construction, Queries
+		Handshake, Construction, Queries
 	}
 
 	public class Report : AbsReport<Stages>

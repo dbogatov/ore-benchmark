@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ORESchemes.Shared;
 using DataStructures.BPlusTree;
 using System.Diagnostics;
@@ -29,24 +28,7 @@ namespace Simulation.Protocol
 			protocol.MessageSent += new MessageSentEventHandler(RecordCommunivcationVolume);
 			protocol.ClientStorage += new ClientStorageEventHandler(RecordClientStorage);
 
-			_protocol.RunHandshake();
 			ClearTrackers();
-		}
-
-		/// <summary>
-		/// Generated sub-report for the construction stage of simulation
-		/// when data structure gets populated with dataset.
-		/// </summary>
-		private Report.SubReport ConstructionStage() =>
-			Profile(() => _protocol.RunConstructionProtocol(_inputs.Dataset), constructionStage: true);
-
-		/// <summary>
-		/// Generated sub-report for the query stage of simulation
-		/// when queries are run against data structure.
-		/// </summary>
-		private Report.SubReport QueryStage()
-		{
-			return Profile(() => _protocol.RunQueryProtocol(_inputs.Queries), constructionStage: false);
 		}
 
 		/// <summary>
@@ -54,7 +36,7 @@ namespace Simulation.Protocol
 		/// given function. Records times and number of events.
 		/// </summary>
 		/// <param name="routine">Function to profile</param>
-		private Report.SubReport Profile(Action routine, bool constructionStage)
+		private Report.SubReport Profile(Action routine, Stages stage)
 		{
 			var currentProcess = Process.GetCurrentProcess();
 
@@ -71,7 +53,19 @@ namespace Simulation.Protocol
 			// for some reason this value is off by exactly hundred
 			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
 
-			var actionsNumber = constructionStage ? _inputs.Dataset.Count : _inputs.QueriesCount();
+			int actionsNumber = 0;
+			switch (stage)
+			{
+				case Stages.Handshake:
+					actionsNumber = 1;
+					break;
+				case Stages.Construction:
+					actionsNumber = _inputs.Dataset.Count;
+					break;
+				case Stages.Queries:
+					actionsNumber = _inputs.QueriesCount();
+					break;
+			}
 
 			return new Report.SubReport
 			{
@@ -93,8 +87,9 @@ namespace Simulation.Protocol
 		public override AbsReport<Stages> Simulate()
 		{
 			var result = new Report();
-			result.Stages[Stages.Construction] = ConstructionStage();
-			result.Stages[Stages.Queries] = QueryStage();
+			result.Stages[Stages.Handshake] = Profile(() => _protocol.RunHandshake(), stage: Stages.Handshake);
+			result.Stages[Stages.Construction] = Profile(() => _protocol.RunConstructionProtocol(_inputs.Dataset), stage: Stages.Construction);
+			result.Stages[Stages.Queries] = Profile(() => _protocol.RunQueryProtocol(_inputs.Queries), stage: Stages.Queries);
 
 			return result;
 		}
