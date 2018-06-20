@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using ORESchemes.Shared.Primitives;
 
 namespace Simulation
@@ -34,8 +35,6 @@ namespace Simulation
 
 			return result;
 		}
-
-		public string ToConciseString() => string.Join(",", Enum.GetValues(typeof(S)).Cast<S>().OrderBy(v => v).Select(s => Stages[s]));
 	}
 
 	public abstract class AbsSubReport
@@ -85,7 +84,5 @@ namespace Simulation
 
 			return result;
 		}
-
-		public abstract string ToConciseString();
 	}
 }

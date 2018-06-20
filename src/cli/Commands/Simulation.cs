@@ -3,6 +3,7 @@ using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 using DataStructures.BPlusTree;
 using Simulation;
+using Newtonsoft.Json;
 
 namespace CLI
 {
@@ -30,6 +31,14 @@ namespace CLI
 				System.Console.WriteLine(output);
 			}
 		}
+
+		protected string JsonReport(object report, object parameters) =>
+			JsonConvert.SerializeObject(
+				new {
+					Report = report,
+					Parameters = parameters
+				}
+			);
 	}
 
 	[Command(Name = "ore-benchamark", Description = "An ORE schemes benchmark", ThrowOnUnexpectedArgument = true)]

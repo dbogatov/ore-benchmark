@@ -100,12 +100,21 @@ namespace CLI
 
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 
-			if (!Parent.Verbose)
-			{
-				System.Console.Write($"{Parent.Seed},{Parent.OREScheme},{CacheSize},{BPlusTreeBranching},");
-			}
-
-			System.Console.WriteLine(Parent.Verbose ? report.ToString() : report.ToConciseString());
+			System.Console.WriteLine(
+				Parent.Verbose ? 
+				report.ToString() : 
+				JsonReport(
+					report.Stages,
+					new {
+						BPlusTreeBranching = BPlusTreeBranching,
+						CacheSize = CacheSize,
+						Queries = Queries,
+						Dataset = Parent.Dataset,
+						OREScheme = Parent.OREScheme,
+						Seed = Parent.Seed
+					}
+				)
+			);
 
 			return 0;
 		}

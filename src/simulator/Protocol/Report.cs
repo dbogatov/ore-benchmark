@@ -33,12 +33,6 @@ namespace Simulation.Protocol
 		CPU time reported: {CPUTime}
 ";
 			}
-
-			/// <summary>
-			/// Returns the string representation of the object in a concise manner
-			/// </summary>
-			/// <param name="queryStage">The stage for which this sub-report was generated</param>
-			public override string ToConciseString() => $@"{IOs},{AvgIOs},{SchemeOperations},{AvgSchemeOperations},{ObservedTime.TotalMilliseconds},{CPUTime.TotalMilliseconds}";
 		}
 	}
 }

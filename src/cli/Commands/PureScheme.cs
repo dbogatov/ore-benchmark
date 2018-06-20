@@ -90,7 +90,21 @@ namespace CLI
 				System.Console.Write($"{Parent.Seed},{LewiOREN},{CryptDBRange},{Parent.OREScheme},");
 			}
 
-			System.Console.WriteLine(Parent.Verbose ? report.ToString() : report.ToConciseString());
+			System.Console.WriteLine(
+				Parent.Verbose ? 
+				report.ToString() : 
+				JsonReport(
+					report.Stages,
+					new {
+						CryptDBRange = CryptDBRange,
+						FHOPEP = FHOPEP,
+						LewiOREN = LewiOREN,
+						Dataset = Parent.Dataset,
+						OREScheme = Parent.OREScheme,
+						Seed = Parent.Seed
+					}
+				)
+			);
 
 			return 0;
 		}

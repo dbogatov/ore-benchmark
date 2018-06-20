@@ -8,10 +8,9 @@ def run(input, queries, scheme, seed, cache, branching)
   cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}.txt --ore-scheme #{scheme} --seed #{seed} protocol --queries ../../data/#{queries}-queries.txt --cache-size #{cache} --b-plus-tree-branches #{branching}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
-  puts output
 
-  open('../../results/protocol.csv', 'a') do |f|
-    f << output
+  open('../../results/protocol.json', 'a') do |f|
+    f << "\"#{cmd}\": #{output},"
   end
 
   $CHILD_STATUS.success?
@@ -28,28 +27,13 @@ puts `#{build}`
 
 success = true
 
-`rm -f ../../results/protocol.csv`
+`rm -f ../../results/protocol.json`
 `mkdir -p ../../results/`
 
-`touch ../../results/protocol.csv`
+`touch ../../results/protocol.json`
 
-names = []
-
-names.push('Seed')
-names.push('Scheme')
-names.push('Queries type')
-names.push('Cache size')
-names.push('B+ tree branches')
-
-%w[Construction Query].each do |stage|
-  ['IOs', 'AvgIOs', 'Scheme OPs', 'Scheme AvgOPs', 'Observed time (ms)', 'CPU time (ms)'].each do |metric|
-    names.push("#{stage} #{metric}")
-  end
-end
-
-open('../../results/protocol.csv', 'a') do |f|
-  f << names.join(',')
-  f << "\n"
+open('../../results/protocol.json', 'a') do |f|
+  f << '{'
 end
 
 %w[fhope lewiore cryptdb practicalore noencryption].each do |scheme|
@@ -62,7 +46,11 @@ end
   end
 end
 
-puts 'Results are in results/protocol.csv in you current directory'
+open('../../results/protocol.json', 'a') do |f|
+  f << '{}}'
+end
+
+puts 'Results are in results/protocol.json in you current directory'
 
 `rm -rf ../../src/**/dist`
 
