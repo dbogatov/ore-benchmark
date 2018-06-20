@@ -47,7 +47,7 @@ end
 end
 
 open('../../results/protocol.json', 'a') do |f|
-  f << '{}}'
+  f << '"" : {}}'
 end
 
 puts 'Results are in results/protocol.json in you current directory'

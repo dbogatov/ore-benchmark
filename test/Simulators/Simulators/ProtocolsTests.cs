@@ -180,17 +180,11 @@ namespace Test.Simulators
 				Assert.NotEqual(0, subreport.MessagesSent);
 			}
 
-			var descriptions = new List<string> {
-				report.ToString(),
-				report.ToConciseString()
-			};
+			var description = report.ToString();
 
-			foreach (var description in descriptions)
+			foreach (var subreport in report.Stages.Values.Cast<Report.SubReport>())
 			{
-				foreach (var subreport in report.Stages.Values.Cast<Report.SubReport>())
-				{
-					Assert.Contains(subreport.SchemeOperations.ToString(), description);
-				}
+				Assert.Contains(subreport.SchemeOperations.ToString(), description);
 			}
 		}
 	}

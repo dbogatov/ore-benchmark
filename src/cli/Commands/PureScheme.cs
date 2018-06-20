@@ -85,11 +85,6 @@ namespace CLI
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
 
-			if (!Parent.Verbose)
-			{
-				System.Console.Write($"{Parent.Seed},{LewiOREN},{CryptDBRange},{Parent.OREScheme},");
-			}
-
 			System.Console.WriteLine(
 				Parent.Verbose ? 
 				report.ToString() : 

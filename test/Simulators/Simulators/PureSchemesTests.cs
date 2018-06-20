@@ -38,17 +38,11 @@ namespace Test.Simulators
 				Assert.NotEqual(0, subreport.TotalPrimitiveOperations.Values.Sum());
 			}
 
-			var descriptions = new List<string> {
-				report.ToString(),
-				report.ToConciseString()
-			};
+			var description = report.ToString();
 
-			foreach (var description in descriptions)
+			foreach (var subreport in subreports)
 			{
-				foreach (var subreport in subreports)
-				{
-					Assert.Contains(subreport.SchemeOperations.ToString(), description);
-				}
+				Assert.Contains(subreport.SchemeOperations.ToString(), description);
 			}
 		}
 	}
