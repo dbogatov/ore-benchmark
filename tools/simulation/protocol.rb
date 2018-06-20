@@ -10,7 +10,7 @@ def run(input, queries, scheme, seed, cache, branching)
   output = `#{cmd}`
   puts output
 
-  open('../../results/tree.csv', 'a') do |f|
+  open('../../results/protocol.csv', 'a') do |f|
     f << output
   end
 
@@ -28,10 +28,10 @@ puts `#{build}`
 
 success = true
 
-`rm -f ../../results/tree.csv`
+`rm -f ../../results/protocol.csv`
 `mkdir -p ../../results/`
 
-`touch ../../results/tree.csv`
+`touch ../../results/protocol.csv`
 
 names = []
 
@@ -47,7 +47,7 @@ names.push('B+ tree branches')
   end
 end
 
-open('../../results/tree.csv', 'a') do |f|
+open('../../results/protocol.csv', 'a') do |f|
   f << names.join(',')
   f << "\n"
 end
@@ -62,7 +62,7 @@ end
   end
 end
 
-puts 'Results are in results/tree.csv in you current directory'
+puts 'Results are in results/protocol.csv in you current directory'
 
 `rm -rf ../../src/**/dist`
 

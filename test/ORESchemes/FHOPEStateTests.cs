@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Test.ORESchemes
 {
+	[Trait("Category", "Unit")]
 	public class FHOPEStateTests
 	{
 		private readonly State _state;
@@ -39,7 +40,7 @@ namespace Test.ORESchemes
 		{
 			_state.Insert(2);
 			_state.Insert(1);
-			
+
 			_state.Insert(5);
 			_state.Insert(5);
 			_state.Insert(5);
@@ -52,7 +53,7 @@ namespace Test.ORESchemes
 		{
 			_state.Insert(2);
 			_state.Insert(1);
-			
+
 			_state.Insert(-5);
 			_state.Insert(-5);
 			_state.Insert(-5);
