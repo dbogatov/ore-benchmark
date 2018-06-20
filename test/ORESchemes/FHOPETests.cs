@@ -15,7 +15,7 @@ namespace Test.ORESchemes
 		public override double GetP() => 0;
 	}
 
-	[Trait("Category", "Integration")]
+	[Trait("Category", "Unit")]
 	public class ImperfectFHOPETests : AbsFHOPETests
 	{
 		public override double GetP() => 0.5;
@@ -105,12 +105,6 @@ namespace Test.ORESchemes
 		[Theory(Skip = "Not applicable")]
 		[InlineData(-10, -10)]
 		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) { }
-
-		[Fact]
-		public void TestName()
-		{
-			base.MinMaxTest();
-		}
 
 		[Theory]
 		[ClassData(typeof(OrderCorrectnessTestData))]
