@@ -8,7 +8,7 @@ namespace DataStructures.BPlusTree
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	public class Options<C>
 	{
-		public event NodeVisitedEventHandler NodeVisited;
+		public virtual event NodeVisitedEventHandler NodeVisited;
 
 		public int Branching { get; private set; }
 		public IOREComparator<C> Comparator { get; private set; }

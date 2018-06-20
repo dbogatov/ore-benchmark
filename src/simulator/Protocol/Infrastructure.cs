@@ -12,10 +12,7 @@ namespace Simulation.Protocol
 
 		public void SetMediator(Mediator mediator) => _mediator = mediator;
 
-		public abstract MR AcceptMessage<MQ, TQ, MR, TR>(MQ message) 
-			where MQ : AbsMessage<TQ>
-			where MR : AbsMessage<TR>
-		;
+		public abstract IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message);
 	}
 
 	public abstract class AbsClient : AbsParty
@@ -24,12 +21,20 @@ namespace Simulation.Protocol
 		public abstract void RunConstruction(List<Record> input);
 		public abstract void RunSearch(List<RangeQuery> input);
 
-		public abstract void RecordStorage(long extra = 0);
+		public virtual void RecordStorage(long extra = 0) => OnClientStorage(extra);
 	}
 
-	public abstract class AbsMessage<T>
+	public interface IMessage<out T>
+	{
+		T Unpack();
+		int GetSize();
+	}
+
+	public abstract class AbsMessage<T> : IMessage<T>
 	{
 		protected T _content;
+
+		public AbsMessage() { }
 
 		public AbsMessage(T content)
 		{
@@ -69,26 +74,28 @@ namespace Simulation.Protocol
 			}
 		}
 
-		public MR SendToServer<MQ, TQ, MR, TR>(MQ message) 
-			where MQ : AbsMessage<TQ>
-			where MR : AbsMessage<TR>
+		public virtual IMessage<R> SendToServer<Q, R>(IMessage<Q> message)
 		{
 			OnMessageSent(message.GetSize());
 
-			var response = _server.AcceptMessage<MQ, TQ, MR, TR>(message);
+			var response = _server.AcceptMessage<Q, R>(message);
 			_client.RecordStorage(response.GetSize());
+
+			OnMessageSent(response.GetSize());
 
 			return response;
 		}
 
-		public MR SendToClient<MQ, TQ, MR, TR>(MQ message) 
-			where MQ : AbsMessage<TQ>
-			where MR : AbsMessage<TR>
+		public virtual IMessage<R> SendToClient<Q, R>(IMessage<Q> message)
 		{
 			OnMessageSent(message.GetSize());
 			_client.RecordStorage(message.GetSize());
 
-			return _client.AcceptMessage<MQ, TQ, MR, TR>(message);
+			var response = _client.AcceptMessage<Q, R>(message);
+
+			OnMessageSent(response.GetSize());
+
+			return response;
 		}
 	}
 
@@ -119,7 +126,7 @@ namespace Simulation.Protocol
 				throw new InvalidOperationException();
 			}
 
-			_mediator = new Mediator(_client, _server);
+			_mediator = _mediator ?? new Mediator(_client, _server);
 
 			_client.SetMediator(_mediator);
 			_client.SetMediator(_mediator);
@@ -136,17 +143,15 @@ namespace Simulation.Protocol
 		public virtual void RunHandshake() => _client.RunHandshake();
 
 		public virtual void RunQueryProtocol(List<RangeQuery> input) => _client.RunSearch(input);
-
-
 	}
 
 	public abstract class AbsEventHandler
 	{
-		public event NodeVisitedEventHandler NodeVisited;
-		public event SchemeOperationEventHandler OperationOcurred;
-		public event PrimitiveUsageEventHandler PrimitiveUsed;
-		public event MessageSentEventHandler MessageSent;
-		public event ClientStorageEventHandler ClientStorage;
+		public virtual event NodeVisitedEventHandler NodeVisited;
+		public virtual event SchemeOperationEventHandler OperationOcurred;
+		public virtual event PrimitiveUsageEventHandler PrimitiveUsed;
+		public virtual event MessageSentEventHandler MessageSent;
+		public virtual event ClientStorageEventHandler ClientStorage;
 
 		protected void OnMessageSent(long size)
 		{

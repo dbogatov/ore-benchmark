@@ -42,9 +42,7 @@ namespace Simulation.Protocol.FHOPE
 				return cipher;
 			};
 
-			_mediator.SendToServer<
-				SimpleORE.MinMaxMessage<Ciphertext>, Tuple<Ciphertext, Ciphertext>,
-				FinishMessage, object>(
+			_mediator.SendToServer<Tuple<Ciphertext, Ciphertext>, object>(
 				new SimpleORE.MinMaxMessage<Ciphertext>(
 					new Tuple<Ciphertext, Ciphertext>(
 						encryptFull(Int32.MinValue),

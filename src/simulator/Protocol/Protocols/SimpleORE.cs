@@ -40,7 +40,6 @@ namespace Simulation.Protocol.SimpleORE
 		protected readonly Options<C> _options;
 		protected readonly Tree<string, C> _tree;
 
-
 		public Server(Options<C> options)
 		{
 			_options = options;
@@ -80,18 +79,18 @@ namespace Simulation.Protocol.SimpleORE
 			return new FinishMessage();
 		}
 
-		public override MR AcceptMessage<MQ, TQ, MR, TR>(MQ message)
+		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
 		{
 			switch (message)
 			{
 				case InsertMessage<C> insert:
-					return (MR)(object)AcceptMessage(insert);
+					return (IMessage<R>)AcceptMessage(insert);
 				case QueryMessage<C> query:
-					return (MR)(object)AcceptMessage(query);
+					return (IMessage<R>)AcceptMessage(query);
 				case MinMaxMessage<C> minMax:
-					return (MR)(object)AcceptMessage(minMax);
+					return (IMessage<R>)AcceptMessage(minMax);
 				default:
-					return (MR)(object)new FinishMessage();
+					return (IMessage<R>)new FinishMessage();
 			}
 		}
 	}
@@ -117,11 +116,11 @@ namespace Simulation.Protocol.SimpleORE
 			OnClientStorage(_key.GetSize());
 		}
 
-		public override MR AcceptMessage<MQ, TQ, MR, TR>(MQ message)
+		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
 		{
 			OnClientStorage(message.GetSize());
 
-			return (MR)(object)new FinishMessage();
+			return (IMessage<R>)new FinishMessage();
 		}
 
 		public override void RecordStorage(long extra = 0) => OnClientStorage(_key.GetSize() + extra);
@@ -130,9 +129,7 @@ namespace Simulation.Protocol.SimpleORE
 		{
 			foreach (var record in input)
 			{
-				_mediator.SendToServer<
-					InsertMessage<C>, C,
-					FinishMessage, object>(
+				_mediator.SendToServer<C, object>(
 					new InsertMessage<C>(
 						EncryptForConstruction(record.index)
 					)
@@ -142,9 +139,7 @@ namespace Simulation.Protocol.SimpleORE
 
 		public override void RunHandshake()
 		{
-			_mediator.SendToServer<
-				MinMaxMessage<C>, Tuple<C, C>,
-				FinishMessage, object>(
+			_mediator.SendToServer<Tuple<C, C>, object>(
 				new MinMaxMessage<C>(
 					new Tuple<C, C>(
 						_scheme.MinCiphertextValue(_key),
@@ -158,9 +153,7 @@ namespace Simulation.Protocol.SimpleORE
 		{
 			foreach (var query in input)
 			{
-				_mediator.SendToServer<
-					QueryMessage<C>, Tuple<C, C>,
-					QueryResultMessage, List<string>>(
+				_mediator.SendToServer<Tuple<C, C>,List<string>>(
 					new QueryMessage<C>(
 						new Tuple<C, C>(
 							EncryptForSearch(query.from),
