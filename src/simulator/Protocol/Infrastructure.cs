@@ -119,17 +119,17 @@ namespace Simulation.Protocol
 
 		protected Mediator _mediator;
 
-		protected void SetupProtocol()
+		protected void SetupProtocol(Mediator mediator = null)
 		{
 			if (_client == null || _server == null)
 			{
 				throw new InvalidOperationException();
 			}
 
-			_mediator = _mediator ?? new Mediator(_client, _server);
+			_mediator = mediator ?? new Mediator(_client, _server);
 
 			_client.SetMediator(_mediator);
-			_client.SetMediator(_mediator);
+			_server.SetMediator(_mediator);
 
 			_mediator.MessageSent += new MessageSentEventHandler(OnMessageSent);
 			_mediator.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);

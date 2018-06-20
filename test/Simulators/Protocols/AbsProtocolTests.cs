@@ -16,12 +16,10 @@ namespace Test.Simulators.Protocols
 		{
 			public TestProtocol(Mediator mediator)
 			{
-				_mediator = mediator;
-
 				_client = new Mock<AbsClient>().Object;
 				_server = new Mock<AbsParty>().Object;
 
-				SetupProtocol();
+				SetupProtocol(mediator);
 			}
 		}
 
