@@ -69,20 +69,5 @@ namespace Simulation
 
 			return result;
 		}
-
-		protected string PrintPrimitiveUsageConcise()
-		{
-			string result = "";
-
-			var primitives = Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v);
-
-			foreach (var primitive in primitives)
-			{
-				result += $"{TotalPrimitiveOperations[primitive]},{TotalPrimitiveOperations[primitive] / SchemeOperations},";
-				result += $"{PurePrimitiveOperations[primitive]},{PurePrimitiveOperations[primitive] / SchemeOperations},";
-			}
-
-			return result;
-		}
 	}
 }
