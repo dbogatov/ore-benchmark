@@ -100,7 +100,7 @@ system-protocol-tests:
   - ./tools/simulation/protocol.rb
   artifacts:
     paths:
-      - results/protocol.csv
+      - results/protocol.json
   dependencies:
   - build-app
   tags:
@@ -117,7 +117,7 @@ system-schemes-tests:
   - ./tools/simulation/pure-schemes.rb
   artifacts:
     paths:
-      - results/schemes.csv
+      - results/schemes.json
   dependencies:
   - build-app
   tags:
