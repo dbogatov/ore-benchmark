@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ORESchemes.Shared.Primitives;
+﻿using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared
@@ -20,6 +18,55 @@ namespace ORESchemes.Shared
 	}
 
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
+
+	public interface IGetSize
+	{
+		/// <summary>
+		/// Returns the size of the entity in bits (not bytes)
+		/// </summary>
+		int GetSize();
+	}
+
+	/// <summary>
+	/// A wrapper around int64 that supports IGetSize
+	/// </summary>
+	public class OPECipher : IGetSize
+	{
+		public long value;
+
+		public OPECipher(long value) => this.value = value;
+		public OPECipher() { }
+
+		public int GetSize() => sizeof(long);
+
+		public static bool operator <(OPECipher a, OPECipher b) => a.value < b.value;
+		public static bool operator >(OPECipher a, OPECipher b) => a.value > b.value;
+		public static bool operator <=(OPECipher a, OPECipher b) => a.value <= b.value;
+		public static bool operator >=(OPECipher a, OPECipher b) => a.value >= b.value;
+		public static bool operator ==(OPECipher a, OPECipher b) => a.value == b.value;
+		public static bool operator !=(OPECipher a, OPECipher b) => a.value != b.value;
+
+		public override int GetHashCode() => value.GetHashCode();
+		public override bool Equals(object obj) => value.Equals(obj);
+
+		public static OPECipher FromInt(int from) => new OPECipher { value = from };
+		public int ToInt() => (int)value;
+	}
+
+	/// <summary>
+	/// A warpper around byte[] that supports IGetSize
+	/// </summary>
+	public class BytesKey : IGetSize
+	{
+		public byte[] value = new byte[] { };
+
+		public BytesKey() { }
+		public BytesKey(byte[] value) => this.value = value;
+
+		public int GetSize() => value.Length * sizeof(byte) * 8;
+	}
+
+
 
 	/// <summary>
 	/// Base functionality for ORE operations
@@ -43,6 +90,8 @@ namespace ORESchemes.Shared
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	/// <typeparam name="K">Key type</typeparam>
 	public interface IOREEncryption<C, K> : IBaseORE
+		where C : IGetSize
+		where K : IGetSize
 	{
 		/// <summary>
 		/// Performs some work on initializing the scheme
@@ -156,7 +205,10 @@ namespace ORESchemes.Shared
 	/// </summary>
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	/// <typeparam name="K">Key type</typeparam>
-	public interface IOREScheme<C, K> : IOREEncryption<C, K>, IOREComparator<C> { }
+	public interface IOREScheme<C, K> : IOREEncryption<C, K>, IOREComparator<C>
+		where C : IGetSize
+		where K : IGetSize
+	{ }
 
 	/// <summary>
 	/// A default implementation of the interface
@@ -164,6 +216,8 @@ namespace ORESchemes.Shared
 	/// </summary>
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	public abstract class AbsOREScheme<C, K> : IOREScheme<C, K>
+		where C : IGetSize
+		where K : IGetSize
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
 
@@ -276,46 +330,47 @@ namespace ORESchemes.Shared
 	/// Generic implementation of OPE scheme
 	/// To be derived by OPE schemes
 	/// </summary>
-	public abstract class AbsOPEScheme<K> : AbsOREScheme<long, K>
+	public abstract class AbsOPEScheme<K> : AbsOREScheme<OPECipher, K>
+		where K : IGetSize
 	{
 		public AbsOPEScheme(byte[] seed) : base(seed) { }
 
-		public override bool IsEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsEqual(OPECipher ciphertextOne, OPECipher ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
 			return ciphertextOne == ciphertextTwo;
 		}
 
-		public override bool IsGreater(long ciphertextOne, long ciphertextTwo)
+		public override bool IsGreater(OPECipher ciphertextOne, OPECipher ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
 			return ciphertextOne > ciphertextTwo;
 		}
 
-		public override bool IsGreaterOrEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsGreaterOrEqual(OPECipher ciphertextOne, OPECipher ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
 			return ciphertextOne >= ciphertextTwo;
 		}
 
-		public override bool IsLess(long ciphertextOne, long ciphertextTwo)
+		public override bool IsLess(OPECipher ciphertextOne, OPECipher ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
 			return ciphertextOne < ciphertextTwo;
 		}
 
-		public override bool IsLessOrEqual(long ciphertextOne, long ciphertextTwo)
+		public override bool IsLessOrEqual(OPECipher ciphertextOne, OPECipher ciphertextTwo)
 		{
 			OnOperation(SchemeOperation.Comparison);
 
 			return ciphertextOne <= ciphertextTwo;
 		}
 
-		protected override bool Compare(long ciphertextOne, long ciphertextTwo) => ciphertextOne < ciphertextTwo;
+		protected override bool Compare(OPECipher ciphertextOne, OPECipher ciphertextTwo) => ciphertextOne.value < ciphertextTwo.value;
 	}
 
 	/// <summary>
@@ -324,6 +379,8 @@ namespace ORESchemes.Shared
 	/// To be derived by ORE schemes
 	/// </summary>
 	public abstract class AbsORECmpScheme<C, K> : AbsOREScheme<C, K>
+		where C : IGetSize
+		where K : IGetSize
 	{
 		public AbsORECmpScheme(byte[] seed) : base(seed) { }
 

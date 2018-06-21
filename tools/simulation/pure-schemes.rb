@@ -9,8 +9,8 @@ def run(input, scheme, seed, lewioren, cryptdbrange)
   puts ">>> #{cmd}"
   output = `#{cmd}`
 
-  open('../../results/schemes.csv', 'a') do |f|
-    f << output
+  open('../../results/schemes.json', 'a') do |f|
+    f << "\"#{cmd}\": #{output},"
   end
 
   $CHILD_STATUS.success?
@@ -27,36 +27,13 @@ puts `#{build}`
 
 success = true
 
-`rm -f ../../results/schemes.csv`
+`rm -f ../../results/schemes.json`
 `mkdir -p ../../results/`
 
-`touch ../../results/schemes.csv`
+`touch ../../results/schemes.json`
 
-names = []
-
-names.push('Seed')
-names.push('LewiORE N')
-names.push('CryptDB Range')
-names.push('Scheme')
-
-%w[Encryption Decryption Comparison].each do |operation|
-  names.push("#{operation} operations number")
-
-  %w[PRF PRG Hash LFPRF PRP HGSampler UniformSampler BinomialSampler PPH].each do |primitive|
-    %w[impure pure].each do |purity|
-      %w[total average].each do |number|
-        names.push("#{operation} #{primitive} usage #{number} (#{purity})")
-      end
-    end
-  end
-
-  names.push("#{operation} observable time (ms)")
-  names.push("#{operation} CPU time (ms)")
-end
-
-open('../../results/schemes.csv', 'a') do |f|
-  f << names.join(',')
-  f << "\n"
+open('../../results/schemes.json', 'a') do |f|
+  f << '{'
 end
 
 %w[fhope lewiore cryptdb practicalore noencryption].each do |scheme|
@@ -77,7 +54,11 @@ end
   end
 end
 
-puts 'Results are in results/schemes.csv in you current directory'
+open('../../results/schemes.json', 'a') do |f|
+  f << '"" : {}}'
+end
+
+puts 'Results are in results/schemes.json in you current directory'
 
 `rm -rf ../../src/**/dist`
 

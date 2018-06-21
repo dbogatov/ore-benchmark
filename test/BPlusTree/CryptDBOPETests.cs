@@ -1,11 +1,12 @@
 using System;
 using ORESchemes.CryptDBOPE;
+using ORESchemes.Shared;
 using Xunit;
 
 namespace Test.BPlusTree
 {
 	[Trait("Category", "Integration")]
-	public class CryptDBOPE : AbsBPlusTreeTests<long, byte[]>
+	public class CryptDBOPE : AbsBPlusTreeTests<OPECipher, BytesKey>
 	{
 		public CryptDBOPE() : base(
 			new CryptDBScheme(

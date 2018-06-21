@@ -7,7 +7,11 @@
 		<ProjectReference Include="..\ore-schemes\fh-ope\fh-ope.csproj" />
 		<ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 </Project>

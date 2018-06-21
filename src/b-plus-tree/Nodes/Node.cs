@@ -70,7 +70,7 @@ namespace DataStructures.BPlusTree
 				Initialize();
 
 				_id = options.GetNextId();
-				
+
 				options.OnVisit(this.GetHashCode());
 			}
 
@@ -93,18 +93,22 @@ namespace DataStructures.BPlusTree
 
 				return
 					children.Count > 0 ?
-					children.Select(ch => ch.index).Aggregate((acc, next) =>
-					{
-						acc = _options.Comparator.IsGreater(next, acc) ? next : acc;
-						return acc;
-					}) :
+					children.Last().index :
 					_options.MaxCipher;
 			}
 
 			/// <summary>
-			/// Reflects the Tree method with the same name
+			/// Gets a value of a record with given key
 			/// </summary>
-			public virtual bool TryGet(C key, out T value)
+			/// <param name="key">Key to search for</param>
+			/// <param name="value">Value to be returned</param>
+			/// <param name="checkValue">
+			/// Optional flag that if unset will skip the check of data node's
+			/// key being equal to requested key.
+			/// Should be unset when called from TryRange method.
+			/// </param>
+			/// <returns>True if element is found and false otherwise</returns>
+			public virtual bool TryGet(C key, out T value, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -204,7 +208,7 @@ namespace DataStructures.BPlusTree
 				// Merge ocurred
 				if (result.orphan != null)
 				{
-					children.Remove(children.First(ch => ch.node == result.orphan));
+					children.RemoveAll(ch => ch.node == result.orphan);
 
 					this.RebuildIndices(true);
 				}

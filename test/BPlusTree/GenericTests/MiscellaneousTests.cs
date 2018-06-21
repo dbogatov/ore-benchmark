@@ -1,7 +1,6 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,11 +32,7 @@ namespace Test.BPlusTree
 		public void MalformedOptionsTest(int branches)
 		{
 			Assert.Throws<ArgumentException>(
-				() => new Options<C>(
-					_scheme,
-					_scheme.MinCiphertextValue(_key),
-					_scheme.MaxCiphertextValue(_key),
-					branches)
+				() => new Options<C>(_scheme, branches)
 			);
 		}
 

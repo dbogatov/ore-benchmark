@@ -13,13 +13,15 @@
 			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.0/cli.dll",
 			"args": [
 				"--dataset",
-				"./data/exact-queries.txt",
+				"./data/dataset.txt",
 				"--ore-scheme",
-				"LewiORE",
+				"fhope",
 				"--seed",
 				"782797714",
 				"-v",
-				"scheme"
+				"protocol",
+				"--queries",
+				"./data/range-2-queries.txt"
 			],
 			"cwd": "${workspaceFolder}",
 			// For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

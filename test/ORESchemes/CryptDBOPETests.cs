@@ -23,7 +23,7 @@ namespace Test.ORESchemes
 
 			scheme.Init();
 
-			byte[] key = scheme.KeyGen();
+			BytesKey key = scheme.KeyGen();
 
 			Assert.Throws<ArgumentException>(
 				() => scheme.Encrypt((int)(Int16.MinValue - 10), key)
@@ -34,11 +34,11 @@ namespace Test.ORESchemes
 			);
 
 			Assert.Throws<ArgumentException>(
-				() => scheme.Decrypt((int)(Int16.MinValue - 10), key)
+				() => scheme.Decrypt(new OPECipher(Int16.MinValue - 10), key)
 			);
 
 			Assert.Throws<ArgumentException>(
-				() => scheme.Decrypt((int)(Int16.MaxValue + 10), key)
+				() => scheme.Decrypt(new OPECipher(Int16.MaxValue + 10), key)
 			);
 		}
 
@@ -60,14 +60,14 @@ namespace Test.ORESchemes
 
 			scheme.Init();
 
-			byte[] key = scheme.KeyGen();
+			BytesKey key = scheme.KeyGen();
 
 			for (int i = 0; i < _runs * 100; i++)
 			{
 				var plaintext = generator.Next(Int16.MinValue, Int16.MaxValue);
 
 				var ciphertext = scheme.Encrypt(plaintext, key);
-				Assert.Equal(plaintext, ciphertext);
+				Assert.Equal(plaintext, ciphertext.value);
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace Test.ORESchemes
 
 			scheme.Init();
 
-			byte[] key = scheme.KeyGen();
+			BytesKey key = scheme.KeyGen();
 
 			var from = scheme.Encrypt(5960, key);
 			var to = scheme.Encrypt(6260, key);
@@ -123,7 +123,7 @@ namespace Test.ORESchemes
 		protected override void SetParameters() => rangeBits = 32;
 	}
 
-	public abstract class AbsCryptDBOPETests : GenericORETests<long, byte[]>
+	public abstract class AbsCryptDBOPETests : GenericORETests<OPECipher, BytesKey>
 	{
 		protected int rangeBits = 48;
 
@@ -143,26 +143,26 @@ namespace Test.ORESchemes
 		{
 			_scheme.Init();
 
-			byte[] key = _scheme.KeyGen();
+			BytesKey key = _scheme.KeyGen();
 
-			long from = 0;
-			long to = 0;
+			OPECipher from = new OPECipher(0);
+			OPECipher to = new OPECipher(0);
 
 			for (int i = 0; i < 10; i++)
 			{
 				from = _scheme.Encrypt(50 + i, key);
 				to = _scheme.Encrypt(51 + i, key);
 
-				if (to - from > 1)
+				if (to.value - from.value > 1)
 				{
 					break;
 				}
 			}
 
-			Assert.True(to - from > 1);
+			Assert.True(to.value - from.value > 1);
 
 			Assert.Throws<ArgumentException>(
-				() => _scheme.Decrypt(from + 1, key)
+				() => _scheme.Decrypt(new OPECipher(from.value + 1), key)
 			);
 		}
 	}

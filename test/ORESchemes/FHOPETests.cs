@@ -1,19 +1,51 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using ORESchemes.FHOPE;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 using Xunit;
 
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class FHOPETests : GenericORETests<Ciphertext, State>
+	public class PerfectFHOPETests : AbsFHOPETests
 	{
+		public override double GetP() => 0;
+	}
+
+	[Trait("Category", "Unit")]
+	public class ImperfectFHOPETests : AbsFHOPETests
+	{
+		public override double GetP() => 0.5;
+
+		[Fact]
+		public void PerfectVsImperfect()
+		{
+			Random random = new Random(SEED);
+
+			var key = _scheme.KeyGen();
+
+			var perfect = new FHOPEScheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
+			var pKey = perfect.KeyGen();
+
+			for (int i = 0; i < _runs; i++)
+			{
+				var plaintext = random.Next(0, _runs / 10);
+				_scheme.Encrypt(plaintext, key);
+				perfect.Encrypt(plaintext, pKey);
+			}
+
+			Assert.True(key.GetSize() < pKey.GetSize());
+		}
+	}
+
+	public abstract class AbsFHOPETests : GenericORETests<Ciphertext, State>
+	{
+		public abstract double GetP();
+
 		protected override void SetScheme()
 		{
-			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, _entropy);
+			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, 10, GetP(), _entropy);
 
 			_expectedEvents = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
@@ -67,22 +99,14 @@ namespace Test.ORESchemes
 			);
 		}
 
-		#pragma warning disable xUnit1026
+#pragma warning disable xUnit1026
 		[Theory(Skip = "Not applicable")]
 		[InlineData(-10, -10)]
-		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) {}
+		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) { }
 
 		[Theory]
-		[InlineData(0, 0)]
-		[InlineData(1, 1)]
-		[InlineData(-1, -1)]
-		[InlineData(-1, 1)]
-		[InlineData(1, -1)]
-		[InlineData(2, 1)]
-		[InlineData(1, 2)]
-		[InlineData(-2, -1)]
-		[InlineData(-1, -2)]
-		public void FHOPEOrderCorrectnessTest(int plaintextOne, int plaintextTwo)
+		[ClassData(typeof(OrderCorrectnessTestData))]
+		public void FHOPEOrderCorrectnessTest(int plaintextOne, int plaintextTwo, bool configureFirst)
 		{
 			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
 
@@ -109,16 +133,48 @@ namespace Test.ORESchemes
 						continue;
 					}
 
-					ciphertextOne = ConfigureCiphertext(ciphertextOne, key);
-					ciphertextTwo = ConfigureCiphertext(ciphertextTwo, key);
+					if (configureFirst)
+					{
+						ciphertextOne = ConfigureCiphertext(ciphertextOne, key);
+					}
+					else
+					{
+						ciphertextTwo = ConfigureCiphertext(ciphertextTwo, key);
+					}
 
 					Assert.Equal(pOne > pTwo, scheme.IsGreater(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne < pTwo, scheme.IsLess(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne >= pTwo, scheme.IsGreaterOrEqual(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne <= pTwo, scheme.IsLessOrEqual(ciphertextOne, ciphertextTwo));
 					Assert.Equal(pOne == pTwo, scheme.IsEqual(ciphertextOne, ciphertextTwo));
+
 				} while (false);
 			}
 		}
+
+		private class OrderCorrectnessTestData : IEnumerable<object[]>
+		{
+			public IEnumerator<object[]> GetEnumerator()
+			{
+				for (int i = -2; i <= 2; i++)
+				{
+					for (int j = -2; j <= 2; j++)
+					{
+						for (int k = 0; k < 2; k++)
+						{
+							if (i * j != 0 && Math.Abs(i) != Math.Abs(j))
+							{
+								yield return new object[] { i, j, k == 0 };
+							}
+						}
+					}
+				}
+			}
+
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		}
+
+		public override int KeySize() => 0;
+		public override int CipherSize() => 24;
 	}
 }

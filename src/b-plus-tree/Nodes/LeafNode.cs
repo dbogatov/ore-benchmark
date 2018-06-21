@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,7 +31,7 @@ namespace DataStructures.BPlusTree
 						found = true;
 
 						T value;
-						children[i].node.TryGet(children[i].index, out value);
+						children[i].node.TryGet(children[i].index, out value, checkValue: false);
 						values.Add(value);
 					}
 				}
@@ -73,7 +72,7 @@ namespace DataStructures.BPlusTree
 						found = true;
 
 						T value;
-						children[i].node.TryGet(children[i].index, out value);
+						children[i].node.TryGet(children[i].index, out value, checkValue: false);
 						values.Add(value);
 					}
 					else

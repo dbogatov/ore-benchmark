@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.Shared.Primitives.Hash

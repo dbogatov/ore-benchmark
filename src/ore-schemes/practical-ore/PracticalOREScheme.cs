@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.PracticalORE
 {
-	public class Ciphertext
+	public class Ciphertext : IGetSize
 	{
 		public List<int> tuples = new List<int>();
 		public byte[] encrypted;
+
+		public int GetSize() => tuples.Count * 2;
 	}
 
-	public class PracticalOREScheme : AbsOREScheme<Ciphertext, byte[]>
+	public class PracticalOREScheme : AbsOREScheme<Ciphertext, BytesKey>
 	{
 		private readonly int M = 4;
 		private readonly IPRF F;
@@ -32,25 +31,25 @@ namespace ORESchemes.PracticalORE
 			G.NextBytes(IV);
 		}
 
-		public override int Decrypt(Ciphertext ciphertext, byte[] key)
+		public override int Decrypt(Ciphertext ciphertext, BytesKey key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
 			return BitConverter.ToInt32(
 				F.InversePRF(
-					key,
+					key.value,
 					ciphertext.encrypted
 				), 0
 			);
 		}
 
-		public override Ciphertext Encrypt(int plaintext, byte[] key)
+		public override Ciphertext Encrypt(int plaintext, BytesKey key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
 			var result = new Ciphertext();
 			result.encrypted = F.PRF(
-				key,
+				key.value,
 				BitConverter.GetBytes(plaintext),
 				IV
 			);
@@ -64,7 +63,7 @@ namespace ORESchemes.PracticalORE
 				// https://stackoverflow.com/a/7471843/1644554
 
 				var prfEnc = F.PRF(
-					key,
+					key.value,
 					BitConverter.GetBytes(msg),
 					IV
 				);
@@ -99,14 +98,14 @@ namespace ORESchemes.PracticalORE
 			return false;
 		}
 
-		public override byte[] KeyGen()
+		public override BytesKey KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
 			byte[] key = new byte[ALPHA / 8];
 			G.NextBytes(key);
 
-			return key;
+			return new BytesKey(key);
 		}
 	}
 }

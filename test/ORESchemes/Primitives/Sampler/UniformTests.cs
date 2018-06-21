@@ -1,11 +1,9 @@
 
 using System;
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared;
 using Xunit;
 using System.Linq;
-using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {

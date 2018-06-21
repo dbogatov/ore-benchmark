@@ -3,7 +3,6 @@ using Xunit;
 using DataStructures.BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared;
 
 namespace Test.BPlusTree
 {

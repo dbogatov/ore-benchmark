@@ -1,9 +1,7 @@
 ﻿using System;
-using Simulation.BPlusTree;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
-using DataStructures.BPlusTree;
-using Simulation;
+using Newtonsoft.Json;
 
 namespace CLI
 {
@@ -31,11 +29,23 @@ namespace CLI
 				System.Console.WriteLine(output);
 			}
 		}
+
+		/// <summary>
+		/// Produces JSON string from report and extra parameters
+		/// </summary>
+		protected string JsonReport(object report, object parameters) =>
+			JsonConvert.SerializeObject(
+				new {
+					Report = report,
+					Parameters = parameters,
+					Version = GlobalVar.Version
+				}
+			);
 	}
 
 	[Command(Name = "ore-benchamark", Description = "An ORE schemes benchmark", ThrowOnUnexpectedArgument = true)]
 	[VersionOptionFromMember("--version", MemberName = nameof(Version))]
-	[Subcommand("tree", typeof(BPlusTreeCommand))]
+	[Subcommand("protocol", typeof(ProtocolCommand))]
 	[Subcommand("scheme", typeof(PureSchemeCommand))]
 	public class SimulatorCommand : CommandBase
 	{

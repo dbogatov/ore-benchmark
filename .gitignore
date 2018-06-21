@@ -13,3 +13,6 @@ coverage-hits.txt
 coverage-html/
 
 results/
+
+tools/simulation/config
+src/cli/Version.cs

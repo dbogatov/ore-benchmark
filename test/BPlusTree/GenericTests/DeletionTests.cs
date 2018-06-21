@@ -1,7 +1,6 @@
 using System;
 using Xunit;
 using DataStructures.BPlusTree;
-using ORESchemes.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -157,12 +156,7 @@ namespace Test.BPlusTree
 						.Distinct()
 						.ToList();
 				var tree = ConstructTree(
-					new Options<C>(
-						_scheme,
-						_scheme.MinCiphertextValue(_key),
-						_scheme.MaxCiphertextValue(_key),
-						i
-					),
+					OptionsWithBranching(i),
 					input
 				);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ORESchemes.Shared;
 
 namespace DataStructures.BPlusTree
 {
@@ -44,12 +43,13 @@ namespace DataStructures.BPlusTree
 		/// <param name="start">Key for start of the range</param>
 		/// <param name="end">Key for end of the range</param>
 		/// <param name="values">The list to put found value to</param>
+		/// <param name="checkRanges">If unset that ranges check would be skipped</param>
 		/// <returns>True if at least element found, false otherwise</returns>
-		public bool TryRange(C start, C end, out List<T> values)
+		public bool TryRange(C start, C end, out List<T> values, bool checkRanges = true)
 		{
 			values = new List<T>();
 
-			if (_options.Comparator.IsGreaterOrEqual(start, end))
+			if (checkRanges && _options.Comparator.IsGreaterOrEqual(start, end))
 			{
 				throw new ArgumentException("Improper range");
 			}

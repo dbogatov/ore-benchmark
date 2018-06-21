@@ -2,14 +2,13 @@ using System;
 using Xunit;
 using ORESchemes.Shared;
 using System.Linq;
-using System.Threading;
 using System.Collections.Generic;
 using ORESchemes.Shared.Primitives;
 
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class NoEncryptionTests : GenericORETests<long, object>
+	public class NoEncryptionTests : GenericORETests<OPECipher, BytesKey>
 	{
 		protected override void SetScheme()
 		{
@@ -54,5 +53,7 @@ namespace Test.ORESchemes
 			Assert.Equal(0, primitiveUsage.Values.Sum());
 			Assert.Equal(0, purePrimitiveUsage.Values.Sum());
 		}
+		
+		public override int KeySize() => 0;
 	}
 }

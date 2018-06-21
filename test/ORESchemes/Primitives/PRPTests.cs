@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRP;
 using Xunit;

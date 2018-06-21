@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.Sampler;
 using ORESchemes.Shared.Primitives.TapeGen;
 
@@ -11,7 +10,7 @@ namespace ORESchemes.CryptDBOPE
 	/// <summary>
 	/// Implemented as in https://eprint.iacr.org/2012/624.pdf
 	/// </summary>
-	public class CryptDBScheme : AbsOPEScheme<byte[]>
+	public class CryptDBScheme : AbsOPEScheme<BytesKey>
 	{
 		private struct Range
 		{
@@ -78,11 +77,11 @@ namespace ORESchemes.CryptDBOPE
 			_target.To = targetTo.ToULong();
 		}
 
-		public override int Decrypt(long ciphertext, byte[] key)
+		public override int Decrypt(OPECipher ciphertext, BytesKey key)
 		{
 			OnOperation(SchemeOperation.Decrypt);
 
-			ulong c = ciphertext.ToULong();
+			ulong c = ciphertext.value.ToULong();
 
 			if (c > _target.To || c < _target.From)
 			{
@@ -110,7 +109,7 @@ namespace ORESchemes.CryptDBOPE
 
 					input = Concatenate(domain, target, true, (ulong)m);
 
-					T = new TapeGen(key, input);
+					T = new TapeGen(key.value, input);
 
 					S = SamplerFactory.GetSampler(T);
 					ulong uniform = S.Uniform(target.From, target.To);
@@ -127,7 +126,7 @@ namespace ORESchemes.CryptDBOPE
 
 				input = Concatenate(domain, target, false, y);
 
-				T = new TapeGen(key, input);
+				T = new TapeGen(key.value, input);
 
 				S = SamplerFactory.GetSampler(T);
 				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
@@ -154,7 +153,7 @@ namespace ORESchemes.CryptDBOPE
 			throw new InvalidOperationException("Should never reach this.");
 		}
 
-		public override long Encrypt(int plaintext, byte[] key)
+		public override OPECipher Encrypt(int plaintext, BytesKey key)
 		{
 			OnOperation(SchemeOperation.Encrypt);
 
@@ -184,17 +183,17 @@ namespace ORESchemes.CryptDBOPE
 				{
 					input = Concatenate(domain, target, true, (ulong)m);
 
-					T = new TapeGen(key, input);
+					T = new TapeGen(key.value, input);
 
 					S = SamplerFactory.GetSampler(T);
 					ulong uniform = S.Uniform(target.From, target.To);
 
-					return uniform.ToLong();
+					return new OPECipher(uniform.ToLong());
 				}
 
 				input = Concatenate(domain, target, false, y);
 
-				T = new TapeGen(key, input);
+				T = new TapeGen(key.value, input);
 
 				S = SamplerFactory.GetSampler(T);
 				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
@@ -254,14 +253,14 @@ namespace ORESchemes.CryptDBOPE
 			return result;
 		}
 
-		public override byte[] KeyGen()
+		public override BytesKey KeyGen()
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
 			byte[] key = new byte[ALPHA / 8];
 			G.NextBytes(key);
 
-			return key;
+			return new BytesKey(key);
 		}
 	}
 }
