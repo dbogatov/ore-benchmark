@@ -8,6 +8,7 @@ cd "${0%/*}"
 CWD=$(pwd)
 
 SIMULATION=""
+SPACE="denis-dolores-space"
 
 usage() { echo "Usage: $0 [-p -s]" 1>&2; exit 1; }
 
@@ -34,6 +35,6 @@ then
 	exit 1
 fi
 
-s3cmd -c config put ./../../results/$SIMULATION.json s3://$SPACE/public/ore-sim-results/$(date +"%Y-%m-%d_%H-%M-%S").json
+s3cmd -c config put ./../../results/$SIMULATION.json s3://$SPACE/public/ore-sim-results/$SIMULATION/$(date +"%Y-%m-%d_%H-%M-%S").json
 
 echo "Done!"
