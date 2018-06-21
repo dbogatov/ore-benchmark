@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using DataStructures.BPlusTree;
 using ORESchemes.FHOPE;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol.FHOPE
 {

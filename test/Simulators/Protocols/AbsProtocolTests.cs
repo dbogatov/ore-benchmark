@@ -1,9 +1,7 @@
 using Simulation.Protocol;
 using Xunit;
 using Moq;
-using Moq.Protected;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using System.Linq;
 

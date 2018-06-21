@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ORESchemes.Shared.Primitives;
+﻿using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared

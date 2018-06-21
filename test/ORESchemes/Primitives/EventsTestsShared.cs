@@ -3,7 +3,6 @@ using ORESchemes.Shared.Primitives;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using ORESchemes.Shared.Primitives.PRF;
 
 namespace Test.ORESchemes.Primitives
 {

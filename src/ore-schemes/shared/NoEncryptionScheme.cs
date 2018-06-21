@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace ORESchemes.Shared
+﻿namespace ORESchemes.Shared
 {
 	public class NoEncryptionScheme : AbsOPEScheme<BytesKey>
 	{

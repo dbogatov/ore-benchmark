@@ -1,10 +1,6 @@
 using System;
 using Xunit;
 using Simulation;
-using System.Linq;
-using ORESchemes.Shared;
-using ORESchemes;
-using System.Collections.Generic;
 
 namespace Test.ORESchemes
 {

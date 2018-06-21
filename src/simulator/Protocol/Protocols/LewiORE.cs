@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using DataStructures.BPlusTree;
 using ORESchemes.LewiORE;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol.LewiORE
 {

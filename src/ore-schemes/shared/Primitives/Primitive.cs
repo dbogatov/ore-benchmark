@@ -1,11 +1,9 @@
 namespace ORESchemes.Shared.Primitives
 {
-
 	public enum Primitive
 	{
 		PRF, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal
 	}
-
 
 	public delegate void PrimitiveUsageEventHandler(Primitive primitive, bool impure);
 

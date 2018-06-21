@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.Sampler;
 using ORESchemes.Shared.Primitives.TapeGen;
 

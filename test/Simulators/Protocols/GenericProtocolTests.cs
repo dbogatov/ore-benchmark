@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataStructures.BPlusTree;
-using ORESchemes.CryptDBOPE;
-using ORESchemes.PracticalORE;
-using ORESchemes.Shared;
 using Simulation.Protocol;
-using Simulation.Protocol.SimpleORE;
 using Xunit;
 
 namespace Test.Simulators.Protocols.Integration

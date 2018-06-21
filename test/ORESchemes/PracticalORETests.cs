@@ -1,4 +1,3 @@
-using System;
 using ORESchemes.PracticalORE;
 using ORESchemes.Shared;
 using Xunit;

@@ -5,7 +5,6 @@ using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared;
 using Xunit;
 using ORESchemes.Shared.Primitives.Hash;
-using System.Linq;
 
 namespace Test.ORESchemes.Primitives.Hash
 {

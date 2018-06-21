@@ -2,7 +2,6 @@ using System;
 using Xunit;
 using ORESchemes.Shared;
 using System.Linq;
-using System.Threading;
 using System.Collections.Generic;
 using ORESchemes.Shared.Primitives;
 
