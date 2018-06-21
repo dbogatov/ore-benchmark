@@ -37,7 +37,8 @@ namespace CLI
 			JsonConvert.SerializeObject(
 				new {
 					Report = report,
-					Parameters = parameters
+					Parameters = parameters,
+					Version = GlobalVar.Version
 				}
 			);
 	}
