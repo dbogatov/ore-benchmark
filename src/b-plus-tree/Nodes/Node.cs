@@ -98,8 +98,16 @@ namespace DataStructures.BPlusTree
 			}
 
 			/// <summary>
-			/// Reflects the Tree method with the same name
+			/// Gets a value of a record with given key
 			/// </summary>
+			/// <param name="key">Key to search for</param>
+			/// <param name="value">Value to be returned</param>
+			/// <param name="checkValue">
+			/// Optional flag that if unset will skip the check of data node's
+			/// key being equal to requested key.
+			/// Should be unset when called from TryRange method.
+			/// </param>
+			/// <returns>True if element is found and false otherwise</returns>
 			public virtual bool TryGet(C key, out T value, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());

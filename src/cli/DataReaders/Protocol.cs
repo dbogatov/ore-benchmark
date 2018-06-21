@@ -6,14 +6,14 @@ using Simulation.Protocol;
 
 namespace CLI.DataReaders
 {
-	public class BPlusTree
+	public class Protocol
 	{
 		public Inputs Inputs = new Inputs();
 
 		/// <summary>
 		/// Immediately populates its local lists with the data read from files
 		/// </summary>
-		public BPlusTree(string dataset, string queries)
+		public Protocol(string dataset, string queries)
 		{
 			using (StreamReader sr = File.OpenText(dataset))
 			{

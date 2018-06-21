@@ -32,6 +32,9 @@ namespace CLI
 			}
 		}
 
+		/// <summary>
+		/// Produces JSON string from report and extra parameters
+		/// </summary>
 		protected string JsonReport(object report, object parameters) =>
 			JsonConvert.SerializeObject(
 				new {

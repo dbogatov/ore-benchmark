@@ -6,6 +6,7 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation
 {
+	/// <typeparam name="S">Stages enum</typeparam>
 	public abstract class AbsReport<S> where S : Enum
 	{
 		public AbsReport()
@@ -49,6 +50,9 @@ namespace Simulation
 		public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
 		public TimeSpan CPUTime { get; set; } = new TimeSpan(0);
 
+		/// <summary>
+		/// Returns a string representing readable printout of primitive usage
+		/// </summary>
 		protected string PrintPrimitiveUsage()
 		{
 			string result = "";

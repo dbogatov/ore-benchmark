@@ -355,6 +355,9 @@ namespace ORESchemes.FHOPE
 				}
 			}
 
+			/// <summary>
+			/// Returns a size of a node with its subtree in bytes
+			/// </summary>
 			public ValueTuple<int, int, bool> GetSize()
 			{
 				int size = sizeof(int);
@@ -386,6 +389,9 @@ namespace ORESchemes.FHOPE
 				return (size, number, cluster);
 			}
 
+			/// <summary>
+			/// Computes a point between min and max rounding up
+			/// </summary>
 			private ulong DivisionHelper(ulong min, ulong max)
 			{
 				ulong diff = max - min;

@@ -84,7 +84,9 @@ namespace Simulation.PureSchemes
 				{
 					int length = _dataset.Count;
 
-					// TODO: This hack will be fixed in #30
+					// This is a necessary hack because FH-OPE requires min and max 
+					// ciphers for comparison which can be computed only when all
+					// plaintexts got encrypted
 					if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
 					{
 						var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;

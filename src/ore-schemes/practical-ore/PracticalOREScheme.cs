@@ -14,7 +14,7 @@ namespace ORESchemes.PracticalORE
 		public List<int> tuples = new List<int>();
 		public byte[] encrypted;
 
-		public int GetSize() => tuples.Count * 2; // + encrypted.Length * sizeof(byte) * 8;
+		public int GetSize() => tuples.Count * 2;
 	}
 
 	public class PracticalOREScheme : AbsOREScheme<Ciphertext, BytesKey>

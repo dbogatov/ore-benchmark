@@ -7,6 +7,7 @@ using System.Linq;
 using ORESchemes.Shared.Primitives;
 namespace Simulation
 {
+	/// <typeparam name="S">Stages enum</typeparam>
 	public abstract class AbsSimulator<S> where S : Enum
 	{
 		// Cache structures
@@ -34,6 +35,9 @@ namespace Simulation
 			ClearTrackers();
 		}
 
+		/// <summary>
+		/// Zero all trackers
+		/// </summary>
 		protected void ClearTrackers()
 		{
 			_visited = 0;
@@ -129,6 +133,10 @@ namespace Simulation
 			}
 		}
 
+		/// <summary>
+		/// Handler for the event that message of certain size was sent
+		/// </summary>
+		/// <param name="size">Size of the message</param>
 		protected void RecordCommunivcationVolume(long size)
 		{
 			_communicationVolume = new Tuple<long, long>(
@@ -138,6 +146,10 @@ namespace Simulation
 			_rounds++;
 		}
 
+		/// <summary>
+		/// Handler for the event that client storage changed
+		/// </summary>
+		/// <param name="size">Current value of client storage</param>
 		protected void RecordClientStorage(long size) => _maxClientStorage = Math.Max(_maxClientStorage, size);
 
 		/// <summary>

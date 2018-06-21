@@ -189,6 +189,9 @@ namespace ORESchemes.FHOPE
 			}
 		}
 
+		/// <summary>
+		/// Throws exception if ciphertext's min or max are not set.
+		/// </summary>
 		private void CiphertextCheck(Ciphertext cipher)
 		{
 			if (!cipher.min.HasValue || !cipher.max.HasValue)

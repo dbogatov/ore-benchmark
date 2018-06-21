@@ -6,27 +6,63 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol
 {
+	/// <summary>
+	/// Encapsulates a party of a protocol capable of exchanging messages.
+	/// Eq. client and server
+	/// </summary>
 	public abstract class AbsParty : AbsEventHandler
 	{
 		protected Mediator _mediator;
 
+		/// <summary>
+		/// Sets a link to mediator through which messages should be exchanged
+		/// </summary>
 		public void SetMediator(Mediator mediator) => _mediator = mediator;
 
+		/// <summary>
+		/// Generic routine responsible for reacting to messages
+		/// </summary>
+		/// <param name="message">Message to react to</param>
+		/// <typeparam name="Q">Type of request message's content</typeparam>
+		/// <typeparam name="R">Type of response message's content</typeparam>
+		/// <returns>A response message</returns>
 		public abstract IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message);
 	}
 
 	public abstract class AbsClient : AbsParty
 	{
+		/// <summary>
+		/// Initiates handshake protocol stage
+		/// </summary>
 		public abstract void RunHandshake();
+
+		/// <summary>
+		/// Initiates construction protocol stage
+		/// </summary>
 		public abstract void RunConstruction(List<Record> input);
+
+		/// <summary>
+		/// Initiates search protocol stage
+		/// </summary>
 		public abstract void RunSearch(List<RangeQuery> input);
 
+		/// <summary>
+		/// Trigger to make a recording of self storage plus optional value
+		/// </summary>
+		/// <param name="extra">Optional number of bits to add to current storage for report</param>
 		public virtual void RecordStorage(long extra = 0) => OnClientStorage(extra);
 	}
 
 	public interface IMessage<out T>
 	{
+		/// <summary>
+		/// Extract message's content
+		/// </summary>
 		T Unpack();
+
+		/// <summary>
+		/// Returns the size of the message
+		/// </summary>
 		int GetSize();
 	}
 
@@ -46,6 +82,10 @@ namespace Simulation.Protocol
 		public abstract int GetSize();
 	}
 
+	/// <summary>
+	/// Special kind of message signalizing OK response of 0 bits
+	/// </summary>
+	/// <typeparam name="object"></typeparam>
 	public class FinishMessage : AbsMessage<object>
 	{
 		public FinishMessage() : base(null) { }
@@ -54,6 +94,10 @@ namespace Simulation.Protocol
 		public override int GetSize() => 0;
 	}
 
+	/// <summary>
+	/// Entity responsible for passing messages between protocol parties
+	/// and keeping track of messages' count and size
+	/// </summary>
 	public class Mediator : AbsEventHandler
 	{
 		private AbsClient _client;
@@ -74,6 +118,10 @@ namespace Simulation.Protocol
 			}
 		}
 
+		/// <summary>
+		/// Passes message to server.
+		/// Parameters correspond to party's AcceptMessage routine.
+		/// </summary>
 		public virtual IMessage<R> SendToServer<Q, R>(IMessage<Q> message)
 		{
 			OnMessageSent(message.GetSize());
@@ -86,6 +134,10 @@ namespace Simulation.Protocol
 			return response;
 		}
 
+		/// <summary>
+		/// Passes message to client.
+		/// Parameters correspond to party's AcceptMessage routine.
+		/// </summary>
 		public virtual IMessage<R> SendToClient<Q, R>(IMessage<Q> message)
 		{
 			OnMessageSent(message.GetSize());
@@ -107,8 +159,19 @@ namespace Simulation.Protocol
 		event MessageSentEventHandler MessageSent;
 		event ClientStorageEventHandler ClientStorage;
 
+		/// <summary>
+		/// Initiates construction protocol stage
+		/// </summary>
 		void RunConstructionProtocol(List<Record> input);
+
+		/// <summary>
+		/// Initiates search protocol stage
+		/// </summary>
 		void RunQueryProtocol(List<RangeQuery> input);
+
+		/// <summary>
+		/// Initiates handshake protocol stage
+		/// </summary>
 		void RunHandshake();
 	}
 
@@ -119,6 +182,11 @@ namespace Simulation.Protocol
 
 		protected Mediator _mediator;
 
+		/// <summary>
+		/// Sets up the protocol object.
+		/// In particular, hooks up events.
+		/// </summary>
+		/// <param name="mediator">If provided, new mediator will not be created</param>
 		protected void SetupProtocol(Mediator mediator = null)
 		{
 			if (_client == null || _server == null)
@@ -145,6 +213,9 @@ namespace Simulation.Protocol
 		public virtual void RunQueryProtocol(List<RangeQuery> input) => _client.RunSearch(input);
 	}
 
+	/// <summary>
+	/// Abstraction that contains events of intrest and routines to trigger those events
+	/// </summary>
 	public abstract class AbsEventHandler
 	{
 		public virtual event NodeVisitedEventHandler NodeVisited;

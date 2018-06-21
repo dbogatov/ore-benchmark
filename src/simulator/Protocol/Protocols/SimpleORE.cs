@@ -48,6 +48,9 @@ namespace Simulation.Protocol.SimpleORE
 			_options.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
 		}
 
+		/// <summary>
+		/// Reacts to insertion request
+		/// </summary>
 		protected virtual FinishMessage AcceptMessage(InsertMessage<C> message)
 		{
 			_tree.Insert(
@@ -58,6 +61,9 @@ namespace Simulation.Protocol.SimpleORE
 			return new FinishMessage();
 		}
 
+		/// <summary>
+		/// Reacts to search request
+		/// </summary>
 		protected virtual QueryResultMessage AcceptMessage(QueryMessage<C> message)
 		{
 			List<string> result = new List<string>();
@@ -71,6 +77,9 @@ namespace Simulation.Protocol.SimpleORE
 			return new QueryResultMessage(result);
 		}
 
+		/// <summary>
+		/// Reacts to request to setup min and max ciphers
+		/// </summary>
 		protected virtual FinishMessage AcceptMessage(MinMaxMessage<C> message)
 		{
 			_options.MinCipher = message.Unpack().Item1;
@@ -164,7 +173,14 @@ namespace Simulation.Protocol.SimpleORE
 			}
 		}
 
+		/// <summary>
+		/// Encrypts plaintext in a way that it can be used for insertion request
+		/// </summary>
 		protected virtual C EncryptForConstruction(int plaintext) => _scheme.Encrypt(plaintext, _key);
+
+		/// <summary>
+		/// Encrypts plaintext in a way that it can be used for search request
+		/// </summary>
 		protected virtual C EncryptForSearch(int plaintext) => _scheme.Encrypt(plaintext, _key);
 	}
 

@@ -11,7 +11,7 @@ using ORESchemes.Shared;
 
 namespace CLI
 {
-	[Command(Description = "Simulate a scheme with BPlusTree")]
+	[Command(Description = "Simulate a client-server protocol using an ORE scheme and a B+ tree")]
 	public class ProtocolCommand : CommandBase
 	{
 		private SimulatorCommand Parent { get; set; }
@@ -36,7 +36,7 @@ namespace CLI
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
-			var reader = new BPlusTree(Parent.Dataset, Queries);
+			var reader = new Protocol(Parent.Dataset, Queries);
 			reader.Inputs.CacheSize = CacheSize;
 
 			timer.Stop();

@@ -23,9 +23,15 @@ namespace ORESchemes.Shared
 
 	public interface IGetSize
 	{
+		/// <summary>
+		/// Returns the size of the entity in bits (not bytes)
+		/// </summary>
 		int GetSize();
 	}
 
+	/// <summary>
+	/// A wrapper around int64 that supports IGetSize
+	/// </summary>
 	public class OPECipher : IGetSize
 	{
 		public long value;
@@ -49,6 +55,9 @@ namespace ORESchemes.Shared
 		public int ToInt() => (int)value;
 	}
 
+	/// <summary>
+	/// A warpper around byte[] that supports IGetSize
+	/// </summary>
 	public class BytesKey : IGetSize
 	{
 		public byte[] value = new byte[] { };
