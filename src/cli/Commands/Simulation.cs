@@ -35,10 +35,11 @@ namespace CLI
 		/// </summary>
 		protected string JsonReport(object report, object parameters) =>
 			JsonConvert.SerializeObject(
-				new {
+				new
+				{
 					Report = report,
 					Parameters = parameters,
-					Version = GlobalVar.Version
+					Version = Version.Value()
 				}
 			);
 	}
@@ -49,7 +50,7 @@ namespace CLI
 	[Subcommand("scheme", typeof(PureSchemeCommand))]
 	public class SimulatorCommand : CommandBase
 	{
-		private static string Version() => GlobalVar.Version;
+		private static string Version() => CLI.Version.Value();
 
 		[Option("--verbose|-v", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
@@ -71,5 +72,15 @@ namespace CLI
 
 			return 1;
 		}
+	}
+
+	public class AbsVersion
+	{
+		public override string ToString() => "local-dev";
+	}
+
+	public partial class Version : AbsVersion
+	{
+		public static string Value() => new Version().ToString();
 	}
 }

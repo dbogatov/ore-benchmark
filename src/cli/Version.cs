@@ -1,7 +1,1 @@
-namespace CLI
-{
-	public static class GlobalVar
-	{
-		public static readonly string Version = "dev";
-	}
-}
+namespace CLI { public partial class Version { public override string ToString() => "ver"; } }
