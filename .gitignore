@@ -6,7 +6,8 @@ results/
 
 data/
 
-docs/documentation
+docs/_site
+docs/index.html
 
 coverage.json
 coverage-hits.txt

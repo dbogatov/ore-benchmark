@@ -5,7 +5,7 @@ MAINTAINER Dmytro Bogatov dmytro@dbogatov.org
 WORKDIR /srv
 
 # Copy the source
-COPY documentation/html .
+COPY _site .
 
 # Copy the NGINX config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
