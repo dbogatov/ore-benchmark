@@ -37,16 +37,15 @@ build-tests:
   - docker
 
 build-docs:
-  image: dbogatov/docker-images:doxygen-latest
+  image: dbogatov/docker-sources:tsgkadot-docker-docfx
   stage: build
   script:
-  - cd docs
-  - rm -rf documentation
-  - mkdir -p documentation
-  - doxygen Doxyfile
+  - rm -rf docs/_site
+  - cp README.md docs/index.md
+  - docfx docs/docfx.json --force
   artifacts:
     paths:
-    - docs/documentation
+    - docs/_site
     - docs/Dockerfile
     - docs/nginx.conf
   tags:

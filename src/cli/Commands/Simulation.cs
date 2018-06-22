@@ -74,13 +74,23 @@ namespace CLI
 		}
 	}
 
+	/// <summary>
+	/// Class responsible for version string
+	/// </summary>
 	public class AbsVersion
 	{
 		public override string ToString() => "local-dev";
 	}
 
+	/// <summary>
+	/// If CI generates a version string, it produces a file with
+	/// part of this class
+	/// </summary>
 	public partial class Version : AbsVersion
 	{
+		/// <summary>
+		/// Version string value
+		/// </summary>
 		public static string Value() => new Version().ToString();
 	}
 }
