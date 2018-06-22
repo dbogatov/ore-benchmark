@@ -141,7 +141,7 @@ pages:
     GIT_STRATEGY: none
   stage: release
   script:
-  - mv docs/documentation/html/ public/
+  - mv docs/_site public/
   - echo "Uploading files to pages"
   artifacts:
     expire_in: 30 min
