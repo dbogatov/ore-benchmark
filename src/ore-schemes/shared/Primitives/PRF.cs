@@ -70,14 +70,15 @@ namespace ORESchemes.Shared.Primitives.PRF
 				aesAlg.Key = key;
 
 				IV = new byte[ALPHA / 8];
-				if (deterministic)
-				{
-					PRGFactory.GetPRG(key).NextBytes(IV);
-				}
-				else
-				{
-					G.NextBytes(IV);
-				}
+				// TODO:
+				// if (deterministic)
+				// {
+				// 	PRGFactory.GetPRG(key).NextBytes(IV);
+				// }
+				// else
+				// {
+				// 	G.NextBytes(IV);
+				// }
 
 				aesAlg.IV = IV;
 				aesAlg.Mode = CipherMode.CBC;

@@ -27,10 +27,10 @@ namespace Test.ORESchemes
 			SetScheme();
 		}
 
-		// ~GenericORETests()
-		// {
-		// 	_scheme.Destruct();
-		// }
+		~GenericORETests()
+		{
+			_scheme.Destruct();
+		}
 
 		protected abstract void SetScheme();
 
