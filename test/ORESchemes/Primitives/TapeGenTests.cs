@@ -13,10 +13,10 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		private const int SEED = 123456;
 		private const int RUNS = 1000;
 
-		private byte[] seedOne = new byte[256 / 8];
-		private byte[] seedTwo = new byte[256 / 8];
-		private byte[] keyOne = new byte[256 / 8];
-		private byte[] keyTwo = new byte[256 / 8];
+		private byte[] seedOne = new byte[128 / 8];
+		private byte[] seedTwo = new byte[128 / 8];
+		private byte[] keyOne = new byte[128 / 8];
+		private byte[] keyTwo = new byte[128 / 8];
 
 		public TapeGenTests()
 		{

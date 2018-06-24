@@ -161,7 +161,8 @@ namespace Test.ORESchemes
 
 			Assert.True(to.value - from.value > 1);
 
-			Assert.Throws<ArgumentException>(
+			// It may happen that domain gets zero size or uniform check fails
+			Assert.ThrowsAny<Exception>(
 				() => _scheme.Decrypt(new OPECipher(from.value + 1), key)
 			);
 		}

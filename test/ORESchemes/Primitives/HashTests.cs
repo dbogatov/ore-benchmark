@@ -26,8 +26,8 @@ namespace Test.ORESchemes.Primitives.Hash
 	{
 		protected readonly IHash _hash;
 		private const int SEED = 123456;
-		private readonly byte[] _key = new byte[256 / 8];
-		private readonly byte[] _anotherKey = new byte[256 / 8];
+		private readonly byte[] _key = new byte[128 / 8];
+		private readonly byte[] _anotherKey = new byte[128 / 8];
 		private const int RUNS = 1000;
 
 		public AbsHashTests(IHash hash)

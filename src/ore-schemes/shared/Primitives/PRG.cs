@@ -18,7 +18,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 			}
 			else
 			{
-				seed = new byte[256 / 8];
+				seed = new byte[128 / 8];
 				new Random().NextBytes(seed);
 				return new AESPRG(seed);
 			}
@@ -36,7 +36,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 			}
 			else
 			{
-				seed = new byte[256 / 8];
+				seed = new byte[128 / 8];
 				new Random().NextBytes(seed);
 				return new DefaultRandom(seed);
 			}
@@ -113,7 +113,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 	/// </summary>
 	public abstract class CustomPRG : System.Security.Cryptography.RandomNumberGenerator, IPRG
 	{
-		protected const int ALPHA = 256;
+		protected const int ALPHA = 128;
 		protected readonly byte[] _seed = new byte[ALPHA / 8];
 
 		public CustomPRG(byte[] seed)

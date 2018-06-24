@@ -8,7 +8,7 @@ namespace Test.ORESchemes.Primitives
 	public partial class SamplerTests
 	{
 		private const int SEED = 123456;
-		private readonly byte[] _entropy = new byte[256 / 8];
+		private readonly byte[] _entropy = new byte[128 / 8];
 		private readonly ISampler _sampler;
 
 		private const int RUNS = 1000;

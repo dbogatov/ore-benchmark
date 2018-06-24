@@ -38,7 +38,7 @@ namespace ORESchemes.FHOPE
 		{
 			OnOperation(SchemeOperation.KeyGen);
 
-			byte[] entropy = new byte[256 / 8];
+			byte[] entropy = new byte[128 / 8];
 			G.NextBytes(entropy);
 
 			IPRG prg = PRGFactory.GetPRG(entropy);

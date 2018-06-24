@@ -14,8 +14,8 @@ namespace ORESchemes.LewiORE
 {
 	public class Key : IGetSize
 	{
-		public byte[] left = new byte[256 / 8];
-		public byte[] right = new byte[256 / 8];
+		public byte[] left = new byte[128 / 8];
+		public byte[] right = new byte[128 / 8];
 
 		public int GetSize() => (left.Length + right.Length) * sizeof(byte) * 8;
 	}
@@ -51,8 +51,6 @@ namespace ORESchemes.LewiORE
 		private readonly IHash H;
 		private readonly IPRP P;
 
-		private readonly byte[] IV = new byte[128 / 8];
-
 		/// <summary>
 		/// Number of values that fit in a block
 		/// </summary>
@@ -74,7 +72,7 @@ namespace ORESchemes.LewiORE
 			this.n = n;
 			d = (int)Math.Pow(2, 32 / n);
 
-			F = PRFFactory.GetPRF();
+			F = PRFFactory.GetPRF(G.GetBytes(ALPHA / 8));
 			H = HashFactory.GetHash();
 			P = PRPFactory.GetPRP();
 
@@ -83,8 +81,6 @@ namespace ORESchemes.LewiORE
 			SubscribePrimitive(P);
 
 			_bitsInBlock = 32 / n;
-
-			G.NextBytes(IV);
 		}
 
 		public override Key KeyGen()
@@ -116,7 +112,7 @@ namespace ORESchemes.LewiORE
 			{
 				left = EncryptLeft(key.left, key.right, ToUInt(plaintext)),
 				right = EncryptRight(key.left, key.right, ToUInt(plaintext)),
-				encrypted = F.PRF(key.left, BitConverter.GetBytes(plaintext), IV)
+				encrypted = F.PRF(key.left, BitConverter.GetBytes(plaintext))
 			};
 		}
 
@@ -189,14 +185,13 @@ namespace ORESchemes.LewiORE
 					xi,
 					F.PRF(
 						rightKey,
-						BitConverter.GetBytes(xtoi),
-						IV
+						BitConverter.GetBytes(xtoi)
 					)
 				);
 
 				byte[] xtoix = Concatenate(xtoi, x);
 
-				byte[] ui = F.PRF(leftKey, xtoix, IV);
+				byte[] ui = F.PRF(leftKey, xtoix);
 
 				result.Add(new Tuple<byte[], uint>(ui, x));
 			}
@@ -236,15 +231,14 @@ namespace ORESchemes.LewiORE
 						j,
 						F.PRF(
 							rightKey,
-							BitConverter.GetBytes(ytoi),
-							IV
+							BitConverter.GetBytes(ytoi)
 						)
 					);
 
 					byte[] ytoij = Concatenate(ytoi, j);
 
 					var cmp = CMP(js, yi);
-					var hash = Hash(nonce, F.PRF(leftKey, ytoij, IV));
+					var hash = Hash(nonce, F.PRF(leftKey, ytoij));
 
 					short vi = (short)(cmp + hash);
 

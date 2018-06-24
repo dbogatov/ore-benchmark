@@ -28,7 +28,7 @@ namespace Simulation
 			}
 			else
 			{
-				_entropy = new byte[256 / 8];
+				_entropy = new byte[128 / 8];
 				new Random().NextBytes(_entropy);
 			}
 		}

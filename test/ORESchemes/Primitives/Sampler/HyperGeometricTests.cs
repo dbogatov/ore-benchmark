@@ -11,7 +11,7 @@ namespace Test.ORESchemes.Primitives
 		[InlineData(99, 10, 25, 0.05)]
 		[InlineData(500, 50, 100, 0.03)]
 		[InlineData(500, 60, 200, 0.02)]
-		[InlineData(500, 70, 300, 0.01)]
+		[InlineData(500, 70, 300, 0.02)]
 		public void HGDistributionTest(int N, int K, int n, double epsilon)
 		{
 			Func<int, double> pmf =

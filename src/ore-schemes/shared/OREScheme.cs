@@ -224,7 +224,7 @@ namespace ORESchemes.Shared
 		public event PrimitiveUsageEventHandler PrimitiveUsed;
 
 		protected readonly IPRG G;
-		protected const int ALPHA = 256;
+		protected const int ALPHA = 128;
 
 		/// <summary>
 		/// Entropy is required for the scheme

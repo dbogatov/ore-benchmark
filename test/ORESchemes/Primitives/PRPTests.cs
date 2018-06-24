@@ -91,7 +91,7 @@ namespace Test.ORESchemes.Primitives.PRP
 	{
 		private const int RUNS = 100;
 		private const int SEED = 123456;
-		protected readonly byte[] _key = new byte[256 / 8];
+		protected readonly byte[] _key = new byte[128 / 8];
 
 		protected readonly IPRP _prp;
 

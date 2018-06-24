@@ -18,17 +18,16 @@ namespace ORESchemes.PracticalORE
 	{
 		private readonly int M = 4;
 		private readonly IPRF F;
-		private readonly byte[] IV;
 
 		public PracticalOREScheme(byte[] seed = null) : base(seed)
 		{
 			M = Convert.ToInt32(G.Next(4, Int32.MaxValue));
-			F = PRFFactory.GetPRF();
+
+			F = PRFFactory.GetPRF(
+				G.GetBytes(ALPHA / 8)
+			);
 
 			SubscribePrimitive(F);
-
-			IV = new byte[128 / 8];
-			G.NextBytes(IV);
 		}
 
 		public override int Decrypt(Ciphertext ciphertext, BytesKey key)
@@ -50,8 +49,7 @@ namespace ORESchemes.PracticalORE
 			var result = new Ciphertext();
 			result.encrypted = F.PRF(
 				key.value,
-				BitConverter.GetBytes(plaintext),
-				IV
+				BitConverter.GetBytes(plaintext)
 			);
 
 			var unsignedPlaintext = unchecked((uint)plaintext + 1) + Int32.MaxValue;
@@ -64,8 +62,7 @@ namespace ORESchemes.PracticalORE
 
 				var prfEnc = F.PRF(
 					key.value,
-					BitConverter.GetBytes(msg),
-					IV
+					BitConverter.GetBytes(msg)
 				);
 
 				var nextBit = ((unsignedPlaintext << i) >> (8 * sizeof(int) - 1)) & 1;

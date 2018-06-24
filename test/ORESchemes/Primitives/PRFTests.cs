@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRF;
@@ -11,7 +12,7 @@ namespace Test.ORESchemes.Primitives.PRF
 	[Trait("Category", "Unit")]
 	public class AESPRFTests : AbsPRFTests
 	{
-		public AESPRFTests() : base(new AES()) { }
+		public AESPRFTests() : base(new AES(Enumerable.Repeat((byte)0x00, 128 / 8).ToArray())) { }
 
 		[Fact]
 		public void EventsTest()
@@ -89,7 +90,7 @@ namespace Test.ORESchemes.Primitives.PRF
 	{
 		protected readonly IPRF _prf;
 		private const int SEED = 123456;
-		protected readonly byte[] _key = new byte[256 / 8];
+		protected readonly byte[] _key = new byte[128 / 8];
 		private const int RUNS = 1000;
 
 		public AbsPRFTests(IPRF prf)
