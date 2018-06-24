@@ -11,7 +11,7 @@ namespace Test.ORESchemes
 
 		protected override void SetParameters() => n = 16;
 
-		public override int CipherSize() => 4496;
+		public override int CipherSize() => 4368;
 	}
 
 	[Trait("Category", "Integration")]
@@ -59,6 +59,6 @@ namespace Test.ORESchemes
 			_scheme = new LewiOREScheme(n, _entropy);
 		}
 
-		public override int KeySize() => 512;
+		public override int KeySize() => 256;
 	}
 }

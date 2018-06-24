@@ -58,7 +58,7 @@ namespace ORESchemes.CryptDBOPE
 		}
 
 		/// <summary>
-		/// Constructor requires domain, range and optionally 256 bytes of entropy.
+		/// Constructor requires domain, range and optionally 128 bytes of entropy.
 		/// Although domain and range are signed integers, internally, scheme will use unsigned versions.
 		/// </summary>
 		/// <returns></returns>

@@ -22,7 +22,7 @@
 		}],
 		"overwrite": "specs/*.md",
 		"globalMetadata": {
-			"_appTitle": "docfx seed website",
+			"_appTitle": "ORE Schemes Simulator",
 			"_enableSearch": true
 		},
 		"template": [

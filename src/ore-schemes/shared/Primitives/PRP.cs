@@ -55,7 +55,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			return bytes;
 		}
 
-		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
+		public byte[] PRF(byte[] key, byte[] input, bool deterministic = true)
 		{
 			BitArray result = PRP(new BitArray(input), key);
 			byte[] bytes = new byte[(result.Length + 7) / 8];
@@ -148,11 +148,9 @@ namespace ORESchemes.Shared.Primitives.PRP
 			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
 				Xor(
 					input.Item2,
-					new BitArray(F.PRF(
-						key, 
-						bytes, 
-						Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()
-					).Skip(128 / 8).ToArray())
+					new BitArray(
+						F.PRF(key, bytes).Skip(128 / 8).ToArray()
+					)
 				),
 				input.Item1
 			);

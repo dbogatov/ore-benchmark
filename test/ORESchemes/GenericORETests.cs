@@ -15,7 +15,7 @@ namespace Test.ORESchemes
 		protected readonly int _runs = 100;
 
 		protected const int SEED = 123456;
-		protected readonly byte[] _entropy = new byte[256 / 8];
+		protected readonly byte[] _entropy = new byte[128 / 8];
 
 		protected Dictionary<SchemeOperation, Tuple<int, int>> _expectedEvents = null;
 
@@ -27,10 +27,10 @@ namespace Test.ORESchemes
 			SetScheme();
 		}
 
-		~GenericORETests()
-		{
-			_scheme.Destruct();
-		}
+		// ~GenericORETests()
+		// {
+		// 	_scheme.Destruct();
+		// }
 
 		protected abstract void SetScheme();
 
@@ -270,7 +270,7 @@ namespace Test.ORESchemes
 			Assert.Equal(CipherSize(), cipher.GetSize());
 		}
 
-		public virtual int KeySize() => 256;
+		public virtual int KeySize() => 128;
 		public virtual int CipherSize() => 8;
 	}
 }

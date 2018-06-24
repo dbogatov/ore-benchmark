@@ -57,8 +57,8 @@ namespace Test.ORESchemes.Primitives.PRG
 	public abstract class AbsPRGTests
 	{
 		protected const int _seed = 132456;
-		protected readonly byte[] _entropy = new byte[256 / 8];
-		protected readonly byte[] _anotherEntropy = new byte[256 / 8];
+		protected readonly byte[] _entropy = new byte[128 / 8];
+		protected readonly byte[] _anotherEntropy = new byte[128 / 8];
 
 		protected const int _runs = 1000;
 

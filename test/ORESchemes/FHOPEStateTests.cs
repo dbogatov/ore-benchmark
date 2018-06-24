@@ -13,7 +13,7 @@ namespace Test.ORESchemes
 
 		public FHOPEStateTests()
 		{
-			byte[] entropy = new byte[256 / 8];
+			byte[] entropy = new byte[128 / 8];
 			new Random(123456).NextBytes(entropy);
 
 			_state = new State(PRGFactory.GetDefaultPRG(entropy), 0, ulong.MaxValue, 10, 0);

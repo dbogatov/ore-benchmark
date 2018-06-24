@@ -49,13 +49,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 		public abstract byte[] ComputeHash(byte[] input);
 
 		public virtual byte[] ComputeHash(byte[] input, byte[] key) =>
-			ComputeHash(
-				F.PRF(
-					key,
-					input,
-					Enumerable.Repeat((byte)0x00, 128 / 8).ToArray()
-				).Skip(128 / 8).ToArray()
-			);
+			ComputeHash(F.PRF(key, input).Skip(128 / 8).ToArray());
 	}
 
 	public class SHA256 : AbsHash

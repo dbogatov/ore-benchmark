@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared.Primitives.PRF
 {
@@ -9,13 +10,22 @@ namespace ORESchemes.Shared.Primitives.PRF
 		/// <summary>
 		/// Returns an initialized instance of a PRF
 		/// </summary>
-		public static IPRF GetPRF()
+		public static IPRF GetPRF(byte[] entropy = null)
 		{
-			return new AES();
+			if (entropy != null)
+			{
+				return new AES(entropy);
+			}
+			else
+			{
+				entropy = new byte[128 / 8];
+				new Random().NextBytes(entropy);
+				return new AES(entropy);
+			}
 		}
 	}
 
-	public interface IPRF: IPrimitive
+	public interface IPRF : IPrimitive
 	{
 		/// <summary>
 		/// Computes the value of the pseudo random function
@@ -24,7 +34,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 		/// <param name="input">The input value to function</param>
 		/// <param name="IV">The initialized vector to use; if given, PRF is deterministic</param>
 		/// <returns>The value of the function of its arguments</returns>
-		byte[] PRF(byte[] key, byte[] input, byte[] IV = null);
+		byte[] PRF(byte[] key, byte[] input, bool deterministic = true);
 
 		/// <summary>
 		/// Computes the value of the inverse of pseudo random function
@@ -37,32 +47,39 @@ namespace ORESchemes.Shared.Primitives.PRF
 
 	public class AES : AbsPrimitive, IPRF
 	{
-		private const int ALPHA = 256;
+		private const int ALPHA = 128;
+
+		private readonly IPRG G;
+
+		public AES(byte[] entropy)
+		{
+			G = PRGFactory.GetPRG(entropy);
+		}
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
-		public byte[] PRF(byte[] key, byte[] input, byte[] IV = null)
+		public byte[] PRF(byte[] key, byte[] input, bool deterministic = true)
 		{
 			OnUse(Primitive.PRF);
 
 			byte[] encrypted;
+			byte[] IV;
 
 			using (Aes aesAlg = Aes.Create())
 			{
 				aesAlg.KeySize = ALPHA;
 				aesAlg.Key = key;
 
-				if (IV == null)
+				IV = new byte[ALPHA / 8];
+				if (deterministic)
 				{
-					aesAlg.GenerateIV();
-					IV = aesAlg.IV;
+					PRGFactory.GetPRG(key).NextBytes(IV);
 				}
 				else
 				{
-					byte[] properIV = new byte[128 / 8];
-					Array.Copy(IV, properIV, properIV.Length);
-					aesAlg.IV = properIV;
+					G.NextBytes(IV);
 				}
 
+				aesAlg.IV = IV;
 				aesAlg.Mode = CipherMode.CBC;
 
 				var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared
 {
@@ -93,5 +94,12 @@ namespace ORESchemes.Shared
 			where C : IGetSize
 			where K : IGetSize
 		=> scheme.Encrypt(int.MinValue, key);
+
+		public static byte[] GetBytes(this IPRG G, int n)
+		{
+			byte[] bytes = new byte[n];
+			G.NextBytes(bytes);
+			return bytes;
+		}
 	}
 }

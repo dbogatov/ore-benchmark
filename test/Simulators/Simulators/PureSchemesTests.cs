@@ -12,10 +12,10 @@ namespace Test.Simulators
 		[Fact]
 		public void SimulatorTest()
 		{
-			byte[] entropy = new byte[256 / 8];
+			byte[] entropy = new byte[128 / 8];
 			new Random(123456).NextBytes(entropy);
 
-			var max = 100;
+			var max = 1000;
 			var dataset =
 				Enumerable
 					.Range(-max, max)
