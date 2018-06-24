@@ -53,7 +53,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 
 		public AES(byte[] entropy)
 		{
-			G = PRGFactory.GetPRG(entropy);
+			G = PRGFactory.GetDefaultPRG(entropy);
 		}
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
@@ -70,15 +70,14 @@ namespace ORESchemes.Shared.Primitives.PRF
 				aesAlg.Key = key;
 
 				IV = new byte[ALPHA / 8];
-				// TODO:
-				// if (deterministic)
-				// {
-				// 	PRGFactory.GetPRG(key).NextBytes(IV);
-				// }
-				// else
-				// {
-				// 	G.NextBytes(IV);
-				// }
+				if (deterministic)
+				{
+					PRGFactory.GetDefaultPRG(key).NextBytes(IV);
+				}
+				else
+				{
+					G.NextBytes(IV);
+				}
 
 				aesAlg.IV = IV;
 				aesAlg.Mode = CipherMode.CBC;

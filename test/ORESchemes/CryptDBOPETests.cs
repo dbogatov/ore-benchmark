@@ -102,6 +102,16 @@ namespace Test.ORESchemes
 	[Trait("Category", "Integration")]
 	public class CryptDBOPERange44Tests : AbsCryptDBOPETests
 	{
+		[Fact]
+		public void TestName()
+		{
+		//Given
+		base.MalformedCiphertextTest();
+		//When
+		
+		//Then
+		}
+
 		protected override void SetParameters() => rangeBits = 44;
 	}
 
@@ -161,7 +171,8 @@ namespace Test.ORESchemes
 
 			Assert.True(to.value - from.value > 1);
 
-			Assert.Throws<ArgumentException>(
+			// It may happen that domain gets zero size or uniform check fails
+			Assert.ThrowsAny<Exception>(
 				() => _scheme.Decrypt(new OPECipher(from.value + 1), key)
 			);
 		}
