@@ -102,16 +102,6 @@ namespace Test.ORESchemes
 	[Trait("Category", "Integration")]
 	public class CryptDBOPERange44Tests : AbsCryptDBOPETests
 	{
-		[Fact]
-		public void TestName()
-		{
-		//Given
-		base.MalformedCiphertextTest();
-		//When
-		
-		//Then
-		}
-
 		protected override void SetParameters() => rangeBits = 44;
 	}
 

@@ -95,6 +95,9 @@ namespace ORESchemes.Shared
 			where K : IGetSize
 		=> scheme.Encrypt(int.MinValue, key);
 
+		/// <summary>
+		/// Helper that returns an array of uniformly sampled bytes of given size
+		/// </summary>
 		public static byte[] GetBytes(this IPRG G, int n)
 		{
 			byte[] bytes = new byte[n];

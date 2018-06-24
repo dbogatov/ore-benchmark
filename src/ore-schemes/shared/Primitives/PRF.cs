@@ -32,7 +32,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 		/// </summary>
 		/// <param name="key">The key componenet to function</param>
 		/// <param name="input">The input value to function</param>
-		/// <param name="IV">The initialized vector to use; if given, PRF is deterministic</param>
+		/// <param name="deterministic">If true, IV will be genrated from key making PRF deterministic</param>
 		/// <returns>The value of the function of its arguments</returns>
 		byte[] PRF(byte[] key, byte[] input, bool deterministic = true);
 
