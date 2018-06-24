@@ -21,7 +21,7 @@ namespace Test.ORESchemes
 
 		protected override void SetParameters() => n = 8;
 
-		public override int CipherSize() => 2568;
+		public override int CipherSize() => 2440;
 	}
 
 	[Trait("Category", "Integration")]
@@ -31,7 +31,7 @@ namespace Test.ORESchemes
 
 		protected override void SetParameters() => n = 4;
 
-		public override int CipherSize() => 3332;
+		public override int CipherSize() => 3204;
 	}
 
 	[Trait("Category", "Unit")]
