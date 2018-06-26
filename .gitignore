@@ -17,3 +17,8 @@ results/
 
 tools/simulation/config
 src/cli/Version.cs
+
+*.o
+*.tbl
+tools/data-gen/tpc-h/qgen
+tools/data-gen/tpc-h/dbgen

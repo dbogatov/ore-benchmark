@@ -18,7 +18,7 @@ namespace CLI.DataReaders
 
 				while ((line = sr.ReadLine()) != null)
 				{
-					Dataset.Add(int.Parse(line));
+					Dataset.Add(int.Parse(line.Split(',')[0]));
 				}
 			}
 		}

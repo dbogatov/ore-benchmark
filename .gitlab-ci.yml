@@ -3,6 +3,18 @@ stages:
 - test
 - release
 
+generate-data:
+  image: dbogatov/docker-images:alpine-extras-latest
+  stage: build
+  script:
+  - ./tools/data-gen/tpc-h.sh -s 0.01
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - tools/data-gen/tpc-h/*.tbl
+  tags:
+  - docker
+
 build-app:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
@@ -102,6 +114,7 @@ system-protocol-tests:
       - results/protocol.json
   dependencies:
   - build-app
+  - generate-data
   tags:
   - docker
 
@@ -112,13 +125,14 @@ system-schemes-tests:
   stage: test
   script:
   - apk add --update bash ruby ruby-bundler
-  - ./tools/data-gen/generate.sh -t 20 -s 1305 -n
+  - ./tools/data-gen/generate.sh -d 20 -s 1305 -n
   - ./tools/simulation/pure-schemes.rb
   artifacts:
     paths:
       - results/schemes.json
   dependencies:
   - build-app
+  - generate-data
   tags:
   - docker
 
