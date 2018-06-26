@@ -41,16 +41,16 @@ end
 
   when 'lewiore'
     [16, 8, 4].each do |lewioren|
-      success = false unless run('schemes-dataset', scheme, prng.rand(2**30), lewioren, 48)
+      success = false unless run('dataset', scheme, prng.rand(2**30), lewioren, 48)
     end
 
   when 'cryptdb'
     [32, 36, 40, 44, 48].each do |cryptdbrange|
-      success = false unless run('schemes-dataset', scheme, prng.rand(2**30), 16, cryptdbrange)
+      success = false unless run('dataset', scheme, prng.rand(2**30), 16, cryptdbrange)
     end
 
   else
-    success = false unless run('schemes-dataset', scheme, prng.rand(2**30), 16, 48)
+    success = false unless run('dataset', scheme, prng.rand(2**30), 16, 48)
   end
 end
 
