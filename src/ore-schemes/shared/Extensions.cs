@@ -90,7 +90,7 @@ namespace ORESchemes.Shared
 		/// Returns the smallest possible ciphertext value possible as an encryption of smallest
 		/// possible plaintext, which is assumed to be min int32.
 		/// </summary>
-		public static C MinCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key) 
+		public static C MinCiphertextValue<C, K>(this IOREScheme<C, K> scheme, K key)
 			where C : IGetSize
 			where K : IGetSize
 		=> scheme.Encrypt(int.MinValue, key);
