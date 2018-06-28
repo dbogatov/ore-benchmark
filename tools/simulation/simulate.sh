@@ -7,20 +7,32 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-SIMULATION=""
+SIMULATION=false
 SPACE="denis-dolores-space"
 
-usage() { echo "Usage: $0 [-p -s]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-p -s -b -r]" 1>&2; exit 1; }
 
-while getopts "ps" o; do
+while getopts "psbr" o; do
 	case "${o}" in
 		p)
 			./protocol.rb
-			SIMULATION="protocol"
+			SIMULATION=true
+			s3cmd -c config put ./../../results/protocol.json s3://$SPACE/public/ore-sim-results/protocol/$(date +"%Y-%m-%d_%H-%M-%S").json
 			;;
 		s)
 			./pure-schemes.rb
-			SIMULATION="schemes"
+			SIMULATION=true
+			s3cmd -c config put ./../../results/schemes.json s3://$SPACE/public/ore-sim-results/schemes/$(date +"%Y-%m-%d_%H-%M-%S").json
+			;;
+		b)
+			./benchmark.sh "schemes"
+			SIMULATION=true
+			s3cmd -c config put --recursive ./../../src/benchmark/BenchmarkDotNet.Artifacts/* s3://$SPACE/public/ore-sim-results/benchmark/$(date +"%Y-%m-%d_%H-%M-%S")/
+			;;
+		r)
+			./benchmark.sh "primitives"
+			SIMULATION=true
+			s3cmd -c config put --recursive ./../../src/benchmark/BenchmarkDotNet.Artifacts/* s3://$SPACE/public/ore-sim-results/primitives/$(date +"%Y-%m-%d_%H-%M-%S")/
 			;;
 		*)
 			usage
@@ -29,12 +41,10 @@ while getopts "ps" o; do
 done
 shift $((OPTIND-1))
 
-if [ "$SIMULATION" == "" ];
+if [ "$SIMULATION" == false ];
 then
 	usage
 	exit 1
 fi
-
-s3cmd -c config put ./../../results/$SIMULATION.json s3://$SPACE/public/ore-sim-results/$SIMULATION/$(date +"%Y-%m-%d_%H-%M-%S").json
 
 echo "Done!"

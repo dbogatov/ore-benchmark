@@ -30,8 +30,10 @@ namespace Simulation.PureSchemes
 		/// Generates a report filled with data gathered during the execution of 
 		/// given function. Records times and number of events.
 		/// </summary>
-		/// <param name="routine">Function to profile</param>
-		private Report.Subreport Profile(Action routine)
+		/// <param name="routine">Function to profile (must take ciphers, dataset, scheme and key)</param>
+		/// <param name="ciphers">List of ciphertext to populate or to take dta from</param>
+		/// <returns>A subreport generated for this particular profiling</returns>
+		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C,K>, K> routine, List<C> ciphers)
 		{
 			var currentProcess = Process.GetCurrentProcess();
 			_primitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
@@ -40,7 +42,7 @@ namespace Simulation.PureSchemes
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 			var processStartTime = currentProcess.UserProcessorTime;
 
-			routine();
+			routine(ciphers, _dataset, _scheme, _key);
 
 			var processEndTime = currentProcess.UserProcessorTime;
 			timer.Stop();
@@ -64,54 +66,78 @@ namespace Simulation.PureSchemes
 
 			var result = new Report();
 
-			result.Stages[Stages.Encrypt] = Profile(() =>
-				{
-					for (int i = 0; i < _dataset.Count; i++)
-					{
-						ciphertexts.Add(_scheme.Encrypt(_dataset[i], _key));
-					}
-				}
-			);
-			result.Stages[Stages.Decrypt] = Profile(() =>
-				{
-					for (int i = 0; i < _dataset.Count; i++)
-					{
-						_scheme.Decrypt(ciphertexts[i], _key);
-					}
-				}
-			);
-			result.Stages[Stages.Compare] = Profile(() =>
-				{
-					int length = _dataset.Count;
-
-					// This is a necessary hack because FH-OPE requires min and max 
-					// ciphers for comparison which can be computed only when all
-					// plaintexts got encrypted
-					if (_scheme is ORESchemes.FHOPE.FHOPEScheme)
-					{
-						var scheme = (ORESchemes.FHOPE.FHOPEScheme)_scheme;
-						ciphertexts.ForEach(
-							c =>
-							{
-								int plaintext = _scheme.Decrypt(c, _key);
-								((ORESchemes.FHOPE.Ciphertext)(object)c).max = scheme.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
-								((ORESchemes.FHOPE.Ciphertext)(object)c).min = scheme.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)_key);
-							}
-						);
-					}
-
-					for (int i = 0; i < length; i++)
-					{
-						_scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-						_scheme.IsLessOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-						_scheme.IsGreater(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-						_scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-						_scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
-					}
-				}
-			);
+			result.Stages[Stages.Encrypt] = Profile(EncryptStage, ciphertexts);
+			result.Stages[Stages.Decrypt] = Profile(DecryptStage, ciphertexts);
+			result.Stages[Stages.Compare] = Profile(CompareStage, ciphertexts);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Encryption stage simulation
+		/// </summary>
+		/// <param name="ciphertexts">Ciphertext list to populate</param>
+		/// <param name="dataset">Dataset from which to take data for operations</param>
+		/// <param name="scheme">Scheme to perform operations with</param>
+		/// <param name="key">Key to use with the scheme</param>
+		public static void EncryptStage(List<C> ciphertexts, List<int> dataset, IOREScheme<C, K> scheme, K key)
+		{
+			for (int i = 0; i < dataset.Count; i++)
+			{
+				ciphertexts.Add(scheme.Encrypt(dataset[i], key));
+			}
+		}
+
+		/// <summary>
+		/// Decryption stage simulation
+		/// </summary>
+		/// <param name="ciphertexts">Ciphertext list to take inputs from</param>
+		/// <param name="dataset">Unused</param>
+		/// <param name="scheme">Scheme to perform operations with</param>
+		/// <param name="key">Key to use with the scheme</param>
+		public static void DecryptStage(List<C> ciphertexts, List<int> dataset, IOREScheme<C, K> scheme, K key)
+		{
+			for (int i = 0; i < dataset.Count; i++)
+			{
+				scheme.Decrypt(ciphertexts[i], key);
+			}
+		}
+
+		/// <summary>
+		/// Comparison stage simulation
+		/// </summary>
+		/// <param name="ciphertexts">Ciphertext list to take inputs from</param>
+		/// <param name="dataset">Unused</param>
+		/// <param name="scheme">Scheme to perform operations with</param>
+		/// <param name="key">Key to use with the scheme</param>
+		public static void CompareStage(List<C> ciphertexts, List<int> dataset, IOREScheme<C, K> scheme, K key)
+		{
+			int length = dataset.Count;
+
+			// This is a necessary hack because FH-OPE requires min and max 
+			// ciphers for comparison which can be computed only when all
+			// plaintexts got encrypted
+			if (scheme is ORESchemes.FHOPE.FHOPEScheme)
+			{
+				var fhope = (ORESchemes.FHOPE.FHOPEScheme)scheme;
+				ciphertexts.ForEach(
+					c =>
+					{
+						int plaintext = scheme.Decrypt(c, key);
+						((ORESchemes.FHOPE.Ciphertext)(object)c).max = fhope.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)key);
+						((ORESchemes.FHOPE.Ciphertext)(object)c).min = fhope.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)key);
+					}
+				);
+			}
+
+			for (int i = 0; i < length; i++)
+			{
+				scheme.IsLess(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+				scheme.IsLessOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+				scheme.IsGreater(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+				scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+				scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
+			}
 		}
 	}
 }

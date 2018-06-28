@@ -1,14 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<ProjectReference Include="..\simulator\simulator.csproj" />
 		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+		<ProjectReference Include="..\simulator\simulator.csproj" />
 	</ItemGroup>
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>netcoreapp2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<NoWarn>$(NoWarn);NU1701</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" Version="0.10.14.660" />
 		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.0" />
 	</ItemGroup>
 </Project>

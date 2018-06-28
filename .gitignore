@@ -22,3 +22,5 @@ src/cli/Version.cs
 *.tbl
 tools/data-gen/tpc-h/qgen
 tools/data-gen/tpc-h/dbgen
+
+BenchmarkDotNet.Artifacts

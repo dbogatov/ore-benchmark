@@ -10,43 +10,19 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.0/cli.dll",
+			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.1/cli.dll",
 			"args": [
 				"--dataset",
 				"./data/dataset.txt",
-				"--ore-scheme",
-				"fhope",
 				"--seed",
 				"782797714",
-				"-v",
-				"protocol",
-				"--queries",
-				"./data/range-2-queries.txt"
+				"benchmark"
 			],
 			"cwd": "${workspaceFolder}",
 			// For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
 			"console": "internalConsole",
 			"stopAtEntry": false,
 			"internalConsoleOptions": "openOnSessionStart"
-		},
-		{
-			"name": ".NET Core Launch (tests)",
-			"type": "coreclr",
-			"request": "launch",
-			"preLaunchTask": "build-test",
-			"justMyCode": false,
-			"program": "${workspaceFolder}/test/bin/Debug/netcoreapp2.0/test.dll",
-			"args": [],
-			"cwd": "${workspaceFolder}/test",
-			"console": "internalConsole",
-			"stopAtEntry": false,
-			"internalConsoleOptions": "openOnSessionStart"
-		},
-		{
-			"name": ".NET Core Attach",
-			"type": "coreclr",
-			"request": "attach",
-			"processId": "${command:pickProcess}"
 		}
 	]
 }
