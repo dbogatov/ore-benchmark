@@ -108,11 +108,11 @@ namespace DataStructures.BPlusTree
 			/// Should be unset when called from TryRange method.
 			/// </param>
 			/// <returns>True if element is found and false otherwise</returns>
-			public virtual bool TryGet(C key, out T value, bool checkValue = true)
+			public virtual bool TryGet(C key, List<Data> values, Func<T, bool> predicate = null, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				value = default(T);
+				// values = new List<T>();
 
 				if (children.Count == 0)
 				{
@@ -123,7 +123,7 @@ namespace DataStructures.BPlusTree
 				{
 					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
-						return children[i].node != null ? children[i].node.TryGet(key, out value) : false;
+						return children[i].node != null ? children[i].node.TryGet(key, values, predicate) : false;
 					}
 				}
 
@@ -134,7 +134,7 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryRange(C start, C end, List<T> values)
+			public virtual bool TryRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -147,7 +147,7 @@ namespace DataStructures.BPlusTree
 							return false;
 						}
 
-						return children[i].node.TryRange(start, end, values);
+						return children[i].node.TryRange(start, end, values, predicate);
 					}
 				}
 

@@ -21,7 +21,7 @@ namespace Test.BPlusTree
 			{
 				Console.WriteLine(tree.ToString());
 			}
-			Assert.False(tree.TryGet(_scheme.Encrypt(element, _key), out _));
+			Assert.False(tree.TryGet(_scheme.Encrypt(element, _key), null));
 
 			Assert.True(tree.Validate());
 
@@ -88,7 +88,7 @@ namespace Test.BPlusTree
 			DeleteAndValidate(tree, 58 * 58);
 			DeleteAndValidate(tree, 59 * 59);
 			tree.Insert(_scheme.Encrypt(59 * 59, _key), (59 * 59).ToString());
-			Assert.True(tree.TryGet(_scheme.Encrypt(59 * 59, _key), out _));
+			Assert.True(tree.TryGet(_scheme.Encrypt(59 * 59, _key), null));
 			DeleteAndValidate(tree, 59 * 59);
 		}
 

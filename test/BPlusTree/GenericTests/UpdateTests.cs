@@ -24,10 +24,10 @@ namespace Test.BPlusTree
 				new List<int> { 3, 4, 5 }
 			);
 
-			Assert.False(tree.Insert(_scheme.Encrypt(5, _key), "five"));
+			Assert.True(tree.UpdateSingle(_scheme.Encrypt(5, _key), "five"));
 
 			var result = "";
-			tree.TryGet(_scheme.Encrypt(5, _key), out result);
+			tree.TryGetSingle(_scheme.Encrypt(5, _key), out result);
 			Assert.Equal("five", result);
 		}
 

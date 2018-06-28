@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace DataStructures.BPlusTree
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
-			public override bool TryRange(C start, C end, List<T> values)
+			public override bool TryRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -30,9 +31,7 @@ namespace DataStructures.BPlusTree
 					{
 						found = true;
 
-						T value;
-						children[i].node.TryGet(children[i].index, out value, checkValue: false);
-						values.Add(value);
+						children[i].node.TryGet(children[i].index, values, checkValue: false);
 					}
 				}
 
@@ -41,7 +40,7 @@ namespace DataStructures.BPlusTree
 					LeafNode nextLeaf = (LeafNode)next;
 					while (nextLeaf != null)
 					{
-						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values);
+						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values, predicate);
 					}
 				}
 
@@ -56,7 +55,7 @@ namespace DataStructures.BPlusTree
 			/// <param name="end">End of the search range</param>
 			/// <param name="values">List to append results to</param>
 			/// <returns>The next leaf if at least one element was found, null otherwise</returns>
-			protected LeafNode ReturnRange(C start, C end, List<T> values)
+			protected LeafNode ReturnRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -71,9 +70,7 @@ namespace DataStructures.BPlusTree
 					{
 						found = true;
 
-						T value;
-						children[i].node.TryGet(children[i].index, out value, checkValue: false);
-						values.Add(value);
+						children[i].node.TryGet(children[i].index, values, checkValue: false);
 					}
 					else
 					{
@@ -105,8 +102,8 @@ namespace DataStructures.BPlusTree
 						// Update then
 						if (_options.Comparator.IsEqual(key, children[i].index))
 						{
-							children[i].node.Insert(key, value);
-							updated = true;
+							var info = children[i].node.Insert(key, value);
+							updated = info.updated;
 						}
 						else
 						{

@@ -7,5 +7,16 @@ namespace Test.BPlusTree
 	public class NoEncryption : AbsBPlusTreeTests<OPECipher, BytesKey>
 	{
 		public NoEncryption() : base(new NoEncryptionScheme(new byte[] { 13, 05, 19, 96 })) { }
+
+		[Fact]
+		public void TestName()
+		{
+			base.SearchSingleElementTest();
+		//Given
+		
+		//When
+		
+		//Then
+		}
 	}
 }

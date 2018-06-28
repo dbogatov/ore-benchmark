@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
@@ -19,22 +20,93 @@ namespace DataStructures.BPlusTree
 			_root = new LeafNode(options, null, null, null);
 		}
 
+		public bool UpdateSingle(C key, T value, Func<T, bool> predicate = null)
+			=> RetriveRoutine(
+				key: key,
+				values: null,
+				value: value,
+				predicate: predicate,
+				get: false,
+				single: false
+			);
+
+		public bool Update(C key, T value, Func<T, bool> predicate = null)
+			=> RetriveRoutine(
+				key: key,
+				values: null,
+				value: value,
+				predicate: predicate,
+				get: false,
+				single: true
+			);
+
+		public bool TryGetSingle(C key, out T value, Func<T, bool> predicate = null)
+		{
+			value = default(T);
+
+			var values = new List<T>();
+
+			var found = RetriveRoutine(
+			   key: key,
+			   values: values,
+			   value: default(T),
+			   predicate: predicate,
+			   get: true,
+			   single: true
+		   );
+
+			if (found)
+			{
+				value = values.Single();
+			}
+
+			return found;
+		}
+
 		/// <summary>
 		/// Returns the value for the key
 		/// </summary>
 		/// <param name="key">Search key</param>
 		/// <param name="value">Variable to place value to</param>
 		/// <returns>True if element is found, false otherwise</returns>
-		public bool TryGet(C key, out T value)
+		public bool TryGet(C key, List<T> values, Func<T, bool> predicate = null)
+			=> RetriveRoutine(
+				key: key,
+				values: values,
+				value: default(T),
+				predicate: predicate,
+				get: true,
+				single: false
+			);
+
+		private bool RetriveRoutine(C key, List<T> values, T value, Func<T, bool> predicate, bool get, bool single)
 		{
-			value = default(T);
+			values = values ?? new List<T>();
+			var returned = new List<Data>();
 
 			if (_size == 0)
 			{
 				return false;
 			}
 
-			return _root.TryGet(key, out value);
+			var found = _root.TryGet(key, returned, predicate);
+			if (found)
+			{
+				if (single && returned.Count > 1)
+				{
+					throw new InvalidOperationException("...Single operation resulted in multiple records.");
+				}
+				if (get)
+				{
+					values.AddRange(returned.Select(d => d.data).ToList());
+				}
+				else
+				{
+					returned.ForEach(r => r.data = value);
+				}
+			}
+
+			return found;
 		}
 
 		/// <summary>
@@ -45,9 +117,10 @@ namespace DataStructures.BPlusTree
 		/// <param name="values">The list to put found value to</param>
 		/// <param name="checkRanges">If unset that ranges check would be skipped</param>
 		/// <returns>True if at least element found, false otherwise</returns>
-		public bool TryRange(C start, C end, out List<T> values, bool checkRanges = true)
+		public bool TryRange(C start, C end, out List<T> values, Func<T, bool> predicate = null, bool checkRanges = true)
 		{
 			values = new List<T>();
+			var returned = new List<Data>();
 
 			if (checkRanges && _options.Comparator.IsGreaterOrEqual(start, end))
 			{
@@ -59,7 +132,13 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
-			return _root.TryRange(start, end, values);
+			var found = _root.TryRange(start, end, returned, predicate);
+			if (found)
+			{
+				values = returned.Select(r => r.data).ToList();
+			}
+
+			return found;
 		}
 
 		/// <summary>
@@ -67,7 +146,7 @@ namespace DataStructures.BPlusTree
 		/// </summary>
 		/// <param name="key">Key for value</param>
 		/// <param name="value">Value to insert or update with</param>
-		/// <returns>True if the value was inserted, false if the value was updated</returns>
+		/// <returns>True if the value with this key did not exist, false otherwise</returns>
 		public bool Insert(C key, T value)
 		{
 			var result = _root.Insert(key, value);
