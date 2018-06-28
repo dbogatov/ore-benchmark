@@ -25,8 +25,7 @@ namespace Benchmark.Primitives
 
 		private byte[] _key = new byte[128 / 8];
 
-		[GlobalSetup]
-		public void GlobalSetup()
+		public Benchmark()
 		{
 			H = HashFactory.GetHash();
 			F = PRFFactory.GetPRF();
@@ -53,7 +52,7 @@ namespace Benchmark.Primitives
 		public void PRF(byte[] input, int size) => F.PRF(_key, input);
 
 		[Benchmark]
-		[ArgumentsSource(nameof(BytesData))]
+		[ArgumentsSource(nameof(PRFBytesData))]
 		public void InversePRF(byte[] input, int size) => F.InversePRF(_key, input);
 
 		[Benchmark]
@@ -135,5 +134,7 @@ namespace Benchmark.Primitives
 		}
 
 		public IEnumerable<object[]> BitData() => BytesData().Select(b => new object[] { new BitArray((byte[])b[0]), b[1] });
+
+		public IEnumerable<object[]> PRFBytesData() => BytesData().Select(b => new object[] { F.PRF(_key, (byte[])b[0]), b[1] });
 	}
 }

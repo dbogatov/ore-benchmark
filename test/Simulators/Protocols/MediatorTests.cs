@@ -13,7 +13,8 @@ namespace Test.Simulators.Protocols
 		SchemeOperation,
 		NodeVisited,
 		PrimitiveUsage,
-		MessageSent
+		MessageSent,
+		Timer
 	}
 
 	[Trait("Category", "Unit")]
@@ -81,6 +82,32 @@ namespace Test.Simulators.Protocols
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
+		public void TimerEvent(bool sendToClient)
+		{
+			bool[] timerEvents = new bool[4];
+			int index = 0;
+
+			_mediator.Timer += stop =>
+			{
+				timerEvents[index] = stop;
+				index++;
+			};
+
+			if (sendToClient)
+			{
+				SendToClient();
+			}
+			else
+			{
+				SendToServer();
+			}
+
+			Assert.Equal(new bool[] { true, false, true, false }, timerEvents);
+		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
 		public void RecordStorageEvent(bool sendToClient)
 		{
 			long clientStorage = 0;
@@ -109,6 +136,7 @@ namespace Test.Simulators.Protocols
 		{
 			var triggers = new Dictionary<Events, bool>();
 			Enum.GetValues(typeof(Events)).Cast<Events>().ToList().ForEach(e => triggers.Add(e, false));
+			triggers[Events.Timer] = true; // parties don't have control over timer
 
 			_mediator.ClientStorage += n => triggers[Events.ClientStorage] = true;
 			_mediator.OperationOcurred += n => triggers[Events.SchemeOperation] = true;

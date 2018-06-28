@@ -30,7 +30,6 @@ namespace Simulation.Protocol
 		
 {PrintPrimitiveUsage()}
 		Observable time elapsed: {ObservedTime}
-		CPU time reported: {CPUTime}
 ";
 			}
 		}

@@ -16,7 +16,6 @@ namespace Simulation.PureSchemes
 
 {PrintPrimitiveUsage()}
 		Observable time elapsed: {ObservedTime}
-		CPU time reported: {CPUTime}
 	";
 		}
 	}

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ORESchemes.Shared;
-using System.Diagnostics;
-using System.Linq;
 using ORESchemes.Shared.Primitives;
 
 namespace Simulation.PureSchemes
@@ -33,27 +31,19 @@ namespace Simulation.PureSchemes
 		/// <param name="routine">Function to profile (must take ciphers, dataset, scheme and key)</param>
 		/// <param name="ciphers">List of ciphertext to populate or to take dta from</param>
 		/// <returns>A subreport generated for this particular profiling</returns>
-		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C,K>, K> routine, List<C> ciphers)
+		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C, K>, K> routine, List<C> ciphers)
 		{
-			var currentProcess = Process.GetCurrentProcess();
-			_primitiveUsage.Keys.ToList().ForEach(key => _primitiveUsage[key] = 0);
-			_purePrimitiveUsage.Keys.ToList().ForEach(key => _purePrimitiveUsage[key] = 0);
+			ClearTrackers();
 
-			var timer = System.Diagnostics.Stopwatch.StartNew();
-			var processStartTime = currentProcess.UserProcessorTime;
+			TimerHandler(stop: false);
 
 			routine(ciphers, _dataset, _scheme, _key);
 
-			var processEndTime = currentProcess.UserProcessorTime;
-			timer.Stop();
-
-			// for some reason this value is off by exactly hundred
-			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
+			TimerHandler(stop: true);
 
 			return new Report.Subreport
 			{
-				CPUTime = procTime,
-				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
+				ObservedTime = _totalTime,
 				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
 				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
 				SchemeOperations = _dataset.Count

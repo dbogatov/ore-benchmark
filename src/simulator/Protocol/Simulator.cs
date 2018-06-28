@@ -1,7 +1,6 @@
 ﻿using System;
 using ORESchemes.Shared;
 using DataStructures.BPlusTree;
-using System.Diagnostics;
 using System.Linq;
 using ORESchemes.Shared.Primitives;
 
@@ -28,6 +27,8 @@ namespace Simulation.Protocol
 			protocol.MessageSent += new MessageSentEventHandler(RecordCommunivcationVolume);
 			protocol.ClientStorage += new ClientStorageEventHandler(RecordClientStorage);
 
+			protocol.Timer += new TimerEventHandler(TimerHandler);
+
 			ClearTrackers();
 		}
 
@@ -38,20 +39,13 @@ namespace Simulation.Protocol
 		/// <param name="routine">Function to profile</param>
 		private Report.SubReport Profile(Action routine, Stages stage)
 		{
-			var currentProcess = Process.GetCurrentProcess();
-
 			ClearTrackers();
 
-			var timer = System.Diagnostics.Stopwatch.StartNew();
-			var processStartTime = currentProcess.UserProcessorTime;
+			TimerHandler(stop: false);
 
 			routine();
 
-			var processEndTime = currentProcess.UserProcessorTime;
-			timer.Stop();
-
-			// for some reason this value is off by exactly hundred
-			var procTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round((processEndTime.TotalMilliseconds - processStartTime.TotalMilliseconds) / 100));
+			TimerHandler(stop: true);
 
 			int actionsNumber = 0;
 			switch (stage)
@@ -70,8 +64,7 @@ namespace Simulation.Protocol
 			return new Report.SubReport
 			{
 				CacheSize = _inputs.CacheSize,
-				CPUTime = procTime,
-				ObservedTime = new TimeSpan(0, 0, 0, 0, (int)timer.ElapsedMilliseconds),
+				ObservedTime = _totalTime,
 				IOs = _visited,
 				AvgIOs = _visited / actionsNumber,
 				SchemeOperations = _schemeOperations.Values.Sum(),
