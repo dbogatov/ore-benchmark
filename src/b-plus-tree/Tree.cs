@@ -179,9 +179,9 @@ namespace DataStructures.BPlusTree
 		/// </summary>
 		/// <param name="key">The key to remove</param>
 		/// <returns>True if element was found, false otherwise</returns>
-		public bool Delete(C key)
+		public bool Delete(C key, Func<T, bool> predicate = null)
 		{
-			var result = _root.Delete(key);
+			var result = _root.Delete(key, predicate);
 
 			if (result.notFound)
 			{

@@ -69,18 +69,34 @@ namespace DataStructures.BPlusTree
 				};
 			}
 
-			public override DeleteInfo Delete(C key)
+			public override DeleteInfo Delete(C key, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
 				if (_options.Comparator.IsEqual(this.key, key))
 				{
-					ConnectNeighbors();
-
-					return new DeleteInfo
+					if (predicate != null)
 					{
-						orphan = this
-					};
+						values.RemoveAll(v => predicate(v.data));
+					}
+					else
+					{
+						values.Clear();
+					}
+
+					if (values.Count == 0)
+					{
+						ConnectNeighbors();
+
+						return new DeleteInfo
+						{
+							orphan = this
+						};
+					}
+					else
+					{
+						return new DeleteInfo();
+					}
 				}
 				else
 				{

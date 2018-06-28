@@ -165,7 +165,7 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			/// <param name="key">Key to remove</param>
 			/// <returns>The struct identifying the result of the inner delete</returns>
-			public virtual DeleteInfo Delete(C key)
+			public virtual DeleteInfo Delete(C key, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -192,7 +192,7 @@ namespace DataStructures.BPlusTree
 							};
 						}
 
-						result = children[i].node.Delete(key);
+						result = children[i].node.Delete(key, predicate);
 						break;
 					}
 				}
