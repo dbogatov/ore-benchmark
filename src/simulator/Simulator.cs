@@ -159,6 +159,10 @@ namespace Simulation
 		/// <param name="size">Current value of client storage</param>
 		protected void RecordClientStorage(long size) => _maxClientStorage = Math.Max(_maxClientStorage, size);
 
+		/// <summary>
+		/// Handler for the event when timer needs to be stopped or resumed
+		/// </summary>
+		/// <param name="stop">True if timer needs to be paused, true if timer needs to be resumed</param>
 		protected void TimerHandler(bool stop)
 		{
 			if (stop)

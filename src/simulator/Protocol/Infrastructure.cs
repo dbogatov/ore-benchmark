@@ -162,6 +162,9 @@ namespace Simulation.Protocol
 			return response;
 		}
 
+		/// <summary>
+		/// Stops timer, executes routine and resumes timer
+		/// </summary>
 		private void StopTimer(Action routine)
 		{
 			OnTimer(stop: true);
@@ -179,6 +182,9 @@ namespace Simulation.Protocol
 		event PrimitiveUsageEventHandler PrimitiveUsed;
 		event MessageSentEventHandler MessageSent;
 		event ClientStorageEventHandler ClientStorage;
+		/// <summary>
+		/// Event signalizing whether to stop or resume simulation timer
+		/// </summary>
 		event TimerEventHandler Timer;
 
 		/// <summary>
@@ -253,6 +259,9 @@ namespace Simulation.Protocol
 			});
 		}
 
+		/// <summary>
+		/// Starts timer, executes routine and stop timer
+		/// </summary>
 		private void ResumeTimer(Action routine)
 		{
 			OnTimer(stop: false);
