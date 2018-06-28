@@ -21,8 +21,47 @@ namespace Test.Simulators.Protocols
 			}
 		}
 
+		public enum Stages
+		{
+			Handshake, Construction, Search
+		}
+
+		[Theory]
+		[InlineData(Stages.Handshake)]
+		[InlineData(Stages.Construction)]
+		[InlineData(Stages.Search)]
+		public void TimerEventsTest(Stages stage)
+		{
+			bool[] timerEvents = new bool[2];
+			int index = 0;
+
+			Mock<Mediator> mediator = new Mock<Mediator>(new Mock<AbsClient>().Object, new Mock<AbsParty>().Object);
+			AbsProtocol protocol = new TestProtocol(mediator.Object);
+
+			protocol.Timer += stop =>
+			{
+				timerEvents[index] = stop;
+				index++;
+			};
+
+			switch (stage)
+			{
+				case Stages.Handshake:
+					protocol.RunHandshake();
+					break;
+				case Stages.Construction:
+					protocol.RunConstructionProtocol(null);
+					break;
+				case Stages.Search:
+					protocol.RunQueryProtocol(null);
+					break;
+			}
+
+			Assert.Equal(new bool[] { false, true }, timerEvents);
+		}
+
 		[Fact]
-		public void PropagatesEventsFromMediator()
+		public void PropagatesEventsFromMediatorTest()
 		{
 			var triggers = new Dictionary<Events, bool>();
 			Enum.GetValues(typeof(Events)).Cast<Events>().ToList().ForEach(e => triggers.Add(e, false));
@@ -35,13 +74,14 @@ namespace Test.Simulators.Protocols
 			protocol.MessageSent += n => triggers[Events.MessageSent] = true;
 			protocol.NodeVisited += n => triggers[Events.NodeVisited] = true;
 			protocol.PrimitiveUsed += (n, i) => triggers[Events.PrimitiveUsage] = true;
+			protocol.Timer += (n) => triggers[Events.Timer] = true;
 
 			mediator.Raise(c => c.ClientStorage += null, 0);
 			mediator.Raise(c => c.OperationOcurred += null, 0);
 			mediator.Raise(c => c.MessageSent += null, 0);
 			mediator.Raise(c => c.NodeVisited += null, 0);
 			mediator.Raise(c => c.PrimitiveUsed += null, 0, false);
-
+			mediator.Raise(c => c.Timer += null, true);
 
 			Assert.All(triggers.Values, v => Assert.True(v));
 		}
