@@ -124,12 +124,18 @@ namespace Simulation.Protocol
 		/// </summary>
 		public virtual IMessage<R> SendToServer<Q, R>(IMessage<Q> message)
 		{
-			OnMessageSent(message.GetSize());
+			StopTimer(() =>
+			{
+				OnMessageSent(message.GetSize());
+			});
 
 			var response = _server.AcceptMessage<Q, R>(message);
-			_client.RecordStorage(response.GetSize());
 
-			OnMessageSent(response.GetSize());
+			StopTimer(() =>
+			{
+				_client.RecordStorage(response.GetSize());
+				OnMessageSent(response.GetSize());
+			});
 
 			return response;
 		}
@@ -140,14 +146,29 @@ namespace Simulation.Protocol
 		/// </summary>
 		public virtual IMessage<R> SendToClient<Q, R>(IMessage<Q> message)
 		{
-			OnMessageSent(message.GetSize());
-			_client.RecordStorage(message.GetSize());
+			StopTimer(() =>
+			{
+				OnMessageSent(message.GetSize());
+				_client.RecordStorage(message.GetSize());
+			});
 
 			var response = _client.AcceptMessage<Q, R>(message);
 
-			OnMessageSent(response.GetSize());
+			StopTimer(() =>
+			{
+				OnMessageSent(response.GetSize());
+			});
 
 			return response;
+		}
+
+		private void StopTimer(Action routine)
+		{
+			OnTimer(stop: true);
+
+			routine();
+
+			OnTimer(stop: false);
 		}
 	}
 
@@ -158,6 +179,7 @@ namespace Simulation.Protocol
 		event PrimitiveUsageEventHandler PrimitiveUsed;
 		event MessageSentEventHandler MessageSent;
 		event ClientStorageEventHandler ClientStorage;
+		event TimerEventHandler Timer;
 
 		/// <summary>
 		/// Initiates construction protocol stage
@@ -204,13 +226,41 @@ namespace Simulation.Protocol
 			_mediator.OperationOcurred += new SchemeOperationEventHandler(OnOperationOccurred);
 			_mediator.PrimitiveUsed += new PrimitiveUsageEventHandler(OnPrimitiveUsed);
 			_mediator.ClientStorage += new ClientStorageEventHandler(OnClientStorage);
+			_mediator.Timer += new TimerEventHandler(OnTimer);
 		}
 
-		public virtual void RunConstructionProtocol(List<Record> input) => _client.RunConstruction(input);
+		public virtual void RunConstructionProtocol(List<Record> input)
+		{
+			ResumeTimer(() =>
+			{
+				_client.RunConstruction(input);
+			});
+		}
 
-		public virtual void RunHandshake() => _client.RunHandshake();
+		public virtual void RunHandshake()
+		{
+			ResumeTimer(() =>
+			{
+				_client.RunHandshake();
+			});
+		}
 
-		public virtual void RunQueryProtocol(List<RangeQuery> input) => _client.RunSearch(input);
+		public virtual void RunQueryProtocol(List<RangeQuery> input)
+		{
+			ResumeTimer(() =>
+			{
+				_client.RunSearch(input);
+			});
+		}
+
+		private void ResumeTimer(Action routine)
+		{
+			OnTimer(stop: false);
+
+			routine();
+
+			OnTimer(stop: true);
+		}
 	}
 
 	/// <summary>
@@ -223,6 +273,7 @@ namespace Simulation.Protocol
 		public virtual event PrimitiveUsageEventHandler PrimitiveUsed;
 		public virtual event MessageSentEventHandler MessageSent;
 		public virtual event ClientStorageEventHandler ClientStorage;
+		public virtual event TimerEventHandler Timer;
 
 		protected void OnMessageSent(long size)
 		{
@@ -268,9 +319,18 @@ namespace Simulation.Protocol
 				handler(size);
 			}
 		}
+
+		protected void OnTimer(bool stop)
+		{
+			var handler = Timer;
+			if (handler != null)
+			{
+				handler(stop);
+			}
+		}
 	}
 
 	public delegate void MessageSentEventHandler(long size);
-
 	public delegate void ClientStorageEventHandler(long size);
+	public delegate void TimerEventHandler(bool stop);
 }

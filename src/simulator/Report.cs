@@ -47,7 +47,6 @@ namespace Simulation
 
 
 		public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
-		public TimeSpan CPUTime { get; set; } = new TimeSpan(0);
 
 		/// <summary>
 		/// Returns a string representing readable printout of primitive usage

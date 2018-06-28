@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using ORESchemes.Shared;
 using System.Linq;
 using ORESchemes.Shared.Primitives;
+using System.Diagnostics;
+
 namespace Simulation
 {
 	/// <typeparam name="S">Stages enum</typeparam>
@@ -27,6 +29,10 @@ namespace Simulation
 
 		// Client storage structures
 		protected long _maxClientStorage = 0;
+
+		// Timer structures
+		protected TimeSpan _totalTime = TimeSpan.Zero;
+		protected Stopwatch _timer = new Stopwatch();
 
 		public AbsSimulator()
 		{
@@ -65,6 +71,9 @@ namespace Simulation
 			_rounds = 0;
 
 			_maxClientStorage = 0;
+
+			_totalTime = TimeSpan.Zero;
+			_timer = new Stopwatch();
 		}
 
 		/// <summary>
@@ -149,6 +158,24 @@ namespace Simulation
 		/// </summary>
 		/// <param name="size">Current value of client storage</param>
 		protected void RecordClientStorage(long size) => _maxClientStorage = Math.Max(_maxClientStorage, size);
+
+		protected void TimerHandler(bool stop)
+		{
+			if (stop)
+			{
+				if (_timer.IsRunning)
+				{
+					_timer.Stop();
+					_totalTime += _timer.Elapsed;	
+				}
+			} else
+			{
+				if (!_timer.IsRunning)
+				{
+					_timer.Start();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Produce a deep (not shallow) copy of its argument
