@@ -69,7 +69,7 @@ namespace Simulation.Protocol.SimpleORE
 			_tree.TryRange(
 				message.Unpack().Item1,
 				message.Unpack().Item2,
-				out result,
+				result,
 				checkRanges: false
 			);
 

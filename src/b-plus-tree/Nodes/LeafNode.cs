@@ -16,7 +16,7 @@ namespace DataStructures.BPlusTree
 				this.children.Where(ch => ch.node != null).ToList().ForEach(ch => ch.node.parent = this);
 			}
 
-			public override bool TryRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
+			public override bool TryRange(C start, C end, List<Data> values)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -40,7 +40,7 @@ namespace DataStructures.BPlusTree
 					LeafNode nextLeaf = (LeafNode)next;
 					while (nextLeaf != null)
 					{
-						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values, predicate);
+						nextLeaf = nextLeaf.ReturnRange(_options.MinCipher, end, values);
 					}
 				}
 
@@ -55,7 +55,7 @@ namespace DataStructures.BPlusTree
 			/// <param name="end">End of the search range</param>
 			/// <param name="values">List to append results to</param>
 			/// <returns>The next leaf if at least one element was found, null otherwise</returns>
-			protected LeafNode ReturnRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
+			protected LeafNode ReturnRange(C start, C end, List<Data> values)
 			{
 				_options.OnVisit(this.GetHashCode());
 

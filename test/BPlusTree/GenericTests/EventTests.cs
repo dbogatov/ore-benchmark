@@ -108,7 +108,7 @@ namespace Test.BPlusTree
 							to = val * 15
 						})
 						.ToList()
-						.ForEach(val => tree.TryRange(_scheme.Encrypt(val.from, _key), _scheme.Encrypt(val.to, _key), out _)),
+						.ForEach(val => tree.TryRange(_scheme.Encrypt(val.from, _key), _scheme.Encrypt(val.to, _key), null)),
 				Enumerable
 					.Range(1, 100)
 					.ToList()

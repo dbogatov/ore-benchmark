@@ -14,7 +14,7 @@ namespace Test.BPlusTree
 			var result = ConstructTree(
 				_defaultOptions,
 				new List<int> { 3 }
-			).TryRange(_scheme.Encrypt(5, _key), _scheme.Encrypt(10, _key), out _);
+			).TryRange(_scheme.Encrypt(5, _key), _scheme.Encrypt(10, _key), null);
 
 			Assert.False(result);
 		}
@@ -24,7 +24,7 @@ namespace Test.BPlusTree
 		{
 			var result = new Tree<string, C>(
 				_defaultOptions
-			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(3, _key), out _);
+			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(3, _key), null);
 
 			Assert.False(result);
 		}
@@ -32,12 +32,12 @@ namespace Test.BPlusTree
 		[Fact]
 		public void SearchRangeSingleElementTest()
 		{
-			List<string> output = null;
+			List<string> output = new List<string>();
 
 			var result = ConstructTree(
 				_defaultOptions,
 				new List<int> { 3 }
-			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(4, _key), out output);
+			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(4, _key), output);
 
 			Assert.True(result);
 
@@ -51,7 +51,7 @@ namespace Test.BPlusTree
 		[InlineData(1, 10000)]
 		public void SearchRangeMultilevelTest(int from, int to)
 		{
-			List<string> output = null;
+			List<string> output = new List<string>();
 			const int salt = 123;
 			const int originalMax = 10000;
 
@@ -76,7 +76,7 @@ namespace Test.BPlusTree
 					.ToList(),
 				false,
 				false
-			).TryRange(_scheme.Encrypt(from * salt, _key), _scheme.Encrypt(to * salt, _key), out output);
+			).TryRange(_scheme.Encrypt(from * salt, _key), _scheme.Encrypt(to * salt, _key), output);
 
 			Assert.True(result);
 
@@ -101,7 +101,7 @@ namespace Test.BPlusTree
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryRange(_scheme.Encrypt(101 * 101, _key), _scheme.Encrypt(120 * 120, _key), out _);
+			).TryRange(_scheme.Encrypt(101 * 101, _key), _scheme.Encrypt(120 * 120, _key), null);
 
 			Assert.False(result);
 		}
@@ -117,7 +117,7 @@ namespace Test.BPlusTree
 			var endCipher = _scheme.Encrypt(end, _key);
 
 			var exception = Assert.Throws<ArgumentException>(
-				() => tree.TryRange(startCipher, endCipher, out _)
+				() => tree.TryRange(startCipher, endCipher, null)
 			);
 
 			Assert.Equal("Improper range", exception.Message);

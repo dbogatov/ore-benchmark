@@ -8,27 +8,29 @@ namespace Test.BPlusTree
 {
 	public abstract partial class AbsBPlusTreeTests<C, K>
 	{
-		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true)
+		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true, List<string> data = null)
 		{
 			var tree = new Tree<string, C>(options);
 
-			input
-				.ForEach(val =>
+			for (int i = 0; i < input.Count; i++)
+			{
+				var val = input[i];
+				var d = data == null ? val.ToString() : data[i];
+
+				if (print)
 				{
-					if (print)
-					{
-						Console.WriteLine($"Adding {val}");
-					}
-					tree.Insert(_scheme.Encrypt(val, _key), val.ToString());
-					if (validate)
-					{
-						Assert.True(tree.Validate());
-					}
-					if (print)
-					{
-						Console.WriteLine(tree.ToString());
-					}
-				});
+					Console.WriteLine($"Adding {val}");
+				}
+				tree.Insert(_scheme.Encrypt(val, _key), d);
+				if (validate)
+				{
+					Assert.True(tree.Validate());
+				}
+				if (print)
+				{
+					Console.WriteLine(tree.ToString());
+				}
+			}
 
 			return tree;
 		}

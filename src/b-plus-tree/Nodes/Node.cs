@@ -134,7 +134,7 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryRange(C start, C end, List<Data> values, Func<T, bool> predicate = null)
+			public virtual bool TryRange(C start, C end, List<Data> values)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -147,7 +147,7 @@ namespace DataStructures.BPlusTree
 							return false;
 						}
 
-						return children[i].node.TryRange(start, end, values, predicate);
+						return children[i].node.TryRange(start, end, values);
 					}
 				}
 

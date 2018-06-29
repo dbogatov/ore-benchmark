@@ -27,7 +27,7 @@ namespace DataStructures.BPlusTree
 				value: value,
 				predicate: predicate,
 				get: false,
-				single: false
+				single: true
 			);
 
 		public bool Update(C key, T value, Func<T, bool> predicate = null)
@@ -37,7 +37,7 @@ namespace DataStructures.BPlusTree
 				value: value,
 				predicate: predicate,
 				get: false,
-				single: true
+				single: false
 			);
 
 		public bool TryGetSingle(C key, out T value, Func<T, bool> predicate = null)
@@ -117,9 +117,9 @@ namespace DataStructures.BPlusTree
 		/// <param name="values">The list to put found value to</param>
 		/// <param name="checkRanges">If unset that ranges check would be skipped</param>
 		/// <returns>True if at least element found, false otherwise</returns>
-		public bool TryRange(C start, C end, out List<T> values, Func<T, bool> predicate = null, bool checkRanges = true)
+		public bool TryRange(C start, C end, List<T> values, bool checkRanges = true)
 		{
-			values = new List<T>();
+			values = values ?? new List<T>();
 			var returned = new List<Data>();
 
 			if (checkRanges && _options.Comparator.IsGreaterOrEqual(start, end))
@@ -132,10 +132,10 @@ namespace DataStructures.BPlusTree
 				return false;
 			}
 
-			var found = _root.TryRange(start, end, returned, predicate);
+			var found = _root.TryRange(start, end, returned);
 			if (found)
 			{
-				values = returned.Select(r => r.data).ToList();
+				values.AddRange(returned.Select(r => r.data).ToList());
 			}
 
 			return found;
