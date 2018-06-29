@@ -13,7 +13,7 @@ namespace Test.BPlusTree
 			var result = ConstructTree(
 				_defaultOptions,
 				new List<int> { 3 }
-			).TryGet(_scheme.Encrypt(2, _key), out _);
+			).TryGetSingle(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);
 		}
@@ -23,7 +23,7 @@ namespace Test.BPlusTree
 		{
 			var result = new Tree<string, C>(
 				_defaultOptions
-			).TryGet(_scheme.Encrypt(2, _key), out _);
+			).TryGetSingle(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);
 		}
@@ -36,7 +36,7 @@ namespace Test.BPlusTree
 			var result = ConstructTree(
 				_defaultOptions,
 				new List<int> { 3 }
-			).TryGet(_scheme.Encrypt(3, _key), out output);
+			).TryGetSingle(_scheme.Encrypt(3, _key), out output);
 
 			Assert.True(result);
 
@@ -54,7 +54,7 @@ namespace Test.BPlusTree
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryGet(_scheme.Encrypt(58 * 58, _key), out output);
+			).TryGetSingle(_scheme.Encrypt(58 * 58, _key), out output);
 
 			Assert.True(result);
 
@@ -70,7 +70,7 @@ namespace Test.BPlusTree
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
-			).TryGet(_scheme.Encrypt(158, _key), out _);
+			).TryGetSingle(_scheme.Encrypt(158, _key), out _);
 
 			Assert.False(result);
 		}

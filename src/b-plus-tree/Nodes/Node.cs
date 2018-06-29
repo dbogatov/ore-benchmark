@@ -102,17 +102,16 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			/// <param name="key">Key to search for</param>
 			/// <param name="value">Value to be returned</param>
+			/// <param name="predicate">Predicate to use for values of the requested index</param>
 			/// <param name="checkValue">
 			/// Optional flag that if unset will skip the check of data node's
 			/// key being equal to requested key.
 			/// Should be unset when called from TryRange method.
 			/// </param>
 			/// <returns>True if element is found and false otherwise</returns>
-			public virtual bool TryGet(C key, out T value, bool checkValue = true)
+			public virtual bool TryGet(C key, List<Data> values, Func<T, bool> predicate = null, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
-
-				value = default(T);
 
 				if (children.Count == 0)
 				{
@@ -123,7 +122,7 @@ namespace DataStructures.BPlusTree
 				{
 					if (_options.Comparator.IsLessOrEqual(key, children[i].index))
 					{
-						return children[i].node != null ? children[i].node.TryGet(key, out value) : false;
+						return children[i].node != null ? children[i].node.TryGet(key, values, predicate) : false;
 					}
 				}
 
@@ -134,7 +133,7 @@ namespace DataStructures.BPlusTree
 			/// <summary>
 			/// Reflects the Tree method with the same name
 			/// </summary>
-			public virtual bool TryRange(C start, C end, List<T> values)
+			public virtual bool TryRange(C start, C end, List<Data> values)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -165,7 +164,7 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			/// <param name="key">Key to remove</param>
 			/// <returns>The struct identifying the result of the inner delete</returns>
-			public virtual DeleteInfo Delete(C key)
+			public virtual DeleteInfo Delete(C key, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -192,7 +191,7 @@ namespace DataStructures.BPlusTree
 							};
 						}
 
-						result = children[i].node.Delete(key);
+						result = children[i].node.Delete(key, predicate);
 						break;
 					}
 				}

@@ -51,6 +51,8 @@ namespace ORESchemes.Shared
 
 		public static OPECipher FromInt(int from) => new OPECipher { value = from };
 		public int ToInt() => (int)value;
+
+		public override string ToString() => value.ToString();
 	}
 
 	/// <summary>

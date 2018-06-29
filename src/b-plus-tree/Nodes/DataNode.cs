@@ -1,21 +1,36 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataStructures.BPlusTree
 {
 	public partial class Tree<T, C>
 	{
+		/// <summary>
+		/// A wrapper around DataNode's data
+		/// This way it's easy to to updates - get the Data object and change wrapped value
+		/// </summary>
+		private class Data
+		{
+			public T data;
+
+			public Data(T data) => this.data = data;
+
+			public override string ToString() => data.ToString();
+		}
+
 		private class DataNode : Node
 		{
 			public C key;
-			public T value;
+			public List<Data> values;
 
 			public DataNode(Options<C> options, Node parent, Node next, Node prev, C key, T value) : base(options, parent, next, prev)
 			{
 				this.key = key;
-				this.value = value;
+				this.values = new List<Data>() { new Data(value) };
 			}
 
-			public override bool TryGet(C key, out T value, bool checkValue = true)
+			public override bool TryGet(C key, List<Data> values, Func<T, bool> predicate = null, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
 
@@ -28,39 +43,64 @@ namespace DataStructures.BPlusTree
 
 				if (found)
 				{
-					value = this.value;
-					return true;
+					if (predicate != null)
+					{
+						var result = this.values.Where(v => predicate(v.data));
+						values.AddRange(result);
+
+						found = result.Count() > 0;
+					}
+					else
+					{
+						values.AddRange(this.values);
+					}
 				}
-				else
-				{
-					value = default(T);
-					return false;
-				}
+
+				return found;
 			}
 
 			public override InsertInfo Insert(C key, T value)
 			{
 				_options.OnVisit(this.GetHashCode());
 
-				this.value = value;
+				bool updated = this.values.Count > 0;
+				this.values.Add(new Data(value));
+
 				return new InsertInfo
 				{
-					extraNode = this
+					extraNode = this,
+					updated = updated
 				};
 			}
 
-			public override DeleteInfo Delete(C key)
+			public override DeleteInfo Delete(C key, Func<T, bool> predicate = null)
 			{
 				_options.OnVisit(this.GetHashCode());
 
 				if (_options.Comparator.IsEqual(this.key, key))
 				{
-					ConnectNeighbors();
-
-					return new DeleteInfo
+					if (predicate != null)
 					{
-						orphan = this
-					};
+						values.RemoveAll(v => predicate(v.data));
+					}
+					else
+					{
+						values.Clear();
+					}
+
+					if (values.Count == 0)
+					{
+						ConnectNeighbors();
+
+						return new DeleteInfo
+						{
+							orphan = this
+						};
+					}
+					else
+					{
+						return new DeleteInfo();
+					}
 				}
 				else
 				{
@@ -89,7 +129,7 @@ namespace DataStructures.BPlusTree
 					result += nests[i] ? "│   " : "    ";
 				}
 
-				return result + $"{(last ? "└" : "├")}[{index.ToString().PadRight(3)}]──\"{value}\"\n";
+				return result + $"{(last ? "└" : "├")}[{index.ToString().PadRight(3)}]──{string.Join(",", values.Select(v => $"\"{v}\""))}\n";
 			}
 
 			public override string TypeString()
