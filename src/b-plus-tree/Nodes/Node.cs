@@ -102,6 +102,7 @@ namespace DataStructures.BPlusTree
 			/// </summary>
 			/// <param name="key">Key to search for</param>
 			/// <param name="value">Value to be returned</param>
+			/// <param name="predicate">Predicate to use for values of the requested index</param>
 			/// <param name="checkValue">
 			/// Optional flag that if unset will skip the check of data node's
 			/// key being equal to requested key.
@@ -111,8 +112,6 @@ namespace DataStructures.BPlusTree
 			public virtual bool TryGet(C key, List<Data> values, Func<T, bool> predicate = null, bool checkValue = true)
 			{
 				_options.OnVisit(this.GetHashCode());
-
-				// values = new List<T>();
 
 				if (children.Count == 0)
 				{

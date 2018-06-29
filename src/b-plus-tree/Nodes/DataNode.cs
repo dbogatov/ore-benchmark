@@ -6,6 +6,10 @@ namespace DataStructures.BPlusTree
 {
 	public partial class Tree<T, C>
 	{
+		/// <summary>
+		/// A wrapper around DataNode's data
+		/// This way it's easy to to updates - get the Data object and change wrapped value
+		/// </summary>
 		private class Data
 		{
 			public T data;
