@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		private int ProfileVisitedNodes(Action<Tree<string, C>> routine, List<int> seeds = null)
 		{
@@ -28,7 +28,7 @@ namespace Test.BPlusTree
 
 
 		[Fact]
-		public void InsertionEventsTest()
+		public void InsertionEvents()
 		{
 			var visited = ProfileVisitedNodes(
 				tree =>
@@ -42,7 +42,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void UpdateEventsTest()
+		public void UpdateEvents()
 		{
 			var visited = ProfileVisitedNodes(
 				tree =>
@@ -60,7 +60,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteEventsTest()
+		public void DeleteEvents()
 		{
 			var visited = ProfileVisitedNodes(
 				tree =>
@@ -78,7 +78,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchEventsTest()
+		public void SearchEvents()
 		{
 			var visited = ProfileVisitedNodes(
 				tree =>
@@ -96,7 +96,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchRangeEventsTest()
+		public void SearchRangeEvents()
 		{
 			var visited = ProfileVisitedNodes(
 				tree =>

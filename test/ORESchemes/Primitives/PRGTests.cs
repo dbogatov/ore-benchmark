@@ -9,9 +9,9 @@ using ORESchemes.Shared.Primitives.PRG;
 namespace Test.ORESchemes.Primitives.PRG
 {
 	[Trait("Category", "Unit")]
-	public class AESPRGTests : AbsPRGTests
+	public class AESPRGGenerator : AbsPRG
 	{
-		public AESPRGTests() : base()
+		public AESPRGGenerator() : base()
 		{
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
@@ -20,7 +20,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
-		public void FactoryTest(bool seed)
+		public void Factory(bool seed)
 		{
 			byte[] entropy = seed ? _entropy : null;
 
@@ -32,9 +32,9 @@ namespace Test.ORESchemes.Primitives.PRG
 	}
 
 	[Trait("Category", "Unit")]
-	public class DefaultRandomTests : AbsPRGTests
+	public class DefaultRandomGenerator : AbsPRG
 	{
-		public DefaultRandomTests() : base()
+		public DefaultRandomGenerator() : base()
 		{
 			_prg = new DefaultRandom(_entropy);
 			_anotherPrg = new DefaultRandom(_anotherEntropy);
@@ -43,7 +43,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
-		public void FactoryTest(bool seed)
+		public void Factory(bool seed)
 		{
 			byte[] entropy = seed ? _entropy : null;
 
@@ -54,7 +54,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 	}
 
-	public abstract class AbsPRGTests
+	public abstract class AbsPRG
 	{
 		protected const int _seed = 132456;
 		protected readonly byte[] _entropy = new byte[128 / 8];
@@ -65,14 +65,14 @@ namespace Test.ORESchemes.Primitives.PRG
 		protected IPRG _prg;
 		protected IPRG _anotherPrg;
 
-		public AbsPRGTests()
+		public AbsPRG()
 		{
 			new Random(_seed).NextBytes(_entropy);
 			new Random(_seed + 1).NextBytes(_anotherEntropy);
 		}
 
 		[Fact]
-		public void NoExceptionsTest()
+		public void NoExceptions()
 		{
 			const int runs = 10;
 
@@ -103,7 +103,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		[InlineData(256)]
 		[InlineData(512)]
 		[InlineData(1024)]
-		public void DifferentSizeRequestsTest(int size)
+		public void DifferentSizeRequests(int size)
 		{
 			byte[] bytes = new byte[size];
 			_prg.NextBytes(bytes);
@@ -112,7 +112,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void NoRepetitionsTest()
+		public void NoRepetitions()
 		{
 			var values = new HashSet<int>(_runs);
 			for (int i = 0; i < _runs; i++)
@@ -124,7 +124,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void DifferentSeedsTest()
+		public void DifferentSeeds()
 		{
 			var values = new HashSet<int>(_runs);
 			for (int i = 0; i < _runs; i++)
@@ -137,7 +137,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void UniformityTest()
+		public void Uniformity()
 		{
 			var values = new Dictionary<int, int>(_runs);
 			for (int i = 0; i < _runs * 100; i++)
@@ -166,7 +166,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void NextDoubleTest()
+		public void NextDouble()
 		{
 			HashSet<double> set = new HashSet<double>();
 
@@ -179,7 +179,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void RangesIntTest()
+		public void RangesInt()
 		{
 			var random = new Random(_seed);
 			CheckRanges<int>(random.Next, _prg.Next);
@@ -188,7 +188,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void RangesLongTest()
+		public void RangesLong()
 		{
 			var random = new Random(_seed);
 			CheckRanges<long>((a, b) => (long)(random.NextDouble() * Int64.MaxValue), _prg.NextLong);
@@ -197,7 +197,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void RangesDoubleTest()
+		public void RangesDouble()
 		{
 			var random = new Random(_seed);
 			CheckRanges<double>((a, b) => random.NextDouble(), _prg.NextDouble);
@@ -206,9 +206,9 @@ namespace Test.ORESchemes.Primitives.PRG
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRG>(
+			EventsTestsShared.Events<IPRG>(
 				_prg,
 				(G) =>
 				{

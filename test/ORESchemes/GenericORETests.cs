@@ -7,7 +7,7 @@ using ORESchemes.Shared.Primitives;
 
 namespace Test.ORESchemes
 {
-	public abstract class GenericORETests<C, K>
+	public abstract class GenericORE<C, K>
 		where C : IGetSize
 		where K : IGetSize
 	{
@@ -19,7 +19,7 @@ namespace Test.ORESchemes
 
 		protected Dictionary<SchemeOperation, Tuple<int, int>> _expectedEvents = null;
 
-		public GenericORETests(int runs = 100)
+		public GenericORE(int runs = 100)
 		{
 			_runs = runs;
 			new Random(SEED).NextBytes(_entropy);
@@ -27,7 +27,7 @@ namespace Test.ORESchemes
 			SetScheme();
 		}
 
-		~GenericORETests()
+		~GenericORE()
 		{
 			_scheme.Destruct();
 		}
@@ -43,20 +43,20 @@ namespace Test.ORESchemes
 		protected virtual C ConfigureCiphertext(C cipher, K key) => cipher;
 
 		[Fact]
-		public void InitTest()
+		public void Init()
 		{
 			_scheme.Init();
 		}
 
 		[Fact]
-		public void DestructTest()
+		public void Destruct()
 		{
 			_scheme.Init();
 			_scheme.Destruct();
 		}
 
 		[Fact]
-		public virtual void KeyGenTest()
+		public virtual void KeyGen()
 		{
 			var keyOne = _scheme.KeyGen();
 			var keyTwo = _scheme.KeyGen();
@@ -69,7 +69,7 @@ namespace Test.ORESchemes
 		/// Decryption of encryption should be original plaintext for all
 		/// valid keys and plaintexts
 		/// </summary>
-		public void CorrectnessTest()
+		public void Correctness()
 		{
 			_scheme.Init();
 
@@ -100,7 +100,7 @@ namespace Test.ORESchemes
 		[InlineData(1, 2)]
 		[InlineData(-2, -1)]
 		[InlineData(-1, -2)]
-		public virtual void OrderCorrectnessTest(int plaintextOne, int plaintextTwo)
+		public virtual void OrderCorrectness(int plaintextOne, int plaintextTwo)
 		{
 			_scheme.Init();
 
@@ -126,7 +126,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
 			var actual = new Dictionary<SchemeOperation, int>();
 			Enum
@@ -177,7 +177,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void MinMaxTest()
+		public void MinMax()
 		{
 			_scheme.Init();
 			var key = _scheme.KeyGen();
@@ -216,7 +216,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public virtual void PrimitivesEventsTest()
+		public virtual void PrimitivesEvents()
 		{
 			_scheme.Init();
 			var key = _scheme.KeyGen();
@@ -255,14 +255,14 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void KeySizeTest()
+		public void KeySizecheck()
 		{
 			var key = _scheme.KeyGen();
 			Assert.Equal(KeySize(), key.GetSize());
 		}
 
 		[Fact]
-		public void CipherSizeTest()
+		public void CipherSizeCheck()
 		{
 			var key = _scheme.KeyGen();
 			var cipher = _scheme.Encrypt(50, key);

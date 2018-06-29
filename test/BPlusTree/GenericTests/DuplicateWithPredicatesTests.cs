@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		private Tree<string, C> DuplicatesTree()
 			=> ConstructTree(

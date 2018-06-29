@@ -6,7 +6,7 @@ using Xunit;
 namespace Test.BPlusTree
 {
 	[Trait("Category", "Integration")]
-	public class CryptDBOPE : AbsBPlusTreeTests<OPECipher, BytesKey>
+	public class CryptDBOPE : AbsBPlusTree<OPECipher, BytesKey>
 	{
 		public CryptDBOPE() : base(
 			new CryptDBScheme(

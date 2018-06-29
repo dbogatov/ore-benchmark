@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true, List<string> data = null)
 		{
@@ -36,7 +36,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void InitializeTest()
+		public void Initialize()
 		{
 			new Tree<string, C>(
 				_defaultOptions
@@ -44,7 +44,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void InsertSingleElementTest()
+		public void InsertSingleElement()
 		{
 			ConstructTree(
 				_defaultOptions,
@@ -53,7 +53,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void TriggerRootSplitTest()
+		public void TriggerRootSplit()
 		{
 			ConstructTree(
 				_defaultOptions,
@@ -62,7 +62,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void TriggerInternalSplitTest()
+		public void TriggerInternalSplit()
 		{
 			ConstructTree(
 				_defaultOptions,
@@ -71,7 +71,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void FromLectureSlidesTest()
+		public void FromLectureSlides()
 		{
 			ConstructTree(
 				_defaultOptions,
@@ -80,7 +80,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SquaresSeriesTest()
+		public void SquaresSeries()
 		{
 			ConstructTree(
 				_defaultOptions,
@@ -92,7 +92,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void OscillatingSeriesTest()
+		public void OscillatingSeries()
 		{
 			ConstructTree(
 				OptionsWithBranching(5),
@@ -104,7 +104,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void RandomSequenceTest()
+		public void RandomSequence()
 		{
 			Random random = new Random(3068354); // seed is static
 

@@ -8,13 +8,13 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class PerfectFHOPETests : AbsFHOPETests
+	public class PerfectFHOPE : AbsFHOPE
 	{
 		public override double GetP() => 0;
 	}
 
 	[Trait("Category", "Unit")]
-	public class ImperfectFHOPETests : AbsFHOPETests
+	public class ImperfectFHOPE : AbsFHOPE
 	{
 		public override double GetP() => 0.5;
 
@@ -39,7 +39,7 @@ namespace Test.ORESchemes
 		}
 	}
 
-	public abstract class AbsFHOPETests : GenericORETests<Ciphertext, State>
+	public abstract class AbsFHOPE : GenericORE<Ciphertext, State>
 	{
 		public abstract double GetP();
 
@@ -71,7 +71,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public override void KeyGenTest()
+		public override void KeyGen()
 		{
 			_scheme.Init();
 			var key = _scheme.KeyGen();
@@ -80,7 +80,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void ExceptionsTest()
+		public void Exceptions()
 		{
 			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
 
@@ -102,11 +102,11 @@ namespace Test.ORESchemes
 #pragma warning disable xUnit1026
 		[Theory(Skip = "Not applicable")]
 		[InlineData(-10, -10)]
-		public override void OrderCorrectnessTest(int plaintextOne, int plaintextTwo) { }
+		public override void OrderCorrectness(int plaintextOne, int plaintextTwo) { }
 
 		[Theory]
 		[ClassData(typeof(OrderCorrectnessTestData))]
-		public void FHOPEOrderCorrectnessTest(int plaintextOne, int plaintextTwo, bool configureFirst)
+		public void FHOPEOrderCorrectness(int plaintextOne, int plaintextTwo, bool configureFirst)
 		{
 			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
 

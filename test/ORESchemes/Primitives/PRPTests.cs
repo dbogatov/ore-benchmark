@@ -8,12 +8,12 @@ using Xunit;
 namespace Test.ORESchemes.Primitives.PRP
 {
 	[Trait("Category", "Unit")]
-	public class FeistelTests : AbsPRPTests
+	public class FeistelPRP : AbsPRP
 	{
-		public FeistelTests() : base(new Feistel(3)) { }
+		public FeistelPRP() : base(new Feistel(3)) { }
 
 		[Fact]
-		public void FactoryTest()
+		public void Factory()
 		{
 			var prp = PRPFactory.GetPRP();
 
@@ -23,9 +23,9 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRP>(
+			EventsTestsShared.Events<IPRP>(
 				_prp,
 				(P) =>
 				{
@@ -48,12 +48,12 @@ namespace Test.ORESchemes.Primitives.PRP
 	}
 
 	[Trait("Category", "Integration")]
-	public class StrongFeistelTests : AbsPRPTests
+	public class StrongFeistel : AbsPRP
 	{
-		public StrongFeistelTests() : base(new Feistel(4)) { }
+		public StrongFeistel() : base(new Feistel(4)) { }
 
 		[Fact]
-		public void FactoryTest()
+		public void Factory()
 		{
 			var prp = PRPFactory.GetStrongPRP();
 
@@ -63,9 +63,9 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRP>(
+			EventsTestsShared.Events<IPRP>(
 				_prp,
 				(P) =>
 				{
@@ -87,7 +87,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 	}
 
-	public abstract class AbsPRPTests
+	public abstract class AbsPRP
 	{
 		private const int RUNS = 100;
 		private const int SEED = 123456;
@@ -95,7 +95,7 @@ namespace Test.ORESchemes.Primitives.PRP
 
 		protected readonly IPRP _prp;
 
-		public AbsPRPTests(IPRP prp)
+		public AbsPRP(IPRP prp)
 		{
 			new Random(SEED).NextBytes(_key);
 
@@ -103,7 +103,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void OneToOneTest()
+		public void OneToOne()
 		{
 			var set = new HashSet<BitArray>();
 
@@ -116,7 +116,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void NoIdentityTest()
+		public void NoIdentity()
 		{
 			int identities = 0;
 
@@ -133,7 +133,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void OddBitsTest()
+		public void OddBits()
 		{
 			var set = new HashSet<byte>();
 
@@ -168,7 +168,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		/// the algorithm use this number, not a length of array.
 		/// This test is a response to an actual bug.
 		/// </summary>
-		public void ProperLengthUsedTest()
+		public void ProperLengthUsed()
 		{
 			var set = new HashSet<int>();
 

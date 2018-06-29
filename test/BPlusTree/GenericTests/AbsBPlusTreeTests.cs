@@ -3,7 +3,7 @@ using ORESchemes.Shared;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 		where C : IGetSize
 		where K : IGetSize
 	{
@@ -24,7 +24,7 @@ namespace Test.BPlusTree
 			private set { }
 		}
 
-		public AbsBPlusTreeTests(IOREScheme<C, K> scheme, int max = 1000)
+		public AbsBPlusTree(IOREScheme<C, K> scheme, int max = 1000)
 		{
 			_max = max;
 

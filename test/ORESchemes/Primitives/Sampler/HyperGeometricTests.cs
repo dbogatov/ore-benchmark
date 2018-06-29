@@ -5,14 +5,14 @@ using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {
-	public partial class SamplerTests
+	public partial class Sampler
 	{
 		[Theory]
 		[InlineData(99, 10, 25, 0.05)]
 		[InlineData(500, 50, 100, 0.03)]
 		[InlineData(500, 60, 200, 0.02)]
 		[InlineData(500, 70, 300, 0.02)]
-		public void HGDistributionTest(int N, int K, int n, double epsilon)
+		public void HGDistribution(int N, int K, int n, double epsilon)
 		{
 			Func<int, double> pmf =
 				(k) =>
@@ -46,7 +46,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void HGLargeInputsTest()
+		public void HGLargeInputs()
 		{
 			_sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
 		}
@@ -55,7 +55,7 @@ namespace Test.ORESchemes.Primitives
 		/// <summary>
 		/// These inputs are know to cause trouble
 		/// </summary>
-		public void HGInconvenientInputsTest()
+		public void HGInconvenientInputs()
 		{
 			_sampler.HyperGeometric(144115188075855871, 72057594037927936, 33562748);
 			_sampler.HyperGeometric(72057594037927935, 36028797018963968, 16781410);
@@ -71,7 +71,7 @@ namespace Test.ORESchemes.Primitives
 		[InlineData(500, 50, 100)]
 		[InlineData(500, 60, 200)]
 		[InlineData(500, 70, 300)]
-		public void HGCorrectnessTest(int N, int K, int n)
+		public void HGCorrectness(int N, int K, int n)
 		{
 			Random random = new Random(SEED);
 

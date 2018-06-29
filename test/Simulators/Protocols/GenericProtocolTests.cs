@@ -6,14 +6,14 @@ using Xunit;
 
 namespace Test.Simulators.Protocols.Integration
 {
-	public abstract class AbsProtocolTests
+	public abstract class AbsProtocol
 	{
 		protected IProtocol _protocol;
 
 		protected readonly List<Simulation.Protocol.Record> _input;
 		protected readonly List<RangeQuery> _queries;
 
-		public AbsProtocolTests()
+		public AbsProtocol()
 		{
 			Random random = new Random(123456);
 

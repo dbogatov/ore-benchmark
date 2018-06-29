@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 
 		[Fact]
-		public void PrintTreeTest()
+		public void PrintTree()
 		{
 			var input = new List<int> { 3, -2, 8 };
 			var tree = ConstructTree(
@@ -29,7 +29,7 @@ namespace Test.BPlusTree
 		[Theory]
 		[InlineData(1)]
 		[InlineData(70000)]
-		public void MalformedOptionsTest(int branches)
+		public void MalformedOptions(int branches)
 		{
 			Assert.Throws<ArgumentException>(
 				() => new Options<C>(_scheme, branches)
@@ -41,7 +41,7 @@ namespace Test.BPlusTree
 		[InlineData(1)]
 		[InlineData(5)]
 		[InlineData(10)]
-		public void SizeTest(int expected)
+		public void Size(int expected)
 		{
 			var tree = ConstructTree(
 				_defaultOptions,

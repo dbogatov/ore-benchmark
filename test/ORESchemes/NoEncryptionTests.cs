@@ -8,7 +8,7 @@ using ORESchemes.Shared.Primitives;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class NoEncryptionTests : GenericORETests<OPECipher, BytesKey>
+	public class NoEncryption : GenericORE<OPECipher, BytesKey>
 	{
 		protected override void SetScheme()
 		{
@@ -16,7 +16,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public override void PrimitivesEventsTest()
+		public override void PrimitivesEvents()
 		{
 			_scheme.Init();
 			var key = _scheme.KeyGen();

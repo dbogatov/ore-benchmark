@@ -5,7 +5,7 @@ using ORESchemes.Shared.Primitives.Sampler;
 namespace Test.ORESchemes.Primitives
 {
 	[Trait("Category", "Unit")]
-	public partial class SamplerTests
+	public partial class Sampler
 	{
 		private const int SEED = 123456;
 		private readonly byte[] _entropy = new byte[128 / 8];
@@ -13,7 +13,7 @@ namespace Test.ORESchemes.Primitives
 
 		private const int RUNS = 1000;
 
-		public SamplerTests()
+		public Sampler()
 		{
 			new Random(SEED).NextBytes(_entropy);
 			_sampler = new CustomSampler(_entropy);

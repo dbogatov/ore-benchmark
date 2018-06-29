@@ -10,14 +10,14 @@ using Xunit;
 namespace Test.ORESchemes.Primitives.PRF
 {
 	[Trait("Category", "Unit")]
-	public class AESPRFTests : AbsPRFTests
+	public class AESPRF : AbsPRF
 	{
-		public AESPRFTests() : base(new AES(Enumerable.Repeat((byte)0x00, 128 / 8).ToArray())) { }
+		public AESPRF() : base(new AES(Enumerable.Repeat((byte)0x00, 128 / 8).ToArray())) { }
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRF>(
+			EventsTestsShared.Events<IPRF>(
 				_prf,
 				(F) =>
 				{
@@ -35,14 +35,14 @@ namespace Test.ORESchemes.Primitives.PRF
 	}
 
 	[Trait("Category", "Unit")]
-	public class FeistelPRFTests : AbsPRFTests
+	public class FeistelPRF : AbsPRF
 	{
-		public FeistelPRFTests() : base(new Feistel(3)) { }
+		public FeistelPRF() : base(new Feistel(3)) { }
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRF>(
+			EventsTestsShared.Events<IPRF>(
 				_prf,
 				(F) =>
 				{
@@ -61,14 +61,14 @@ namespace Test.ORESchemes.Primitives.PRF
 	}
 
 	[Trait("Category", "Integration")]
-	public class FeistelStrongPRFTests : AbsPRFTests
+	public class FeistelStrongPRF : AbsPRF
 	{
-		public FeistelStrongPRFTests() : base(new Feistel(4)) { }
+		public FeistelStrongPRF() : base(new Feistel(4)) { }
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IPRF>(
+			EventsTestsShared.Events<IPRF>(
 				_prf,
 				(F) =>
 				{
@@ -86,21 +86,21 @@ namespace Test.ORESchemes.Primitives.PRF
 		}
 	}
 
-	public abstract class AbsPRFTests
+	public abstract class AbsPRF
 	{
 		protected readonly IPRF _prf;
 		private const int SEED = 123456;
 		protected readonly byte[] _key = new byte[128 / 8];
 		private const int RUNS = 1000;
 
-		public AbsPRFTests(IPRF prf)
+		public AbsPRF(IPRF prf)
 		{
 			new Random(SEED).NextBytes(_key);
 			_prf = prf;
 		}
 
 		[Fact]
-		public void CorrectnessIntTest()
+		public void CorrectnessInt()
 		{
 			for (int i = -RUNS; i < RUNS; i++)
 			{
@@ -111,7 +111,7 @@ namespace Test.ORESchemes.Primitives.PRF
 		}
 
 		[Fact]
-		public void CorrectnessTest()
+		public void Correctness()
 		{
 			Random random = new Random(SEED);
 

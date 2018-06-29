@@ -11,9 +11,9 @@ using Xunit;
 namespace Test.Simulators.Protocols.Integration
 {
 	[Trait("Category", "Unit")]
-	public class NoEncryptionProtocolTests : AbsProtocolTests
+	public class NoEncryptionProtocol : AbsProtocol
 	{
-		public NoEncryptionProtocolTests()
+		public NoEncryptionProtocol()
 		{
 			var scheme = new NoEncryptionScheme();
 			_protocol = new Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
@@ -23,9 +23,9 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class CryptDBProtocolTests : AbsProtocolTests
+	public class CryptDBProtocol : AbsProtocol
 	{
-		public CryptDBProtocolTests()
+		public CryptDBProtocol()
 		{
 			var scheme =
 				new CryptDBScheme(
@@ -42,9 +42,9 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class PracticalOREProtocolTests : AbsProtocolTests
+	public class PracticalOREProtocol : AbsProtocol
 	{
-		public PracticalOREProtocolTests()
+		public PracticalOREProtocol()
 		{
 			var scheme = new PracticalOREScheme();
 
@@ -55,9 +55,9 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class LewiOREProtocolTests : AbsProtocolTests
+	public class LewiOREProtocol : AbsProtocol
 	{
-		public LewiOREProtocolTests()
+		public LewiOREProtocol()
 		{
 			var scheme = new LewiOREScheme();
 
@@ -68,9 +68,9 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class FHOPEProtocolTests : AbsProtocolTests
+	public class FHOPEProtocol : AbsProtocol
 	{
-		public FHOPEProtocolTests()
+		public FHOPEProtocol()
 		{
 			var scheme = new FHOPEScheme(long.MinValue, long.MaxValue);
 

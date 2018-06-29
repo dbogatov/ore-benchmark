@@ -8,7 +8,7 @@ using System.Linq;
 namespace Test.Simulators.Protocols
 {
 	[Trait("Category", "Unit")]
-	public class AbsProtocolTests
+	public class AbsProtocolChecks
 	{
 		private class TestProtocol : AbsProtocol
 		{
@@ -30,7 +30,7 @@ namespace Test.Simulators.Protocols
 		[InlineData(Stages.Handshake)]
 		[InlineData(Stages.Construction)]
 		[InlineData(Stages.Search)]
-		public void TimerEventsTest(Stages stage)
+		public void TimerEvents(Stages stage)
 		{
 			bool[] timerEvents = new bool[2];
 			int index = 0;
@@ -61,7 +61,7 @@ namespace Test.Simulators.Protocols
 		}
 
 		[Fact]
-		public void PropagatesEventsFromMediatorTest()
+		public void PropagatesEventsFromMediator()
 		{
 			var triggers = new Dictionary<Events, bool>();
 			Enum.GetValues(typeof(Events)).Cast<Events>().ToList().ForEach(e => triggers.Add(e, false));

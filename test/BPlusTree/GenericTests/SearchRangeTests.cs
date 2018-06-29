@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		[Fact]
-		public void SearchRangeNotExistingTest()
+		public void SearchRangeNotExisting()
 		{
 			var result = ConstructTree(
 				_defaultOptions,
@@ -20,7 +20,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchRangeEmptyTreeTest()
+		public void SearchRangeEmptyTree()
 		{
 			var result = new Tree<string, C>(
 				_defaultOptions
@@ -30,7 +30,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchRangeSingleElementTest()
+		public void SearchRangeSingleElement()
 		{
 			List<string> output = new List<string>();
 
@@ -49,7 +49,7 @@ namespace Test.BPlusTree
 		[InlineData(5000, 5050)]
 		[InlineData(3000, 7000)]
 		[InlineData(1, 10000)]
-		public void SearchRangeMultilevelTest(int from, int to)
+		public void SearchRangeMultilevel(int from, int to)
 		{
 			List<string> output = new List<string>();
 			const int salt = 123;
@@ -93,7 +93,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchRangeNonExistingMultilevelTest()
+		public void SearchRangeNonExistingMultilevel()
 		{
 			var result = ConstructTree(
 				_defaultOptions,
@@ -109,7 +109,7 @@ namespace Test.BPlusTree
 		[Theory]
 		[InlineData(3, 2)]
 		[InlineData(2, 2)]
-		public void SearchRangeImproperTest(int start, int end)
+		public void SearchRangeImproper(int start, int end)
 		{
 			var tree = new Tree<string, C>(_defaultOptions);
 

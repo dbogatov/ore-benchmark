@@ -6,13 +6,13 @@ using MathNet.Numerics;
 
 namespace Test.ORESchemes.Primitives
 {
-	public partial class SamplerTests
+	public partial class Sampler
 	{
 		[Theory]
 		[InlineData(40, 0.5, 0.03)]
 		[InlineData(20, 0.7, 0.03)]
 		[InlineData(20, 0.5, 0.03)]
-		public void BinomialDistributionTest(int n, double p, double epsilon)
+		public void BinomialDistribution(int n, double p, double epsilon)
 		{
 			Func<int, double> pmf =
 				(k) =>

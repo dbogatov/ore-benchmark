@@ -13,13 +13,13 @@ using Xunit;
 namespace Test.Simulators
 {
 	[Trait("Category", "Unit")]
-	public class ProtocolsTests
+	public class ProtocolsSimulation
 	{
 		[Theory]
 		[InlineData(Stages.Handshake)]
 		[InlineData(Stages.Construction)]
 		[InlineData(Stages.Queries)]
-		public void SimulatorTest(Stages stage)
+		public void Simulator(Stages stage)
 		{
 			Expression<Action<IProtocol>> setup = null;
 			int actionsNumber = 0;
@@ -153,7 +153,7 @@ namespace Test.Simulators
 		}
 
 		[Fact]
-		public void IntegrationTest()
+		public void Integration()
 		{
 			Random random = new Random(123456);
 

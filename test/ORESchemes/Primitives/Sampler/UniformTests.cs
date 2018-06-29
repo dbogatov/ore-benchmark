@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace Test.ORESchemes.Primitives
 {
-	public partial class SamplerTests
+	public partial class Sampler
 	{
 		[Fact]
-		public void UniformityTest()
+		public void Uniformity()
 		{
 			var values = new Dictionary<ulong, int>(RUNS);
 			for (int i = 0; i < RUNS * 100; i++)
@@ -39,7 +39,7 @@ namespace Test.ORESchemes.Primitives
 		}
 
 		[Fact]
-		public void RangesTest()
+		public void Ranges()
 		{
 			Random random = new Random(SEED);
 

@@ -8,7 +8,7 @@ using Xunit;
 namespace Test.ORESchemes.Primitives.LFPRF
 {
 	[Trait("Category", "Unit")]
-	public class TapeGenTests
+	public class TapeGenerator
 	{
 		private const int SEED = 123456;
 		private const int RUNS = 1000;
@@ -18,7 +18,7 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		private byte[] keyOne = new byte[128 / 8];
 		private byte[] keyTwo = new byte[128 / 8];
 
-		public TapeGenTests()
+		public TapeGenerator()
 		{
 			Random random = new Random(SEED);
 
@@ -29,7 +29,7 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		}
 
 		[Fact]
-		public void DifferentSeedsTest()
+		public void DifferentSeeds()
 		{
 			var tapes = new List<TapeGen>() {
 				new TapeGen(keyOne, seedOne),
@@ -48,9 +48,9 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<TapeGen>(
+			EventsTestsShared.Events<TapeGen>(
 				new TapeGen(keyOne, seedOne),
 				(T) =>
 				{

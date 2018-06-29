@@ -8,7 +8,7 @@ using Xunit;
 namespace Test
 {
 	[Trait("Category", "Unit")]
-	public class BenchmarkTests
+	public class Benchmark
 	{
 		[Theory]
 		[InlineData("Primitives")]
@@ -17,11 +17,11 @@ namespace Test
 		{
 			var summary = BenchmarkSwitcher.FromTypes(
 				new[] {
-					typeof(Benchmark.Schemes.Benchmark<OPECipher, BytesKey>),
-					typeof(Benchmark.Schemes.Benchmark<global::ORESchemes.PracticalORE.Ciphertext, BytesKey>),
-					typeof(Benchmark.Schemes.Benchmark<global::ORESchemes.LewiORE.Ciphertext, global::ORESchemes.LewiORE.Key>),
-					typeof(Benchmark.Schemes.Benchmark<global::ORESchemes.FHOPE.Ciphertext, global::ORESchemes.FHOPE.State>),
-					typeof(Benchmark.Primitives.Benchmark)
+					typeof(global::Benchmark.Schemes.Benchmark<OPECipher, BytesKey>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.PracticalORE.Ciphertext, BytesKey>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.LewiORE.Ciphertext, global::ORESchemes.LewiORE.Key>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.FHOPE.Ciphertext, global::ORESchemes.FHOPE.State>),
+					typeof(global::Benchmark.Primitives.Benchmark)
 				}
 			).Run(new[] { $"--namespace=Benchmark.{@namespace}", "--join" }, new CustomConfig());
 		}

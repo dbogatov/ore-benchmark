@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		[Fact]
-		public void SearchNotExistingElementTest()
+		public void SearchNotExistingElement()
 		{
 			var result = ConstructTree(
 				_defaultOptions,
@@ -19,7 +19,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchEmptyTreeTest()
+		public void SearchEmptyTree()
 		{
 			var result = new Tree<string, C>(
 				_defaultOptions
@@ -29,7 +29,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchSingleElementTest()
+		public void SearchSingleElement()
 		{
 			var output = "";
 
@@ -44,7 +44,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchSingleElementMultilevelTest()
+		public void SearchSingleElementMultilevel()
 		{
 			var output = "";
 
@@ -62,7 +62,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void SearchNonExistingElementMultilevelTest()
+		public void SearchNonExistingElementMultilevel()
 		{
 			var result = ConstructTree(
 				_defaultOptions,

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Test.BPlusTree
 {
-	public abstract partial class AbsBPlusTreeTests<C, K>
+	public abstract partial class AbsBPlusTree<C, K>
 	{
 		public Tree<string, C> DeleteAndValidate(Tree<string, C> tree, int element, bool print = false)
 		{
@@ -29,7 +29,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteNotExistingElementTest()
+		public void DeleteNotExistingElement()
 		{
 			var tree = ConstructTree(
 				_defaultOptions,
@@ -40,7 +40,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteEmptyTreeTest()
+		public void DeleteEmptyTree()
 		{
 			var tree = new Tree<string, C>(
 				_defaultOptions
@@ -50,7 +50,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteSingleElementTest()
+		public void DeleteSingleElement()
 		{
 			var tree = ConstructTree(
 				_defaultOptions,
@@ -61,7 +61,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteMultilevelTest()
+		public void DeleteMultilevel()
 		{
 			var tree = ConstructTree(
 				_defaultOptions,
@@ -75,7 +75,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteThenInsertTest()
+		public void DeleteThenInsert()
 		{
 			var tree = ConstructTree(
 				_defaultOptions,
@@ -141,7 +141,7 @@ namespace Test.BPlusTree
 		}
 
 		[Fact]
-		public void DeleteRandomElementsTest()
+		public void DeleteRandomElements()
 		{
 			Random random = new Random(3068354); // seed is static
 

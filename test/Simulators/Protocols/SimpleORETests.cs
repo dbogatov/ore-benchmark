@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Test.Simulators.Protocols.SimpleORE
 {
-	public static class ProtocolTestsHelper
+	public static class ProtocolHelper
 	{
 		public static Mock<IOREScheme<OPECipher, BytesKey>> GetScheme()
 		{
@@ -55,7 +55,7 @@ namespace Test.Simulators.Protocols.SimpleORE
 	}
 
 	[Trait("Category", "Unit")]
-	public class ClientTests
+	public class Client
 	{
 		private readonly Mock<Mediator> _mediator =
 			new Mock<Mediator>(
@@ -63,11 +63,11 @@ namespace Test.Simulators.Protocols.SimpleORE
 				new Mock<AbsParty>().Object
 			);
 
-		private readonly Mock<IOREScheme<OPECipher, BytesKey>> _scheme = ProtocolTestsHelper.GetScheme();
+		private readonly Mock<IOREScheme<OPECipher, BytesKey>> _scheme = ProtocolHelper.GetScheme();
 
 		private readonly Client<IOREScheme<OPECipher, BytesKey>, OPECipher, BytesKey> _client;
 
-		public ClientTests()
+		public Client()
 		{
 			_client = new Client<IOREScheme<OPECipher, BytesKey>, OPECipher, BytesKey>(_scheme.Object);
 			_client.SetMediator(_mediator.Object);
@@ -165,15 +165,15 @@ namespace Test.Simulators.Protocols.SimpleORE
 	}
 
 	[Trait("Category", "Unit")]
-	public class ServerTests
+	public class Server
 	{
 		private readonly Server<OPECipher> _server;
 
-		private readonly Mock<IOREScheme<OPECipher, BytesKey>> _scheme = ProtocolTestsHelper.GetScheme();
+		private readonly Mock<IOREScheme<OPECipher, BytesKey>> _scheme = ProtocolHelper.GetScheme();
 
 		private readonly Mock<Options<OPECipher>> _options;
 
-		public ServerTests()
+		public Server()
 		{
 			_options = new Mock<Options<OPECipher>>(_scheme.Object, 60);
 			_server = new Server<OPECipher>(_options.Object);

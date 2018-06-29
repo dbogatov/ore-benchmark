@@ -6,12 +6,12 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class CryptDBOPERange48Tests : AbsCryptDBOPETests
+	public class CryptDBOPERange48 : AbsCryptDBOPE
 	{
 		protected override void SetParameters() => rangeBits = 48;
 
 		[Fact]
-		public void InputOutOfRangeTest()
+		public void InputOutOfRange()
 		{
 			var scheme = new CryptDBScheme(
 				Int16.MinValue,
@@ -46,7 +46,7 @@ namespace Test.ORESchemes
 		/// <summary>
 		/// If domain is equal to range, scheme must be one to one
 		/// </summary>
-		public void OneToOneTest()
+		public void OneToOne()
 		{
 			var generator = new Random(SEED);
 
@@ -76,7 +76,7 @@ namespace Test.ORESchemes
 		/// Inputs known to trigger failures
 		/// Every bug must turn to test
 		/// </summary>
-		public void SpecialInputsTest()
+		public void SpecialInputs()
 		{
 			var entropy = BitConverter.GetBytes(782797714);
 
@@ -100,30 +100,30 @@ namespace Test.ORESchemes
 	}
 
 	[Trait("Category", "Integration")]
-	public class CryptDBOPERange44Tests : AbsCryptDBOPETests
+	public class CryptDBOPERange44 : AbsCryptDBOPE
 	{
 		protected override void SetParameters() => rangeBits = 44;
 	}
 
 	[Trait("Category", "Integration")]
-	public class CryptDBOPERange40Tests : AbsCryptDBOPETests
+	public class CryptDBOPERange40 : AbsCryptDBOPE
 	{
 		protected override void SetParameters() => rangeBits = 40;
 	}
 
 	[Trait("Category", "Integration")]
-	public class CryptDBOPERange36Tests : AbsCryptDBOPETests
+	public class CryptDBOPERange36 : AbsCryptDBOPE
 	{
 		protected override void SetParameters() => rangeBits = 36;
 	}
 
 	[Trait("Category", "Integration")]
-	public class CryptDBOPERange32Tests : AbsCryptDBOPETests
+	public class CryptDBOPERange32 : AbsCryptDBOPE
 	{
 		protected override void SetParameters() => rangeBits = 32;
 	}
 
-	public abstract class AbsCryptDBOPETests : GenericORETests<OPECipher, BytesKey>
+	public abstract class AbsCryptDBOPE : GenericORE<OPECipher, BytesKey>
 	{
 		protected int rangeBits = 48;
 
@@ -139,7 +139,7 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void MalformedCiphertextTest()
+		public void MalformedCiphertext()
 		{
 			_scheme.Init();
 

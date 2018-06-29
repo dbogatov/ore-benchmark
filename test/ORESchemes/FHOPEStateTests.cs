@@ -7,11 +7,11 @@ using Xunit;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class FHOPEStateTests
+	public class FHOPEState
 	{
 		private readonly State _state;
 
-		public FHOPEStateTests()
+		public FHOPEState()
 		{
 			byte[] entropy = new byte[128 / 8];
 			new Random(123456).NextBytes(entropy);

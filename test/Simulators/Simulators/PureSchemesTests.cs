@@ -7,10 +7,10 @@ using ORESchemes.LewiORE;
 namespace Test.Simulators
 {
 	[Trait("Category", "Unit")]
-	public class PureSchemesTests
+	public class PureSchemes
 	{
 		[Fact]
-		public void SimulatorTest()
+		public void Simulator()
 		{
 			byte[] entropy = new byte[128 / 8];
 			new Random(123456).NextBytes(entropy);

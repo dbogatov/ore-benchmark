@@ -5,10 +5,10 @@ using ORESchemes.Shared;
 namespace Test
 {
 	[Trait("Category", "Unit")]
-	public class MiscellaneousTests
+	public class Miscellaneous
 	{
 		[Fact]
-		public void PrintByteExtensionTest()
+		public void PrintByteExtension()
 		{
 			var bytes = new byte[] { 0x00, 0x13, 0x05, 0x19, 0x96, 0xAA };
 

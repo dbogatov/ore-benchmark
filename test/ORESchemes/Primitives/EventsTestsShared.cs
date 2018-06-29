@@ -16,7 +16,7 @@ namespace Test.ORESchemes.Primitives
 		/// <param name="expectedTotal">The dictionary with expected total primitive usage</param>
 		/// <param name="expectedPure">The dictionary with expected pure primitive usage</param>
 		/// <typeparam name="T">Type of the primitive</typeparam>
-		public static void EventsTests<T>(
+		public static void Events<T>(
 			T prim,
 			Action<T> routine,
 			Dictionary<Primitive, int> expectedTotal,

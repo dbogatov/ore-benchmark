@@ -9,20 +9,20 @@ using ORESchemes.Shared.Primitives.Hash;
 namespace Test.ORESchemes.Primitives.Hash
 {
 	[Trait("Category", "Unit")]
-	public class SHA256Tests : AbsHashTests
+	public class SHA256Hash : AbsHash
 	{
-		public SHA256Tests() : base(new SHA256()) { }
+		public SHA256Hash() : base(new SHA256()) { }
 
 		[Theory]
 		[InlineData("Hello, world", "4AE7C3B6AC0BEFF671EFA8CF57386151C06E58CA53A78D83F36107316CEC125F")]
 		[InlineData("", "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855")]
 		[InlineData("1305", "C7F4F146491D27EED1CD4D422C9B3FEC37006C606B17DABBFEBEF85845F3CBC1")]
-		public void CorrectnessTest(string input, string output) =>
+		public void Correctness(string input, string output) =>
 			Assert.Equal(output, _hash.ComputeHash(Encoding.Default.GetBytes(input)).PrintHex());
 
 	}
 
-	public abstract class AbsHashTests
+	public abstract class AbsHash
 	{
 		protected readonly IHash _hash;
 		private const int SEED = 123456;
@@ -30,7 +30,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		private readonly byte[] _anotherKey = new byte[128 / 8];
 		private const int RUNS = 1000;
 
-		public AbsHashTests(IHash hash)
+		public AbsHash(IHash hash)
 		{
 			Random random = new Random(SEED);
 			random.NextBytes(_key);
@@ -40,7 +40,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		}
 
 		[Fact]
-		public void DeterministicTest()
+		public void Deterministic()
 		{
 			for (int i = 0; i < RUNS; i++)
 			{
@@ -52,7 +52,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		}
 
 		[Fact]
-		public void NoDuplicatesTest()
+		public void NoDuplicates()
 		{
 			HashSet<byte[]> set = new HashSet<byte[]>();
 
@@ -65,7 +65,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		}
 
 		[Fact]
-		public void DeterministicSameKeyTest()
+		public void DeterministicSameKey()
 		{
 			for (int i = 0; i < RUNS; i++)
 			{
@@ -77,7 +77,7 @@ namespace Test.ORESchemes.Primitives.Hash
 		}
 
 		[Fact]
-		public void DifferentKeyTest()
+		public void DifferentKey()
 		{
 			for (int i = 0; i < RUNS; i++)
 			{
@@ -89,9 +89,9 @@ namespace Test.ORESchemes.Primitives.Hash
 		}
 
 		[Fact]
-		public void EventsTest()
+		public void Events()
 		{
-			EventsTestsShared.EventsTests<IHash>(
+			EventsTestsShared.Events<IHash>(
 				_hash,
 				(H) =>
 				{

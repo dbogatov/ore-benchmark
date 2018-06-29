@@ -18,7 +18,7 @@ namespace Test.Simulators.Protocols
 	}
 
 	[Trait("Category", "Unit")]
-	public class MediatorTests
+	public class MediatorChecks
 	{
 		private readonly Mock<AbsMessage<object>> _message = new Mock<AbsMessage<object>>();
 		private readonly Mock<AbsMessage<object>> _response = new Mock<AbsMessage<object>>();
@@ -27,7 +27,7 @@ namespace Test.Simulators.Protocols
 		private readonly Mock<AbsParty> _server = new Mock<AbsParty>();
 		private readonly Mediator _mediator;
 
-		public MediatorTests()
+		public MediatorChecks()
 		{
 			_mediator = new Mediator(_client.Object, _server.Object);
 

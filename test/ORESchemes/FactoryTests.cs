@@ -5,7 +5,7 @@ using Simulation;
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class FactoryTests
+	public class Factory
 	{
 		[Theory]
 		[InlineData(global::ORESchemes.Shared.ORESchemes.CryptDB)]
@@ -13,7 +13,7 @@ namespace Test.ORESchemes
 		[InlineData(global::ORESchemes.Shared.ORESchemes.NoEncryption)]
 		[InlineData(global::ORESchemes.Shared.ORESchemes.PracticalORE)]
 		[InlineData(global::ORESchemes.Shared.ORESchemes.FHOPE)]
-		public void SchemeFactoryTests(global::ORESchemes.Shared.ORESchemes scheme)
+		public void SchemeFactory(global::ORESchemes.Shared.ORESchemes scheme)
 		{
 			bool useSeed = true;
 
