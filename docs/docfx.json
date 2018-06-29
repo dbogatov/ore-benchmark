@@ -26,7 +26,8 @@
 			"_enableSearch": true
 		},
 		"template": [
-			"default"
+			"default",
+			"docfx-tmpl/src"
 		],
 		"markdownEngineName": "markdig",
 		"dest": "_site",

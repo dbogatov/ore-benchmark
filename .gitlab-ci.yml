@@ -52,9 +52,7 @@ build-docs:
   image: dbogatov/docker-sources:tsgkadot-docker-docfx
   stage: build
   script:
-  - rm -rf docs/_site
-  - cp README.md docs/index.md
-  - docfx docs/docfx.json --force
+  - ./docs/docs.sh
   artifacts:
     paths:
     - docs/_site

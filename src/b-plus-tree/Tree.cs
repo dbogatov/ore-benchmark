@@ -27,7 +27,7 @@ namespace DataStructures.BPlusTree
 		/// <param name="value">New value</param>
 		/// <param name="predicate">Predicate to use for values of the requested index</param>
 		/// <returns>True if element was found, false otherwise</returns>
-		///<exception cref="InvalidOperationException">Thrown if more than one element were retrivied for the index with predicate</exception>  
+		/// <exception cref="System.InvalidOperationException">Thrown if more than one element were retrivied for the index with predicate</exception>  
 		public bool UpdateSingle(C key, T value, Func<T, bool> predicate = null)
 			=> RetriveRoutine(
 				key: key,
