@@ -139,9 +139,9 @@ docs-website:
     GIT_STRATEGY: none
   stage: release
   script:
-  - docker build -t registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME docs/
+  - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME docs/
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
-  - docker push registry.dbogatov.org/bu/cs-562/project-code/docs:$CI_BUILD_REF_NAME
+  - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME
   dependencies:
   - build-docs
   tags:
