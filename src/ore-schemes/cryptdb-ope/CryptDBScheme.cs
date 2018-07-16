@@ -111,7 +111,7 @@ namespace ORESchemes.CryptDBOPE
 
 					T = new TapeGen(key.value, input);
 
-					S = SamplerFactory.GetSampler(T);
+					S = new SamplerFactory(T).GetPrimitive();
 					ulong uniform = S.Uniform(target.From, target.To);
 
 					if (uniform == c)
@@ -128,7 +128,7 @@ namespace ORESchemes.CryptDBOPE
 
 				T = new TapeGen(key.value, input);
 
-				S = SamplerFactory.GetSampler(T);
+				S = new SamplerFactory(T).GetPrimitive();
 				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 
@@ -185,7 +185,7 @@ namespace ORESchemes.CryptDBOPE
 
 					T = new TapeGen(key.value, input);
 
-					S = SamplerFactory.GetSampler(T);
+					S = new SamplerFactory(T).GetPrimitive();
 					ulong uniform = S.Uniform(target.From, target.To);
 
 					return new OPECipher(uniform.ToLong());
@@ -195,7 +195,7 @@ namespace ORESchemes.CryptDBOPE
 
 				T = new TapeGen(key.value, input);
 
-				S = SamplerFactory.GetSampler(T);
+				S = new SamplerFactory(T).GetPrimitive();
 				ulong hg = S.HyperGeometric((ulong)N, (ulong)(y - r), (ulong)M);
 				ulong x = d + hg;
 

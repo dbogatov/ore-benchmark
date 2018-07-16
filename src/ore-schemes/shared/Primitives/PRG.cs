@@ -1,45 +1,27 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace ORESchemes.Shared.Primitives.PRG
 {
-	public class PRGFactory
+	public class PRGFactory : AbsPrimitiveFactory<IPRG>
 	{
-		/// <summary>
-		/// Returns an initialized instance of AES PRG
-		/// Accepts optional entropy
-		/// </summary>
-		public static IPRG GetPRG(byte[] seed = null)
-		{
-			if (seed != null)
-			{
-				return new AESPRG(seed);
-			}
-			else
-			{
-				seed = new byte[128 / 8];
-				new Random().NextBytes(seed);
-				return new AESPRG(seed);
-			}
-		}
+		public PRGFactory(byte[] entropy = null) : base(entropy) { }
 
-		/// <summary>
-		/// Returns an initialized instance of built-in C# PRG
-		/// Accepts optional entropy
-		/// </summary>
-		public static IPRG GetDefaultPRG(byte[] seed = null)
+		protected override IPRG CreatePrimitive(byte[] entropy)
 		{
-			if (seed != null)
-			{
-				return new DefaultRandom(seed);
-			}
-			else
-			{
-				seed = new byte[128 / 8];
-				new Random().NextBytes(seed);
-				return new DefaultRandom(seed);
-			}
+			return new AESPRG(entropy);
+		}
+	}
+
+	public class DefaultPRGFactory : AbsPrimitiveFactory<IPRG>
+	{
+		public DefaultPRGFactory(byte[] entropy = null) : base(entropy) { }
+
+		protected override IPRG CreatePrimitive(byte[] entropy)
+		{
+			return new DefaultRandom(entropy);
 		}
 	}
 
@@ -246,49 +228,59 @@ namespace ORESchemes.Shared.Primitives.PRG
 	}
 
 	/// <summary>
-	/// AES based PRG (CTR mode)
+	/// AES based PRG (CTR mode) with cache
 	/// </summary>
 	public class AESPRG : CustomPRG
 	{
-		private ulong _counter = 0;
+		private const int CACHE = 1024; // 1 KB of entropy should be more than enough
+		private int _counter = 0;
+		private int _position = 0;
+
+		private byte[] _entropy = new byte[CACHE];
 
 		public AESPRG(byte[] seed) : base(seed) { }
 
 		public override void GetBytes(byte[] data)
 		{
 			OnUse(Primitive.PRG);
+			OnUse(Primitive.AES);
 
-			byte[] encrypted;
+			int dataPosition = 0;
 
-			using (Aes aesAlg = Aes.Create())
+			while (dataPosition < data.Length)
 			{
-				aesAlg.KeySize = ALPHA;
-				aesAlg.Key = _seed;
-				aesAlg.IV = new byte[128 / 8];
+				int fromCache = Math.Min(CACHE - _position, data.Length);
 
-				aesAlg.Mode = CipherMode.ECB;
+				Array.Copy(_entropy, _position, data, dataPosition, fromCache);
 
-				var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+				dataPosition += fromCache;
+				_position += fromCache;
 
-				for (int i = 0; i <= data.Length * 8 / aesAlg.BlockSize; i++)
+				if (_position == CACHE - 1)
 				{
-					// Create the streams used for encryption
-					using (var msEncrypt = new MemoryStream())
+					using (Aes aesAlg = Aes.Create())
 					{
-						using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+						aesAlg.KeySize = ALPHA;
+						aesAlg.Key = _seed;
+
+						aesAlg.Mode = CipherMode.ECB;
+
+						var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+						// Create the streams used for encryption
+						using (var msEncrypt = new MemoryStream())
 						{
+							using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+							{
+								byte[] input = Enumerable.Range(_counter, CACHE).Select(c => BitConverter.GetBytes(c)).SelectMany(c => c).ToArray();
+								csEncrypt.Write(input, 0, input.Length);
+								csEncrypt.FlushFinalBlock();
 
-							byte[] input = BitConverter.GetBytes(_counter);
-							csEncrypt.Write(input, 0, input.Length);
-							csEncrypt.FlushFinalBlock();
-
-							encrypted = msEncrypt.ToArray();
-							_counter++;
+								_entropy = msEncrypt.ToArray();
+								_counter += CACHE;
+							}
 						}
 					}
-
-					var length = data.Length * 8 >= (i + 1) * aesAlg.BlockSize ? aesAlg.BlockSize : data.Length * 8 - i * aesAlg.BlockSize;
-					Array.Copy(encrypted, 0, data, i * aesAlg.BlockSize / 8, length / 8);
 				}
 			}
 		}

@@ -16,7 +16,7 @@ namespace Test.ORESchemes
 			byte[] entropy = new byte[128 / 8];
 			new Random(123456).NextBytes(entropy);
 
-			_state = new State(PRGFactory.GetDefaultPRG(entropy), 0, ulong.MaxValue, 10, 0);
+			_state = new State(new PRGFactory(entropy).GetPrimitive(), 0, ulong.MaxValue, 10, 0);
 		}
 
 		[Fact]

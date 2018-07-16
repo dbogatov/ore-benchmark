@@ -1,8 +1,10 @@
+using System;
+
 namespace ORESchemes.Shared.Primitives
 {
 	public enum Primitive
 	{
-		PRF, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal
+		AES, PRF, Symmetric, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal
 	}
 
 	public delegate void PrimitiveUsageEventHandler(Primitive primitive, bool impure);
@@ -32,5 +34,29 @@ namespace ORESchemes.Shared.Primitives
 				handler(primitive, impure);
 			}
 		}
+	}
+
+	public abstract class AbsPrimitiveFactory<P> where P : IPrimitive
+	{
+		private readonly byte[] _entropy = null;
+
+		public AbsPrimitiveFactory(byte[] entropy = null)
+		{
+			if (entropy == null)
+			{
+				_entropy = new byte[128 / 8];
+				new Random().NextBytes(_entropy);
+			}
+			else
+			{
+				_entropy = entropy;
+			}
+		}
+		public P GetPrimitive() => CreatePrimitive(_entropy);
+
+		/// <summary>
+		/// Returns an initialized instance of a the primitive
+		/// </summary>
+		protected abstract P CreatePrimitive(byte[] entropy);
 	}
 }

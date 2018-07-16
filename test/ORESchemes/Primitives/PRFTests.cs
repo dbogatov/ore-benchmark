@@ -10,9 +10,9 @@ using Xunit;
 namespace Test.ORESchemes.Primitives.PRF
 {
 	[Trait("Category", "Unit")]
-	public class AESPRF : AbsPRF
+	public class AESPRFChecks : AbsPRF
 	{
-		public AESPRF() : base(new AES(Enumerable.Repeat((byte)0x00, 128 / 8).ToArray())) { }
+		public AESPRFChecks() : base(new AESPRF() { }) { }
 
 		[Fact]
 		public void Events()

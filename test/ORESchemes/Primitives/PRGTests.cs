@@ -24,7 +24,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			byte[] entropy = seed ? _entropy : null;
 
-			var prg = PRGFactory.GetPRG(entropy);
+			var prg = new PRGFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
 			Assert.IsType<AESPRG>(prg);
@@ -47,7 +47,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			byte[] entropy = seed ? _entropy : null;
 
-			var prg = PRGFactory.GetDefaultPRG(entropy);
+			var prg = new DefaultPRGFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
 			Assert.IsType<DefaultRandom>(prg);

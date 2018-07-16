@@ -23,9 +23,7 @@ namespace ORESchemes.PracticalORE
 		{
 			M = Convert.ToInt32(G.Next(4, Int32.MaxValue));
 
-			F = PRFFactory.GetPRF(
-				G.GetBytes(ALPHA / 8)
-			);
+			F = new PRFFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 		}
@@ -35,7 +33,7 @@ namespace ORESchemes.PracticalORE
 			OnOperation(SchemeOperation.Decrypt);
 
 			return BitConverter.ToInt32(
-				F.InversePRF(
+				E.Decrypt(
 					key.value,
 					ciphertext.encrypted
 				), 0
@@ -47,7 +45,7 @@ namespace ORESchemes.PracticalORE
 			OnOperation(SchemeOperation.Encrypt);
 
 			var result = new Ciphertext();
-			result.encrypted = F.PRF(
+			result.encrypted = E.Encrypt(
 				key.value,
 				BitConverter.GetBytes(plaintext)
 			);

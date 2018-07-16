@@ -7,13 +7,20 @@ namespace ORESchemes.Shared.Primitives.Sampler
 
 	public class SamplerFactory
 	{
+		private readonly IPRG _prg;
+
+		public SamplerFactory(IPRG prg)
+		{
+			_prg = prg;
+		}
+
 		/// <summary>
 		/// Returns an initialized instance of a ISampler that works on 64 bits unsigned integers
 		/// Requires PRG that will be used as source of randomness
 		/// </summary>
-		public static ISampler GetSampler(IPRG prg)
+		public ISampler GetPrimitive()
 		{
-			return new CustomSampler(prg);
+			return new CustomSampler(_prg);
 		}
 	}
 
@@ -53,7 +60,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 
 		public CustomSampler(byte[] entropy = null)
 		{
-			G = PRGFactory.GetPRG(entropy);
+			G = new PRGFactory(entropy).GetPrimitive();
 
 			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)

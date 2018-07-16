@@ -5,25 +5,21 @@ using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.Shared.Primitives.PRP
 {
-	public class PRPFactory
+	public class PRPFactory : AbsPrimitiveFactory<IPRP>
 	{
-		/// <summary>
-		/// Returns an initialized instance of PRP
-		/// </summary>
-		public static IPRP GetPRP()
+		protected override IPRP CreatePrimitive(byte[] entropy)
 		{
 			return new Feistel(3);
 		}
+	}
 
-		/// <summary>
-		/// Returns an initialized instance of strong PRP
-		/// </summary>
-		public static IPRP GetStrongPRP()
+	public class StrongPRPFactory : AbsPrimitiveFactory<IPRP>
+	{
+		protected override IPRP CreatePrimitive(byte[] entropy)
 		{
 			return new Feistel(4);
 		}
 	}
-
 
 	public interface IPRP : IPRF
 	{
@@ -55,7 +51,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			return bytes;
 		}
 
-		public byte[] PRF(byte[] key, byte[] input, bool deterministic = true)
+		public byte[] PRF(byte[] key, byte[] input)
 		{
 			BitArray result = PRP(new BitArray(input), key);
 			byte[] bytes = new byte[(result.Length + 7) / 8];
@@ -81,7 +77,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		public Feistel(int rounds = 3)
 		{
 			Rounds = rounds;
-			F = PRFFactory.GetPRF();
+			F = new PRFFactory().GetPrimitive();
 
 			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)

@@ -1,5 +1,6 @@
 ﻿using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
+using ORESchemes.Shared.Primitives.Symmetric;
 
 namespace ORESchemes.Shared
 {
@@ -226,6 +227,7 @@ namespace ORESchemes.Shared
 		public event PrimitiveUsageEventHandler PrimitiveUsed;
 
 		protected readonly IPRG G;
+		protected readonly ISymmetric E;
 		protected const int ALPHA = 128;
 
 		/// <summary>
@@ -233,9 +235,11 @@ namespace ORESchemes.Shared
 		/// </summary>
 		public AbsOREScheme(byte[] seed)
 		{
-			G = PRGFactory.GetPRG(seed);
+			G = new PRGFactory(seed).GetPrimitive();
+			E = new SymmetricFactory().GetPrimitive();
 
 			SubscribePrimitive(G);
+			SubscribePrimitive(E);
 		}
 
 		public abstract int Decrypt(C ciphertext, K key);

@@ -15,7 +15,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		[Fact]
 		public void Factory()
 		{
-			var prp = PRPFactory.GetPRP();
+			var prp = new PRPFactory().GetPrimitive();
 
 			Assert.NotNull(prp);
 			Feistel feistel = Assert.IsType<Feistel>(prp);
@@ -55,7 +55,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		[Fact]
 		public void Factory()
 		{
-			var prp = PRPFactory.GetStrongPRP();
+			var prp = new StrongPRPFactory().GetPrimitive();
 
 			Assert.NotNull(prp);
 			Feistel feistel = Assert.IsType<Feistel>(prp);

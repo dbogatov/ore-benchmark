@@ -27,17 +27,17 @@ namespace Benchmark.Primitives
 
 		public Benchmark()
 		{
-			H = HashFactory.GetHash();
-			F = PRFFactory.GetPRF();
+			H = new HashFactory().GetPrimitive();
+			F = new PRFFactory().GetPrimitive();
 
-			G = PRGFactory.GetPRG();
-			GDef = PRGFactory.GetDefaultPRG();
+			G = new PRGFactory().GetPrimitive();
+			GDef = new DefaultPRGFactory().GetPrimitive();
 
-			P = PRPFactory.GetPRP();
-			PStrong = PRPFactory.GetStrongPRP();
+			P = new PRPFactory().GetPrimitive();
+			PStrong = new StrongPRPFactory().GetPrimitive();
 
-			S = SamplerFactory.GetSampler(G);
-			SDef = SamplerFactory.GetSampler(GDef);
+			S = new SamplerFactory(G).GetPrimitive();
+			SDef = new SamplerFactory(GDef).GetPrimitive();
 
 			var random = new Random(123456);
 			random.NextBytes(_key);
