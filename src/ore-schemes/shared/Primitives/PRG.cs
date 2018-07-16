@@ -236,14 +236,19 @@ namespace ORESchemes.Shared.Primitives.PRG
 		private int _counter = 0;
 		private int _position = 0;
 
-		private byte[] _entropy = new byte[CACHE];
+		private byte[] _entropy = null;
 
 		public AESPRG(byte[] seed) : base(seed) { }
 
 		public override void GetBytes(byte[] data)
 		{
 			OnUse(Primitive.PRG);
-			OnUse(Primitive.AES);
+
+			if (_entropy == null)
+			{
+				_entropy = new byte[CACHE];
+				GenerateEntropy();
+			}
 
 			int dataPosition = 0;
 
@@ -256,30 +261,38 @@ namespace ORESchemes.Shared.Primitives.PRG
 				dataPosition += fromCache;
 				_position += fromCache;
 
-				if (_position == CACHE - 1)
+				if (_position == CACHE)
 				{
-					using (Aes aesAlg = Aes.Create())
+					GenerateEntropy();
+					_position = 0;
+				}
+			}
+		}
+
+		private void GenerateEntropy()
+		{
+			OnUse(Primitive.AES, true);
+
+			using (Aes aesAlg = Aes.Create())
+			{
+				aesAlg.KeySize = ALPHA;
+				aesAlg.Key = _seed;
+
+				aesAlg.Mode = CipherMode.ECB;
+
+				var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+				// Create the streams used for encryption
+				using (var msEncrypt = new MemoryStream())
+				{
+					using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
 					{
-						aesAlg.KeySize = ALPHA;
-						aesAlg.Key = _seed;
+						byte[] input = Enumerable.Range(_counter, CACHE).Select(c => BitConverter.GetBytes(c)).SelectMany(c => c).ToArray();
+						csEncrypt.Write(input, 0, input.Length);
+						csEncrypt.FlushFinalBlock();
 
-						aesAlg.Mode = CipherMode.ECB;
-
-						var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-						// Create the streams used for encryption
-						using (var msEncrypt = new MemoryStream())
-						{
-							using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-							{
-								byte[] input = Enumerable.Range(_counter, CACHE).Select(c => BitConverter.GetBytes(c)).SelectMany(c => c).ToArray();
-								csEncrypt.Write(input, 0, input.Length);
-								csEncrypt.FlushFinalBlock();
-
-								_entropy = msEncrypt.ToArray();
-								_counter += CACHE;
-							}
-						}
+						_entropy = msEncrypt.ToArray();
+						_counter += CACHE;
 					}
 				}
 			}

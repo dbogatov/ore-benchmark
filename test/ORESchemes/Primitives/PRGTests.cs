@@ -11,10 +11,36 @@ namespace Test.ORESchemes.Primitives.PRG
 	[Trait("Category", "Unit")]
 	public class AESPRGGenerator : AbsPRG
 	{
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 },
+					{ Primitive.AES, 1 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+
 		public AESPRGGenerator() : base()
 		{
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
+		}
+
+		[Fact]
+		public void TestName()
+		{
+			//Given
+			base.Events();
+			//When
+
+			//Then
 		}
 
 		[Theory]
@@ -38,6 +64,21 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			_prg = new DefaultRandom(_entropy);
 			_anotherPrg = new DefaultRandom(_anotherEntropy);
+		}
+
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
 		}
 
 		[Theory]
@@ -64,6 +105,9 @@ namespace Test.ORESchemes.Primitives.PRG
 
 		protected IPRG _prg;
 		protected IPRG _anotherPrg;
+
+		protected abstract Dictionary<Primitive, int> _totalEvents { get; set; }
+		protected abstract Dictionary<Primitive, int> _pureEvents { get; set; }
 
 		public AbsPRG()
 		{
@@ -227,12 +271,8 @@ namespace Test.ORESchemes.Primitives.PRG
 					G.NextDouble(10);
 					G.NextDouble(10, 20);
 				},
-				new Dictionary<Primitive, int> {
-					{ Primitive.PRG, 10 }
-				},
-				new Dictionary<Primitive, int> {
-					{ Primitive.PRG, 10 }
-				}
+				_totalEvents,
+				_pureEvents
 			);
 		}
 
