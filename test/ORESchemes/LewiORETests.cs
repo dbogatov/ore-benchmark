@@ -7,11 +7,20 @@ namespace Test.ORESchemes
 	[Trait("Category", "Unit")]
 	public class LewiOREN16 : AbsLewiORE
 	{
+		[Fact]
+		public void TestName()
+		{
+		//Given
+		base.Correctness();
+		//When
+		
+		//Then
+		}
 		public LewiOREN16() : base(100) { }
 
 		protected override void SetParameters() => n = 16;
 
-		public override int CipherSize() => 4368;
+		public override int CipherSize() => 2320;
 	}
 
 	[Trait("Category", "Integration")]

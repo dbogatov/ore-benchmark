@@ -72,7 +72,8 @@ namespace Test.ORESchemes.Primitives.LFPRF
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 1 },
 					{ Primitive.PRG, 10 },
-					{ Primitive.LFPRF, 10 }
+					{ Primitive.LFPRF, 10 },
+					{ Primitive.AES, 1 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.LFPRF, 10 }

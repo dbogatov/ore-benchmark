@@ -57,13 +57,15 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 				IPRG G = new PRGFactory(key).GetPrimitive();
 
-				_cachePermutation = Enumerable.Range(byte.MinValue, byte.MaxValue).Cast<byte>().ToArray();
+				int max = (int)Math.Pow(2, bits) - 1;
+
+				_cachePermutation = Enumerable.Range(byte.MinValue, max + 1).Select(v => Convert.ToByte(v)).ToArray();
 
 				// Start from the last element and
 				// swap one by one. We don't need to
 				// run for the first element 
 				// that's why i > 0
-				for (int i = (1 >> bits) - 1; i > byte.MinValue; i--)
+				for (int i = max; i > byte.MinValue; i--)
 				{
 					// Pick a random index
 					// from 0 to i

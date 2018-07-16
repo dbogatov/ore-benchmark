@@ -144,9 +144,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
 				Xor(
 					input.Item2,
-					new BitArray(
-						F.PRF(key, bytes).Skip(128 / 8).ToArray()
-					)
+					new BitArray(F.PRF(key, bytes))
 				),
 				input.Item1
 			);

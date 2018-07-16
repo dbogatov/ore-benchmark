@@ -11,6 +11,17 @@ namespace Test.ORESchemes.Primitives.PRG
 	[Trait("Category", "Unit")]
 	public class AESPRGGenerator : AbsPRG
 	{
+
+		[Fact]
+		public void TestName()
+		{
+		//Given
+		base.Uniformity();
+		//When
+		
+		//Then
+		}
+
 		protected override Dictionary<Primitive, int> _totalEvents
 		{
 			get => new Dictionary<Primitive, int> {
@@ -31,16 +42,6 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
-		}
-
-		[Fact]
-		public void TestName()
-		{
-			//Given
-			base.Events();
-			//When
-
-			//Then
 		}
 
 		[Theory]

@@ -38,7 +38,8 @@ namespace Test.ORESchemes.Primitives.PRP
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 48 },
-					{ Primitive.PRP, 16 }
+					{ Primitive.PRP, 16 },
+					{ Primitive.AES, 48 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 16 }
@@ -78,7 +79,8 @@ namespace Test.ORESchemes.Primitives.PRP
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 64 },
-					{ Primitive.PRP, 16 }
+					{ Primitive.PRP, 16 },
+					{ Primitive.AES, 64 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 16 }

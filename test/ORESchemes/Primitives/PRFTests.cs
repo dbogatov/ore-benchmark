@@ -25,7 +25,8 @@ namespace Test.ORESchemes.Primitives.PRF
 					F.InversePRF(_key, c);
 				},
 				new Dictionary<Primitive, int> {
-					{ Primitive.PRF, 2 }
+					{ Primitive.PRF, 2 },
+					{ Primitive.AES, 2 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 2 }
@@ -51,7 +52,8 @@ namespace Test.ORESchemes.Primitives.PRF
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 6 },
-					{ Primitive.PRP, 2 }
+					{ Primitive.PRP, 2 },
+					{ Primitive.AES, 6 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 2 }
