@@ -111,6 +111,10 @@ namespace Benchmark.Schemes
 					yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.FHOPE, value);
 				}
 			}
+			else if (typeof(C) == typeof(ORESchemes.AdamORE.Ciphertext))
+			{
+				yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.AdamORE, 0);
+			}
 		}
 
 		private void IterationSetup(Stages stage)

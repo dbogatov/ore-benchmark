@@ -51,6 +51,7 @@ namespace Benchmark
 					typeof(Schemes.Benchmark<ORESchemes.PracticalORE.Ciphertext, BytesKey>),
 					typeof(Schemes.Benchmark<ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>),
 					typeof(Schemes.Benchmark<ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>),
+					typeof(Schemes.Benchmark<ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>),
 					typeof(Primitives.Benchmark)
 				}
 			).Run(new[] { $"--namespace=Benchmark.{@namespace}", "--join" }, new CustomConfig());
