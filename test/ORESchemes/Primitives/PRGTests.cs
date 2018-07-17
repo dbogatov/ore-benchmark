@@ -32,6 +32,19 @@ namespace Test.ORESchemes.Primitives.PRG
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
 		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void Factory(bool seed)
+		{
+			byte[] entropy = seed ? _entropy : null;
+
+			var prg = new PRGFactory(entropy).GetPrimitive();
+
+			Assert.NotNull(prg);
+			Assert.IsType<AESPRG>(prg);
+		}
 	}
 
 	[Trait("Category", "Unit")]
@@ -66,7 +79,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			byte[] entropy = seed ? _entropy : null;
 
-			var prg = new PRGFactory(entropy).GetPrimitive();
+			var prg = new PRGCachedFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
 			Assert.IsType<AESPRGCached>(prg);

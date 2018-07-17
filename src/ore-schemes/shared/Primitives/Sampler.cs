@@ -60,7 +60,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 
 		public CustomSampler(byte[] entropy = null)
 		{
-			G = new PRGFactory(entropy).GetPrimitive();
+			G = new PRGCachedFactory(entropy).GetPrimitive();
 
 			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)

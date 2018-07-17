@@ -48,7 +48,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 				_cacheKey = (key, bits);
 				_cachePermutation = new byte[sizeof(byte) * 8];
 
-				IPRG G = new PRGFactory(key).GetPrimitive();
+				IPRG G = new PRGCachedFactory(key).GetPrimitive();
 
 				int max = (int)Math.Pow(2, bits) - 1;
 

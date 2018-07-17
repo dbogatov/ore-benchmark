@@ -235,7 +235,7 @@ namespace ORESchemes.Shared
 		/// </summary>
 		public AbsOREScheme(byte[] seed)
 		{
-			G = new PRGFactory(seed).GetPrimitive();
+			G = new PRGCachedFactory(seed).GetPrimitive();
 			E = new SymmetricFactory().GetPrimitive();
 
 			SubscribePrimitive(G);

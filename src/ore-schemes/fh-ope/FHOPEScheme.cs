@@ -41,7 +41,7 @@ namespace ORESchemes.FHOPE
 			byte[] entropy = new byte[128 / 8];
 			G.NextBytes(entropy);
 
-			IPRG prg = new PRGFactory(entropy).GetPrimitive();
+			IPRG prg = new PRGCachedFactory(entropy).GetPrimitive();
 			SubscribePrimitive(prg);
 
 			State state = new State(prg, this.min, this.max, r, p);

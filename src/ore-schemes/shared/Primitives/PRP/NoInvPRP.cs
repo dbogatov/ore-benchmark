@@ -49,7 +49,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 			int[] bitsToMax = new int[] { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
 
-			IPRG G = new PRGFactory(key).GetPrimitive();
+			IPRG G = new PRGCachedFactory(key).GetPrimitive();
 
 			int max = bitsToMax[bits];
 

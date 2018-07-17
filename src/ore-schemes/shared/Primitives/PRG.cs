@@ -11,6 +11,16 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		protected override IPRG CreatePrimitive(byte[] entropy)
 		{
+			return new AESPRG(entropy);
+		}
+	}
+
+	public class PRGCachedFactory : AbsPrimitiveFactory<IPRG>
+	{
+		public PRGCachedFactory(byte[] entropy = null) : base(entropy) { }
+
+		protected override IPRG CreatePrimitive(byte[] entropy)
+		{
 			return new AESPRGCached(entropy);
 		}
 	}

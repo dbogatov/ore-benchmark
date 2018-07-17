@@ -15,7 +15,7 @@ namespace ORESchemes.Shared.Primitives.TapeGen
 		public TapeGen(byte[] key, byte[] entropy) :
 			base(new PRFFactory().GetPrimitive().PRF(key, entropy))
 		{
-			G = new PRGFactory(_seed).GetPrimitive();
+			G = new PRGCachedFactory(_seed).GetPrimitive();
 
 			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
