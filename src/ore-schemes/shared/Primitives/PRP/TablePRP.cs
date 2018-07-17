@@ -36,6 +36,11 @@ namespace ORESchemes.Shared.Primitives.PRP
 		}
 
 		// https://www.geeksforgeeks.org/shuffle-a-given-array/
+		/// <summary>
+		/// Generate a permutation of given number of bits and puts it in the cache
+		/// </summary>
+		/// <param name="key">Key to use as seed for PRG</param>
+		/// <param name="bits">Number of bits to permutate</param>
 		private void GeneratePermutation(byte[] key, byte bits)
 		{
 			if (bits < 1 || bits > 8)

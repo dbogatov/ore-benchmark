@@ -14,19 +14,19 @@ namespace ORESchemes.Shared.Primitives.Symmetric
 	public interface ISymmetric : IPrimitive
 	{
 		/// <summary>
-		/// Computes the value of the pseudo random function
+		/// Symmetrically encrypts (randomized) a value
 		/// </summary>
-		/// <param name="key">The key componenet to function</param>
-		/// <param name="input">The input value to function</param>
-		/// <returns>The value of the function of its arguments</returns>
+		/// <param name="key">The encryption key</param>
+		/// <param name="input">The plaintext to encrypt</param>
+		/// <returns>The randomized ciphertext for the input and key</returns>
 		byte[] Encrypt(byte[] key, byte[] input);
 
 		/// <summary>
-		/// Computes the value of the inverse of pseudo random function
+		/// Symmetrically decrypts (deterministic) a value
 		/// </summary>
-		/// <param name="key">The key componenet to function</param>
-		/// <param name="input">The input value to function</param>
-		/// <returns>The value of the inverse of function of its arguments</returns>
+		/// <param name="key">The encryption key</param>
+		/// <param name="input">The ciphertext to decrypt</param>
+		/// <returns>The determinstic plaintext for the input and key</returns>
 		byte[] Decrypt(byte[] key, byte[] input);
 	}
 

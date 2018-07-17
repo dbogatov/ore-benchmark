@@ -310,6 +310,9 @@ namespace ORESchemes.Shared.Primitives.PRG
 			}
 		}
 
+		/// <summary>
+		/// Fills up cache with generated entropy
+		/// </summary>
 		private void GenerateEntropy()
 		{
 			OnUse(Primitive.AES, true);

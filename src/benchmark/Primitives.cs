@@ -209,7 +209,17 @@ namespace Benchmark.Primitives
 			}
 		}
 
-		public IEnumerable<object[]> BitData() => BytesData().Select(b => new object[] { new BitArray((byte[])b[0]), b[1] });
+		public IEnumerable<object[]> SmallBitData()
+		{
+			var random = new Random(123456);
+
+			foreach (var size in new[] { 1, 2, 4, 8 })
+			{
+				yield return new object[] { new BitArray(new int[] { random.Next(0, (int)(Math.Pow(2, size) - 1)) }), size };
+			}
+		}
+
+		public IEnumerable<object[]> BitData() => BytesData().Select(b => new object[] { new BitArray((byte[])b[0]), b[1] }).Concat(SmallBitData());
 
 		public IEnumerable<object[]> PRFBytesData() => BytesData().Select(b => new object[] { F.PRF(_key, (byte[])b[0]), b[1] });
 

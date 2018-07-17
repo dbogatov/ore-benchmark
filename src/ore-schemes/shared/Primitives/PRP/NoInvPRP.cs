@@ -29,6 +29,14 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 		// https://www.geeksforgeeks.org/shuffle-a-given-array/
 		// https://en.wikipedia.org/wiki/Random_permutation
+		/// <summary>
+		/// Generate permutation and returns a value or inverse value
+		/// </summary>
+		/// <param name="key">Key to use as seed to PRG</param>
+		/// <param name="bits">Number of bits to permute</param>
+		/// <param name="inv">True if inverse is requested</param>
+		/// <param name="value">Rarameter to permute function</param>
+		/// <returns>Permutation of supplied value</returns>
 		private byte GeneratePermutation(byte[] key, byte bits, bool inv, byte value)
 		{
 			if (bits < 1 || bits > 8)
