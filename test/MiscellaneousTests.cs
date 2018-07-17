@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using ORESchemes.Shared;
+using ORESchemes.Shared.Primitives.PRG;
 
 namespace Test
 {
@@ -33,6 +34,24 @@ namespace Test
 				Assert.Contains(index.ToString(), record.ToString());
 				Assert.Contains(value.ToString(), record.ToString());
 			}
+		}
+
+		[Fact]
+		public void GetBytesExtension()
+		{
+			Random random = new Random(123456);
+			byte[] entropy = new byte[128 / 8];
+			random.NextBytes(entropy);
+
+			IPRG G1 = new PRGFactory(entropy).GetPrimitive();
+			IPRG G2 = new PRGFactory(entropy).GetPrimitive();
+
+			byte[] bytes1 = new byte[128 / 8];
+			G1.NextBytes(bytes1);
+
+			byte[] bytes2 = G2.GetBytes(128 / 8);
+
+			Assert.Equal(bytes1, bytes2);
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		{
 			OnUse(Primitive.PRP);
 
-			GeneratePermutation(key, bits);
+			GeneratePermutation(key, bits, input);
 
 			return _cachePermutation[input];
 		}
@@ -30,7 +30,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		{
 			OnUse(Primitive.PRP);
 
-			GeneratePermutation(key, bits);
+			GeneratePermutation(key, bits, input);
 
 			return (byte)Array.IndexOf(_cachePermutation, input);
 		}
@@ -41,11 +41,18 @@ namespace ORESchemes.Shared.Primitives.PRP
 		/// </summary>
 		/// <param name="key">Key to use as seed for PRG</param>
 		/// <param name="bits">Number of bits to permutate</param>
-		private void GeneratePermutation(byte[] key, byte bits)
+		private void GeneratePermutation(byte[] key, byte bits, byte value)
 		{
 			if (bits < 1 || bits > 8)
 			{
 				throw new ArgumentException("Simplified PRP works only within 1 to {sizeof(byte) * 8} bits.");
+			}
+
+			int max = (int)Math.Pow(2, bits) - 1;
+
+			if (value > max)
+			{
+				throw new ArgumentException($"Invalid input {value} for bitness {bits}.");
 			}
 
 			if (!_cacheKey.HasValue || _cacheKey.Value.Item1 != key || _cacheKey.Value.Item2 != bits)
@@ -54,8 +61,6 @@ namespace ORESchemes.Shared.Primitives.PRP
 				_cachePermutation = new byte[sizeof(byte) * 8];
 
 				IPRG G = new PRGCachedFactory(key).GetPrimitive();
-
-				int max = (int)Math.Pow(2, bits) - 1;
 
 				_cachePermutation = Enumerable.Range(byte.MinValue, max + 1).Select(v => Convert.ToByte(v)).ToArray();
 

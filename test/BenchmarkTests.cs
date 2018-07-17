@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
@@ -19,6 +20,7 @@ namespace Test
 		[InlineData("Schemes")]
 		public void DryJob(string @namespace)
 		{
+			Console.SetOut(TextWriter.Null);
 			var summary = BenchmarkSwitcher.FromTypes(
 				new[] {
 					typeof(global::Benchmark.Schemes.Benchmark<OPECipher, BytesKey>),
@@ -92,6 +94,14 @@ namespace Test
 			benchmark.SamplerDefaultHG(population, success, samples);
 			benchmark.SamplerCachedUniform(from, to);
 			benchmark.SamplerCachedHG(population, success, samples);
+		}
+
+		[Fact]
+		public void BenchmarkCLI()
+		{
+			Console.SetOut(TextWriter.Null);
+			global::Benchmark.Program.Main(new string[] { "--primitives" });
+			global::Benchmark.Program.Main(new string[] { "--schemes" });
 		}
 	}
 }
