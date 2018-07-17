@@ -79,7 +79,8 @@ namespace Test.ORESchemes.Primitives.PRF
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 8 },
-					{ Primitive.PRP, 2 }
+					{ Primitive.PRP, 2 },
+					{ Primitive.AES, 8 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 2 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -46,7 +47,7 @@ namespace ORESchemes.LewiORE
 	{
 		private readonly IPRF F;
 		private readonly IHash H;
-		private readonly ISimplifiedPRP P;
+		private readonly IPRP P;
 
 		/// <summary>
 		/// Number of values that fit in a block
@@ -71,7 +72,7 @@ namespace ORESchemes.LewiORE
 
 			F = new PRFFactory().GetPrimitive();
 			H = new HashFactory().GetPrimitive();
-			P = new NoInvPRPFactory().GetPrimitive();
+			P = new PRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 			SubscribePrimitive(H);
@@ -267,13 +268,35 @@ namespace ORESchemes.LewiORE
 		/// Wrapper around PRP permute function
 		/// </summary>
 		private uint Permute(uint input, byte[] key)
-			=> P.PRP((byte)input, key, (byte)_bitsInBlock);
+		{
+			BitArray permutation =
+				P.PRP(
+					new BitArray(new int[] { (int)input }),
+					key,
+					_bitsInBlock
+				);
+			int[] result = new int[1];
+			permutation.CopyTo(result, 0);
+
+			return (uint)result[0];
+		}
 
 		/// <summary>
 		/// Wrapper around PRP unpermute function
 		/// </summary>
 		private uint Unpermute(uint input, byte[] key)
-			=> P.InversePRP((byte)input, key, (byte)_bitsInBlock);
+		{
+			BitArray permutation =
+				P.InversePRP(
+					new BitArray(new int[] { (int)input }),
+					key,
+					_bitsInBlock
+				);
+			int[] result = new int[1];
+			permutation.CopyTo(result, 0);
+
+			return (uint)result[0];
+		}
 
 		/// <summary>
 		/// Wrapper around Hash function
