@@ -4,6 +4,7 @@ using ORESchemes.CryptDBOPE;
 using ORESchemes.PracticalORE;
 using ORESchemes.LewiORE;
 using ORESchemes.FHOPE;
+using ORESchemes.AdamORE;
 
 namespace Simulation
 {
@@ -68,7 +69,7 @@ namespace Simulation
 			);
 	}
 
-	public class LewiOREFactory : ORESchemesFactory<LewiOREScheme, ORESchemes.LewiORE.Ciphertext, Key>
+	public class LewiOREFactory : ORESchemesFactory<LewiOREScheme, ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>
 	{
 		public LewiOREFactory(int? seed = null) : base(seed) { }
 
@@ -80,5 +81,12 @@ namespace Simulation
 		public FHOPEFactory(int? seed = null) : base(seed) { }
 
 		public override FHOPEScheme GetScheme(int parameter = 0) => new FHOPEScheme(long.MinValue, long.MaxValue, 10, parameter * 0.01, _entropy);
+	}
+
+	public class AdamOREFactory : ORESchemesFactory<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>
+	{
+		public AdamOREFactory(int? seed = null) : base(seed) { }
+
+		public override AdamOREScheme GetScheme(int parameter = 0) => new AdamOREScheme(_entropy);
 	}
 }

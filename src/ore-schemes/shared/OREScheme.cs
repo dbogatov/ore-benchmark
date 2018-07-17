@@ -10,7 +10,8 @@ namespace ORESchemes.Shared
 		CryptDB,
 		PracticalORE,
 		LewiORE,
-		FHOPE
+		FHOPE,
+		AdamORE
 	}
 
 	public enum SchemeOperation

@@ -8,6 +8,7 @@ using Simulation.Protocol;
 using ORESchemes.PracticalORE;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.Shared;
+using ORESchemes.AdamORE;
 
 namespace CLI
 {
@@ -68,7 +69,7 @@ namespace CLI
 						);
 					break;
 				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, Ciphertext, BytesKey>(
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>(
 						new Options<ORESchemes.PracticalORE.Ciphertext>(
 							new PracticalOREFactory().GetScheme(),
 							BPlusTreeBranching
@@ -92,6 +93,15 @@ namespace CLI
 							BPlusTreeBranching
 						),
 						new FHOPEFactory(Parent.Seed).GetScheme()
+					);
+					break;
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					protocol = new Simulation.Protocol.SimpleORE.Protocol<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
+						new Options<ORESchemes.AdamORE.Ciphertext>(
+							new AdamOREFactory().GetScheme(),
+							BPlusTreeBranching
+						),
+						new AdamOREFactory(Parent.Seed).GetScheme()
 					);
 					break;
 				default:

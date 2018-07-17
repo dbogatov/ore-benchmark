@@ -30,8 +30,9 @@ namespace Simulation.PureSchemes
 		/// </summary>
 		/// <param name="routine">Function to profile (must take ciphers, dataset, scheme and key)</param>
 		/// <param name="ciphers">List of ciphertext to populate or to take dta from</param>
+		/// <param name="stage">Stage of simulation (affects how averages are computed)</param>
 		/// <returns>A subreport generated for this particular profiling</returns>
-		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C, K>, K> routine, List<C> ciphers)
+		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C, K>, K> routine, List<C> ciphers, Stages stage)
 		{
 			ClearTrackers();
 
@@ -46,7 +47,7 @@ namespace Simulation.PureSchemes
 				ObservedTime = _totalTime,
 				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
 				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
-				SchemeOperations = _dataset.Count
+				SchemeOperations = _dataset.Count * (stage != Stages.Compare ? 1 : 5)
 			};
 		}
 
@@ -56,9 +57,9 @@ namespace Simulation.PureSchemes
 
 			var result = new Report();
 
-			result.Stages[Stages.Encrypt] = Profile(EncryptStage, ciphertexts);
-			result.Stages[Stages.Decrypt] = Profile(DecryptStage, ciphertexts);
-			result.Stages[Stages.Compare] = Profile(CompareStage, ciphertexts);
+			result.Stages[Stages.Encrypt] = Profile(EncryptStage, ciphertexts, Stages.Encrypt);
+			result.Stages[Stages.Decrypt] = Profile(DecryptStage, ciphertexts, Stages.Decrypt);
+			result.Stages[Stages.Compare] = Profile(CompareStage, ciphertexts, Stages.Compare);
 
 			return result;
 		}

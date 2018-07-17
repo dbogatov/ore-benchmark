@@ -53,6 +53,9 @@ namespace Benchmark.Schemes
 				case ORESchemes.Shared.ORESchemes.FHOPE:
 					_scheme = (IOREScheme<C, K>)new FHOPEFactory(seed).GetScheme(Scheme.Item2);
 					break;
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					_scheme = (IOREScheme<C, K>)new AdamOREFactory(seed).GetScheme(Scheme.Item2);
+					break;
 			}
 
 			foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>())
