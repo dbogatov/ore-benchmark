@@ -6,6 +6,8 @@ namespace ORESchemes.Shared.Primitives.PPH
 {
 	public class PPHFactory : AbsPrimitiveFactory<IPPH>
 	{
+		public PPHFactory(byte[] entropy = null) : base(entropy) { }
+
 		protected override IPPH CreatePrimitive(byte[] entropy) => new FakePPH(entropy);
 	}
 

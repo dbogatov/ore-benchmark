@@ -35,7 +35,7 @@ namespace ORESchemes.AdamORE
 		public AdamOREScheme(byte[] seed = null) : base(seed)
 		{
 			F = new PRFFactory().GetPrimitive();
-			R = new PPHFactory().GetPrimitive();
+			R = new PPHFactory(G.GetBytes(ALPHA / 8)).GetPrimitive();
 			P = new PRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
@@ -64,12 +64,14 @@ namespace ORESchemes.AdamORE
 				encrypted = E.Encrypt(
 					key.encryptionKey,
 					BitConverter.GetBytes(plaintext)
-				)
+				),
+				testKey = key.pphKey.testKey
 			};
 
 			var unsignedPlaintext = unchecked((uint)plaintext + 1) + Int32.MaxValue;
 
 			byte[][] tuples = new byte[8 * sizeof(int)][];
+			byte[] permutationKey = G.GetBytes(ALPHA / 8);
 
 			for (int i = 0; i < 8 * sizeof(int); i++)
 			{
@@ -79,19 +81,19 @@ namespace ORESchemes.AdamORE
 
 				var prfEnc = F.PRF(
 					key.encryptionKey,
-					BitConverter.GetBytes(msg)
+					BitConverter.GetBytes(msg).Concat(BitConverter.GetBytes(i)).ToArray()
 				);
 
 				var nextBit = ((unsignedPlaintext << i) >> (8 * sizeof(int) - 1)) & 1;
 
 				var u = (
 					(new BigInteger(prfEnc) + nextBit) %
-					new BigInteger(Enumerable.Repeat((byte)0x00, ALPHA / 8).ToArray())
+					BigInteger.Pow(2, 128)
 				).ToByteArray();
 
 				var t = R.Hash(key.pphKey.hashKey, u);
 
-				tuples[P.Permute((uint)i, key.encryptionKey, 5)] = t;
+				tuples[P.Permute((uint)i, permutationKey, 5)] = t;
 			}
 
 			result.tuples = tuples.ToList();
@@ -107,7 +109,7 @@ namespace ORESchemes.AdamORE
 
 			for (int i = 0; i < 8 * sizeof(int); i++)
 			{
-				for (int j = 0; j < 8 *sizeof(int); j++)
+				for (int j = 0; j < 8 * sizeof(int); j++)
 				{
 					var v1 = ciphertextOne.tuples[i];
 					var v2 = ciphertextTwo.tuples[j];

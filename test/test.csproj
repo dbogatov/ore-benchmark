@@ -17,6 +17,7 @@
 		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\cryptdb-ope\cryptdb-ope.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\practical-ore\practical-ore.csproj" />
+		<ProjectReference Include="..\src\ore-schemes\adam-ore\adam-ore.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\lewi-ore\lewi-ore.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\fh-ope\fh-ope.csproj" />
 		<ProjectReference Include="..\src\simulator\simulator.csproj" />
