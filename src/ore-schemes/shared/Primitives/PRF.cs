@@ -1,27 +1,14 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
-using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared.Primitives.PRF
 {
-	public class PRFFactory
+	public class PRFFactory : AbsPrimitiveFactory<IPRF>
 	{
-		/// <summary>
-		/// Returns an initialized instance of a PRF
-		/// </summary>
-		public static IPRF GetPRF(byte[] entropy = null)
+		protected override IPRF CreatePrimitive(byte[] entropy)
 		{
-			if (entropy != null)
-			{
-				return new AES(entropy);
-			}
-			else
-			{
-				entropy = new byte[128 / 8];
-				new Random().NextBytes(entropy);
-				return new AES(entropy);
-			}
+			return new AESPRF();
 		}
 	}
 
@@ -32,9 +19,8 @@ namespace ORESchemes.Shared.Primitives.PRF
 		/// </summary>
 		/// <param name="key">The key componenet to function</param>
 		/// <param name="input">The input value to function</param>
-		/// <param name="deterministic">If true, IV will be genrated from key making PRF deterministic</param>
 		/// <returns>The value of the function of its arguments</returns>
-		byte[] PRF(byte[] key, byte[] input, bool deterministic = true);
+		byte[] PRF(byte[] key, byte[] input);
 
 		/// <summary>
 		/// Computes the value of the inverse of pseudo random function
@@ -45,21 +31,15 @@ namespace ORESchemes.Shared.Primitives.PRF
 		byte[] InversePRF(byte[] key, byte[] input);
 	}
 
-	public class AES : AbsPrimitive, IPRF
+	public class AESPRF : AbsPrimitive, IPRF
 	{
 		private const int ALPHA = 128;
 
-		private readonly IPRG G;
-
-		public AES(byte[] entropy)
-		{
-			G = PRGFactory.GetDefaultPRG(entropy);
-		}
-
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
-		public byte[] PRF(byte[] key, byte[] input, bool deterministic = true)
+		public byte[] PRF(byte[] key, byte[] input)
 		{
 			OnUse(Primitive.PRF);
+			OnUse(Primitive.AES, true);
 
 			byte[] encrypted;
 			byte[] IV;
@@ -70,14 +50,6 @@ namespace ORESchemes.Shared.Primitives.PRF
 				aesAlg.Key = key;
 
 				IV = new byte[ALPHA / 8];
-				if (deterministic)
-				{
-					PRGFactory.GetDefaultPRG(key).NextBytes(IV);
-				}
-				else
-				{
-					G.NextBytes(IV);
-				}
 
 				aesAlg.IV = IV;
 				aesAlg.Mode = CipherMode.CBC;
@@ -96,18 +68,18 @@ namespace ORESchemes.Shared.Primitives.PRF
 				}
 			}
 
-			var combinedIvCt = new byte[IV.Length + encrypted.Length];
-			Array.Copy(IV, 0, combinedIvCt, 0, IV.Length);
-			Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
+			var ciphertext = new byte[encrypted.Length];
+			Array.Copy(encrypted, 0, ciphertext, 0, encrypted.Length);
 
 			// Return the encrypted bytes from the memory stream.
-			return combinedIvCt;
+			return ciphertext;
 		}
 
 		// https://gist.github.com/mark-adams/87aa34da3a5ed48ed0c7
 		public byte[] InversePRF(byte[] key, byte[] input)
 		{
 			OnUse(Primitive.PRF);
+			OnUse(Primitive.AES, true);
 
 			// Declare the string used to hold the decrypted text
 			byte[] plaintext = null;
@@ -118,20 +90,14 @@ namespace ORESchemes.Shared.Primitives.PRF
 				aesAlg.KeySize = ALPHA;
 				aesAlg.Key = key;
 
-				byte[] IV = new byte[aesAlg.BlockSize / 8];
-				byte[] cipherText = new byte[input.Length - IV.Length];
-
-				Array.Copy(input, IV, IV.Length);
-				Array.Copy(input, IV.Length, cipherText, 0, cipherText.Length);
-
-				aesAlg.IV = IV;
+				aesAlg.IV = new byte[ALPHA / 8];
 				aesAlg.Mode = CipherMode.CBC;
 
 				// Create a decrytor to perform the stream transform
 				var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
 				// Create the streams used for decryption. 
-				using (var msDecrypt = new MemoryStream(cipherText))
+				using (var msDecrypt = new MemoryStream(input))
 				{
 					using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
 					{

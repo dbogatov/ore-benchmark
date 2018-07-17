@@ -1,45 +1,37 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace ORESchemes.Shared.Primitives.PRG
 {
-	public class PRGFactory
+	public class PRGFactory : AbsPrimitiveFactory<IPRG>
 	{
-		/// <summary>
-		/// Returns an initialized instance of AES PRG
-		/// Accepts optional entropy
-		/// </summary>
-		public static IPRG GetPRG(byte[] seed = null)
-		{
-			if (seed != null)
-			{
-				return new AESPRG(seed);
-			}
-			else
-			{
-				seed = new byte[128 / 8];
-				new Random().NextBytes(seed);
-				return new AESPRG(seed);
-			}
-		}
+		public PRGFactory(byte[] entropy = null) : base(entropy) { }
 
-		/// <summary>
-		/// Returns an initialized instance of built-in C# PRG
-		/// Accepts optional entropy
-		/// </summary>
-		public static IPRG GetDefaultPRG(byte[] seed = null)
+		protected override IPRG CreatePrimitive(byte[] entropy)
 		{
-			if (seed != null)
-			{
-				return new DefaultRandom(seed);
-			}
-			else
-			{
-				seed = new byte[128 / 8];
-				new Random().NextBytes(seed);
-				return new DefaultRandom(seed);
-			}
+			return new AESPRG(entropy);
+		}
+	}
+
+	public class PRGCachedFactory : AbsPrimitiveFactory<IPRG>
+	{
+		public PRGCachedFactory(byte[] entropy = null) : base(entropy) { }
+
+		protected override IPRG CreatePrimitive(byte[] entropy)
+		{
+			return new AESPRGCached(entropy);
+		}
+	}
+
+	public class DefaultPRGFactory : AbsPrimitiveFactory<IPRG>
+	{
+		public DefaultPRGFactory(byte[] entropy = null) : base(entropy) { }
+
+		protected override IPRG CreatePrimitive(byte[] entropy)
+		{
+			return new DefaultRandom(entropy);
 		}
 	}
 
@@ -165,18 +157,28 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		public int Next(int min, int max)
 		{
-			uint large = unchecked((uint)this.Next());
-			uint diff;
-			if (min < 0)
+			while (true)
 			{
-				diff = (uint)max + (uint)-min;
-			}
-			else
-			{
-				diff = (uint)max - (uint)min;
-			}
+				uint large = unchecked((uint)this.Next());
+				uint diff;
+				if (min < 0)
+				{
+					diff = (uint)max + (uint)-min;
+				}
+				else
+				{
+					diff = (uint)max - (uint)min;
+				}
 
-			return (int)Math.Round(min + ((double)large / UInt32.MaxValue) * (diff + 1));
+				var result = (int)Math.Round(min + ((double)large / UInt32.MaxValue) * (diff + 1));
+
+				if (result > max || result < min)
+				{
+					continue;
+				}
+
+				return result;
+			}
 		}
 
 		public void NextBytes(byte[] bytes)
@@ -204,10 +206,20 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		public double NextDouble(double min, double max)
 		{
-			ulong large = unchecked((ulong)this.NextLong());
-			double diff = max - min;
+			while (true)
+			{
+				ulong large = unchecked((ulong)this.NextLong());
+				double diff = max - min;
 
-			return min + ((double)large / UInt64.MaxValue) * diff;
+				var result = min + ((double)large / UInt64.MaxValue) * diff;
+
+				if (result > max || result < min)
+				{
+					continue;
+				}
+
+				return result;
+			}
 		}
 
 		public long NextLong()
@@ -230,18 +242,110 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		public long NextLong(long min, long max)
 		{
-			ulong large = unchecked((ulong)this.NextLong());
-			ulong diff;
-			if (min < 0)
+			while (true)
 			{
-				diff = (ulong)max + (ulong)-min;
+				ulong large = unchecked((ulong)this.NextLong());
+				ulong diff;
+				if (min < 0)
+				{
+					diff = (ulong)max + (ulong)-min;
+				}
+				else
+				{
+					diff = (ulong)max - (ulong)min;
+				}
+
+				var result = (long)Math.Round(min + ((double)large / UInt64.MaxValue) * (diff + 1));
+
+				if (result > max || result < min)
+				{
+					continue;
+				}
+
+				return result;
 			}
-			else
+		}
+	}
+
+	/// <summary>
+	/// AES based PRG (CTR mode) with cache
+	/// </summary>
+	public class AESPRGCached : CustomPRG
+	{
+		const int BLOCK = 128;
+		private const int CACHE = BLOCK / 8; // Cache one block of entropy
+		private ulong _counter = 0;
+		private int _position = 0;
+
+		private byte[] _entropy = null;
+
+		public AESPRGCached(byte[] seed) : base(seed) { }
+
+		public override void GetBytes(byte[] data)
+		{
+			OnUse(Primitive.PRG);
+
+			if (_entropy == null)
 			{
-				diff = (ulong)max - (ulong)min;
+				_entropy = new byte[CACHE];
+				GenerateEntropy();
 			}
 
-			return (long)Math.Round(min + ((double)large / UInt64.MaxValue) * (diff + 1));
+			int dataPosition = 0;
+
+			while (dataPosition < data.Length)
+			{
+				int fromCache = Math.Min(CACHE - _position, data.Length - dataPosition);
+
+				Array.Copy(_entropy, _position, data, dataPosition, fromCache);
+
+				dataPosition += fromCache;
+				_position += fromCache;
+
+				if (_position == CACHE)
+				{
+					GenerateEntropy();
+					_position = 0;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills up cache with generated entropy
+		/// </summary>
+		private void GenerateEntropy()
+		{
+			OnUse(Primitive.AES, true);
+
+			using (Aes aesAlg = Aes.Create())
+			{
+				aesAlg.KeySize = ALPHA;
+				aesAlg.Key = _seed;
+
+				aesAlg.Mode = CipherMode.ECB;
+
+				var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+				// Create the streams used for encryption
+				using (var msEncrypt = new MemoryStream())
+				{
+					using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+					{
+						byte[] input = new byte[0];
+
+						for (ulong i = _counter; i < _counter + CACHE; i++)
+						{
+							input = input.Concat(BitConverter.GetBytes(i)).Concat(new byte[(BLOCK / 8) - sizeof(ulong)]).ToArray();
+						}
+
+						csEncrypt.Write(input, 0, input.Length);
+						csEncrypt.FlushFinalBlock();
+
+						_entropy = msEncrypt.ToArray();
+						_counter += CACHE;
+					}
+				}
+			}
 		}
 	}
 
@@ -257,14 +361,13 @@ namespace ORESchemes.Shared.Primitives.PRG
 		public override void GetBytes(byte[] data)
 		{
 			OnUse(Primitive.PRG);
+			OnUse(Primitive.AES, true);
 
 			byte[] encrypted;
 
 			using (Aes aesAlg = Aes.Create())
 			{
-				aesAlg.KeySize = ALPHA;
 				aesAlg.Key = _seed;
-				aesAlg.IV = new byte[128 / 8];
 
 				aesAlg.Mode = CipherMode.ECB;
 

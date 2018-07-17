@@ -100,7 +100,8 @@ namespace Test.ORESchemes.Primitives.Hash
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.Hash, 2 },
-					{ Primitive.PRF, 1 }
+					{ Primitive.PRF, 1 },
+					{ Primitive.AES, 1 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.Hash, 2 }

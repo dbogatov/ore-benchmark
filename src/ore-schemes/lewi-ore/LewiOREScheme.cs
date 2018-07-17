@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.Hash;
 using ORESchemes.Shared.Primitives.PRF;
-using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.PRP;
 
 namespace ORESchemes.LewiORE
@@ -72,9 +70,9 @@ namespace ORESchemes.LewiORE
 			this.n = n;
 			d = (int)Math.Pow(2, 32 / n);
 
-			F = PRFFactory.GetPRF(G.GetBytes(ALPHA / 8));
-			H = HashFactory.GetHash();
-			P = PRPFactory.GetPRP();
+			F = new PRFFactory().GetPrimitive();
+			H = new HashFactory().GetPrimitive();
+			P = new PRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 			SubscribePrimitive(H);
@@ -99,7 +97,7 @@ namespace ORESchemes.LewiORE
 			OnOperation(SchemeOperation.Decrypt);
 
 			return BitConverter.ToInt32(
-				F.InversePRF(
+				E.Decrypt(
 					key.left,
 					ciphertext.encrypted
 				), 0
@@ -112,7 +110,7 @@ namespace ORESchemes.LewiORE
 			{
 				left = EncryptLeft(key.left, key.right, ToUInt(plaintext)),
 				right = EncryptRight(key.left, key.right, ToUInt(plaintext)),
-				encrypted = F.PRF(key.left, BitConverter.GetBytes(plaintext))
+				encrypted = E.Encrypt(key.left, BitConverter.GetBytes(plaintext))
 			};
 		}
 

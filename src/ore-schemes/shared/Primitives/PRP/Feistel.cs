@@ -5,68 +5,20 @@ using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.Shared.Primitives.PRP
 {
-	public class PRPFactory
+	public class PRPFactory : AbsPrimitiveFactory<IPRP>
 	{
-		/// <summary>
-		/// Returns an initialized instance of PRP
-		/// </summary>
-		public static IPRP GetPRP()
+		protected override IPRP CreatePrimitive(byte[] entropy)
 		{
 			return new Feistel(3);
 		}
+	}
 
-		/// <summary>
-		/// Returns an initialized instance of strong PRP
-		/// </summary>
-		public static IPRP GetStrongPRP()
+	public class StrongPRPFactory : AbsPrimitiveFactory<IPRP>
+	{
+		protected override IPRP CreatePrimitive(byte[] entropy)
 		{
 			return new Feistel(4);
 		}
-	}
-
-
-	public interface IPRP : IPRF
-	{
-		/// <summary>
-		/// Perform a pseudo random permutation on bits of input
-		/// </summary>
-		/// <param name="input">The input to PRP</param>
-		/// <param name="key">The key to PRP (source of randomness)</param>
-		/// <returns>Permuted bits of input</returns>
-		BitArray PRP(BitArray input, byte[] key, int? bits = null);
-
-		/// <summary>
-		/// Perform an inverse of pseudo random permutation on bits of input
-		/// </summary>
-		/// <param name="input">The input to inverse of PRP (output of original PRP)</param>
-		/// <param name="key">The key to PRP (source of randomness)</param>
-		/// <returns>Un-permuted bits of input</returns>
-		BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
-	}
-
-	public abstract class AbsPRP : AbsPrimitive, IPRP
-	{
-		public byte[] InversePRF(byte[] key, byte[] input)
-		{
-			BitArray result = InversePRP(new BitArray(input), key);
-			byte[] bytes = new byte[(result.Length + 7) / 8];
-			result.CopyTo(bytes, 0);
-
-			return bytes;
-		}
-
-		public byte[] PRF(byte[] key, byte[] input, bool deterministic = true)
-		{
-			BitArray result = PRP(new BitArray(input), key);
-			byte[] bytes = new byte[(result.Length + 7) / 8];
-			result.CopyTo(bytes, 0);
-
-			return bytes;
-		}
-
-		public abstract BitArray InversePRP(BitArray input, byte[] key, int? bits = null);
-
-		public abstract BitArray PRP(BitArray input, byte[] key, int? bits = null);
 	}
 
 	/// <summary>
@@ -81,7 +33,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		public Feistel(int rounds = 3)
 		{
 			Rounds = rounds;
-			F = PRFFactory.GetPRF();
+			F = new PRFFactory().GetPrimitive();
 
 			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
@@ -148,9 +100,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			Tuple<BitArray, BitArray> result = new Tuple<BitArray, BitArray>(
 				Xor(
 					input.Item2,
-					new BitArray(
-						F.PRF(key, bytes).Skip(128 / 8).ToArray()
-					)
+					new BitArray(F.PRF(key, bytes))
 				),
 				input.Item1
 			);

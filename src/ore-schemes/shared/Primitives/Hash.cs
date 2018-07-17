@@ -4,12 +4,9 @@ using ORESchemes.Shared.Primitives.PRF;
 
 namespace ORESchemes.Shared.Primitives.Hash
 {
-	public class HashFactory
+	public class HashFactory : AbsPrimitiveFactory<IHash>
 	{
-		/// <summary>
-		/// Returns an initialized instance of a Hash function
-		/// </summary>
-		public static IHash GetHash()
+		protected override IHash CreatePrimitive(byte[] entropy)
 		{
 			return new SHA256();
 		}
@@ -39,7 +36,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 
 		public AbsHash()
 		{
-			F = PRFFactory.GetPRF();
+			F = new PRFFactory().GetPrimitive();
 
 			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)
@@ -48,8 +45,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 
 		public abstract byte[] ComputeHash(byte[] input);
 
-		public virtual byte[] ComputeHash(byte[] input, byte[] key) =>
-			ComputeHash(F.PRF(key, input).Skip(128 / 8).ToArray());
+		public virtual byte[] ComputeHash(byte[] input, byte[] key) => ComputeHash(F.PRF(key, input));
 	}
 
 	public class SHA256 : AbsHash

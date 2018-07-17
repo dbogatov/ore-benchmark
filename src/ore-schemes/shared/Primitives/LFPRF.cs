@@ -1,4 +1,3 @@
-using System.Linq;
 using ORESchemes.Shared.Primitives.PRF;
 using ORESchemes.Shared.Primitives.PRG;
 
@@ -14,9 +13,9 @@ namespace ORESchemes.Shared.Primitives.TapeGen
 		private bool _used = false;
 
 		public TapeGen(byte[] key, byte[] entropy) :
-			base(PRFFactory.GetPRF().PRF(key, entropy).Skip(128 / 8).ToArray())
+			base(new PRFFactory().GetPrimitive().PRF(key, entropy))
 		{
-			G = PRGFactory.GetPRG(_seed);
+			G = new PRGCachedFactory(_seed).GetPrimitive();
 
 			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
 				(prim, impure) => base.OnUse(prim, true)

@@ -11,6 +11,22 @@ namespace Test.ORESchemes.Primitives.PRG
 	[Trait("Category", "Unit")]
 	public class AESPRGGenerator : AbsPRG
 	{
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 },
+					{ Primitive.AES, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+
 		public AESPRGGenerator() : base()
 		{
 			_prg = new AESPRG(_entropy);
@@ -24,10 +40,49 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			byte[] entropy = seed ? _entropy : null;
 
-			var prg = PRGFactory.GetPRG(entropy);
+			var prg = new PRGFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
 			Assert.IsType<AESPRG>(prg);
+		}
+	}
+
+	[Trait("Category", "Unit")]
+	public class AESPRGCachedGenerator : AbsPRG
+	{
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 },
+					{ Primitive.AES, 5 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+
+		public AESPRGCachedGenerator() : base()
+		{
+			_prg = new AESPRGCached(_entropy);
+			_anotherPrg = new AESPRGCached(_anotherEntropy);
+		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void Factory(bool seed)
+		{
+			byte[] entropy = seed ? _entropy : null;
+
+			var prg = new PRGCachedFactory(entropy).GetPrimitive();
+
+			Assert.NotNull(prg);
+			Assert.IsType<AESPRGCached>(prg);
 		}
 	}
 
@@ -40,6 +95,21 @@ namespace Test.ORESchemes.Primitives.PRG
 			_anotherPrg = new DefaultRandom(_anotherEntropy);
 		}
 
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
@@ -47,7 +117,7 @@ namespace Test.ORESchemes.Primitives.PRG
 		{
 			byte[] entropy = seed ? _entropy : null;
 
-			var prg = PRGFactory.GetDefaultPRG(entropy);
+			var prg = new DefaultPRGFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
 			Assert.IsType<DefaultRandom>(prg);
@@ -64,6 +134,9 @@ namespace Test.ORESchemes.Primitives.PRG
 
 		protected IPRG _prg;
 		protected IPRG _anotherPrg;
+
+		protected abstract Dictionary<Primitive, int> _totalEvents { get; set; }
+		protected abstract Dictionary<Primitive, int> _pureEvents { get; set; }
 
 		public AbsPRG()
 		{
@@ -175,7 +248,7 @@ namespace Test.ORESchemes.Primitives.PRG
 				set.Add(_prg.NextDouble());
 			}
 
-			Assert.Equal(_runs, set.Count);
+			Assert.InRange(set.Count, _runs * 0.995, _runs * 1.005);
 		}
 
 		[Fact]
@@ -227,12 +300,8 @@ namespace Test.ORESchemes.Primitives.PRG
 					G.NextDouble(10);
 					G.NextDouble(10, 20);
 				},
-				new Dictionary<Primitive, int> {
-					{ Primitive.PRG, 10 }
-				},
-				new Dictionary<Primitive, int> {
-					{ Primitive.PRG, 10 }
-				}
+				_totalEvents,
+				_pureEvents
 			);
 		}
 

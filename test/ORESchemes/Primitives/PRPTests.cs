@@ -13,9 +13,9 @@ namespace Test.ORESchemes.Primitives.PRP
 		public FeistelPRP() : base(new Feistel(3)) { }
 
 		[Fact]
-		public void Factory()
+		public override void Factory()
 		{
-			var prp = PRPFactory.GetPRP();
+			var prp = new PRPFactory().GetPrimitive();
 
 			Assert.NotNull(prp);
 			Feistel feistel = Assert.IsType<Feistel>(prp);
@@ -38,7 +38,8 @@ namespace Test.ORESchemes.Primitives.PRP
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 48 },
-					{ Primitive.PRP, 16 }
+					{ Primitive.PRP, 16 },
+					{ Primitive.AES, 48 }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 16 }
@@ -53,9 +54,9 @@ namespace Test.ORESchemes.Primitives.PRP
 		public StrongFeistel() : base(new Feistel(4)) { }
 
 		[Fact]
-		public void Factory()
+		public override void Factory()
 		{
-			var prp = PRPFactory.GetStrongPRP();
+			var prp = new StrongPRPFactory().GetPrimitive();
 
 			Assert.NotNull(prp);
 			Feistel feistel = Assert.IsType<Feistel>(prp);
@@ -78,6 +79,94 @@ namespace Test.ORESchemes.Primitives.PRP
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.PRF, 64 },
+					{ Primitive.PRP, 16 },
+					{ Primitive.AES, 64 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 16 }
+				}
+			);
+		}
+	}
+
+	[Trait("Category", "Unit")]
+	public class TablePRPChecks : AbsSimplifiedPRPChecks
+	{
+		public TablePRPChecks() : base(new TablePRP()) { }
+
+		[Fact]
+		public override void Factory()
+		{
+			var prp = new TablePRPFactory().GetPrimitive();
+
+			Assert.NotNull(prp);
+			Assert.IsType<TablePRP>(prp);
+		}
+	}
+
+	[Trait("Category", "Unit")]
+	public class NoInvPRPChecks : AbsSimplifiedPRPChecks
+	{
+		public NoInvPRPChecks() : base(new NoInvPRP()) { }
+
+		[Fact]
+		public override void Factory()
+		{
+			var prp = new NoInvPRPFactory().GetPrimitive();
+
+			Assert.NotNull(prp);
+			Assert.IsType<NoInvPRP>(prp);
+		}
+	}
+
+	public abstract class AbsSimplifiedPRPChecks : AbsPRP
+	{
+		private class SimplifiedPRPWrapper : global::ORESchemes.Shared.Primitives.PRP.AbsPRP
+		{
+			private readonly ISimplifiedPRP P;
+
+			public SimplifiedPRPWrapper(ISimplifiedPRP prp)
+			{
+				P = prp;
+				P.PrimitiveUsed += (primitive, impure) => OnUse(primitive, impure);
+			}
+
+			public override BitArray InversePRP(BitArray input, byte[] key, int? bits = null)
+			{
+				int[] ints = new int[1];
+				input.CopyTo(ints, 0);
+				byte value = (byte)(ints[0]);
+
+				return new BitArray(new byte[] { P.InversePRP(value, key, (byte)(bits.HasValue ? bits.Value : 8)) });
+			}
+
+			public override BitArray PRP(BitArray input, byte[] key, int? bits = null)
+			{
+				int[] ints = new int[1];
+				input.CopyTo(ints, 0);
+				byte value = (byte)(ints[0]);
+
+				return new BitArray(new byte[] { P.PRP(value, key, (byte)(bits.HasValue ? bits.Value : 8)) });
+			}
+		}
+
+		public AbsSimplifiedPRPChecks(ISimplifiedPRP prp) : base(new SimplifiedPRPWrapper(prp)) { }
+
+		[Fact]
+		public void Events()
+		{
+			EventsTestsShared.Events<IPRP>(
+				_prp,
+				(P) =>
+				{
+					for (int i = 0; i < 8; i++)
+					{
+						var input = new BitArray(new int[] { i });
+						P.PRP(input, _key, 3);
+						P.InversePRP(input, _key, 3);
+					}
+				},
+				new Dictionary<Primitive, int> {
 					{ Primitive.PRP, 16 }
 				},
 				new Dictionary<Primitive, int> {
@@ -85,6 +174,25 @@ namespace Test.ORESchemes.Primitives.PRP
 				}
 			);
 		}
+
+		[Fact]
+		public void MalformedInput()
+		{
+			Assert.Throws<ArgumentException>(
+				() => _prp.PRP(new BitArray(3), _key, bits: 0)
+			);
+
+			Assert.Throws<ArgumentException>(
+				() => _prp.PRP(new BitArray(3), _key, bits: 9)
+			);
+
+			Assert.Throws<ArgumentException>(
+				() => _prp.PRP(new BitArray(new byte[] { 255 }), _key, bits: 2)
+			);
+		}
+
+		[Fact(Skip = "N/A")]
+		public override void OddBits() { }
 	}
 
 	public abstract class AbsPRP
@@ -101,6 +209,9 @@ namespace Test.ORESchemes.Primitives.PRP
 
 			_prp = prp;
 		}
+
+		[Fact]
+		public abstract void Factory();
 
 		[Fact]
 		public void OneToOne()
@@ -133,7 +244,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		}
 
 		[Fact]
-		public void OddBits()
+		public virtual void OddBits()
 		{
 			var set = new HashSet<byte>();
 
