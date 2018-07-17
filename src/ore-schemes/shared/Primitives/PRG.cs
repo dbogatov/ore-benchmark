@@ -11,7 +11,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		protected override IPRG CreatePrimitive(byte[] entropy)
 		{
-			return new AESPRG(entropy);
+			return new AESPRGCached(entropy);
 		}
 	}
 
@@ -262,7 +262,8 @@ namespace ORESchemes.Shared.Primitives.PRG
 	/// </summary>
 	public class AESPRGCached : CustomPRG
 	{
-		private const int CACHE = 1024; // 1 KB of entropy should be more than enough
+		const int BLOCK = 128;
+		private const int CACHE = BLOCK / 8; // Cache one block of entropy
 		private ulong _counter = 0;
 		private int _position = 0;
 
@@ -302,8 +303,6 @@ namespace ORESchemes.Shared.Primitives.PRG
 		private void GenerateEntropy()
 		{
 			OnUse(Primitive.AES, true);
-
-			const int BLOCK = 128;
 
 			using (Aes aesAlg = Aes.Create())
 			{

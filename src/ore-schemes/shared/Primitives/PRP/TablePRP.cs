@@ -4,19 +4,12 @@ using ORESchemes.Shared.Primitives.PRG;
 
 namespace ORESchemes.Shared.Primitives.PRP
 {
-	public class SimplifiedPRPFactory : AbsPrimitiveFactory<ISimplifiedPRP>
+	public class TablePRPFactory : AbsPrimitiveFactory<ISimplifiedPRP>
 	{
 		protected override ISimplifiedPRP CreatePrimitive(byte[] entropy)
 		{
 			return new TablePRP();
 		}
-	}
-
-	public interface ISimplifiedPRP : IPrimitive
-	{
-		byte PRP(byte input, byte[] key, byte bits);
-
-		byte InversePRP(byte input, byte[] key, byte bits);
 	}
 
 	public class TablePRP : AbsPrimitive, ISimplifiedPRP

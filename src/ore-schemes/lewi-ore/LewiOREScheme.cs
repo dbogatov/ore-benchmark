@@ -71,7 +71,7 @@ namespace ORESchemes.LewiORE
 
 			F = new PRFFactory().GetPrimitive();
 			H = new HashFactory().GetPrimitive();
-			P = new SimplifiedPRPFactory().GetPrimitive();
+			P = new NoInvPRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 			SubscribePrimitive(H);

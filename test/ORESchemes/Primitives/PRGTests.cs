@@ -11,22 +11,11 @@ namespace Test.ORESchemes.Primitives.PRG
 	[Trait("Category", "Unit")]
 	public class AESPRGGenerator : AbsPRG
 	{
-
-		[Fact]
-		public void TestName()
-		{
-		//Given
-		base.Uniformity();
-		//When
-		
-		//Then
-		}
-
 		protected override Dictionary<Primitive, int> _totalEvents
 		{
 			get => new Dictionary<Primitive, int> {
 					{ Primitive.PRG, 10 },
-					{ Primitive.AES, 1 }
+					{ Primitive.AES, 10 }
 				};
 			set => throw new NotImplementedException();
 		}
@@ -54,7 +43,7 @@ namespace Test.ORESchemes.Primitives.PRG
 			var prg = new PRGFactory(entropy).GetPrimitive();
 
 			Assert.NotNull(prg);
-			Assert.IsType<AESPRG>(prg);
+			Assert.IsType<AESPRGCached>(prg);
 		}
 	}
 
