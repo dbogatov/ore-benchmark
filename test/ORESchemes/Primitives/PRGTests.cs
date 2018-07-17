@@ -32,6 +32,32 @@ namespace Test.ORESchemes.Primitives.PRG
 			_prg = new AESPRG(_entropy);
 			_anotherPrg = new AESPRG(_anotherEntropy);
 		}
+	}
+
+	[Trait("Category", "Unit")]
+	public class AESPRGCachedGenerator : AbsPRG
+	{
+		protected override Dictionary<Primitive, int> _totalEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 },
+					{ Primitive.AES, 5 }
+				};
+			set => throw new NotImplementedException();
+		}
+		protected override Dictionary<Primitive, int> _pureEvents
+		{
+			get => new Dictionary<Primitive, int> {
+					{ Primitive.PRG, 10 }
+				};
+			set => throw new NotImplementedException();
+		}
+
+		public AESPRGCachedGenerator() : base()
+		{
+			_prg = new AESPRGCached(_entropy);
+			_anotherPrg = new AESPRGCached(_anotherEntropy);
+		}
 
 		[Theory]
 		[InlineData(true)]
@@ -209,7 +235,7 @@ namespace Test.ORESchemes.Primitives.PRG
 				set.Add(_prg.NextDouble());
 			}
 
-			Assert.Equal(_runs, set.Count);
+			Assert.InRange(set.Count, _runs * 0.995, _runs * 1.005);
 		}
 
 		[Fact]
