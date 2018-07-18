@@ -20,6 +20,7 @@ echo "You may be promted for sudo password."
 echo "This is needed to set process' priority and remove old artifacts."
 
 sudo rm -rf BenchmarkDotNet.Artifacts
-sudo dotnet run -c RELEASE -- "--$1"
+dotnet build -c RELEASE
+sudo dotnet run -c RELEASE --no-build -- "--$1"
 
 echo "Done!"

@@ -58,15 +58,17 @@ namespace Simulation
 			var primitives = Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v);
 
 			int padding = primitives.Max(p => p.ToString().Length) + 1;
-			int section = "123456 (123 avg)".Length;
+			int total = "10527220".Length;
+			int average = "5623".Length;
+			int section = " ( avg)".Length + total + average;
 
 			result += $"\t\t{"Primitive".PadRight(padding)}: {"Total".PadLeft(section)} | {"Pure".PadLeft(section)}{Environment.NewLine}";
 			result += "\t\t" + String.Join("", Enumerable.Repeat("-", result.Length - 3)) + Environment.NewLine;
 
 			foreach (var primitive in primitives)
 			{
-				result += $"\t\t{primitive.ToString().PadRight(padding)}: {TotalPrimitiveOperations[primitive].ToString().PadLeft(6)} ({(TotalPrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(3)} avg)";
-				result += $" | {PurePrimitiveOperations[primitive].ToString().PadLeft(6)} ({(PurePrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(3)} avg){Environment.NewLine}";
+				result += $"\t\t{primitive.ToString().PadRight(padding)}: {TotalPrimitiveOperations[primitive].ToString().PadLeft(total)} ({(TotalPrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(average)} avg)";
+				result += $" | {PurePrimitiveOperations[primitive].ToString().PadLeft(total)} ({(PurePrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(average)} avg){Environment.NewLine}";
 			}
 
 			return result;

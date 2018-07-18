@@ -81,6 +81,13 @@ namespace CLI
 							new FHOPEFactory(Parent.Seed).GetScheme(FHOPEP)
 						).Simulate();
 					break;
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					report =
+						new Simulator<ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
+							reader.Dataset,
+							new AdamOREFactory(Parent.Seed).GetScheme()
+						).Simulate();
+					break;
 				default:
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}

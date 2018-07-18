@@ -179,12 +179,13 @@ namespace ORESchemes.LewiORE
 				uint xi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
 				uint xtoi = shift > 31 ? 0 : input >> shift;
 
-				uint x = Permute(
+				uint x = P.Permute(
 					xi,
 					F.PRF(
 						rightKey,
 						BitConverter.GetBytes(xtoi)
-					)
+					),
+					_bitsInBlock
 				);
 
 				byte[] xtoix = Concatenate(xtoi, x);
@@ -225,12 +226,13 @@ namespace ORESchemes.LewiORE
 
 				for (uint j = 0; j < d; j++)
 				{
-					uint js = Unpermute(
+					uint js = P.Unpermute(
 						j,
 						F.PRF(
 							rightKey,
 							BitConverter.GetBytes(ytoi)
-						)
+						),
+						_bitsInBlock
 					);
 
 					byte[] ytoij = Concatenate(ytoi, j);
@@ -264,39 +266,7 @@ namespace ORESchemes.LewiORE
 		/// </summary>
 		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
 
-		/// <summary>
-		/// Wrapper around PRP permute function
-		/// </summary>
-		private uint Permute(uint input, byte[] key)
-		{
-			BitArray permutation =
-				P.PRP(
-					new BitArray(new int[] { (int)input }),
-					key,
-					_bitsInBlock
-				);
-			int[] result = new int[1];
-			permutation.CopyTo(result, 0);
 
-			return (uint)result[0];
-		}
-
-		/// <summary>
-		/// Wrapper around PRP unpermute function
-		/// </summary>
-		private uint Unpermute(uint input, byte[] key)
-		{
-			BitArray permutation =
-				P.InversePRP(
-					new BitArray(new int[] { (int)input }),
-					key,
-					_bitsInBlock
-				);
-			int[] result = new int[1];
-			permutation.CopyTo(result, 0);
-
-			return (uint)result[0];
-		}
 
 		/// <summary>
 		/// Wrapper around Hash function

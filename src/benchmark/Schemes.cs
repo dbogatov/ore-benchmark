@@ -53,6 +53,9 @@ namespace Benchmark.Schemes
 				case ORESchemes.Shared.ORESchemes.FHOPE:
 					_scheme = (IOREScheme<C, K>)new FHOPEFactory(seed).GetScheme(Scheme.Item2);
 					break;
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					_scheme = (IOREScheme<C, K>)new AdamOREFactory(seed).GetScheme(Scheme.Item2);
+					break;
 			}
 
 			foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>())
@@ -107,6 +110,10 @@ namespace Benchmark.Schemes
 				{
 					yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.FHOPE, value);
 				}
+			}
+			else if (typeof(C) == typeof(ORESchemes.AdamORE.Ciphertext))
+			{
+				yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.AdamORE, 0);
 			}
 		}
 
