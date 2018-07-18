@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
+using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PPH;
 using Xunit;
 
@@ -70,6 +72,31 @@ namespace Test.ORESchemes.Primitives.PPH
 					)
 				);
 			}
+		}
+
+		[Fact]
+		public void Events()
+		{
+			EventsTestsShared.Events<IPPH>(
+				R,
+				pph =>
+				{
+					var key = pph.KeyGen();
+					pph.Test(
+						key.testKey,
+						pph.Hash(key.hashKey, new byte[] { }),
+						pph.Hash(key.hashKey, new byte[] { })
+					);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PPH, 3 },
+					{ Primitive.PRG, 2 },
+					{ Primitive.AES, 2 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PPH, 3 }
+				}
+			);
 		}
 	}
 }

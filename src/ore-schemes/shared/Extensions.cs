@@ -107,6 +107,9 @@ namespace ORESchemes.Shared
 			return bytes;
 		}
 
+		/// <summary>
+		/// Helper that wraps PRP when uint input is provided instead of generic bit array
+		/// </summary>
 		public static uint Permute(this IPRP P, uint input, byte[] key, int bits)
 		{
 			BitArray permutation =
@@ -121,6 +124,9 @@ namespace ORESchemes.Shared
 			return (uint)result[0];
 		}
 
+		/// <summary>
+		/// Helper that wraps PRP when uint input is provided instead of generic bit array
+		/// </summary>
 		public static uint Unpermute(this IPRP P, uint input, byte[] key, int bits)
 		{
 			BitArray permutation =

@@ -23,7 +23,7 @@ namespace ORESchemes.AdamORE
 		public byte[] encrypted;
 		public byte[] testKey;
 
-		public int GetSize() => (tuples.Sum(t => t.Length) + testKey.Length) * 8;
+		public int GetSize() => tuples.Sum(t => t.Length) * 8;
 	}
 
 	public class AdamOREScheme : AbsORECmpScheme<Ciphertext, Key>
@@ -91,9 +91,7 @@ namespace ORESchemes.AdamORE
 					BigInteger.Pow(2, 128)
 				).ToByteArray();
 
-				var t = R.Hash(key.pphKey.hashKey, u);
-
-				tuples[P.Permute((uint)i, permutationKey, 5)] = t;
+				tuples[P.Permute((uint)i, permutationKey, 5)] = R.Hash(key.pphKey.hashKey, u);
 			}
 
 			result.tuples = tuples.ToList();
