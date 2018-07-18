@@ -11,7 +11,7 @@ namespace Test.ORESchemes
 			_scheme = new AdamOREScheme(_entropy);
 		}
 
-		public override int CipherSize() => 4216;
+		public override int CipherSize() => 4088;
 		public override int KeySize() => 384;
 	}
 }
