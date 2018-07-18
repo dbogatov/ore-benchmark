@@ -94,6 +94,20 @@ namespace Simulation.Protocol
 		public override int GetSize() => 0;
 	}
 
+	public class RequestMessage : AbsMessage<object>
+	{
+		public RequestMessage() : base(null) { }
+
+		public override int GetSize() => 0;
+	}
+
+	public class SizeableMessage<T> : AbsMessage<T> where T : IGetSize
+	{
+		public SizeableMessage(T content) : base(content) { }
+
+		public override int GetSize() => _content.GetSize();
+	}
+
 	/// <summary>
 	/// Entity responsible for passing messages between protocol parties
 	/// and keeping track of messages' count and size

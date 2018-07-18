@@ -6,11 +6,9 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol.SimpleORE
 {
-	public class InsertMessage<C> : AbsMessage<C> where C : IGetSize
+	public class InsertMessage<C> : SizeableMessage<C> where C : IGetSize
 	{
 		public InsertMessage(C content) : base(content) { }
-
-		public override int GetSize() => _content.GetSize();
 	}
 
 	public class QueryMessage<C> : AbsMessage<Tuple<C, C>> where C : IGetSize
@@ -24,7 +22,7 @@ namespace Simulation.Protocol.SimpleORE
 	{
 		public QueryResultMessage(List<string> content) : base(content) { }
 
-		public override int GetSize() => _content.Count * sizeof(byte);
+		public override int GetSize() => _content.Count * sizeof(byte) * 8;
 	}
 
 	public class MinMaxMessage<C> : AbsMessage<Tuple<C, C>> where C : IGetSize
@@ -161,7 +159,7 @@ namespace Simulation.Protocol.SimpleORE
 		{
 			foreach (var query in input)
 			{
-				_mediator.SendToServer<Tuple<C, C>,List<string>>(
+				_mediator.SendToServer<Tuple<C, C>, List<string>>(
 					new QueryMessage<C>(
 						new Tuple<C, C>(
 							EncryptForSearch(query.from),
