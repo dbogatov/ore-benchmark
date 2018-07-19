@@ -54,12 +54,13 @@ namespace Simulation.Protocol.Florian
 			int n = _structure.Count;
 			int s = G.Next(0, n);
 
-			List<Tuple<Cipher, string>> @new = new List<Tuple<Cipher, string>>(_structure.Count);
+			// List<Tuple<Cipher, string>> @new = new List<Tuple<Cipher, string>>(_structure.Count);
+			Tuple<Cipher, string>[] @new = new Tuple<Cipher, string>[_structure.Count];
 			for (int i = 0; i < n; i++)
 			{
 				@new[(i + s) % n] = _structure[i];
 			}
-			_structure = @new;
+			_structure = @new.ToList();
 
 			return new FinishMessage();
 		}

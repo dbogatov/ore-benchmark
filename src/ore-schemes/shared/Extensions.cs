@@ -108,6 +108,16 @@ namespace ORESchemes.Shared
 		}
 
 		/// <summary>
+		/// Helper that returns an array of uniformly sampled bytes of given size
+		/// </summary>
+		public static byte[] GetBytes(this Random G, int n)
+		{
+			byte[] bytes = new byte[n];
+			G.NextBytes(bytes);
+			return bytes;
+		}
+
+		/// <summary>
 		/// Helper that wraps PRP when uint input is provided instead of generic bit array
 		/// </summary>
 		public static uint Permute(this IPRP P, uint input, byte[] key, int bits)
@@ -139,6 +149,22 @@ namespace ORESchemes.Shared
 			permutation.CopyTo(result, 0);
 
 			return (uint)result[0];
+		}
+
+		// https://stackoverflow.com/a/1262619/1644554
+		public static IList<T> Shuffle<T>(this IList<T> list, Random rng)
+		{
+			int n = list.Count;
+			while (n > 1)
+			{
+				n--;
+				int k = rng.Next(n + 1);
+				T value = list[k];
+				list[k] = list[n];
+				list[n] = value;
+			}
+
+			return list;
 		}
 	}
 }

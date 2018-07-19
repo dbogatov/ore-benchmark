@@ -89,7 +89,7 @@ namespace Simulation.Protocol.Florian
 			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input)) };
 
 		private int Decrypt(Cipher input)
-			=> Convert.ToInt32(E.Decrypt(_key, input.encrypted));
+			=> BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
 
 		private int InsertValue(int m)
 		{
@@ -98,38 +98,32 @@ namespace Simulation.Protocol.Florian
 			).Unpack();
 
 			int l = 0;
-			int u = n - 1;
+			int u = n;
 
 			if (n == 0)
 			{
 				return 0;
 			}
 
-			Cipher c0 = _mediator.SendToServer<int, Cipher>(
-				new RequestCipherMessage(0)
-			).Unpack();
+			int r = Decrypt(
+				_mediator.SendToServer<int, Cipher>(
+					new RequestCipherMessage(0)
+				).Unpack()
+			);
 
-			int r = Decrypt(c0);
+			bool nextGreater = false;
 
 			while (l != u)
 			{
 				int j = (int)Math.Ceiling((double)(l + (u - l) / 2));
 
-				Cipher cj = _mediator.SendToServer<int, Cipher>(
-					new RequestCipherMessage(j)
-				).Unpack();
+				int mPrime = Decrypt(
+					_mediator.SendToServer<int, Cipher>(
+						new RequestCipherMessage(j)
+					).Unpack()
+				);
 
-				int mPrime = Decrypt(cj);
-
-				if (mPrime - r > m - r)
-				{
-					l = j + 1;
-				}
-				else if (mPrime - r < m - r)
-				{
-					u = j;
-				}
-				else if (m == mPrime)
+				if (m == mPrime)
 				{
 					if (G.Next() % 2 == 0)
 					{
@@ -140,10 +134,75 @@ namespace Simulation.Protocol.Florian
 						u = j;
 					}
 				}
+				else if (m > r)
+				{
+					if (m > mPrime)
+					{
+						l = j + 1;
+					}
+					else
+					{
+						u = j;
+					}
+				}
 				else
 				{
-					throw new InvalidOperationException("Should never happen");
+					// m < r
+					if (mPrime > r)
+					{
+						u = j;
+					}
+					else if (mPrime == r) // TODO ?? 
+					{
+						if (nextGreater)
+						{
+							u = j;
+						}
+						else
+						{
+							l = j + 1;
+						}
+					}
+					else
+					{
+						// m < r AND mPrime < r
+						if (m < mPrime)
+						{
+							u = j;
+						}
+						else
+						{
+							// m < r AND mPrime < r AND m > mPrime
+							l = j + 1;
+						}
+					}
 				}
+
+				nextGreater = mPrime > r;
+
+				// if ((mPrime - r) % UInt32.MaxValue > (m - r) % UInt32.MaxValue)
+				// {
+				// 	l = j + 1;
+				// }
+				// else if ((mPrime - r) % UInt32.MaxValue < (m - r) % UInt32.MaxValue)
+				// {
+				// 	u = j;
+				// }
+				// else if (m == mPrime)
+				// {
+				// 	if (G.Next() % 2 == 0)
+				// 	{
+				// 		l = j + 1;
+				// 	}
+				// 	else
+				// 	{
+				// 		u = j;
+				// 	}
+				// }
+				// else
+				// {
+				// 	throw new InvalidOperationException("Should never happen");
+				// }
 			}
 
 			return l;
