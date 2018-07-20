@@ -7,6 +7,7 @@ using Simulation.Protocol.Florian;
 
 namespace Test.Simulators.Protocols
 {
+	[Trait("Category", "Unit")]
 	public class FlorianProtocol
 	{
 		private static int SEED = 123456;
