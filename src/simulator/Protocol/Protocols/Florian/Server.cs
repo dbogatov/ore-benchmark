@@ -73,24 +73,20 @@ namespace Simulation.Protocol.Florian
 			var structure = _structure.Select(e => decode(e.Item1)).ToArray();
 			int n = structure.Length;
 
-			var min = (index: n + 1, value: int.MaxValue);
+			int jumps = 0;
 			for (int i = 0; i < n; i++)
-			{
-				if (structure[i] < min.value)
-				{
-					min = (i, structure[i]);
-				}
-			}
-
-			for (int i = min.index; i < n + min.index - 1; i++)
 			{
 				if (structure[i % n] > structure[(i + 1) % n])
 				{
-					return false;
+					jumps++;
+					if (jumps == 2)
+					{
+						return false;
+					}
 				}
 			}
 
-			return true;
+			return jumps <= 1;
 		}
 	}
 }

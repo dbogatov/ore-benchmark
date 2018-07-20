@@ -91,7 +91,7 @@ namespace Simulation.Protocol.Florian
 		private int Decrypt(Cipher input)
 			=> BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
 
-		private int InsertValue(int value)
+		private int InsertValue(int value) 
 		{
 			int n = _mediator.SendToServer<object, int>(
 				new RequestNMessage()
@@ -110,6 +110,8 @@ namespace Simulation.Protocol.Florian
 					new RequestCipherMessage(0)
 				).Unpack()
 			);
+
+			int trueLocation = -1;
 
 			while (l != u)
 			{
@@ -133,12 +135,17 @@ namespace Simulation.Protocol.Florian
 				}
 				else if (value == middle)
 				{
+					// Bug in the original paper
+					trueLocation = j;
+
 					if (G.Next() % 2 == 0)
 					{
+						// go right
 						l = j + 1;
 					}
 					else
 					{
+						// go left
 						u = j;
 					}
 				}
@@ -148,7 +155,7 @@ namespace Simulation.Protocol.Florian
 				}
 			}
 
-			return l;
+			return trueLocation != -1 ? trueLocation : l;
 		}
 
 		private int GetSearchIndex(int a, int b, bool from)

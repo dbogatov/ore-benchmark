@@ -14,24 +14,28 @@ namespace Test.Simulators.Protocols
 		private readonly Random G = new Random(SEED);
 		private readonly Client _client;
 		private readonly Server _server;
+		private readonly Mediator _mediator;
+
+		private readonly int DISTINCT = 1000;
+		private readonly int DUPLICATES = 5;
 
 		public FlorianProtocol()
 		{
 			_client = new Client(G.GetBytes(128 / 8));
 			_server = new Server(G.GetBytes(128 / 8));
 
-			var mediator = new Mediator(_client, _server);
+			_mediator = new Mediator(_client, _server);
 
-			_client.SetMediator(mediator);
-			_server.SetMediator(mediator);
+			_client.SetMediator(_mediator);
+			_server.SetMediator(_mediator);
 		}
 
 		[Fact]
 		public void InsertionCorrectness()
 		{
 			var input = Enumerable
-				.Range(1, 10)
-				.Select(a => Enumerable.Repeat(a, 3))
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
 				.SelectMany(a => a)
 				.ToList()
 				.Shuffle(G)
