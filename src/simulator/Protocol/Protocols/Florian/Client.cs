@@ -190,7 +190,12 @@ namespace Simulation.Protocol.Florian
 				).Unpack()
 			);
 
-			if (r == nMinusOne && from)
+			// a <= r was not in original paper
+			// has to put it here to fix a bug
+			// In particular the following failed
+			// structure = [72, 72, 73, 73, .... , 72]
+			// and looking for a = 73, from = true
+			if (r == nMinusOne && from && a <= r)
 			{
 				r++;
 			}

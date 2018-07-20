@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Simulation.Protocol;
 using ORESchemes.Shared;
@@ -64,8 +63,8 @@ namespace Test.Simulators.Protocols
 		public void QueryCorrectness()
 		{
 			var input = Enumerable
-				.Range(1, 10)
-				.Select(a => Enumerable.Repeat(a, 3))
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
 				.SelectMany(a => a)
 				.ToList()
 				.Shuffle(G)
@@ -73,11 +72,11 @@ namespace Test.Simulators.Protocols
 				.ToList();
 
 			var queries = Enumerable
-				.Range(1, 10)
+				.Range(1, DISTINCT)
 				.Select(_ =>
 				{
-					int a = G.Next(1, 10);
-					int b = G.Next(1, 10);
+					int a = G.Next(1, DISTINCT);
+					int b = G.Next(1, DISTINCT);
 
 					return new RangeQuery(Math.Min(a, b), Math.Max(a, b));
 				})
@@ -91,7 +90,7 @@ namespace Test.Simulators.Protocols
 
 				var expected = Enumerable
 					.Range(query.from, query.to - query.from + 1)
-					.Select(a => Enumerable.Repeat(a, 3))
+					.Select(a => Enumerable.Repeat(a, DUPLICATES))
 					.SelectMany(a => a)
 					.OrderBy(a => a)
 					.Select(a => a.ToString())
