@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ORESchemes.Shared.Primitives.PRG;
+
+[assembly: InternalsVisibleTo("test")]
 
 namespace Simulation.Protocol.Florian
 {
@@ -63,6 +66,31 @@ namespace Simulation.Protocol.Florian
 			_structure = @new.ToList();
 
 			return new FinishMessage();
+		}
+
+		internal bool ValidateStructure(Func<Cipher, int> decode)
+		{
+			var structure = _structure.Select(e => decode(e.Item1)).ToArray();
+			int n = structure.Length;
+
+			var min = (index: n + 1, value: int.MaxValue);
+			for (int i = 0; i < n; i++)
+			{
+				if (structure[i] < min.value)
+				{
+					min = (i, structure[i]);
+				}
+			}
+
+			for (int i = min.index; i < n + min.index - 1; i++)
+			{
+				if (structure[i % n] > structure[(i + 1) % n])
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

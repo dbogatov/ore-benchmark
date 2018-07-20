@@ -91,7 +91,7 @@ namespace Simulation.Protocol.Florian
 		private int Decrypt(Cipher input)
 			=> BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
 
-		private int InsertValue(int m)
+		private int InsertValue(int value)
 		{
 			int n = _mediator.SendToServer<object, int>(
 				new RequestNMessage()
@@ -111,19 +111,27 @@ namespace Simulation.Protocol.Florian
 				).Unpack()
 			);
 
-			bool nextGreater = false;
-
 			while (l != u)
 			{
 				int j = (int)Math.Ceiling((double)(l + (u - l) / 2));
 
-				int mPrime = Decrypt(
+				int middle = Decrypt(
 					_mediator.SendToServer<int, Cipher>(
 						new RequestCipherMessage(j)
 					).Unpack()
 				);
 
-				if (m == mPrime)
+				if (Modulo(value - r) > Modulo(middle - r))
+				{
+					// go right
+					l = j + 1;
+				}
+				else if (Modulo(value - r) < Modulo(middle - r))
+				{
+					// go left
+					u = j;
+				}
+				else if (value == middle)
 				{
 					if (G.Next() % 2 == 0)
 					{
@@ -134,75 +142,10 @@ namespace Simulation.Protocol.Florian
 						u = j;
 					}
 				}
-				else if (m > r)
-				{
-					if (m > mPrime)
-					{
-						l = j + 1;
-					}
-					else
-					{
-						u = j;
-					}
-				}
 				else
 				{
-					// m < r
-					if (mPrime > r)
-					{
-						u = j;
-					}
-					else if (mPrime == r) // TODO ?? 
-					{
-						if (nextGreater)
-						{
-							u = j;
-						}
-						else
-						{
-							l = j + 1;
-						}
-					}
-					else
-					{
-						// m < r AND mPrime < r
-						if (m < mPrime)
-						{
-							u = j;
-						}
-						else
-						{
-							// m < r AND mPrime < r AND m > mPrime
-							l = j + 1;
-						}
-					}
+					throw new InvalidOperationException("Should never happen");
 				}
-
-				nextGreater = mPrime > r;
-
-				// if ((mPrime - r) % UInt32.MaxValue > (m - r) % UInt32.MaxValue)
-				// {
-				// 	l = j + 1;
-				// }
-				// else if ((mPrime - r) % UInt32.MaxValue < (m - r) % UInt32.MaxValue)
-				// {
-				// 	u = j;
-				// }
-				// else if (m == mPrime)
-				// {
-				// 	if (G.Next() % 2 == 0)
-				// 	{
-				// 		l = j + 1;
-				// 	}
-				// 	else
-				// 	{
-				// 		u = j;
-				// 	}
-				// }
-				// else
-				// {
-				// 	throw new InvalidOperationException("Should never happen");
-				// }
 			}
 
 			return l;
@@ -257,5 +200,8 @@ namespace Simulation.Protocol.Florian
 
 			return from ? l : u;
 		}
+		private long Modulo(int a) => a >= 0 ? a : UInt32.MaxValue + a;
+
+		internal Func<Cipher, int> ExportDecryption() => Decrypt;
 	}
 }

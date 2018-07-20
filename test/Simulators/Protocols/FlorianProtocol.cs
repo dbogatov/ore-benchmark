@@ -27,10 +27,12 @@ namespace Test.Simulators.Protocols
 		}
 
 		[Fact]
-		public void Correctness()
+		public void InsertionCorrectness()
 		{
 			var input = Enumerable
 				.Range(1, 10)
+				.Select(a => Enumerable.Repeat(a, 3))
+				.SelectMany(a => a)
 				.ToList()
 				.Shuffle(G)
 				.Select(a => new Simulation.Protocol.Record(a, a.ToString()))
@@ -49,7 +51,33 @@ namespace Test.Simulators.Protocols
 
 			_client.RunConstruction(input);
 
-			_client.RunSearch(queries);
+			Assert.True(
+				_server.ValidateStructure(_client.ExportDecryption())
+			);
+		}
+
+		[Fact]
+		public void QueryCorrectness()
+		{
+			var input = Enumerable
+					.Range(1, 10)
+					.ToList()
+					.Shuffle(G)
+					.Select(a => new Simulation.Protocol.Record(a, a.ToString()))
+					.ToList();
+
+			var queries = Enumerable
+				.Range(1, 10)
+				.Select(_ =>
+				{
+					int a = G.Next(1, 10);
+					int b = G.Next(1, 10);
+
+					return new RangeQuery(Math.Min(a, b), Math.Max(a, b));
+				})
+				.ToList();
+
+			_client.RunConstruction(input);
 		}
 	}
 }
