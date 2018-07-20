@@ -64,11 +64,13 @@ namespace Test.Simulators.Protocols
 		public void QueryCorrectness()
 		{
 			var input = Enumerable
-					.Range(1, 10)
-					.ToList()
-					.Shuffle(G)
-					.Select(a => new Simulation.Protocol.Record(a, a.ToString()))
-					.ToList();
+				.Range(1, 10)
+				.Select(a => Enumerable.Repeat(a, 3))
+				.SelectMany(a => a)
+				.ToList()
+				.Shuffle(G)
+				.Select(a => new Simulation.Protocol.Record(a, a.ToString()))
+				.ToList();
 
 			var queries = Enumerable
 				.Range(1, 10)
@@ -82,6 +84,23 @@ namespace Test.Simulators.Protocols
 				.ToList();
 
 			_client.RunConstruction(input);
+
+			foreach (var query in queries)
+			{
+				var result = _client.Search(query);
+
+				var expected = Enumerable
+					.Range(query.from, query.to - query.from + 1)
+					.Select(a => Enumerable.Repeat(a, 3))
+					.SelectMany(a => a)
+					.OrderBy(a => a)
+					.Select(a => a.ToString())
+					.ToList();
+
+				result = result.OrderBy(a => Int32.Parse(a)).ToList();
+
+				Assert.Equal(expected, result);
+			}
 		}
 	}
 }

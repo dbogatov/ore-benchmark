@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+// using System.Runtime.CompilerServices;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.Symmetric;
+
+// [assembly: InternalsVisibleTo("test")]
 
 namespace Simulation.Protocol.Florian
 {
@@ -47,34 +51,41 @@ namespace Simulation.Protocol.Florian
 		{
 			foreach (var query in input)
 			{
-				int from = GetSearchIndex(query.from, query.to, from: true);
-				int to = GetSearchIndex(query.from, query.to, from: false);
+				Search(query);
+			}
+		}
 
-				if (from <= to)
-				{
-					_mediator.SendToServer<Tuple<int, int>, List<string>>(
-						new QueryMessage(
-							new Tuple<int, int>(from, to)
-						)
-					);
-				}
-				else
-				{
-					int n = _mediator.SendToServer<object, int>(
-						new RequestNMessage()
-					).Unpack();
+		internal List<string> Search(RangeQuery query)
+		{
+			int from = GetSearchIndex(query.from, query.to, from: true);
+			int to = GetSearchIndex(query.from, query.to, from: false);
 
+			if (from <= to)
+			{
+				return _mediator.SendToServer<Tuple<int, int>, List<string>>(
+					new QueryMessage(
+						new Tuple<int, int>(from, to)
+					)
+				).Unpack();
+			}
+			else
+			{
+				int n = _mediator.SendToServer<object, int>(
+					new RequestNMessage()
+				).Unpack();
+
+				return _mediator.SendToServer<Tuple<int, int>, List<string>>(
+					new QueryMessage(
+						new Tuple<int, int>(0, to)
+					)
+				).Unpack()
+				.Concat(
 					_mediator.SendToServer<Tuple<int, int>, List<string>>(
 						new QueryMessage(
-							new Tuple<int, int>(0, from)
+							new Tuple<int, int>(from, n)
 						)
-					);
-					_mediator.SendToServer<Tuple<int, int>, List<string>>(
-						new QueryMessage(
-							new Tuple<int, int>(to, n)
-						)
-					);
-				}
+					).Unpack()
+				).ToList();
 			}
 		}
 
@@ -91,7 +102,7 @@ namespace Simulation.Protocol.Florian
 		private int Decrypt(Cipher input)
 			=> BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
 
-		private int InsertValue(int value) 
+		private int InsertValue(int value)
 		{
 			int n = _mediator.SendToServer<object, int>(
 				new RequestNMessage()
@@ -165,19 +176,21 @@ namespace Simulation.Protocol.Florian
 			).Unpack();
 
 			int l = 0;
-			int u = n - 1;
+			int u = n;
 
-			Cipher c0 = _mediator.SendToServer<int, Cipher>(
-				new RequestCipherMessage(0)
-			).Unpack();
+			int r = Decrypt(
+				_mediator.SendToServer<int, Cipher>(
+					new RequestCipherMessage(0)
+				).Unpack()
+			);
 
-			Cipher cNMinusOne = _mediator.SendToServer<int, Cipher>(
-				new RequestCipherMessage(n - 1)
-			).Unpack();
+			int nMinusOne = Decrypt(
+				_mediator.SendToServer<int, Cipher>(
+					new RequestCipherMessage(n - 1)
+				).Unpack()
+			);
 
-			int r = Decrypt(c0);
-
-			if (r == Decrypt(cNMinusOne) && from)
+			if (r == nMinusOne && from)
 			{
 				r++;
 			}
@@ -186,21 +199,23 @@ namespace Simulation.Protocol.Florian
 			{
 				int j = (int)Math.Ceiling((double)(l + (u - l) / 2));
 
-				Cipher cj = _mediator.SendToServer<int, Cipher>(
-					new RequestCipherMessage(j)
-				).Unpack();
-
-				int m = Decrypt(cj);
+				int middle = Decrypt(
+					_mediator.SendToServer<int, Cipher>(
+						new RequestCipherMessage(j)
+					).Unpack()
+				);
 
 				if (
-					m - r > a - r ||
-					m - r <= b - r
+					(Modulo(a - r) > Modulo(middle - r) && from) ||
+					(Modulo(b - r) >= Modulo(middle - r) && !from)
 				)
 				{
+					// go right
 					l = j + 1;
 				}
 				else
 				{
+					// go left
 					u = j;
 				}
 			}
