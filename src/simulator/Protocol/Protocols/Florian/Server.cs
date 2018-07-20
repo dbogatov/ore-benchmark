@@ -17,6 +17,8 @@ namespace Simulation.Protocol.Florian
 		{
 			G = new PRGFactory(entropy).GetPrimitive();
 
+			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
+
 			_structure = new List<Tuple<Cipher, string>>();
 		}
 

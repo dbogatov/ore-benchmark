@@ -23,6 +23,9 @@ namespace Simulation.Protocol.Florian
 
 			_key = G.GetBytes(128 / 8);
 
+			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
+			E.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
+
 			OnClientStorage(_key.Length * 8);
 		}
 

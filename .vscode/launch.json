@@ -14,9 +14,17 @@
 			"args": [
 				"--dataset",
 				"./data/dataset.txt",
+				"--ore-scheme",
+				"florian",
 				"--seed",
-				"782797714",
-				"benchmark"
+				"141299821",
+				"protocol",
+				"--queries",
+				"./data/range-0.5-queries.txt",
+				"--cache-size",
+				"0",
+				"--b-plus-tree-branches",
+				"2"
 			],
 			"cwd": "${workspaceFolder}",
 			// For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

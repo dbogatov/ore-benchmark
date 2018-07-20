@@ -16,7 +16,7 @@ namespace Simulation.Protocol
 
 			public long MessagesSent { get; set; } = 0;
 			public long CommunicationVolume { get; set; } = 0;
-			public long AvgMessageSize => CommunicationVolume / MessagesSent;
+			public long AvgMessageSize => CommunicationVolume == 0 ? 0 : CommunicationVolume / MessagesSent;
 
 			public long MaxClientStorage { get; set; } = 0;
 
