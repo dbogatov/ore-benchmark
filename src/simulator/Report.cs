@@ -53,6 +53,8 @@ namespace Simulation
 		/// </summary>
 		protected string PrintPrimitiveUsage()
 		{
+			Func<long, long, long> avg = (a, b) => a == 0 || b == 0 ? 0 : a / b;
+
 			string result = "";
 
 			var primitives = Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v);
@@ -67,8 +69,8 @@ namespace Simulation
 
 			foreach (var primitive in primitives)
 			{
-				result += $"\t\t{primitive.ToString().PadRight(padding)}: {TotalPrimitiveOperations[primitive].ToString().PadLeft(total)} ({(TotalPrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(average)} avg)";
-				result += $" | {PurePrimitiveOperations[primitive].ToString().PadLeft(total)} ({(PurePrimitiveOperations[primitive] / SchemeOperations).ToString().PadLeft(average)} avg){Environment.NewLine}";
+				result += $"\t\t{primitive.ToString().PadRight(padding)}: {TotalPrimitiveOperations[primitive].ToString().PadLeft(total)} ({avg(TotalPrimitiveOperations[primitive], SchemeOperations).ToString().PadLeft(average)} avg)";
+				result += $" | {PurePrimitiveOperations[primitive].ToString().PadLeft(total)} ({avg(PurePrimitiveOperations[primitive], SchemeOperations).ToString().PadLeft(average)} avg){Environment.NewLine}";
 			}
 
 			return result;

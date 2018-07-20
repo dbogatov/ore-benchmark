@@ -11,7 +11,8 @@ namespace ORESchemes.Shared
 		PracticalORE,
 		LewiORE,
 		FHOPE,
-		AdamORE
+		AdamORE,
+		Florian
 	}
 
 	public enum SchemeOperation

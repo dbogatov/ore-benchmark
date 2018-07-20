@@ -79,4 +79,13 @@ namespace Test.Simulators.Protocols.Integration
 			);
 		}
 	}
+
+	[Trait("Category", "Unit")]
+	public class FlorianProtocol : AbsProtocol
+	{
+		public FlorianProtocol()
+		{
+			_protocol = new global::Simulation.Protocol.Florian.Protocol(new Random(123456).GetBytes(128 / 8));
+		}
+	}
 }

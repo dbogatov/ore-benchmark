@@ -104,6 +104,11 @@ namespace CLI
 						new AdamOREFactory(Parent.Seed).GetScheme()
 					);
 					break;
+				case ORESchemes.Shared.ORESchemes.Florian:
+					protocol = new Simulation.Protocol.Florian.Protocol(
+						new Random(Parent.Seed).GetBytes(128 / 8)
+					);
+					break;
 				default:
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
@@ -111,11 +116,12 @@ namespace CLI
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 
 			System.Console.WriteLine(
-				Parent.Verbose ? 
-				report.ToString() : 
+				Parent.Verbose ?
+				report.ToString() :
 				JsonReport(
 					report.Stages,
-					new {
+					new
+					{
 						BPlusTreeBranching = BPlusTreeBranching,
 						CacheSize = CacheSize,
 						Queries = Queries,
