@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-// using System.Runtime.CompilerServices;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.Symmetric;
-
-// [assembly: InternalsVisibleTo("test")]
 
 namespace Simulation.Protocol.Florian
 {
@@ -58,6 +55,11 @@ namespace Simulation.Protocol.Florian
 			}
 		}
 
+		/// <summary>
+		/// Returns a result for a single search
+		/// </summary>
+		/// <param name="query">Query object containing requested endpoints</param>
+		/// <returns>A list of strings - results</returns>
 		internal List<string> Search(RangeQuery query)
 		{
 			int from = GetSearchIndex(query.from, query.to, from: true);
@@ -99,12 +101,21 @@ namespace Simulation.Protocol.Florian
 			return (IMessage<R>)new FinishMessage();
 		}
 
+		/// <summary>
+		/// Helper that encrypts a plaintext
+		/// </summary>
 		private Cipher Encrypt(int input)
 			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input)) };
 
+		/// <summary>
+		/// Helper that decrypts a ciphertext
+		/// </summary>
 		private int Decrypt(Cipher input)
 			=> BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
 
+		/// <summary>
+		/// Interactively talks to server and returns the index where given value must be inserted
+		/// </summary>
 		private int InsertValue(int value)
 		{
 			int n = _mediator.SendToServer<object, int>(
@@ -172,6 +183,13 @@ namespace Simulation.Protocol.Florian
 			return trueLocation != -1 ? trueLocation : l;
 		}
 
+		/// <summary>
+		/// Interactively talks to server to find indices for query endpoints
+		/// </summary>
+		/// <param name="a">Left query endpoint</param>
+		/// <param name="b">Right query endpoint</param>
+		/// <param name="from">True, if index for left endpoint requested, false for right endpoint</param>
+		/// <returns>The index of an endpoint</returns>
 		private int GetSearchIndex(int a, int b, bool from)
 		{
 			int n = _mediator.SendToServer<object, int>(
@@ -230,8 +248,17 @@ namespace Simulation.Protocol.Florian
 
 			return from ? l : u;
 		}
+
+		/// <summary>
+		/// Helper that computes mathematically correct modulo -
+		/// one that lives between 0 and a - 1
+		/// </summary>
 		private long Modulo(int a) => a >= 0 ? a : UInt32.MaxValue + a;
 
+		/// <summary>
+		/// Helper method visible only to the test assembly.
+		/// Needed for proper testing
+		/// </summary>
 		internal Func<Cipher, int> ExportDecryption() => Decrypt;
 	}
 }

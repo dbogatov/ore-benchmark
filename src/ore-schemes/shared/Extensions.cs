@@ -152,6 +152,10 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/1262619/1644554
+		/// <summary>
+		/// Helper routine that shuffles a list using Knuth shuffle using entropy generated
+		/// by the provided Random generator
+		/// </summary>
 		public static IList<T> Shuffle<T>(this IList<T> list, Random rng)
 		{
 			int n = list.Count;

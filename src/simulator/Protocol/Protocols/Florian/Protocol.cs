@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
+
+[assembly: InternalsVisibleTo("test")]
 
 namespace Simulation.Protocol.Florian
 {

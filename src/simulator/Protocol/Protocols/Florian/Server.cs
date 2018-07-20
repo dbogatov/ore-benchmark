@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using ORESchemes.Shared.Primitives.PRG;
-
-[assembly: InternalsVisibleTo("test")]
 
 namespace Simulation.Protocol.Florian
 {
@@ -45,6 +42,9 @@ namespace Simulation.Protocol.Florian
 			}
 		}
 
+		/// <summary>
+		/// React to the insert request from server
+		/// </summary>
 		private FinishMessage AcceptMessage(InsertMessage insert)
 		{
 			_structure.Insert(
@@ -59,7 +59,6 @@ namespace Simulation.Protocol.Florian
 			int n = _structure.Count;
 			int s = G.Next(0, n);
 
-			// List<Tuple<Cipher, string>> @new = new List<Tuple<Cipher, string>>(_structure.Count);
 			Tuple<Cipher, string>[] @new = new Tuple<Cipher, string>[_structure.Count];
 			for (int i = 0; i < n; i++)
 			{
@@ -70,6 +69,11 @@ namespace Simulation.Protocol.Florian
 			return new FinishMessage();
 		}
 
+		/// <summary>
+		/// Helper method visible only the test assembly
+		/// </summary>
+		/// <param name="decode">Lambda used to decrypt the ciphertext</param>
+		/// <returns>True, if internal structure is valid (sorted)</returns>
 		internal bool ValidateStructure(Func<Cipher, int> decode)
 		{
 			var structure = _structure.Select(e => decode(e.Item1)).ToArray();
@@ -81,10 +85,6 @@ namespace Simulation.Protocol.Florian
 				if (structure[i % n] > structure[(i + 1) % n])
 				{
 					jumps++;
-					if (jumps == 2)
-					{
-						return false;
-					}
 				}
 			}
 
