@@ -35,11 +35,4 @@ namespace Simulation.Protocol.Florian
 
 		public override int GetSize() => 2 * sizeof(int) * 8;
 	}
-
-	internal class QueryResponseMessage : AbsMessage<List<string>>
-	{
-		public QueryResponseMessage(List<string> content) : base(content) { }
-
-		public override int GetSize() => _content.Count * sizeof(byte) * 8;
-	}
 }

@@ -51,6 +51,13 @@ namespace Simulation.Protocol
 		/// </summary>
 		/// <param name="extra">Optional number of bits to add to current storage for report</param>
 		public virtual void RecordStorage(long extra = 0) => OnClientStorage(extra);
+
+		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
+		{
+			OnClientStorage(message.GetSize());
+
+			return (IMessage<R>)new FinishMessage();
+		}
 	}
 
 	public interface IMessage<out T>
@@ -101,11 +108,40 @@ namespace Simulation.Protocol
 		public override int GetSize() => 0;
 	}
 
+	public class QueryResponseMessage : AbsMessage<List<string>>
+	{
+		public QueryResponseMessage(List<string> content) : base(content) { }
+
+		public override int GetSize() => _content.Count * sizeof(byte) * 8;
+	}
+
+	public class InsertMessage<C> : SizeableMessage<EncryptedRecord<C>> where C : IGetSize
+	{
+		public InsertMessage(EncryptedRecord<C> content) : base(content) { }
+	}
+
+	public class QueryMessage<C> : AbsMessage<Tuple<C, C>> where C : IGetSize
+	{
+		public QueryMessage(Tuple<C, C> content) : base(content) { }
+
+		public override int GetSize() => _content.Item1.GetSize() + _content.Item2.GetSize();
+	}
+
 	public class SizeableMessage<T> : AbsMessage<T> where T : IGetSize
 	{
 		public SizeableMessage(T content) : base(content) { }
 
 		public override int GetSize() => _content.GetSize();
+	}
+
+	public class EncryptedRecord<C> : IGetSize where C : IGetSize
+	{
+		public C cipher;
+		public string value;
+
+		private readonly int VALUESIZE = 0;
+
+		public int GetSize() => cipher.GetSize() + VALUESIZE;
 	}
 
 	/// <summary>

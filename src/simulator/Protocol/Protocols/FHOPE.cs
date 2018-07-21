@@ -8,17 +8,17 @@ namespace Simulation.Protocol.FHOPE
 	{
 		public Server(Options<Ciphertext> options) : base(options) { }
 
-		protected override FinishMessage AcceptMessage(SimpleORE.InsertMessage<Ciphertext> message)
+		protected override FinishMessage AcceptMessage(InsertMessage<Ciphertext> message)
 		{
-			var cipher = message.Unpack();
+			var content = message.Unpack();
 
 			_tree.Insert(
-				cipher,
-				""
+				content.cipher,
+				content.value
 			);
 
-			cipher.max = null;
-			cipher.min = null;
+			content.cipher.min = null;
+			content.cipher.max = null;
 
 			return new FinishMessage();
 		}

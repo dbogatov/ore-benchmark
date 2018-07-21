@@ -8,16 +8,16 @@ namespace Simulation.Protocol.LewiORE
 	{
 		public Server(Options<Ciphertext> options) : base(options) { }
 
-		protected override FinishMessage AcceptMessage(SimpleORE.InsertMessage<Ciphertext> message)
+		protected override FinishMessage AcceptMessage(InsertMessage<Ciphertext> message)
 		{
-			var cipher = message.Unpack();
+			var content = message.Unpack();
 
 			_tree.Insert(
-				cipher,
-				""
+				content.cipher,
+				content.value
 			);
 
-			cipher.left = null;
+			content.cipher.left = null;
 
 			return new FinishMessage();
 		}

@@ -42,17 +42,6 @@ namespace Test.Simulators.Protocols
 				.Select(a => new Simulation.Protocol.Record(a, a.ToString()))
 				.ToList();
 
-			var queries = Enumerable
-				.Range(1, 10)
-				.Select(_ =>
-				{
-					int a = G.Next(1, 10);
-					int b = G.Next(1, 10);
-
-					return new RangeQuery(Math.Min(a, b), Math.Max(a, b));
-				})
-				.ToList();
-
 			_client.RunConstruction(input);
 
 			Assert.True(

@@ -6,25 +6,6 @@ using ORESchemes.Shared.Primitives;
 
 namespace Simulation.Protocol.SimpleORE
 {
-	public class InsertMessage<C> : SizeableMessage<C> where C : IGetSize
-	{
-		public InsertMessage(C content) : base(content) { }
-	}
-
-	public class QueryMessage<C> : AbsMessage<Tuple<C, C>> where C : IGetSize
-	{
-		public QueryMessage(Tuple<C, C> content) : base(content) { }
-
-		public override int GetSize() => _content.Item1.GetSize() + _content.Item2.GetSize();
-	}
-
-	public class QueryResultMessage : AbsMessage<List<string>>
-	{
-		public QueryResultMessage(List<string> content) : base(content) { }
-
-		public override int GetSize() => _content.Count * sizeof(byte) * 8;
-	}
-
 	public class MinMaxMessage<C> : AbsMessage<Tuple<C, C>> where C : IGetSize
 	{
 		public MinMaxMessage(Tuple<C, C> content) : base(content) { }
@@ -51,8 +32,8 @@ namespace Simulation.Protocol.SimpleORE
 		protected virtual FinishMessage AcceptMessage(InsertMessage<C> message)
 		{
 			_tree.Insert(
-				message.Unpack(),
-				""
+				message.Unpack().cipher,
+				message.Unpack().value
 			);
 
 			return new FinishMessage();
@@ -61,7 +42,7 @@ namespace Simulation.Protocol.SimpleORE
 		/// <summary>
 		/// Reacts to search request
 		/// </summary>
-		protected virtual QueryResultMessage AcceptMessage(QueryMessage<C> message)
+		protected virtual QueryResponseMessage AcceptMessage(QueryMessage<C> message)
 		{
 			List<string> result = new List<string>();
 			_tree.TryRange(
@@ -71,7 +52,7 @@ namespace Simulation.Protocol.SimpleORE
 				checkRanges: false
 			);
 
-			return new QueryResultMessage(result);
+			return new QueryResponseMessage(result);
 		}
 
 		/// <summary>
@@ -122,22 +103,19 @@ namespace Simulation.Protocol.SimpleORE
 			OnClientStorage(_key.GetSize());
 		}
 
-		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
-		{
-			OnClientStorage(message.GetSize());
-
-			return (IMessage<R>)new FinishMessage();
-		}
-
 		public override void RecordStorage(long extra = 0) => OnClientStorage(_key.GetSize() + extra);
 
 		public override void RunConstruction(List<Record> input)
 		{
 			foreach (var record in input)
 			{
-				_mediator.SendToServer<C, object>(
+				_mediator.SendToServer<EncryptedRecord<C>, object>(
 					new InsertMessage<C>(
-						EncryptForConstruction(record.index)
+						new EncryptedRecord<C>
+						{
+							cipher = EncryptForConstruction(record.index),
+							value = record.value
+						}
 					)
 				);
 			}
