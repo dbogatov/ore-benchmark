@@ -47,7 +47,7 @@ namespace Test.Simulators.Protocols
 			_client.RunConstruction(input);
 
 			Assert.True(
-				_server.ValidateStructure(input.Select(c => c.index).ToList(), _client.ExportDecryption())
+				_server.ValidateStructure(input.Select(c => (long)c.index).ToList(), c => (long)_client.ExportDecryption()(c))
 			);
 		}
 

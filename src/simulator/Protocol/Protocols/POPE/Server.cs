@@ -80,6 +80,6 @@ namespace Simulation.Protocol.POPE
 			return new FinishMessage();
 		}
 
-		internal bool ValidateStructure(List<int> input, Func<Cipher, int> decode) => _tree.ValidateElementsInserted(input, decode);
+		internal bool ValidateStructure(List<long> input, Func<Cipher, long> decode) => _tree.ValidateElementsInserted(input, decode);
 	}
 }

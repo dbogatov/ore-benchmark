@@ -29,30 +29,41 @@ namespace Simulation.Protocol.POPE
 
 		public List<string> Search(C left, C right)
 		{
-			InternalNode newRoot;
+			LeafNode Split(C point)
+			{
 
-			SplitResult leftSplit = _root.Split(left);
-			newRoot = leftSplit.leaf?.parent.Rebalance();
-			_root = newRoot ?? _root;
+				SplitResult split = _root.Split(point);
+				var newRoot = split.leaf?.parent.Rebalance();
 
-			SplitResult rightSplit = _root.Split(right);
-			newRoot = rightSplit.leaf?.parent.Rebalance();
-			_root = newRoot ?? _root;
+				if (newRoot != null)
+				{
+					_root = newRoot;
+				}
+				else if (split.newRoot != null)
+				{
+					_root = split.newRoot;
+				}
+
+				return split.leaf;
+			}
+
+			LeafNode leftLeaf = Split(left);
+			LeafNode rightLeaf = Split(right);
 
 			List<string> result = new List<string>();
-
-			LeafNode leftLeaf = leftSplit.leaf;
 
 			do
 			{
 				result.AddRange(leftLeaf._buffer.Select(b => b.value));
 				leftLeaf = (LeafNode)leftLeaf.right;
-			} while (leftLeaf != rightSplit.leaf);
+			} while (leftLeaf != rightLeaf);
 
-			result.AddRange(rightSplit.leaf._buffer.Select(b => b.value));
+			result.AddRange(rightLeaf._buffer.Select(b => b.value));
 
 			return result;
 		}
+
+		internal void Validate(Func<C, long> decode) => _root.Validate(decode, long.MinValue, long.MaxValue);
 
 		private abstract class Node
 		{
@@ -76,6 +87,8 @@ namespace Simulation.Protocol.POPE
 			public void AcceptChild(EncryptedRecord<C> child) => _buffer.Add(child);
 
 			internal abstract List<C> GetAllCiphers();
+
+			internal abstract void Validate(Func<C, long> decode, long from, long to);
 		}
 
 		private class InternalNode : Node
@@ -93,7 +106,7 @@ namespace Simulation.Protocol.POPE
 			{
 				if (_children.Count <= _options.L)
 				{
-					return null;
+					return newRoot;
 				}
 
 				InternalNode root;
@@ -104,16 +117,14 @@ namespace Simulation.Protocol.POPE
 				}
 				else
 				{
-					root = (InternalNode)parent;
+					root = parent;
 				}
 
 				var partitions = _children.InSetsOf(_options.L).ToList();
 
 				root.AcceptInternals(this, partitions);
 
-				root.Rebalance(newRoot);
-
-				return newRoot;
+				return root.Rebalance(newRoot);
 			}
 
 			public void AcceptInternals(InternalNode child, List<List<CipherChild>> partitions)
@@ -128,6 +139,8 @@ namespace Simulation.Protocol.POPE
 					)
 					.ToList();
 
+				toInsert.ForEach(c => c.child.parent = this);
+
 				if (_children.Count > 0)
 				{
 					for (int i = 0; i < _children.Count; i++)
@@ -136,15 +149,10 @@ namespace Simulation.Protocol.POPE
 						{
 							var thisChild = _children[i].child;
 
-							// TODO check
-							// // we must always have an upper value
-							// if (_children[i].cipher == null)
-							// {
-							// 	toInsert.Last().cipher = default(C);
-							// }
-
 							_children.RemoveAt(i);
 							_children.InsertRange(i, toInsert);
+
+							break;
 						}
 					}
 				}
@@ -266,7 +274,58 @@ namespace Simulation.Protocol.POPE
 			}
 
 			internal override List<C> GetAllCiphers() =>
-				_children.Select(c => c.cipher).Concat(_buffer.Select(b => b.cipher)).Concat(_children.Select(c => c.child.GetAllCiphers()).SelectMany(c => c)).ToList();
+				_buffer.Select(b => b.cipher).Concat(_children.Select(c => c.child.GetAllCiphers()).SelectMany(c => c)).ToList();
+
+			internal override void Validate(Func<C, long> decode, long from, long to)
+			{
+				// number of children
+				if (_children.Count > _options.L)
+				{
+					throw new InvalidOperationException("Children count");
+				}
+
+				// children bounds
+				if (decode(_children.First().cipher) <= from)
+				{
+					throw new InvalidOperationException("Children lower bound");
+				}
+				if (decode(_children.Last().cipher) > to)
+				{
+					throw new InvalidOperationException("Children upper bound");
+				}
+
+				// children in order
+				for (int i = 0; i < _children.Count - 1; i++)
+				{
+					if (decode(_children[i].cipher) >= decode(_children[i + 1].cipher))
+					{
+						throw new InvalidOperationException("Children order");
+					}
+				}
+
+				// has parent
+				if ((!(from == long.MinValue && to == long.MaxValue)) && parent == null)
+				{
+					throw new InvalidOperationException("Parent unset");
+				}
+
+				// validate children
+				for (int i = 0; i < _children.Count; i++)
+				{
+					long lower;
+					if (i == 0)
+					{
+						lower = long.MinValue;
+					}
+					else
+					{
+						lower = decode(_children[i - 1].cipher);
+					}
+
+
+					_children[i].child.Validate(decode, lower, decode(_children[i].cipher));
+				}
+			}
 		}
 
 		private class LeafNode : Node
@@ -330,6 +389,36 @@ namespace Simulation.Protocol.POPE
 			}
 
 			internal override List<C> GetAllCiphers() => _buffer.Select(b => b.cipher).ToList();
+
+			internal override void Validate(Func<C, long> decode, long from, long to)
+			{
+				// children bounds
+				if (_buffer.Min(c => decode(c.cipher)) <= from)
+				{
+					throw new InvalidOperationException("Buffer lower bound");
+				}
+				if (_buffer.Max(c => decode(c.cipher)) > to)
+				{
+					throw new InvalidOperationException("Buffer upper bound");
+				}
+
+				// sibling links
+				if (from != long.MinValue && left == null)
+				{
+					throw new InvalidOperationException("Left unset");
+				}
+
+				if (to != long.MaxValue && right == null)
+				{
+					throw new InvalidOperationException("Right unset");
+				}
+
+				// has parent
+				if ((!(from == long.MinValue && to == long.MaxValue)) && parent == null)
+				{
+					throw new InvalidOperationException("Parent unset");
+				}
+			}
 		}
 
 		private class CipherChild
@@ -349,7 +438,7 @@ namespace Simulation.Protocol.POPE
 			public LeafNode child;
 		}
 
-		internal bool ValidateElementsInserted(List<int> expected, Func<C, int> decode)
+		internal bool ValidateElementsInserted(List<long> expected, Func<C, long> decode)
 		{
 			expected = expected.OrderBy(c => c).ToList();
 			var actual = _root.GetAllCiphers().Select(c => decode(c)).OrderBy(c => c).ToList();
