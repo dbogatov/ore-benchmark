@@ -29,17 +29,15 @@ namespace Simulation.Protocol.POPE
 
 		public List<string> Search(C left, C right)
 		{
+			InternalNode newRoot;
+
 			SplitResult leftSplit = _root.Split(left);
-			if (leftSplit.newRoot != null && leftSplit.newRoot != _root)
-			{
-				_root = leftSplit.newRoot;
-			}
+			newRoot = leftSplit.leaf?.parent.Rebalance();
+			_root = newRoot ?? _root;
 
 			SplitResult rightSplit = _root.Split(right);
-			if (rightSplit.newRoot != null && rightSplit.newRoot != _root)
-			{
-				_root = rightSplit.newRoot;
-			}
+			newRoot = rightSplit.leaf?.parent.Rebalance();
+			_root = newRoot ?? _root;
 
 			List<string> result = new List<string>();
 
@@ -58,7 +56,7 @@ namespace Simulation.Protocol.POPE
 
 		private abstract class Node
 		{
-			public Node parent = null;
+			public InternalNode parent = null;
 			public Node right = null;
 			public Node left = null;
 
@@ -85,6 +83,76 @@ namespace Simulation.Protocol.POPE
 			private readonly List<CipherChild> _children = new List<CipherChild>();
 
 			public InternalNode(Options<C> options) : base(options) { }
+
+			public InternalNode(Options<C> options, List<CipherChild> children) : base(options)
+			{
+				_children = children;
+			}
+
+			public InternalNode Rebalance(InternalNode newRoot = null)
+			{
+				if (_children.Count <= _options.L)
+				{
+					return null;
+				}
+
+				InternalNode root;
+				if (parent == null)
+				{
+					root = new InternalNode(_options);
+					newRoot = root;
+				}
+				else
+				{
+					root = (InternalNode)parent;
+				}
+
+				var partitions = _children.InSetsOf(_options.L).ToList();
+
+				root.AcceptInternals(this, partitions);
+
+				root.Rebalance(newRoot);
+
+				return newRoot;
+			}
+
+			public void AcceptInternals(InternalNode child, List<List<CipherChild>> partitions)
+			{
+				var toInsert = partitions
+					.Select(p =>
+						new CipherChild
+						{
+							child = new InternalNode(_options, p),
+							cipher = p.Last().cipher
+						}
+					)
+					.ToList();
+
+				if (_children.Count > 0)
+				{
+					for (int i = 0; i < _children.Count; i++)
+					{
+						if (_children[i].child == child)
+						{
+							var thisChild = _children[i].child;
+
+							// TODO check
+							// // we must always have an upper value
+							// if (_children[i].cipher == null)
+							// {
+							// 	toInsert.Last().cipher = default(C);
+							// }
+
+							_children.RemoveAt(i);
+							_children.InsertRange(i, toInsert);
+						}
+					}
+				}
+				else
+				{
+					_children.AddRange(toInsert);
+				}
+			}
 
 			public override SplitResult Split(C label, SplitResult split = null)
 			{
