@@ -7,7 +7,7 @@ namespace Simulation.Protocol.POPE
 	{
 		public SetListMessage(HashSet<Cipher> content) : base(content) { }
 
-		public override int GetSize() => _content.Sum(c => c.GetSize());
+		public override int GetSize() => _content.Sum(c => c == null ? 0 : c.GetSize());
 	}
 
 
@@ -17,7 +17,7 @@ namespace Simulation.Protocol.POPE
 	{
 		public SortedListResponseMessage(List<Cipher> content) : base(content) { }
 
-		public override int GetSize() => _content.Sum(c => c.GetSize());
+		public override int GetSize() => _content.Sum(c => c == null ? 0 : c.GetSize());
 	}
 
 

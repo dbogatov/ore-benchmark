@@ -7,7 +7,7 @@ namespace Simulation.Protocol.POPE
 	public class Server : AbsParty
 	{
 		private readonly IPRG G;
-		private Tree _tree;
+		private Tree<Cipher> _tree;
 
 		public Server(byte[] entropy)
 		{
@@ -15,12 +15,12 @@ namespace Simulation.Protocol.POPE
 
 			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 
-			_tree = new Tree(
-				new Options
+			_tree = new Tree<Cipher>(
+				new Options<Cipher>
 				{
 					L = 5, // TODO
 					SetList =
-						(list) =>
+						list =>
 						_mediator.SendToClient<HashSet<Cipher>, object>(
 							new SetListMessage(list)
 						),

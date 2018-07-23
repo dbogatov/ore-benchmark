@@ -4,6 +4,7 @@ using Simulation.Protocol;
 using ORESchemes.Shared;
 using Xunit;
 using Simulation.Protocol.POPE;
+using System.Collections.Generic;
 
 namespace Test.Simulators.Protocols
 {
@@ -18,6 +19,7 @@ namespace Test.Simulators.Protocols
 
 		private readonly int DISTINCT = 1000;
 		private readonly int DUPLICATES = 5;
+		private readonly int RUNS = 100;
 
 		public POPEProtocol()
 		{
@@ -47,6 +49,81 @@ namespace Test.Simulators.Protocols
 			Assert.True(
 				_server.ValidateStructure(input.Select(c => c.index).ToList(), _client.ExportDecryption())
 			);
+		}
+
+		[Fact]
+		public void ClientResponseCorrectnessSortedList()
+		{
+			var input = Enumerable
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
+				.SelectMany(a => a)
+				.ToList()
+				.Shuffle(G);
+
+			_client.AcceptMessage<HashSet<Cipher>, object>(
+				new SetListMessage(
+					new HashSet<Cipher>(input.Select(_client.ExportEncryption()))
+				)
+			);
+
+			var result = _client.AcceptMessage<object, List<Cipher>>(
+				new GetSortedListMessage()
+			).Unpack();
+
+			var decrypted = result.Select(_client.ExportDecryption()).ToList();
+			var expected = input.OrderBy(c => c).ToList();
+
+			Assert.Equal(expected, decrypted);
+		}
+
+		[Fact]
+		public void ClientResponseCorrectnessIndex()
+		{
+			var input = Enumerable
+				.Range(1, 100)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
+				.SelectMany(a => a)
+				.ToList()
+				.Shuffle(G);
+
+
+			_client.AcceptMessage<HashSet<Cipher>, object>(
+				new SetListMessage(
+					new HashSet<Cipher>(input.Select(_client.ExportEncryption()).Concat(new List<Cipher> { null }))
+				)
+			);
+
+			input.Add(int.MaxValue);
+
+			var sorted = input.OrderBy(c => c).ToList();
+
+			for (int i = 0; i < RUNS; i++)
+			{
+				var insert = G.Next(1, 100);
+
+				var result = _client.AcceptMessage<Cipher, int>(
+					new IndexOfResultMessage(_client.ExportEncryption()(insert))
+				).Unpack();
+
+				int expected = -1;
+				for (int j = 0; j < sorted.Count; j++)
+				{
+					if (sorted[j] >= insert)
+					{
+						expected = j;
+						break;
+					}
+				}
+
+				Assert.Equal(expected, result);
+			}
+
+			var right = _client.AcceptMessage<Cipher, int>(
+				new IndexOfResultMessage(_client.ExportEncryption()(150))
+			).Unpack();
+
+			Assert.Equal(sorted.Count - 1, right);
 		}
 	}
 }

@@ -108,5 +108,11 @@ namespace Simulation.Protocol.POPE
 		/// Needed for proper testing
 		/// </summary>
 		internal Func<Cipher, int> ExportDecryption() => Decrypt;
+
+		/// <summary>
+		/// Helper method visible only to the test assembly.
+		/// Needed for proper testing
+		/// </summary>
+		internal Func<int, Cipher> ExportEncryption() => Encrypt;
 	}
 }
