@@ -15,7 +15,33 @@ namespace Simulation.Protocol.POPE
 
 			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 
-			_tree = new Tree();
+			_tree = new Tree(
+				new Options
+				{
+					L = 5, // TODO
+					SetList =
+						(list) =>
+						_mediator.SendToClient<HashSet<Cipher>, object>(
+							new SetListMessage(list)
+						),
+					GetSortedList =
+						() =>
+						_mediator.SendToClient<object, List<Cipher>>(
+							new GetSortedListMessage()
+						).Unpack(),
+					IndexToInsert =
+						cipher =>
+						_mediator.SendToClient<Cipher, int>(
+							new IndexOfResultMessage(cipher)
+						).Unpack(),
+					IndexOfResult =
+						cipher =>
+						_mediator.SendToClient<Cipher, int>(
+							new IndexOfResultMessage(cipher)
+						).Unpack(),
+					G = G
+				}
+			);
 		}
 
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
@@ -44,9 +70,12 @@ namespace Simulation.Protocol.POPE
 		/// <summary>
 		/// React to the search request from server
 		/// </summary>
-		private FinishMessage AcceptMessage(QueryMessage<Cipher> insert)
+		private FinishMessage AcceptMessage(QueryMessage<Cipher> query)
 		{
-			// TODO
+			_tree.Search(
+				query.Unpack().Item1,
+				query.Unpack().Item2
+			);
 
 			return new FinishMessage();
 		}
