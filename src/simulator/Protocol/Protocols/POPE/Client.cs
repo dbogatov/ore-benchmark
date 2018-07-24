@@ -14,7 +14,7 @@ namespace Simulation.Protocol.POPE
 		private readonly byte[] _key;
 
 		private List<Cipher> _workingList;
-		private List<int> _decrypted;
+		private List<long> _decrypted;
 
 		public Client(byte[] entropy)
 		{
@@ -39,7 +39,7 @@ namespace Simulation.Protocol.POPE
 					new InsertMessage<Cipher>(
 						new EncryptedRecord<Cipher>
 						{
-							cipher = Encrypt(record.index),
+							cipher = Encrypt(new Value(record.index, G.Next(0, int.MaxValue / 4), Origin.None)),
 							value = record.value
 						}
 					)
@@ -54,8 +54,8 @@ namespace Simulation.Protocol.POPE
 				_mediator.SendToServer<Tuple<Cipher, Cipher>, List<string>>(
 					new QueryMessage<Cipher>(
 						new Tuple<Cipher, Cipher>(
-							Encrypt(query.from),
-							Encrypt(query.to)
+							Encrypt(new Value(query.from, G.Next(0, int.MaxValue / 4), Origin.Left)),
+							Encrypt(new Value(query.to, G.Next(0, int.MaxValue / 4), Origin.Right))
 						)
 					)
 				);
@@ -94,25 +94,25 @@ namespace Simulation.Protocol.POPE
 		/// <summary>
 		/// Helper that encrypts a plaintext
 		/// </summary>
-		private Cipher Encrypt(int input)
-			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input)) };
+		private Cipher Encrypt(Value input) // TODO
+			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input.OrderValue)), original = input };
 
 		/// <summary>
 		/// Helper that decrypts a ciphertext
 		/// </summary>
-		private int Decrypt(Cipher input)
-			=> input == null ? Int32.MaxValue : BitConverter.ToInt32(E.Decrypt(_key, input.encrypted), 0);
+		private long Decrypt(Cipher input)
+			=> input == null ? Int64.MaxValue : BitConverter.ToInt64(E.Decrypt(_key, input.encrypted), 0);
 
 		/// <summary>
 		/// Helper method visible only to the test assembly.
 		/// Needed for proper testing
 		/// </summary>
-		internal Func<Cipher, int> ExportDecryption() => Decrypt;
+		internal Func<Cipher, long> ExportDecryption() => Decrypt;
 
 		/// <summary>
 		/// Helper method visible only to the test assembly.
 		/// Needed for proper testing
 		/// </summary>
-		internal Func<int, Cipher> ExportEncryption() => Encrypt;
+		internal Func<Value, Cipher> ExportEncryption() => Encrypt;
 	}
 }

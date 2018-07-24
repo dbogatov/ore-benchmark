@@ -33,7 +33,108 @@ namespace Test.Simulators.Protocols
 		}
 
 		[Fact]
-		public void InsertionCorrectness()
+		public void ClientResponseCorrectnessSortedList()
+		{
+			var input = Enumerable
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
+				.SelectMany(a => a)
+				.ToList()
+				.Shuffle(G)
+				.Select(a =>
+				{
+					var nonce = G.Next(Int32.MaxValue / 4);
+					return new
+					{
+						encrypted = new EncryptedRecord<Cipher>
+						{
+							cipher = _client.ExportEncryption()(new Value(a, nonce, Origin.None)),
+							value = $"{a}-{nonce}"
+						},
+						original = new Value(a, nonce, Origin.None).OrderValue
+					};
+				})
+				.ToList();
+
+			_client.AcceptMessage<HashSet<Cipher>, object>(
+				new SetListMessage(
+					new HashSet<Cipher>(input.Select(a => a.encrypted.cipher))
+				)
+			);
+
+			var result = _client.AcceptMessage<object, List<Cipher>>(
+				new GetSortedListMessage()
+			).Unpack();
+
+			var decrypted = result.Select(_client.ExportDecryption()).ToList();
+			var expected = input.Select(c => c.original).OrderBy(c => c).ToList();
+
+			Assert.Equal(expected, decrypted);
+		}
+
+		[Fact]
+		public void ClientResponseCorrectnessIndex()
+		{
+			var input = Enumerable
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
+				.SelectMany(a => a)
+				.Concat(new List<int> { int.MaxValue })
+				.ToList()
+				.Shuffle(G)
+				.Select(a =>
+				{
+					var nonce = G.Next(Int32.MaxValue / 4);
+					return new
+					{
+						encrypted = new EncryptedRecord<Cipher>
+						{
+							cipher = _client.ExportEncryption()(new Value(a, nonce, Origin.None)),
+							value = $"{a}-{nonce}"
+						},
+						original = new Value(a, nonce, Origin.None).OrderValue
+					};
+				})
+				.ToList();
+
+			_client.AcceptMessage<HashSet<Cipher>, object>(
+				new SetListMessage(
+					new HashSet<Cipher>(input.Select(a => a.encrypted.cipher))
+				)
+			);
+
+			var sorted = input.OrderBy(c => c.original).ToList();
+
+			for (int i = 0; i < RUNS; i++)
+			{
+				var insert = new Value(G.Next(1, DISTINCT), G.Next(0, int.MaxValue / 4), Origin.None);
+
+				var result = _client.AcceptMessage<Cipher, int>(
+					new IndexOfResultMessage(_client.ExportEncryption()(insert))
+				).Unpack();
+
+				int expected = -1;
+				for (int j = 0; j < sorted.Count; j++)
+				{
+					if (sorted[j].original >= insert.OrderValue)
+					{
+						expected = j;
+						break;
+					}
+				}
+
+				Assert.Equal(expected, result);
+			}
+
+			var right = _client.AcceptMessage<Cipher, int>(
+				new IndexOfResultMessage(_client.ExportEncryption()(new Value(DISTINCT + 100, G.Next(0, int.MaxValue / 4), Origin.None)))
+			).Unpack();
+
+			Assert.Equal(sorted.Count - 1, right);
+		}
+
+		[Fact]
+		public void SearchCorrectness()
 		{
 			var input = Enumerable
 				.Range(1, DISTINCT)
@@ -46,84 +147,43 @@ namespace Test.Simulators.Protocols
 
 			_client.RunConstruction(input);
 
-			Assert.True(
-				_server.ValidateStructure(input.Select(c => (long)c.index).ToList(), c => (long)_client.ExportDecryption()(c))
-			);
-		}
-
-		[Fact]
-		public void ClientResponseCorrectnessSortedList()
-		{
-			var input = Enumerable
-				.Range(1, DISTINCT)
-				.Select(a => Enumerable.Repeat(a, DUPLICATES))
-				.SelectMany(a => a)
-				.ToList()
-				.Shuffle(G);
-
-			_client.AcceptMessage<HashSet<Cipher>, object>(
-				new SetListMessage(
-					new HashSet<Cipher>(input.Select(_client.ExportEncryption()))
-				)
-			);
-
-			var result = _client.AcceptMessage<object, List<Cipher>>(
-				new GetSortedListMessage()
-			).Unpack();
-
-			var decrypted = result.Select(_client.ExportDecryption()).ToList();
-			var expected = input.OrderBy(c => c).ToList();
-
-			Assert.Equal(expected, decrypted);
-		}
-
-		[Fact]
-		public void ClientResponseCorrectnessIndex()
-		{
-			var input = Enumerable
-				.Range(1, 100)
-				.Select(a => Enumerable.Repeat(a, DUPLICATES))
-				.SelectMany(a => a)
-				.ToList()
-				.Shuffle(G);
-
-
-			_client.AcceptMessage<HashSet<Cipher>, object>(
-				new SetListMessage(
-					new HashSet<Cipher>(input.Select(_client.ExportEncryption()).Concat(new List<Cipher> { null }))
-				)
-			);
-
-			input.Add(int.MaxValue);
-
-			var sorted = input.OrderBy(c => c).ToList();
-
 			for (int i = 0; i < RUNS; i++)
 			{
-				var insert = G.Next(1, 100);
+				var from = G.Next(1, DISTINCT);
+				var to = G.Next(1, DISTINCT);
 
-				var result = _client.AcceptMessage<Cipher, int>(
-					new IndexOfResultMessage(_client.ExportEncryption()(insert))
-				).Unpack();
-
-				int expected = -1;
-				for (int j = 0; j < sorted.Count; j++)
+				if (from > to)
 				{
-					if (sorted[j] >= insert)
-					{
-						expected = j;
-						break;
-					}
+					var tmp = to;
+					to = from;
+					from = tmp;
 				}
 
-				Assert.Equal(expected, result);
+				var result = _server.AcceptMessage<Tuple<Cipher, Cipher>, List<string>>(
+					new QueryMessage<Cipher>(
+						new Tuple<Cipher, Cipher>(
+							_client.ExportEncryption()(new Value(from, G.Next(0, int.MaxValue / 4), Origin.Left)),
+							_client.ExportEncryption()(new Value(to, G.Next(0, int.MaxValue / 4), Origin.Right))
+						)
+					)
+				)
+				.Unpack()
+				.OrderBy(c => int.Parse(c))
+				.ToHashSet();
+
+				var expected = Enumerable
+					.Range(from, to - from)
+					.Select(a => Enumerable.Repeat(a, DUPLICATES))
+					.SelectMany(a => a)
+					.OrderBy(c => c)
+					.Select(c => c.ToString())
+					.ToHashSet();
+
+				var min = result.Min(c => int.Parse(c));
+				var max = result.Max(c => int.Parse(c));
+
+				Assert.Superset(expected, result);
 			}
-
-			var right = _client.AcceptMessage<Cipher, int>(
-				new IndexOfResultMessage(_client.ExportEncryption()(150))
-			).Unpack();
-
-			Assert.Equal(sorted.Count - 1, right);
 		}
 	}
 }

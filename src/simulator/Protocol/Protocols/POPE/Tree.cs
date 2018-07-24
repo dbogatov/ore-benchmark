@@ -31,7 +31,6 @@ namespace Simulation.Protocol.POPE
 		{
 			LeafNode Split(C point)
 			{
-
 				SplitResult split = _root.Split(point, default(C));
 				var newRoot = split.leaf?.parent.Rebalance();
 
@@ -54,7 +53,7 @@ namespace Simulation.Protocol.POPE
 
 			do
 			{
-				result.AddRange(leftLeaf._buffer.Select(b => b.value));
+				result.AddRange(leftLeaf.RetrieveBuffer());
 				// A bug in original POPE paper
 				// If item is in intermediate node between endpoints 
 				// it is not included in the response
@@ -62,7 +61,7 @@ namespace Simulation.Protocol.POPE
 				var parent = leftLeaf.parent;
 				while (parent != null)
 				{
-					result.AddRange(parent._buffer.Select(b => b.value));
+					result.AddRange(parent.RetrieveBuffer());
 					parent = parent.parent;
 				}
 
@@ -84,18 +83,20 @@ namespace Simulation.Protocol.POPE
 
 			protected readonly Options<C> _options;
 
+			protected readonly HashSet<EncryptedRecord<C>> _buffer = new HashSet<EncryptedRecord<C>>();
+
 			public Node(Options<C> options)
 			{
 				_options = options;
 			}
-
-			public readonly HashSet<EncryptedRecord<C>> _buffer = new HashSet<EncryptedRecord<C>>();
 
 			public void Insert(EncryptedRecord<C> block) => _buffer.Add(block);
 
 			public abstract SplitResult Split(C label, C max, SplitResult split = null);
 
 			public void AcceptChild(EncryptedRecord<C> child) => _buffer.Add(child);
+
+			public List<string> RetrieveBuffer() => _buffer.Select(b => b.value).ToList();
 
 			internal abstract List<C> GetAllCiphers();
 

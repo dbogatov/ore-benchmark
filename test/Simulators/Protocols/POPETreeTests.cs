@@ -37,6 +37,11 @@ namespace Test.Simulators.Protocols
 
 			public FakeCipher(int value, int nonce, Origin origin)
 			{
+				if (nonce >= Int32.MaxValue / 4 || nonce < 0)
+				{
+					throw new ArgumentException("Nonce must be from 0 to Int32.MaxValue / 4 = {Int32.MaxValue / 4}");
+				}
+
 				this.value = value;
 				this.nonce = nonce;
 				this.origin = origin;

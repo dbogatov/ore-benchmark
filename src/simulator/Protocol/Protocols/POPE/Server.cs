@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ORESchemes.Shared.Primitives.PRG;
 
@@ -6,6 +5,8 @@ namespace Simulation.Protocol.POPE
 {
 	public class Server : AbsParty
 	{
+		private readonly int L = 5;
+
 		private readonly IPRG G;
 		private Tree<Cipher> _tree;
 
@@ -18,7 +19,7 @@ namespace Simulation.Protocol.POPE
 			_tree = new Tree<Cipher>(
 				new Options<Cipher>
 				{
-					L = 5, // TODO
+					L = L,
 					SetList =
 						list =>
 						_mediator.SendToClient<HashSet<Cipher>, object>(
@@ -70,16 +71,14 @@ namespace Simulation.Protocol.POPE
 		/// <summary>
 		/// React to the search request from server
 		/// </summary>
-		private FinishMessage AcceptMessage(QueryMessage<Cipher> query)
+		private QueryResponseMessage AcceptMessage(QueryMessage<Cipher> query)
 		{
-			_tree.Search(
-				query.Unpack().Item1,
-				query.Unpack().Item2
+			return new QueryResponseMessage(
+				_tree.Search(
+					query.Unpack().Item1,
+					query.Unpack().Item2
+				)
 			);
-
-			return new FinishMessage();
 		}
-
-		internal bool ValidateStructure(List<long> input, Func<Cipher, long> decode) => _tree.ValidateElementsInserted(input, decode);
 	}
 }

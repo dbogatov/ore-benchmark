@@ -88,4 +88,13 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new global::Simulation.Protocol.Florian.Protocol(new Random(123456).GetBytes(128 / 8));
 		}
 	}
+
+	[Trait("Category", "Unit")]
+	public class POPEProtocol : AbsProtocol
+	{
+		public POPEProtocol()
+		{
+			_protocol = new global::Simulation.Protocol.POPE.Protocol(new Random(123456).GetBytes(128 / 8));
+		}
+	}
 }
