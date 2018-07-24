@@ -56,8 +56,6 @@ namespace Test.Simulators.Protocols
 		{
 			GTree = new DefaultPRGFactory(G.GetBytes(128 / 8)).GetPrimitive();
 
-
-
 			Func<FakeCipher, int> index = cipher =>
 			{
 				for (int j = 0; j < _fakeWorkingSet.Count; j++)
@@ -161,9 +159,13 @@ namespace Test.Simulators.Protocols
 		[Fact]
 		public void ManyQueriesCorrectness()
 		{
+			const int DISTINCT = 50;
+			const int DUPLICATES = 3;
+			const int RUNS = 500;
+
 			var input = Enumerable
-				.Range(1, 10)
-				.Select(a => Enumerable.Repeat(a, 2))
+				.Range(1, DISTINCT)
+				.Select(a => Enumerable.Repeat(a, DUPLICATES))
 				.SelectMany(a => a)
 				.ToList()
 				.Shuffle(G)
@@ -183,21 +185,16 @@ namespace Test.Simulators.Protocols
 				_tree.Insert(item);
 			}
 
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < RUNS; i++)
 			{
-				var from = G.Next(1, 10);
-				var to = G.Next(1, 10);
+				var from = G.Next(1, DISTINCT);
+				var to = G.Next(1, DISTINCT);
 
 				if (from > to)
 				{
 					var tmp = to;
 					to = from;
 					from = tmp;
-				}
-
-				if (i == 89)
-				{
-					
 				}
 
 				var result = _tree.Search(

@@ -32,7 +32,7 @@ namespace Simulation.Protocol.POPE
 			LeafNode Split(C point)
 			{
 
-				SplitResult split = _root.Split(point);
+				SplitResult split = _root.Split(point, default(C));
 				var newRoot = split.leaf?.parent.Rebalance();
 
 				if (newRoot != null)
@@ -85,7 +85,7 @@ namespace Simulation.Protocol.POPE
 
 			public void Insert(EncryptedRecord<C> block) => _buffer.Add(block);
 
-			public abstract SplitResult Split(C label, SplitResult split = null);
+			public abstract SplitResult Split(C label, C max, SplitResult split = null);
 
 			public void AcceptChild(EncryptedRecord<C> child) => _buffer.Add(child);
 
@@ -168,7 +168,7 @@ namespace Simulation.Protocol.POPE
 				}
 			}
 
-			public override SplitResult Split(C label, SplitResult split = null)
+			public override SplitResult Split(C label, C max, SplitResult split = null)
 			{
 				SplitResult result;
 
@@ -188,7 +188,7 @@ namespace Simulation.Protocol.POPE
 
 					var resultIndex = _options.IndexOfResult(label);
 
-					result = _children[resultIndex].child.Split(label);
+					result = _children[resultIndex].child.Split(label, _children[resultIndex].cipher);
 				}
 				else
 				{
@@ -197,8 +197,8 @@ namespace Simulation.Protocol.POPE
 
 				while (result.wasSplit)
 				{
-					LeafNode child = AcceptChildren(result.child, result.buffer, result.list, label);
-					result = child.Split(label);
+					CipherChild pair = AcceptChildren(result.child, result.buffer, result.list, label);
+					result = pair.child.Split(label, pair.cipher);
 				}
 
 				result.newRoot = result.newRoot ?? split?.newRoot;
@@ -206,12 +206,12 @@ namespace Simulation.Protocol.POPE
 				return result;
 			}
 
-			public LeafNode AcceptChildren(LeafNode child, HashSet<EncryptedRecord<C>> buffer, List<C> list, C label)
+			public CipherChild AcceptChildren(LeafNode child, HashSet<EncryptedRecord<C>> buffer, List<C> list, C label)
 			{
-				if (_children.Count == 0)
-				{
-					list.Add(default(C));
-				}
+				// if (_children.Count == 0)
+				// {
+				// 	list.Add(default(C));
+				// }
 
 				var toInsert = list.Select(c => new CipherChild { cipher = c, child = new LeafNode(_options) }).ToList();
 				for (int i = 0; i < toInsert.Count; i++)
@@ -276,7 +276,7 @@ namespace Simulation.Protocol.POPE
 
 				var resultIndex = _options.IndexOfResult(label);
 
-				return (LeafNode)_children[resultIndex].child;
+				return _children[resultIndex];
 			}
 
 			internal override List<C> GetAllCiphers() =>
@@ -347,7 +347,7 @@ namespace Simulation.Protocol.POPE
 			{
 			}
 
-			public override SplitResult Split(C label, SplitResult split = null)
+			public override SplitResult Split(C label, C max, SplitResult split = null)
 			{
 				SplitResult result = new SplitResult();
 
@@ -368,6 +368,12 @@ namespace Simulation.Protocol.POPE
 						continue;
 					}
 					labels.Add(sampled.cipher);
+				}
+
+				if (!labels.Contains(max))
+				{
+					labels.Remove(labels.ElementAt(_options.G.Next(0, labels.Count - 1)));
+					labels.Add(max);
 				}
 
 				_options.SetList(labels);
@@ -397,7 +403,7 @@ namespace Simulation.Protocol.POPE
 				}
 				else
 				{
-					return newRoot.Split(label, result);
+					return newRoot.Split(label, default(C), result);
 				}
 			}
 
