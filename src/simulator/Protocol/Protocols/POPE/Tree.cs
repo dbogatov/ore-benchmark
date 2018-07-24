@@ -412,13 +412,23 @@ namespace Simulation.Protocol.POPE
 			internal override void Validate(Func<C, long> decode, long from, long to)
 			{
 				// children bounds
-				if (_buffer.Min(c => decode(c.cipher)) <= from)
+				if (_buffer.Count > 0)
 				{
-					throw new InvalidOperationException("Buffer lower bound");
+					if (_buffer.Min(c => decode(c.cipher)) <= from)
+					{
+						throw new InvalidOperationException("Buffer lower bound");
+					}
+					if (_buffer.Max(c => decode(c.cipher)) > to)
+					{
+						throw new InvalidOperationException("Buffer upper bound");
+					}
 				}
-				if (_buffer.Max(c => decode(c.cipher)) > to)
+				else
 				{
-					throw new InvalidOperationException("Buffer upper bound");
+					if (to != long.MaxValue)
+					{
+						throw new InvalidOperationException("Buffer empty for not last child");
+					}
 				}
 
 				// sibling links

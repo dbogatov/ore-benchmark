@@ -47,16 +47,16 @@ namespace Test.Simulators.Protocols
 		private readonly Random G = new Random(SEED);
 		private readonly IPRG GTree;
 
-		private readonly Tree<FakeCipher> _tree;
 		private List<FakeCipher> _fakeWorkingSet;
 
 		private readonly Func<FakeCipher, long> _decode = cipher => cipher == null ? long.MaxValue : cipher.OrderValue;
+		private readonly Func<FakeCipher, int> _index;
 
 		public POPETree()
 		{
 			GTree = new DefaultPRGFactory(G.GetBytes(128 / 8)).GetPrimitive();
 
-			Func<FakeCipher, int> index = cipher =>
+			_index = cipher =>
 			{
 				for (int j = 0; j < _fakeWorkingSet.Count; j++)
 				{
@@ -67,8 +67,11 @@ namespace Test.Simulators.Protocols
 				}
 				throw new InvalidOperationException();
 			};
+		}
 
-			_tree = new Tree<FakeCipher>(
+		private Tree<FakeCipher> GetTree(int l)
+		{
+			return new Tree<FakeCipher>(
 				new Options<FakeCipher>
 				{
 					L = 3,
@@ -76,8 +79,8 @@ namespace Test.Simulators.Protocols
 						list => _fakeWorkingSet = list.OrderBy(c => _decode(c)).ToList(),
 					GetSortedList =
 						() => _fakeWorkingSet,
-					IndexToInsert = index,
-					IndexOfResult = index,
+					IndexToInsert = _index,
+					IndexOfResult = _index,
 					G = GTree
 				}
 			);
@@ -104,12 +107,14 @@ namespace Test.Simulators.Protocols
 				})
 				.ToList();
 
+			var tree = GetTree(3);
+
 			foreach (var item in input)
 			{
-				_tree.Insert(item);
+				tree.Insert(item);
 			}
 
-			Assert.True(_tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
+			Assert.True(tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
 		}
 
 		[Fact]
@@ -132,12 +137,14 @@ namespace Test.Simulators.Protocols
 				})
 				.ToList();
 
+			var tree = GetTree(3);
+
 			foreach (var item in input)
 			{
-				_tree.Insert(item);
+				tree.Insert(item);
 			}
 
-			var result = _tree.Search(
+			var result = tree.Search(
 				new FakeCipher(3, G.Next(Int32.MaxValue / 4), Origin.Left),
 				new FakeCipher(7, G.Next(Int32.MaxValue / 4), Origin.Right)
 			).ToHashSet();
@@ -151,21 +158,25 @@ namespace Test.Simulators.Protocols
 
 			Assert.Superset(expected, result);
 
-			Assert.True(_tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
+			Assert.True(tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
 
-			_tree.Validate(_decode);
+			tree.Validate(_decode);
 		}
 
-		[Fact]
-		public void ManyQueriesCorrectness()
+		[Theory]
+		[InlineData(10, 2, 3)]
+		[InlineData(100, 3, 3)]
+		[InlineData(1000, 5, 3)]
+		[InlineData(1000, 3, 5)]
+		[InlineData(1000, 3, 10)]
+		[InlineData(1000, 3, 20)]
+		public void ManyQueriesCorrectness(int distinct, int duplicates, int l)
 		{
-			const int DISTINCT = 50;
-			const int DUPLICATES = 3;
-			const int RUNS = 500;
+			const int RUNS = 100;
 
 			var input = Enumerable
-				.Range(1, DISTINCT)
-				.Select(a => Enumerable.Repeat(a, DUPLICATES))
+				.Range(1, distinct)
+				.Select(a => Enumerable.Repeat(a, duplicates))
 				.SelectMany(a => a)
 				.ToList()
 				.Shuffle(G)
@@ -180,15 +191,17 @@ namespace Test.Simulators.Protocols
 				})
 				.ToList();
 
+			var tree = GetTree(l);
+
 			foreach (var item in input)
 			{
-				_tree.Insert(item);
+				tree.Insert(item);
 			}
 
 			for (int i = 0; i < RUNS; i++)
 			{
-				var from = G.Next(1, DISTINCT);
-				var to = G.Next(1, DISTINCT);
+				var from = G.Next(1, distinct);
+				var to = G.Next(1, distinct);
 
 				if (from > to)
 				{
@@ -197,7 +210,7 @@ namespace Test.Simulators.Protocols
 					from = tmp;
 				}
 
-				var result = _tree.Search(
+				var result = tree.Search(
 					new FakeCipher(from, G.Next(Int32.MaxValue / 4), Origin.Left),
 					new FakeCipher(to, G.Next(Int32.MaxValue / 4), Origin.Right)
 				).ToHashSet();
@@ -211,9 +224,9 @@ namespace Test.Simulators.Protocols
 
 				Assert.Superset(expected, result);
 
-				Assert.True(_tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
+				Assert.True(tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
 
-				_tree.Validate(_decode);
+				tree.Validate(_decode);
 			}
 		}
 	}
