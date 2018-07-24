@@ -40,6 +40,9 @@ namespace Simulation.Protocol.POPE
 		private int nonce;
 		private Origin origin;
 
+		/// <summary>
+		/// This number derived from value, nonce and origin should be used for comparisons
+		/// </summary>
 		public long OrderValue
 		{
 			get

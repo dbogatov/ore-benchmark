@@ -25,6 +25,7 @@ namespace Simulation.Protocol.POPE
 	{
 		public IndexOfResultMessage(Cipher content) : base(content) { }
 	}
+	
 	internal class IndexResponseMessage : AbsMessage<int>
 	{
 		public IndexResponseMessage(int content) : base(content) { }

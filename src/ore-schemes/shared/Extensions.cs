@@ -172,6 +172,9 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/3773438/1644554
+		/// <summary>
+		/// Partitions a list to lists of max elements and returns that list
+		/// </summary>
 		public static IEnumerable<List<T>> InSetsOf<T>(this IEnumerable<T> source, int max)
 		{
 			List<T> toReturn = new List<T>(max);

@@ -6,6 +6,11 @@ using ORESchemes.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.POPE
 {
+	/// <summary>
+	/// Data structure holding configuration for the tree
+	/// Actions and functions are a way for tree interact with "client"
+	/// </summary>
+	/// <typeparam name="C">Ciphertext type</typeparam>
 	internal class Options<C> where C : IGetSize
 	{
 		public int L;
@@ -25,8 +30,21 @@ namespace Simulation.Protocol.POPE
 			_root = new LeafNode(options);
 		}
 
+		/// <summary>
+		/// Adds an item to the tree
+		/// </summary>
+		/// <param name="block">A block to add</param>
 		public void Insert(EncryptedRecord<C> block) => _root.Insert(block);
 
+		/// <summary>
+		/// Performs a range query on tree
+		/// </summary>
+		/// <param name="left">Left endpoint</param>
+		/// <param name="right">Right endpoint</param>
+		/// <returns>A list of strings as a result of search</returns>
+		/// <remarks>
+		/// May return a superset of the real answer
+		/// </remarks>
 		public List<string> Search(C left, C right)
 		{
 			LeafNode Split(C point)
@@ -75,6 +93,11 @@ namespace Simulation.Protocol.POPE
 			return result;
 		}
 
+		/// <summary>
+		/// Internal function for debug purposes.
+		/// Verifies that tree structure is valid.
+		/// </summary>
+		/// <param name="decode">A function to decode a ciphertext into orderable value</param>
 		internal void Validate(Func<C, long> decode) => _root.Validate(decode, long.MinValue, long.MaxValue);
 
 		private abstract class Node
@@ -90,16 +113,43 @@ namespace Simulation.Protocol.POPE
 				_options = options;
 			}
 
+			/// <summary>
+			/// Mirrors corresponding Tree method
+			/// </summary>
 			public void Insert(EncryptedRecord<C> block) => _buffer.Add(block);
 
+			/// <summary>
+			/// Splits a node if necessary (as described in the original paper)
+			/// </summary>
+			/// <param name="label">Ciphertext to search for</param>
+			/// <param name="max">Greatest value the the node is supposed to have (needed when sampling children)</param>
+			/// <param name="split">If this node was created as a result of child's split, this is the result of that split</param>
+			/// <returns>The result of the split (complex object)</returns>
 			public abstract SplitResult Split(C label, C max, SplitResult split = null);
 
+			/// <summary>
+			/// Makes node add a child to itself (buffer)
+			/// </summary>
+			/// <param name="child">A child to insert</param>
 			public void AcceptChild(EncryptedRecord<C> child) => _buffer.Add(child);
 
+			/// <summary>
+			/// Returns values from its buffer
+			/// </summary>
 			public List<string> RetrieveBuffer() => _buffer.Select(b => b.value).ToList();
 
+			/// <summary>
+			/// Internal function for debug purposes.
+			/// Returns its ciphertexts and children's ciphertexts.
+			/// </summary>
 			internal abstract List<C> GetAllCiphers();
 
+			/// <summary>
+			/// Mirrors corresponding Tree method
+			/// </summary>
+			/// <param name="decode">Function that converts ciphers to orderable numbers</param>
+			/// <param name="from">Smallest eligible ciphers decryption for this node</param>
+			/// <param name="to">Largest eligible ciphers decryption for this node</param>
 			internal abstract void Validate(Func<C, long> decode, long from, long to);
 		}
 
@@ -114,6 +164,11 @@ namespace Simulation.Protocol.POPE
 				_children = children;
 			}
 
+			/// <summary>
+			/// Splits this node if it has too many children
+			/// </summary>
+			/// <param name="newRoot">If new root was created in a recursive call, this node is here</param>
+			/// <returns>A new root, if it was created</returns>
 			public InternalNode Rebalance(InternalNode newRoot = null)
 			{
 				if (_children.Count <= _options.L)
@@ -139,6 +194,11 @@ namespace Simulation.Protocol.POPE
 				return root.Rebalance(newRoot);
 			}
 
+			/// <summary>
+			/// Makes this node accept new children and insert them in its list properly
+			/// </summary>
+			/// <param name="child">Child that caused the acceptance and will be removed</param>
+			/// <param name="partitions">Sets of children to insert (this node picks largest from each set)</param>
 			public void AcceptInternals(InternalNode child, List<List<CipherChild>> partitions)
 			{
 				var toInsert = partitions
@@ -215,13 +275,16 @@ namespace Simulation.Protocol.POPE
 				return result;
 			}
 
+			/// <summary>
+			/// Makes this node accept new leaf nodes as children
+			/// </summary>
+			/// <param name="child">Child that caused an acceptance and will be removed</param>
+			/// <param name="buffer">Set of encrypted records to distribute among children</param>
+			/// <param name="list">List of children to accept</param>
+			/// <param name="label">Ciphertext to search for</param>
+			/// <returns>Child that contans requested ciphertext</returns>
 			public CipherChild AcceptChildren(LeafNode child, HashSet<EncryptedRecord<C>> buffer, List<C> list, C label)
 			{
-				// if (_children.Count == 0)
-				// {
-				// 	list.Add(default(C));
-				// }
-
 				var toInsert = list.Select(c => new CipherChild { cipher = c, child = new LeafNode(_options) }).ToList();
 				for (int i = 0; i < toInsert.Count; i++)
 				{
@@ -476,6 +539,12 @@ namespace Simulation.Protocol.POPE
 			public LeafNode child;
 		}
 
+		/// <summary>
+		/// Verifies that all supplied elements are in the tree
+		/// </summary>
+		/// <param name="expected">Suplied elements</param>
+		/// <param name="decode">Function to get orderable value from cipher</param>
+		/// <returns>True if check passed</returns>
 		internal bool ValidateElementsInserted(List<long> expected, Func<C, long> decode)
 		{
 			expected = expected.OrderBy(c => c).ToList();

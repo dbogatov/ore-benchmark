@@ -139,6 +139,10 @@ namespace Simulation.Protocol
 		public C cipher;
 		public string value;
 
+		/// <summary>
+		/// Size of encrypted value
+		/// 0 if we do not count values in message size
+		/// </summary>
 		private readonly int VALUESIZE = 0;
 
 		public int GetSize() => cipher.GetSize() + VALUESIZE;
