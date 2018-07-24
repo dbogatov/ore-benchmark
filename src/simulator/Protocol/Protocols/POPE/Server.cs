@@ -5,12 +5,10 @@ namespace Simulation.Protocol.POPE
 {
 	public class Server : AbsParty
 	{
-		private readonly int L = 5;
-
 		private readonly IPRG G;
 		private Tree<Cipher> _tree;
 
-		public Server(byte[] entropy)
+		public Server(byte[] entropy, int L)
 		{
 			G = new PRGFactory(entropy).GetPrimitive();
 

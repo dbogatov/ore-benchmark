@@ -94,8 +94,8 @@ namespace Simulation.Protocol.POPE
 		/// <summary>
 		/// Helper that encrypts a plaintext
 		/// </summary>
-		private Cipher Encrypt(Value input) // TODO
-			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input.OrderValue)), original = input };
+		private Cipher Encrypt(Value input)
+			=> new Cipher { encrypted = E.Encrypt(_key, BitConverter.GetBytes(input.OrderValue)) };
 
 		/// <summary>
 		/// Helper that decrypts a ciphertext

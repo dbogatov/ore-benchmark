@@ -9,12 +9,12 @@ namespace Simulation.Protocol.POPE
 {
 	public class Protocol : AbsProtocol
 	{
-		public Protocol(byte[] entropy)
+		public Protocol(byte[] entropy, int L = 60)
 		{
 			IPRG G = new PRGFactory(entropy).GetPrimitive();
 
 			_client = new Client(G.GetBytes(128 / 8));
-			_server = new Server(G.GetBytes(128 / 8));
+			_server = new Server(G.GetBytes(128 / 8), L);
 
 			SetupProtocol();
 		}
@@ -23,10 +23,6 @@ namespace Simulation.Protocol.POPE
 	internal class Cipher : IGetSize
 	{
 		public byte[] encrypted;
-
-
-// TODO
-public Value original;
 
 		public int GetSize() => encrypted.Length * 8;
 	}
