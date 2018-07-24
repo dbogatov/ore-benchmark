@@ -164,13 +164,14 @@ namespace Test.Simulators.Protocols
 		}
 
 		[Theory]
-		[InlineData(10, 2, 3)]
-		[InlineData(100, 3, 3)]
-		[InlineData(1000, 5, 3)]
-		[InlineData(1000, 3, 5)]
-		[InlineData(1000, 3, 10)]
-		[InlineData(1000, 3, 20)]
-		public void ManyQueriesCorrectness(int distinct, int duplicates, int l)
+		[InlineData(10, 2, 3, false)]
+		[InlineData(100, 3, 3, false)]
+		[InlineData(1000, 5, 3, false)]
+		[InlineData(1000, 3, 5, false)]
+		[InlineData(1000, 3, 10, false)]
+		[InlineData(1000, 3, 20, false)]
+		// [InlineData(10, 2, 3, true)] TODO
+		public void ManyQueriesCorrectness(int distinct, int duplicates, int l, bool insert)
 		{
 			const int RUNS = 100;
 
@@ -200,6 +201,26 @@ namespace Test.Simulators.Protocols
 
 			for (int i = 0; i < RUNS; i++)
 			{
+				if (insert && i % 5 == 0)
+				{
+					var nonce = G.Next(Int32.MaxValue / 4);
+					var a = G.Next(1, distinct);
+
+					var cipher = new EncryptedRecord<FakeCipher>
+					{
+						cipher = new FakeCipher(a, nonce, Origin.None),
+						value = $"{a}-{nonce}"
+					};
+
+					input.Add(cipher);
+
+					tree.Insert(cipher);
+
+					Assert.True(tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
+
+					tree.Validate(_decode);
+				}
+
 				var from = G.Next(1, distinct);
 				var to = G.Next(1, distinct);
 
