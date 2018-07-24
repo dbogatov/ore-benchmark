@@ -21,10 +21,12 @@ namespace Test.Simulators.Protocols
 		private readonly int DUPLICATES = 5;
 		private readonly int RUNS = 100;
 
+		private readonly int L = 60;
+
 		public POPEProtocol()
 		{
 			_client = new Client(G.GetBytes(128 / 8));
-			_server = new Server(G.GetBytes(128 / 8));
+			_server = new Server(G.GetBytes(128 / 8), L);
 
 			_mediator = new Mediator(_client, _server);
 
