@@ -157,5 +157,67 @@ namespace Test.Simulators.Protocols
 
 			_tree.Validate(_decode);
 		}
+
+		[Fact]
+		public void ManyQueriesCorrectness()
+		{
+			var input = Enumerable
+				.Range(1, 10)
+				.Select(a => Enumerable.Repeat(a, 2))
+				.SelectMany(a => a)
+				.ToList()
+				.Shuffle(G)
+				.Select(a =>
+				{
+					var nonce = G.Next(Int32.MaxValue / 4);
+					return new EncryptedRecord<FakeCipher>
+					{
+						cipher = new FakeCipher(a, nonce, Origin.None),
+						value = $"{a}-{nonce}"
+					};
+				})
+				.ToList();
+
+			foreach (var item in input)
+			{
+				_tree.Insert(item);
+			}
+
+			for (int i = 0; i < 100; i++)
+			{
+				var from = G.Next(1, 10);
+				var to = G.Next(1, 10);
+
+				if (from > to)
+				{
+					var tmp = to;
+					to = from;
+					from = tmp;
+				}
+
+				if (i == 89)
+				{
+					
+				}
+
+				var result = _tree.Search(
+					new FakeCipher(from, G.Next(Int32.MaxValue / 4), Origin.Left),
+					new FakeCipher(to, G.Next(Int32.MaxValue / 4), Origin.Right)
+				).ToHashSet();
+
+				var expected = input
+					.OrderBy(c => c.cipher.value)
+					.SkipWhile(c => c.cipher.value < from)
+					.TakeWhile(c => c.cipher.value <= to)
+					.Select(c => c.value)
+					.ToHashSet();
+
+				Assert.Superset(expected, result);
+
+				Assert.True(_tree.ValidateElementsInserted(input.Select(c => _decode(c.cipher)).ToList(), _decode));
+
+				_tree.Validate(_decode);
+			}
+		}
 	}
 }

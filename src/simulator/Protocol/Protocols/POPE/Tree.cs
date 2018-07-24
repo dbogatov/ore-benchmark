@@ -55,10 +55,15 @@ namespace Simulation.Protocol.POPE
 			do
 			{
 				result.AddRange(leftLeaf._buffer.Select(b => b.value));
+				if (leftLeaf == rightLeaf)
+				{
+					break;
+				}
 				leftLeaf = (LeafNode)leftLeaf.right;
-			} while (leftLeaf != rightLeaf);
+			} while (true);
 
-			result.AddRange(rightLeaf._buffer.Select(b => b.value));
+			// TODO
+			// result.AddRange(rightLeaf._buffer.Select(b => b.value));
 
 			return result;
 		}
@@ -68,8 +73,6 @@ namespace Simulation.Protocol.POPE
 		private abstract class Node
 		{
 			public InternalNode parent = null;
-			public Node right = null;
-			public Node left = null;
 
 			protected readonly Options<C> _options;
 
@@ -131,12 +134,15 @@ namespace Simulation.Protocol.POPE
 			{
 				var toInsert = partitions
 					.Select(p =>
-						new CipherChild
+					{
+						var result = new CipherChild
 						{
 							child = new InternalNode(_options, p),
 							cipher = p.Last().cipher
-						}
-					)
+						};
+						p.ToList().ForEach(c => c.child.parent = (InternalNode)result.child);
+						return result;
+					})
 					.ToList();
 
 				toInsert.ForEach(c => c.child.parent = this);
@@ -212,11 +218,11 @@ namespace Simulation.Protocol.POPE
 				{
 					if (i != 0)
 					{
-						toInsert[i].child.left = toInsert[i - 1].child;
+						((LeafNode)toInsert[i].child).left = (LeafNode)toInsert[i - 1].child;
 					}
 					if (i != toInsert.Count - 1)
 					{
-						toInsert[i].child.right = toInsert[i + 1].child;
+						((LeafNode)toInsert[i].child).right = (LeafNode)toInsert[i + 1].child;
 					}
 
 					toInsert[i].child.parent = this;
@@ -232,18 +238,18 @@ namespace Simulation.Protocol.POPE
 					{
 						if (_children[i].child == child)
 						{
-							var thisChild = _children[i].child;
+							LeafNode thisChild = (LeafNode)_children[i].child;
 
 							if (thisChild.left != null)
 							{
-								thisChild.left.right = toInsert.First().child;
-								toInsert.First().child.left = thisChild.left;
+								thisChild.left.right = (LeafNode)toInsert.First().child;
+								((LeafNode)toInsert.First().child).left = thisChild.left;
 							}
 
 							if (thisChild.right != null)
 							{
-								thisChild.right.left = toInsert.Last().child;
-								toInsert.Last().child.right = thisChild.right;
+								thisChild.right.left = (LeafNode)toInsert.Last().child;
+								((LeafNode)toInsert.Last().child).right = thisChild.right;
 							}
 
 							// we must always have an upper value
@@ -322,6 +328,10 @@ namespace Simulation.Protocol.POPE
 						lower = decode(_children[i - 1].cipher);
 					}
 
+					if (_children[i].child.parent != this)
+					{
+						throw new InvalidOperationException("Child parent relationship");
+					}
 
 					_children[i].child.Validate(decode, lower, decode(_children[i].cipher));
 				}
@@ -330,6 +340,9 @@ namespace Simulation.Protocol.POPE
 
 		private class LeafNode : Node
 		{
+			public LeafNode right = null;
+			public LeafNode left = null;
+
 			public LeafNode(Options<C> options) : base(options)
 			{
 			}
