@@ -170,7 +170,7 @@ namespace Test.Simulators.Protocols
 		[InlineData(1000, 3, 5, false)]
 		[InlineData(1000, 3, 10, false)]
 		[InlineData(1000, 3, 20, false)]
-		// [InlineData(10, 2, 3, true)] TODO
+		[InlineData(1000, 5, 10, true)]
 		public void ManyQueriesCorrectness(int distinct, int duplicates, int l, bool insert)
 		{
 			const int RUNS = 100;

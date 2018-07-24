@@ -55,15 +55,23 @@ namespace Simulation.Protocol.POPE
 			do
 			{
 				result.AddRange(leftLeaf._buffer.Select(b => b.value));
+				// A bug in original POPE paper
+				// If item is in intermediate node between endpoints 
+				// it is not included in the response
+				// Here is the fix
+				var parent = leftLeaf.parent;
+				while (parent != null)
+				{
+					result.AddRange(parent._buffer.Select(b => b.value));
+					parent = parent.parent;
+				}
+
 				if (leftLeaf == rightLeaf)
 				{
 					break;
 				}
 				leftLeaf = (LeafNode)leftLeaf.right;
 			} while (true);
-
-			// TODO
-			// result.AddRange(rightLeaf._buffer.Select(b => b.value));
 
 			return result;
 		}
