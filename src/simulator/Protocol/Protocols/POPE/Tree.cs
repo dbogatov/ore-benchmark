@@ -147,7 +147,7 @@ namespace Simulation.Protocol.POPE
 			/// </summary>
 			public void Insert(EncryptedRecord<C> block)
 			{
-				ReportNodeVisited();
+				ReportNodeVisited(justAppend: true);
 
 				_buffer.Add(block);
 			}
@@ -193,9 +193,16 @@ namespace Simulation.Protocol.POPE
 
 			public override int GetHashCode() => _id;
 
-			protected void ReportNodeVisited()
+			protected void ReportNodeVisited(bool justAppend = false)
 			{
 				var elements = ElementsNumber();
+
+				if (justAppend)
+				{
+					// If we only append we count only the last block 
+					_options.OnVisit(this.GetHashCode() * 2 + (elements / (_options.L + 1)) * 3);
+					return;
+				}
 
 				for (int i = 0; i <= elements / (_options.L + 1); i++)
 				{
