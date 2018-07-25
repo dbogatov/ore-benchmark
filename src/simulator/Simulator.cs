@@ -10,6 +10,72 @@ namespace Simulation
 	/// <typeparam name="S">Stages enum</typeparam>
 	public abstract class AbsSimulator<S> where S : Enum
 	{
+		protected AbsTracker perStage;
+		protected AbsTracker perQuery;
+
+		private List<AbsSubReport> perQueryReports = new List<AbsSubReport>();
+
+		protected void QueryReport()
+		{
+			perQueryReports.Add(perQuery.ReadMetrics());
+			perQuery.ClearTrackers();
+		}
+
+		protected AbsSubReport StageReport()
+		{
+			var result = perStage.ReadMetrics();
+			result.PerQuerySubreports = perQueryReports.ToArray();
+			perStage.ClearTrackers();
+
+			return result;
+		}
+
+		public void RecordNodeVisit(int nodeHash)
+		{
+			perQuery.RecordNodeVisit(nodeHash);
+			perStage.RecordNodeVisit(nodeHash);
+		}
+
+		public void RecordSchemeOperation(SchemeOperation operation)
+		{
+			perQuery.RecordSchemeOperation(operation);
+			perStage.RecordSchemeOperation(operation);
+		}
+
+		public void RecordPrimitiveUsage(Primitive primitive, bool impure)
+		{
+			perQuery.RecordPrimitiveUsage(primitive, impure);
+			perStage.RecordPrimitiveUsage(primitive, impure);
+		}
+
+		public void RecordCommunivcationVolume(long size)
+		{
+			perQuery.RecordCommunivcationVolume(size);
+			perStage.RecordCommunivcationVolume(size);
+		}
+
+		public void RecordClientStorage(long size)
+		{
+			perQuery.RecordClientStorage(size);
+			perStage.RecordClientStorage(size);
+		}
+
+		public void TimerHandler(bool stop)
+		{
+			perQuery.TimerHandler(stop);
+			perStage.TimerHandler(stop);
+		}
+
+		/// <summary>
+		/// Runs simulation for the inputs and options provided through
+		/// the constructor.
+		/// </summary>
+		/// <returns>A final report containing sub-reports for different stages</returns>
+		public abstract AbsReport<S> Simulate();
+	}
+
+	public abstract class AbsTracker
+	{
 		// Cache structures
 		protected List<Tuple<int, long>> _cache;
 		protected int _cacheSize = 0;
@@ -34,15 +100,12 @@ namespace Simulation
 		protected TimeSpan _totalTime = TimeSpan.Zero;
 		protected Stopwatch _timer = new Stopwatch();
 
-		public AbsSimulator()
-		{
-			ClearTrackers();
-		}
+		public AbsTracker() => ClearTrackers();
 
 		/// <summary>
 		/// Zero all trackers
 		/// </summary>
-		protected void ClearTrackers()
+		public void ClearTrackers()
 		{
 			_visited = 0;
 			_cache = new List<Tuple<int, long>>(_cacheSize);
@@ -80,7 +143,7 @@ namespace Simulation
 		/// Handler for the event that node has been visited
 		/// </summary>
 		/// <param name="nodeHash">hash of the node</param>
-		protected void RecordNodeVisit(int nodeHash)
+		public void RecordNodeVisit(int nodeHash)
 		{
 			_clock++;
 
@@ -125,13 +188,13 @@ namespace Simulation
 		/// Handler for the event that the scheme has performed an operation
 		/// </summary>
 		/// <param name="operation">Performed operation</param>
-		protected void RecordSchemeOperation(SchemeOperation operation) => _schemeOperations[operation]++;
+		public void RecordSchemeOperation(SchemeOperation operation) => _schemeOperations[operation]++;
 
 		/// <summary>
 		/// Handler for the event that the primitive has been used
 		/// </summary>
 		/// <param name="operation">Primitive used</param>
-		protected void RecordPrimitiveUsage(Primitive primitive, bool impure)
+		public void RecordPrimitiveUsage(Primitive primitive, bool impure)
 		{
 			_primitiveUsage[primitive]++;
 			if (!impure)
@@ -144,7 +207,7 @@ namespace Simulation
 		/// Handler for the event that message of certain size was sent
 		/// </summary>
 		/// <param name="size">Size of the message</param>
-		protected void RecordCommunivcationVolume(long size)
+		public void RecordCommunivcationVolume(long size)
 		{
 			_communicationVolume = new Tuple<long, long>(
 				_communicationVolume.Item1 + size,
@@ -157,22 +220,23 @@ namespace Simulation
 		/// Handler for the event that client storage changed
 		/// </summary>
 		/// <param name="size">Current value of client storage</param>
-		protected void RecordClientStorage(long size) => _maxClientStorage = Math.Max(_maxClientStorage, size);
+		public void RecordClientStorage(long size) => _maxClientStorage = Math.Max(_maxClientStorage, size);
 
 		/// <summary>
 		/// Handler for the event when timer needs to be stopped or resumed
 		/// </summary>
 		/// <param name="stop">True if timer needs to be paused, true if timer needs to be resumed</param>
-		protected void TimerHandler(bool stop)
+		public void TimerHandler(bool stop)
 		{
 			if (stop)
 			{
 				if (_timer.IsRunning)
 				{
 					_timer.Stop();
-					_totalTime += _timer.Elapsed;	
+					_totalTime += _timer.Elapsed;
 				}
-			} else
+			}
+			else
 			{
 				if (!_timer.IsRunning)
 				{
@@ -185,7 +249,7 @@ namespace Simulation
 		/// Produce a deep (not shallow) copy of its argument
 		/// </summary>
 		/// <param name="original">Dictionary to copy</param>
-		protected private Dictionary<Primitive, long> CloneDictionary(Dictionary<Primitive, long> original)
+		protected Dictionary<Primitive, long> CloneDictionary(Dictionary<Primitive, long> original)
 		{
 			Dictionary<Primitive, long> copy = new Dictionary<Primitive, long>();
 
@@ -194,11 +258,6 @@ namespace Simulation
 			return copy;
 		}
 
-		/// <summary>
-		/// Runs simulation for the inputs and options provided through
-		/// the constructor.
-		/// </summary>
-		/// <returns>A final report containing sub-reports for different stages</returns>
-		public abstract AbsReport<S> Simulate();
+		public abstract AbsSubReport ReadMetrics();
 	}
 }

@@ -22,23 +22,6 @@ namespace Test.Simulators
 		public void Simulator(Stages stage)
 		{
 			Expression<Action<IProtocol>> setup = null;
-			int actionsNumber = 0;
-
-			switch (stage)
-			{
-				case Stages.Handshake:
-					setup = p => p.RunHandshake();
-					actionsNumber = 1;
-					break;
-				case Stages.Construction:
-					setup = p => p.RunConstructionProtocol(It.IsAny<List<Simulation.Protocol.Record>>());
-					actionsNumber = 10;
-					break;
-				case Stages.Queries:
-					setup = p => p.RunQueryProtocol(It.IsAny<List<RangeQuery>>());
-					actionsNumber = 10;
-					break;
-			}
 
 			Mock<IProtocol> protocol = new Mock<IProtocol>();
 			protocol
@@ -81,7 +64,6 @@ namespace Test.Simulators
 				CacheSize = 10,
 
 				IOs = 2,
-				AvgIOs = 2 / actionsNumber,
 
 				MessagesSent = 2,
 				CommunicationVolume = 3,
@@ -89,7 +71,6 @@ namespace Test.Simulators
 				MaxClientStorage = 20,
 
 				SchemeOperations = 3,
-				AvgSchemeOperations = 3 / actionsNumber,
 
 				TotalPrimitiveOperations =
 					new Dictionary<Primitive, long>()
@@ -112,7 +93,6 @@ namespace Test.Simulators
 				Assert.Equal(expected.CacheSize, actual.CacheSize);
 
 				Assert.Equal(expected.IOs, actual.IOs);
-				Assert.Equal(expected.AvgIOs, actual.AvgIOs);
 
 				Assert.Equal(expected.MessagesSent, actual.MessagesSent);
 				Assert.Equal(expected.CommunicationVolume, actual.CommunicationVolume);
@@ -120,7 +100,6 @@ namespace Test.Simulators
 				Assert.Equal(expected.MaxClientStorage, actual.MaxClientStorage);
 
 				Assert.Equal(expected.SchemeOperations, actual.SchemeOperations);
-				Assert.Equal(expected.AvgSchemeOperations, actual.AvgSchemeOperations);
 
 				ComparePrimitiveUsage(
 					expectedReport.TotalPrimitiveOperations,

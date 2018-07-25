@@ -17,19 +17,18 @@ namespace Simulation.Protocol
 			_inputs = inputs;
 			_protocol = protocol;
 
-			_cacheSize = _inputs.CacheSize;
+			perQuery = new Tracker(_inputs.CacheSize);
+			perStage = new Tracker(_inputs.CacheSize);
 
-			ClearTrackers();
+			protocol.NodeVisited += RecordNodeVisit;
+			protocol.OperationOcurred += RecordSchemeOperation;
+			protocol.PrimitiveUsed +=  RecordPrimitiveUsage;
+			protocol.MessageSent += RecordCommunivcationVolume;
+			protocol.ClientStorage += RecordClientStorage;
 
-			protocol.NodeVisited += new NodeVisitedEventHandler(RecordNodeVisit);
-			protocol.OperationOcurred += new SchemeOperationEventHandler(RecordSchemeOperation);
-			protocol.PrimitiveUsed += new PrimitiveUsageEventHandler(RecordPrimitiveUsage);
-			protocol.MessageSent += new MessageSentEventHandler(RecordCommunivcationVolume);
-			protocol.ClientStorage += new ClientStorageEventHandler(RecordClientStorage);
+			protocol.Timer += TimerHandler;
 
-			protocol.Timer += new TimerEventHandler(TimerHandler);
-
-			ClearTrackers();
+			protocol.QueryCompleted += QueryReport;
 		}
 
 		/// <summary>
@@ -39,42 +38,28 @@ namespace Simulation.Protocol
 		/// <param name="routine">Function to profile</param>
 		private Report.SubReport Profile(Action routine, Stages stage)
 		{
-			ClearTrackers();
-
 			TimerHandler(stop: false);
 
 			routine();
 
 			TimerHandler(stop: true);
 
-			int actionsNumber = 0;
+			var report = (Report.SubReport)StageReport();
+
 			switch (stage)
 			{
 				case Stages.Handshake:
-					actionsNumber = 1;
+					report.ActionsNumber = 1;
 					break;
 				case Stages.Construction:
-					actionsNumber = _inputs.Dataset.Count;
+					report.ActionsNumber = _inputs.Dataset.Count;
 					break;
 				case Stages.Queries:
-					actionsNumber = _inputs.QueriesCount();
+					report.ActionsNumber = _inputs.QueriesCount();
 					break;
 			}
 
-			return new Report.SubReport
-			{
-				CacheSize = _inputs.CacheSize,
-				ObservedTime = _totalTime,
-				IOs = _visited,
-				AvgIOs = _visited / actionsNumber,
-				SchemeOperations = _schemeOperations.Values.Sum(),
-				AvgSchemeOperations = _schemeOperations.Values.Sum() / actionsNumber,
-				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
-				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
-				MessagesSent = _rounds,
-				CommunicationVolume = _communicationVolume.Item1,
-				MaxClientStorage = _maxClientStorage
-			};
+			return report;
 		}
 
 		public override AbsReport<Stages> Simulate()
@@ -85,6 +70,30 @@ namespace Simulation.Protocol
 			result.Stages[Stages.Queries] = Profile(() => _protocol.RunQueryProtocol(_inputs.Queries), stage: Stages.Queries);
 
 			return result;
+		}
+	}
+
+	public class Tracker : AbsTracker
+	{
+		public Tracker(int cacheSize)
+		{
+			_cacheSize = cacheSize;
+		}
+
+		public override AbsSubReport ReadMetrics()
+		{
+			return new Protocol.Report.SubReport
+			{
+				CacheSize = _cacheSize,
+				ObservedTime = _totalTime,
+				IOs = _visited,
+				SchemeOperations = _schemeOperations.Values.Sum(),
+				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
+				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
+				MessagesSent = _rounds,
+				CommunicationVolume = _communicationVolume.Item1,
+				MaxClientStorage = _maxClientStorage
+			};
 		}
 	}
 }

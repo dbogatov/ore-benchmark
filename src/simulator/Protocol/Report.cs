@@ -12,7 +12,7 @@ namespace Simulation.Protocol
 			public int CacheSize { get; set; } = 0;
 
 			public long IOs { get; set; } = 0;
-			public long AvgIOs { get; set; } = 0;
+			public long AvgIOs => IOs / ActionsNumber;
 
 			public long MessagesSent { get; set; } = 0;
 			public long CommunicationVolume { get; set; } = 0;

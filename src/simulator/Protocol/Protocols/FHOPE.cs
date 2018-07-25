@@ -47,6 +47,8 @@ namespace Simulation.Protocol.FHOPE
 					)
 				)
 			);
+
+			OnQueryCompleted();
 		}
 
 		protected override Ciphertext EncryptForSearch(int plaintext)

@@ -26,7 +26,7 @@ namespace Simulation.Protocol.Florian
 			OnClientStorage(_key.Length * 8);
 		}
 
-		public override void RunHandshake() { }
+		public override void RunHandshake() => OnQueryCompleted();
 
 		public override void RunConstruction(List<Record> input)
 		{
@@ -44,6 +44,8 @@ namespace Simulation.Protocol.Florian
 						}
 					)
 				);
+
+				OnQueryCompleted();
 			}
 		}
 
@@ -52,6 +54,8 @@ namespace Simulation.Protocol.Florian
 			foreach (var query in input)
 			{
 				Search(query);
+
+				OnQueryCompleted();
 			}
 		}
 

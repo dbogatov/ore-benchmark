@@ -236,10 +236,16 @@ namespace Simulation.Protocol
 		event PrimitiveUsageEventHandler PrimitiveUsed;
 		event MessageSentEventHandler MessageSent;
 		event ClientStorageEventHandler ClientStorage;
+		
 		/// <summary>
 		/// Event signalizing whether to stop or resume simulation timer
 		/// </summary>
 		event TimerEventHandler Timer;
+
+		/// <summary>
+		/// Event signalizing that a single query has been completed
+		/// </summary>
+		event QueryCompletedHandler QueryCompleted;
 
 		/// <summary>
 		/// Initiates construction protocol stage
@@ -337,6 +343,7 @@ namespace Simulation.Protocol
 		public virtual event MessageSentEventHandler MessageSent;
 		public virtual event ClientStorageEventHandler ClientStorage;
 		public virtual event TimerEventHandler Timer;
+		public virtual event QueryCompletedHandler QueryCompleted;
 
 		protected void OnMessageSent(long size)
 		{
@@ -391,9 +398,19 @@ namespace Simulation.Protocol
 				handler(stop);
 			}
 		}
+
+		protected void OnQueryCompleted()
+		{
+			var handler = QueryCompleted;
+			if (handler != null)
+			{
+				handler();
+			}
+		}
 	}
 
 	public delegate void MessageSentEventHandler(long size);
 	public delegate void ClientStorageEventHandler(long size);
 	public delegate void TimerEventHandler(bool stop);
+	public delegate void QueryCompletedHandler();
 }

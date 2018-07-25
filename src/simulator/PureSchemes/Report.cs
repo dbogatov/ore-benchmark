@@ -7,7 +7,7 @@ namespace Simulation.PureSchemes
 
 	public class Report : AbsReport<Stages>
 	{
-		public class Subreport : AbsSubReport
+		public class SubReport : AbsSubReport
 		{
 
 			public override string ToString() =>

@@ -21,6 +21,9 @@ namespace Simulation.PureSchemes
 			_scheme = scheme;
 			_key = scheme.KeyGen();
 
+			perQuery = new Tracker();
+			perStage = new Tracker();
+
 			scheme.PrimitiveUsed += new PrimitiveUsageEventHandler(RecordPrimitiveUsage);
 		}
 
@@ -32,23 +35,19 @@ namespace Simulation.PureSchemes
 		/// <param name="ciphers">List of ciphertext to populate or to take dta from</param>
 		/// <param name="stage">Stage of simulation (affects how averages are computed)</param>
 		/// <returns>A subreport generated for this particular profiling</returns>
-		private Report.Subreport Profile(Action<List<C>, List<int>, IOREScheme<C, K>, K> routine, List<C> ciphers, Stages stage)
+		private Report.SubReport Profile(Action<List<C>, List<int>, IOREScheme<C, K>, K> routine, List<C> ciphers, Stages stage)
 		{
-			ClearTrackers();
-
 			TimerHandler(stop: false);
 
 			routine(ciphers, _dataset, _scheme, _key);
 
 			TimerHandler(stop: true);
 
-			return new Report.Subreport
-			{
-				ObservedTime = _totalTime,
-				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
-				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
-				SchemeOperations = _dataset.Count * (stage != Stages.Compare ? 1 : 5)
-			};
+			var report = (Report.SubReport)StageReport();
+
+			report.SchemeOperations = _dataset.Count * (stage != Stages.Compare ? 1 : 5);
+
+			return report;
 		}
 
 		public override AbsReport<Stages> Simulate()
@@ -129,6 +128,19 @@ namespace Simulation.PureSchemes
 				scheme.IsGreaterOrEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
 				scheme.IsEqual(ciphertexts[i % length], ciphertexts[(i + 1) % length]);
 			}
+		}
+	}
+
+	public class Tracker : AbsTracker
+	{
+		public override AbsSubReport ReadMetrics()
+		{
+			return new Report.SubReport
+			{
+				ObservedTime = _totalTime,
+				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
+				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage)
+			};
 		}
 	}
 }
