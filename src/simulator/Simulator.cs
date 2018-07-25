@@ -24,7 +24,7 @@ namespace Simulation
 		protected AbsSubReport StageReport()
 		{
 			var result = perStage.ReadMetrics();
-			result.PerQuerySubreports = perQueryReports.ToArray();
+			result.PerQuerySubreports = perQueryReports;
 			perStage.ClearTrackers();
 
 			return result;

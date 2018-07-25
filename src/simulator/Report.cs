@@ -77,6 +77,6 @@ namespace Simulation
 			return result;
 		}
 
-		public AbsSubReport[] PerQuerySubreports = new AbsSubReport[] { };
+		public List<AbsSubReport> PerQuerySubreports = new List<AbsSubReport>();
 	}
 }

@@ -9,6 +9,7 @@ using ORESchemes.PracticalORE;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.Shared;
 using ORESchemes.AdamORE;
+using System.Linq;
 
 namespace CLI
 {
@@ -122,8 +123,13 @@ namespace CLI
 
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 
+			if (!Parent.Extended)
+			{
+				report.Stages.Values.ToList().ForEach(s => s.PerQuerySubreports.Clear());
+			}
+
 			System.Console.WriteLine(
-				Parent.Verbose ?
+				Parent.Verbose && !Parent.Extended ?
 				report.ToString() :
 				JsonReport(
 					report.Stages,

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using Simulation;
 using CLI.DataReaders;
 using ORESchemes.Shared;
+using System.Linq;
 
 namespace CLI
 {
@@ -92,8 +93,13 @@ namespace CLI
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
 
+			if (!Parent.Extended)
+			{
+				report.Stages.Values.ToList().ForEach(s => s.PerQuerySubreports.Clear());
+			}
+
 			System.Console.WriteLine(
-				Parent.Verbose ? 
+				Parent.Verbose && !Parent.Extended ?
 				report.ToString() : 
 				JsonReport(
 					report.Stages,

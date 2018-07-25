@@ -6,6 +6,7 @@ using DataStructures.BPlusTree;
 using Moq;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
+using Simulation;
 using Simulation.Protocol;
 using Simulation.Protocol.SimpleORE;
 using Xunit;
@@ -102,7 +103,7 @@ namespace Test.Simulators
 					},
 
 				PerQuerySubreports = Enumerable.Repeat(
-					new Report.SubReport
+					(AbsSubReport)new Report.SubReport
 					{
 						CacheSize = 10,
 
@@ -127,7 +128,7 @@ namespace Test.Simulators
 							},
 					},
 					3
-				).ToArray()
+				).ToList()
 			};
 
 			Report.SubReport actual = (Report.SubReport)report.Stages[stage];
@@ -177,7 +178,7 @@ namespace Test.Simulators
 
 				if (goDeeper)
 				{
-					for (int i = 0; i < expectedReport.PerQuerySubreports.Length; i++)
+					for (int i = 0; i < expectedReport.PerQuerySubreports.Count; i++)
 					{
 						CompareReports(
 							(Report.SubReport)expectedReport.PerQuerySubreports[i], 

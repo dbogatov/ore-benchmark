@@ -52,8 +52,11 @@ namespace CLI
 	{
 		private static string Version() => CLI.Version.Value();
 
-		[Option("--verbose|-v", "If present, more verbose output will be generated.", CommandOptionType.NoValue)]
+		[Option("--verbose|-v", "If present, report summary will be output instead of JSON.", CommandOptionType.NoValue)]
 		public bool Verbose { get; } = false;
+
+		[Option("--extended|-V", "If present, JSON will contain per-query subreports. Overrides -v flag. WARNING: use with care, files can easily grow gigabytes.", CommandOptionType.NoValue)]
+		public bool Extended { get; } = false;
 
 		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
 		public int Seed { get; } = new Random().Next();
