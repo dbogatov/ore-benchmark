@@ -50,7 +50,7 @@ namespace Simulation.Protocol.POPE
 			LeafNode Split(C point)
 			{
 				SplitResult split = _root.Split(point, default(C));
-				var newRoot = split.leaf?.parent.Rebalance();
+				var newRoot = split.leaf.parent?.Rebalance();
 
 				if (newRoot != null)
 				{
