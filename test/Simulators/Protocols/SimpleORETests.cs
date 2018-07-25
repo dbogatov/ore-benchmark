@@ -101,9 +101,9 @@ namespace Test.Simulators.Protocols.SimpleORE
 			);
 
 			_mediator.Verify(
-				m => m.SendToServer<OPECipher, object>(
+				m => m.SendToServer<EncryptedRecord<OPECipher>, object>(
 					It.Is<InsertMessage<OPECipher>>(
-						t => t.Unpack().value == 1
+						t => t.Unpack().cipher.value == 1
 					)
 				),
 				Times.Exactly(10)
@@ -217,9 +217,13 @@ namespace Test.Simulators.Protocols.SimpleORE
 				).Object
 			);
 
-			mockServer.Object.AcceptMessage<OPECipher, object>(
+			mockServer.Object.AcceptMessage<EncryptedRecord<OPECipher>, object>(
 				new Mock<InsertMessage<OPECipher>>(
-					new OPECipher(0)
+					new EncryptedRecord<OPECipher>
+					{
+						cipher = new OPECipher(0),
+						value = "0"
+					}
 				).Object
 			);
 
@@ -253,7 +257,7 @@ namespace Test.Simulators.Protocols.SimpleORE
 		{
 			FinishMessage AcceptMessage(MinMaxMessage<C> message);
 			FinishMessage AcceptMessage(InsertMessage<C> message);
-			QueryResultMessage AcceptMessage(QueryMessage<C> message);
+			QueryResponseMessage AcceptMessage(QueryMessage<C> message);
 		}
 	}
 }

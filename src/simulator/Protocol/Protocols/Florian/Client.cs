@@ -94,13 +94,6 @@ namespace Simulation.Protocol.Florian
 			}
 		}
 
-		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
-		{
-			OnClientStorage(message.GetSize());
-
-			return (IMessage<R>)new FinishMessage();
-		}
-
 		/// <summary>
 		/// Helper that encrypts a plaintext
 		/// </summary>

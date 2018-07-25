@@ -109,6 +109,12 @@ namespace CLI
 						new Random(Parent.Seed).GetBytes(128 / 8)
 					);
 					break;
+				case ORESchemes.Shared.ORESchemes.POPE:
+					protocol = new Simulation.Protocol.POPE.Protocol(
+						new Random(Parent.Seed).GetBytes(128 / 8),
+						BPlusTreeBranching
+					);
+					break;
 				default:
 					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
 			}
