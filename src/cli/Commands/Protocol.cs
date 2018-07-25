@@ -106,7 +106,8 @@ namespace CLI
 					break;
 				case ORESchemes.Shared.ORESchemes.Florian:
 					protocol = new Simulation.Protocol.Florian.Protocol(
-						new Random(Parent.Seed).GetBytes(128 / 8)
+						new Random(Parent.Seed).GetBytes(128 / 8),
+						BPlusTreeBranching
 					);
 					break;
 				case ORESchemes.Shared.ORESchemes.POPE:

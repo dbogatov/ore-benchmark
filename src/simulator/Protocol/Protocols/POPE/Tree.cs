@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DataStructures.BPlusTree;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
 
@@ -13,6 +14,28 @@ namespace Simulation.Protocol.POPE
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	internal class Options<C> where C : IGetSize
 	{
+		public virtual event NodeVisitedEventHandler NodeVisited;
+
+		/// <summary>
+		/// Emits event when node has been visited
+		/// </summary>
+		/// <param name="hash">Unique hash of the node</param>
+		public void OnVisit(int hash)
+		{
+			var handler = NodeVisited;
+			if (handler != null)
+			{
+				handler(hash);
+			}
+		}
+
+		private Random _generator = new Random(123456);
+
+		/// <summary>
+		/// Returns the next unique available id for a node
+		/// </summary>s
+		public int GetNextId() => _generator.Next();
+
 		public int L;
 		public Action<HashSet<C>> SetList;
 		public Func<List<C>> GetSortedList;
@@ -108,15 +131,26 @@ namespace Simulation.Protocol.POPE
 
 			protected readonly HashSet<EncryptedRecord<C>> _buffer = new HashSet<EncryptedRecord<C>>();
 
+			private int _id;
+
 			public Node(Options<C> options)
 			{
 				_options = options;
+
+				_id = options.GetNextId();
+
+				ReportNodeVisited();
 			}
 
 			/// <summary>
 			/// Mirrors corresponding Tree method
 			/// </summary>
-			public void Insert(EncryptedRecord<C> block) => _buffer.Add(block);
+			public void Insert(EncryptedRecord<C> block)
+			{
+				ReportNodeVisited();
+
+				_buffer.Add(block);
+			}
 
 			/// <summary>
 			/// Splits a node if necessary (as described in the original paper)
@@ -136,7 +170,12 @@ namespace Simulation.Protocol.POPE
 			/// <summary>
 			/// Returns values from its buffer
 			/// </summary>
-			public List<string> RetrieveBuffer() => _buffer.Select(b => b.value).ToList();
+			public List<string> RetrieveBuffer()
+			{
+				ReportNodeVisited();
+
+				return _buffer.Select(b => b.value).ToList();
+			}
 
 			/// <summary>
 			/// Internal function for debug purposes.
@@ -151,6 +190,20 @@ namespace Simulation.Protocol.POPE
 			/// <param name="from">Smallest eligible ciphers decryption for this node</param>
 			/// <param name="to">Largest eligible ciphers decryption for this node</param>
 			internal abstract void Validate(Func<C, long> decode, long from, long to);
+
+			public override int GetHashCode() => _id;
+
+			protected void ReportNodeVisited()
+			{
+				var elements = ElementsNumber();
+
+				for (int i = 0; i <= elements / (_options.L + 1); i++)
+				{
+					_options.OnVisit(this.GetHashCode() * 2 + i * 3);
+				}
+			}
+
+			protected abstract int ElementsNumber();
 		}
 
 		private class InternalNode : Node
@@ -171,6 +224,8 @@ namespace Simulation.Protocol.POPE
 			/// <returns>A new root, if it was created</returns>
 			public InternalNode Rebalance(InternalNode newRoot = null)
 			{
+				ReportNodeVisited();
+
 				if (_children.Count <= _options.L)
 				{
 					return newRoot;
@@ -201,6 +256,8 @@ namespace Simulation.Protocol.POPE
 			/// <param name="partitions">Sets of children to insert (this node picks largest from each set)</param>
 			public void AcceptInternals(InternalNode child, List<List<CipherChild>> partitions)
 			{
+				ReportNodeVisited();
+
 				var toInsert = partitions
 					.Select(p =>
 					{
@@ -239,6 +296,8 @@ namespace Simulation.Protocol.POPE
 
 			public override SplitResult Split(C label, C max, SplitResult split = null)
 			{
+				ReportNodeVisited();
+
 				SplitResult result;
 
 				if (split == null)
@@ -285,6 +344,8 @@ namespace Simulation.Protocol.POPE
 			/// <returns>Child that contans requested ciphertext</returns>
 			public CipherChild AcceptChildren(LeafNode child, HashSet<EncryptedRecord<C>> buffer, List<C> list, C label)
 			{
+				ReportNodeVisited();
+
 				var toInsert = list.Select(c => new CipherChild { cipher = c, child = new LeafNode(_options) }).ToList();
 				for (int i = 0; i < toInsert.Count; i++)
 				{
@@ -408,6 +469,8 @@ namespace Simulation.Protocol.POPE
 					_children[i].child.Validate(decode, lower, decode(_children[i].cipher));
 				}
 			}
+
+			protected override int ElementsNumber() => _buffer.Count + _children.Count;
 		}
 
 		private class LeafNode : Node
@@ -415,12 +478,12 @@ namespace Simulation.Protocol.POPE
 			public LeafNode right = null;
 			public LeafNode left = null;
 
-			public LeafNode(Options<C> options) : base(options)
-			{
-			}
+			public LeafNode(Options<C> options) : base(options) { }
 
 			public override SplitResult Split(C label, C max, SplitResult split = null)
 			{
+				ReportNodeVisited();
+
 				SplitResult result = new SplitResult();
 
 				if (_buffer.Count <= _options.L)
@@ -520,6 +583,8 @@ namespace Simulation.Protocol.POPE
 					throw new InvalidOperationException("Parent unset");
 				}
 			}
+
+			protected override int ElementsNumber() => _buffer.Count;
 		}
 
 		private class CipherChild
