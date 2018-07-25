@@ -164,11 +164,13 @@ namespace Simulation.Protocol
 
 			foreach (var party in new AbsParty[] { _client, _server })
 			{
-				party.MessageSent += new MessageSentEventHandler(OnMessageSent);
-				party.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
-				party.OperationOcurred += new SchemeOperationEventHandler(OnOperationOccurred);
-				party.PrimitiveUsed += new PrimitiveUsageEventHandler(OnPrimitiveUsed);
-				party.ClientStorage += new ClientStorageEventHandler(OnClientStorage);
+				party.MessageSent += OnMessageSent;
+				party.NodeVisited += OnNodeVisited;
+				party.OperationOcurred += OnOperationOccurred;
+				party.PrimitiveUsed += OnPrimitiveUsed;
+				party.ClientStorage += OnClientStorage;
+				party.Timer += OnTimer;
+				party.QueryCompleted += OnQueryCompleted;
 			}
 		}
 
@@ -236,7 +238,7 @@ namespace Simulation.Protocol
 		event PrimitiveUsageEventHandler PrimitiveUsed;
 		event MessageSentEventHandler MessageSent;
 		event ClientStorageEventHandler ClientStorage;
-		
+
 		/// <summary>
 		/// Event signalizing whether to stop or resume simulation timer
 		/// </summary>
@@ -287,12 +289,13 @@ namespace Simulation.Protocol
 			_client.SetMediator(_mediator);
 			_server.SetMediator(_mediator);
 
-			_mediator.MessageSent += new MessageSentEventHandler(OnMessageSent);
-			_mediator.NodeVisited += new NodeVisitedEventHandler(OnNodeVisited);
-			_mediator.OperationOcurred += new SchemeOperationEventHandler(OnOperationOccurred);
-			_mediator.PrimitiveUsed += new PrimitiveUsageEventHandler(OnPrimitiveUsed);
-			_mediator.ClientStorage += new ClientStorageEventHandler(OnClientStorage);
-			_mediator.Timer += new TimerEventHandler(OnTimer);
+			_mediator.MessageSent += OnMessageSent;
+			_mediator.NodeVisited += OnNodeVisited;
+			_mediator.OperationOcurred += OnOperationOccurred;
+			_mediator.PrimitiveUsed += OnPrimitiveUsed;
+			_mediator.ClientStorage += OnClientStorage;
+			_mediator.Timer += OnTimer;
+			_mediator.QueryCompleted += OnQueryCompleted;
 		}
 
 		public virtual void RunConstructionProtocol(List<Record> input)

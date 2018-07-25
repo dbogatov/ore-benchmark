@@ -55,6 +55,16 @@ namespace Test.Simulators.Protocols.Integration
 
 			SetupHandlers();
 		}
+
+		[Fact]
+		public void TestName()
+		{
+		//Given
+base.Search();		
+		//When
+		
+		//Then
+		}
 	}
 
 	[Trait("Category", "Unit")]

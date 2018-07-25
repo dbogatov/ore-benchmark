@@ -75,6 +75,7 @@ namespace Test.Simulators.Protocols
 			protocol.NodeVisited += n => triggers[Events.NodeVisited] = true;
 			protocol.PrimitiveUsed += (n, i) => triggers[Events.PrimitiveUsage] = true;
 			protocol.Timer += (n) => triggers[Events.Timer] = true;
+			protocol.QueryCompleted += () => triggers[Events.QueryCompleted] = true;
 
 			mediator.Raise(c => c.ClientStorage += null, 0);
 			mediator.Raise(c => c.OperationOcurred += null, 0);
@@ -82,6 +83,7 @@ namespace Test.Simulators.Protocols
 			mediator.Raise(c => c.NodeVisited += null, 0);
 			mediator.Raise(c => c.PrimitiveUsed += null, 0, false);
 			mediator.Raise(c => c.Timer += null, true);
+			mediator.Raise(c => c.QueryCompleted += null);
 
 			Assert.All(triggers.Values, v => Assert.True(v));
 		}
