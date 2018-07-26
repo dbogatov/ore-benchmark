@@ -9,14 +9,17 @@ namespace Simulation.Protocol.Florian
 	{
 		private readonly IPRG G;
 		private List<Tuple<Cipher, string>> _structure;
+		private readonly int _blockSize;
 
-		public Server(byte[] entropy)
+		public Server(byte[] entropy, int blockSize)
 		{
 			G = new PRGFactory(entropy).GetPrimitive();
 
 			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 
 			_structure = new List<Tuple<Cipher, string>>();
+
+			_blockSize = blockSize;
 		}
 
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
@@ -26,24 +29,41 @@ namespace Simulation.Protocol.Florian
 				case RequestNMessage requestN:
 					return (IMessage<R>)new ResponseNMessage(_structure.Count);
 				case RequestCipherMessage requestCipher:
+					// Set block hash a derivative of first element (so if shift, different hash) and block number where element requested
+					// The idea is that middle element should be cached if no shifts occurred
+					OnNodeVisited(_structure[0].Item1.GetHashCode() * 2 + (requestCipher.Unpack() / _blockSize) * 3);
 					return (IMessage<R>)new ResponseCipherMessage(_structure[requestCipher.Unpack()].Item1);
 				case InsertMessage insert:
 					return (IMessage<R>)AcceptMessage(insert);
 				case QueryMessage query:
-					return (IMessage<R>)new QueryResponseMessage(
-						_structure
-							.Skip(query.Unpack().Item1)
-							.Take(query.Unpack().Item2 - query.Unpack().Item1)
-							.Select(e => e.Item2)
-							.ToList()
-						);
+					return (IMessage<R>)AcceptMessage(query);
 				default:
 					return (IMessage<R>)new FinishMessage();
 			}
 		}
 
 		/// <summary>
-		/// React to the insert request from server
+		/// React to the search query request from client
+		/// </summary>
+		private QueryResponseMessage AcceptMessage(QueryMessage query)
+		{
+			// When query is executed, all return blocks are accessed
+			for (int i = query.Unpack().Item1 / _blockSize; i <= query.Unpack().Item2 / _blockSize; i++)
+			{
+				OnNodeVisited(_structure[0].Item1.GetHashCode() * 2 + i * 3);
+			}
+
+			return new QueryResponseMessage(
+				_structure
+					.Skip(query.Unpack().Item1)
+					.Take(query.Unpack().Item2 - query.Unpack().Item1)
+					.Select(e => e.Item2)
+					.ToList()
+			);
+		}
+
+		/// <summary>
+		/// React to the insert request from client
 		/// </summary>
 		private FinishMessage AcceptMessage(InsertMessage insert)
 		{
@@ -65,6 +85,12 @@ namespace Simulation.Protocol.Florian
 				@new[(i + s) % n] = _structure[i];
 			}
 			_structure = @new.ToList();
+
+			// When shift happens, all blocks are accessed
+			for (int i = 0; i <= _structure.Count; i++)
+			{
+				OnNodeVisited(_structure[0].Item1.GetHashCode() * 2 + i * 3);
+			}
 
 			return new FinishMessage();
 		}

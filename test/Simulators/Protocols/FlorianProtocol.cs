@@ -18,11 +18,12 @@ namespace Test.Simulators.Protocols
 
 		private readonly int DISTINCT = 1000;
 		private readonly int DUPLICATES = 5;
+		private readonly int BLOCKSIZE = 60;
 
 		public FlorianProtocol()
 		{
 			_client = new Client(G.GetBytes(128 / 8));
-			_server = new Server(G.GetBytes(128 / 8));
+			_server = new Server(G.GetBytes(128 / 8), BLOCKSIZE);
 
 			_mediator = new Mediator(_client, _server);
 

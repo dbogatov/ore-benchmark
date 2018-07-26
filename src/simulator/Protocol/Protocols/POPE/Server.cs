@@ -14,33 +14,35 @@ namespace Simulation.Protocol.POPE
 
 			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 
-			_tree = new Tree<Cipher>(
-				new Options<Cipher>
-				{
-					L = L,
-					SetList =
-						list =>
-						_mediator.SendToClient<HashSet<Cipher>, object>(
-							new SetListMessage(list)
-						),
-					GetSortedList =
-						() =>
-						_mediator.SendToClient<object, List<Cipher>>(
-							new GetSortedListMessage()
-						).Unpack(),
-					IndexToInsert =
-						cipher =>
-						_mediator.SendToClient<Cipher, int>(
-							new IndexOfResultMessage(cipher)
-						).Unpack(),
-					IndexOfResult =
-						cipher =>
-						_mediator.SendToClient<Cipher, int>(
-							new IndexOfResultMessage(cipher)
-						).Unpack(),
-					G = G
-				}
-			);
+			var options = new Options<Cipher>
+			{
+				L = L,
+				SetList =
+					list =>
+					_mediator.SendToClient<HashSet<Cipher>, object>(
+						new SetListMessage(list)
+					),
+				GetSortedList =
+					() =>
+					_mediator.SendToClient<object, List<Cipher>>(
+						new GetSortedListMessage()
+					).Unpack(),
+				IndexToInsert =
+					cipher =>
+					_mediator.SendToClient<Cipher, int>(
+						new IndexOfResultMessage(cipher)
+					).Unpack(),
+				IndexOfResult =
+					cipher =>
+					_mediator.SendToClient<Cipher, int>(
+						new IndexOfResultMessage(cipher)
+					).Unpack(),
+				G = G
+			};
+
+			options.NodeVisited += OnNodeVisited;
+
+			_tree = new Tree<Cipher>(options);
 		}
 
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)

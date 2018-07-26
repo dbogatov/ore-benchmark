@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using DataStructures.BPlusTree;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.FHOPE;
@@ -19,6 +21,18 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
 				new Options<OPECipher>(scheme), scheme
 			);
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.PrimitiveUsage);
+				return set;
+			}
 		}
 	}
 
@@ -38,9 +52,11 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new Protocol<CryptDBScheme, OPECipher, BytesKey>(
 				new Options<OPECipher>(scheme), scheme
 			);
+
+			SetupHandlers();
 		}
 	}
-
+	
 	[Trait("Category", "Unit")]
 	public class PracticalOREProtocol : AbsProtocol
 	{
@@ -51,6 +67,8 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new Protocol<PracticalOREScheme, global::ORESchemes.PracticalORE.Ciphertext, BytesKey>(
 				new Options<global::ORESchemes.PracticalORE.Ciphertext>(scheme), scheme
 			);
+
+			SetupHandlers();
 		}
 	}
 
@@ -64,6 +82,8 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new Simulation.Protocol.LewiORE.Protocol(
 				new Options<global::ORESchemes.LewiORE.Ciphertext>(scheme), scheme
 			);
+
+			SetupHandlers();
 		}
 	}
 
@@ -77,6 +97,8 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol = new Simulation.Protocol.FHOPE.Protocol(
 				new Options<global::ORESchemes.FHOPE.Ciphertext>(scheme), scheme
 			);
+
+			SetupHandlers();
 		}
 	}
 
@@ -86,6 +108,18 @@ namespace Test.Simulators.Protocols.Integration
 		public FlorianProtocol()
 		{
 			_protocol = new global::Simulation.Protocol.Florian.Protocol(new Random(123456).GetBytes(128 / 8));
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.SchemeOperation);
+				return set;
+			}
 		}
 	}
 
@@ -95,6 +129,18 @@ namespace Test.Simulators.Protocols.Integration
 		public POPEProtocol()
 		{
 			_protocol = new global::Simulation.Protocol.POPE.Protocol(new Random(123456).GetBytes(128 / 8));
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.SchemeOperation);
+				return set;
+			}
 		}
 	}
 }

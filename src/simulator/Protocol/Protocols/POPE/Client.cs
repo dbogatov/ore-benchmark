@@ -29,7 +29,7 @@ namespace Simulation.Protocol.POPE
 			OnClientStorage(_key.Length * 8);
 		}
 
-		public override void RunHandshake() { }
+		public override void RunHandshake() => OnQueryCompleted();
 
 		public override void RunConstruction(List<Record> input)
 		{
@@ -44,6 +44,8 @@ namespace Simulation.Protocol.POPE
 						}
 					)
 				);
+
+				OnQueryCompleted();
 			}
 		}
 
@@ -59,6 +61,8 @@ namespace Simulation.Protocol.POPE
 						)
 					)
 				);
+
+				OnQueryCompleted();
 			}
 		}
 

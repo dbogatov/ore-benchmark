@@ -14,7 +14,8 @@ namespace Test.Simulators.Protocols
 		NodeVisited,
 		PrimitiveUsage,
 		MessageSent,
-		Timer
+		Timer,
+		QueryCompleted
 	}
 
 	[Trait("Category", "Unit")]
@@ -143,6 +144,7 @@ namespace Test.Simulators.Protocols
 			_mediator.MessageSent += n => triggers[Events.MessageSent] = true;
 			_mediator.NodeVisited += n => triggers[Events.NodeVisited] = true;
 			_mediator.PrimitiveUsed += (n, i) => triggers[Events.PrimitiveUsage] = true;
+			_mediator.QueryCompleted += () => triggers[Events.QueryCompleted] = true;
 
 			if (client)
 			{
@@ -151,6 +153,7 @@ namespace Test.Simulators.Protocols
 				_client.Raise(c => c.MessageSent += null, 0);
 				_client.Raise(c => c.NodeVisited += null, 0);
 				_client.Raise(c => c.PrimitiveUsed += null, 0, false);
+				_client.Raise(c => c.QueryCompleted += null);
 			}
 			else
 			{
@@ -159,6 +162,7 @@ namespace Test.Simulators.Protocols
 				_server.Raise(c => c.MessageSent += null, 0);
 				_server.Raise(c => c.NodeVisited += null, 0);
 				_server.Raise(c => c.PrimitiveUsed += null, 0, false);
+				_server.Raise(c => c.QueryCompleted += null);
 			}
 
 			Assert.All(triggers.Values, v => Assert.True(v));

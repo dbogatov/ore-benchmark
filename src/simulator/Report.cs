@@ -39,12 +39,13 @@ namespace Simulation
 
 	public abstract class AbsSubReport
 	{
+		public long ActionsNumber  { get; set; } = 1;
+
 		public long SchemeOperations { get; set; } = 0;
-		public long AvgSchemeOperations { get; set; } = 0;
+		public long AvgSchemeOperations => SchemeOperations / ActionsNumber;
 
 		public Dictionary<Primitive, long> TotalPrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
 		public Dictionary<Primitive, long> PurePrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
-
 
 		public TimeSpan ObservedTime { get; set; } = new TimeSpan(0);
 
@@ -75,5 +76,7 @@ namespace Simulation
 
 			return result;
 		}
+
+		public List<AbsSubReport> PerQuerySubreports = new List<AbsSubReport>();
 	}
 }

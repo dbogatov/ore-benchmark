@@ -8,12 +8,12 @@ namespace Simulation.Protocol.Florian
 {
 	public class Protocol : AbsProtocol
 	{
-		public Protocol(byte[] entropy)
+		public Protocol(byte[] entropy, int blockSize = 60)
 		{
 			IPRG G = new PRGFactory(entropy).GetPrimitive();
 
 			_client = new Client(G.GetBytes(128 / 8));
-			_server = new Server(G.GetBytes(128 / 8));
+			_server = new Server(G.GetBytes(128 / 8), blockSize);
 
 			SetupProtocol();
 		}
@@ -24,6 +24,8 @@ namespace Simulation.Protocol.Florian
 		public byte[] encrypted;
 
 		public int GetSize() => encrypted.Length * 8;
+
+		public override int GetHashCode() => encrypted.GetHashCode();
 	}
 
 	internal class InsertContent : IGetSize

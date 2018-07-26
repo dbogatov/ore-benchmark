@@ -9,6 +9,7 @@ using ORESchemes.PracticalORE;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.Shared;
 using ORESchemes.AdamORE;
+using System.Linq;
 
 namespace CLI
 {
@@ -106,7 +107,8 @@ namespace CLI
 					break;
 				case ORESchemes.Shared.ORESchemes.Florian:
 					protocol = new Simulation.Protocol.Florian.Protocol(
-						new Random(Parent.Seed).GetBytes(128 / 8)
+						new Random(Parent.Seed).GetBytes(128 / 8),
+						BPlusTreeBranching
 					);
 					break;
 				case ORESchemes.Shared.ORESchemes.POPE:
@@ -121,8 +123,13 @@ namespace CLI
 
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 
+			if (!Parent.Extended)
+			{
+				report.Stages.Values.ToList().ForEach(s => s.PerQuerySubreports.Clear());
+			}
+
 			System.Console.WriteLine(
-				Parent.Verbose ?
+				Parent.Verbose && !Parent.Extended ?
 				report.ToString() :
 				JsonReport(
 					report.Stages,

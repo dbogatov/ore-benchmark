@@ -118,6 +118,8 @@ namespace Simulation.Protocol.SimpleORE
 						}
 					)
 				);
+
+				OnQueryCompleted();
 			}
 		}
 
@@ -131,6 +133,8 @@ namespace Simulation.Protocol.SimpleORE
 					)
 				)
 			);
+
+			OnQueryCompleted();
 		}
 
 		public override void RunSearch(List<RangeQuery> input)
@@ -145,6 +149,8 @@ namespace Simulation.Protocol.SimpleORE
 						)
 					)
 				);
+
+				OnQueryCompleted();
 			}
 		}
 
