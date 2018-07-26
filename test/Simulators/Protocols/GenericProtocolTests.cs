@@ -49,7 +49,7 @@ namespace Test.Simulators.Protocols.Integration
 			_protocol.MessageSent += n => _triggers[Events.MessageSent] = true;
 			_protocol.NodeVisited += n => _triggers[Events.NodeVisited] = true;
 			_protocol.PrimitiveUsed += (n, i) => _triggers[Events.PrimitiveUsage] = true;
-			_protocol.Timer += (n) => _triggers[Events.Timer] = true;
+			_protocol.Timer += n => _triggers[Events.Timer] = true;
 			_protocol.QueryCompleted += () => _triggers[Events.QueryCompleted] = true;
 		}
 

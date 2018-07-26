@@ -7,6 +7,9 @@ using System.Diagnostics;
 
 namespace Simulation
 {
+	/// <summary>
+	/// Undocumented methods mirror corresponding Tracker's methods
+	/// </summary>
 	/// <typeparam name="S">Stages enum</typeparam>
 	public abstract class AbsSimulator<S> where S : Enum
 	{
@@ -15,12 +18,18 @@ namespace Simulation
 
 		private List<AbsSubReport> perQueryReports = new List<AbsSubReport>();
 
+		/// <summary>
+		/// Generate per query report and clear corresponding tracker
+		/// </summary>
 		protected void QueryReport()
 		{
 			perQueryReports.Add(perQuery.ReadMetrics());
 			perQuery.ClearTrackers();
 		}
 
+		/// <summary>
+		/// Generate stage report that includes query reports
+		/// </summary>
 		protected AbsSubReport StageReport()
 		{
 			var result = perStage.ReadMetrics();
@@ -258,6 +267,9 @@ namespace Simulation
 			return copy;
 		}
 
+		/// <summary>
+		/// Generate report from current (as-of-now) data
+		/// </summary>
 		public abstract AbsSubReport ReadMetrics();
 	}
 }
