@@ -52,7 +52,7 @@ namespace CLI
 						).Simulate();
 					break;
 				case ORESchemes.Shared.ORESchemes.CryptDB:
-					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(-Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
+					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
 					report =
 						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
