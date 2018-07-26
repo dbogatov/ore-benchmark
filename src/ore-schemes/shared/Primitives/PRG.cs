@@ -150,10 +150,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 			return BitConverter.ToInt32(bytes, 0);
 		}
 
-		public int Next(int max)
-		{
-			return this.Next(0, max);
-		}
+		public int Next(int max) => Next(0, max);
 
 		public int Next(int min, int max)
 		{
@@ -170,7 +167,12 @@ namespace ORESchemes.Shared.Primitives.PRG
 					diff = (uint)max - (uint)min;
 				}
 
-				var result = (int)Math.Round(min + ((double)large / UInt32.MaxValue) * (diff + 1));
+				if (large > (uint.MaxValue / diff) * diff)
+				{
+					continue;
+				}
+
+				var result = (int)Math.Floor(min + ((double)large / UInt32.MaxValue) * (diff + 1));
 
 				if (result > max || result < min)
 				{
@@ -181,28 +183,11 @@ namespace ORESchemes.Shared.Primitives.PRG
 			}
 		}
 
-		public void NextBytes(byte[] bytes)
-		{
-			GetBytes(bytes);
-		}
+		public void NextBytes(byte[] bytes) => GetBytes(bytes);
 
-		public double NextDouble()
-		{
-			byte[] bytes = new byte[sizeof(double)];
-			this.GetBytes(bytes);
+		public double NextDouble() => NextLong() * (1.0 / long.MaxValue);
 
-			if (BitConverter.IsLittleEndian)
-			{
-				Array.Reverse(bytes);
-			}
-
-			return BitConverter.ToDouble(bytes, 0);
-		}
-
-		public double NextDouble(double max)
-		{
-			return this.NextDouble(0, max);
-		}
+		public double NextDouble(double max) => NextDouble(0, max);
 
 		public double NextDouble(double min, double max)
 		{
@@ -235,10 +220,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 			return BitConverter.ToInt64(bytes, 0);
 		}
 
-		public long NextLong(long max)
-		{
-			return this.NextLong(0, max);
-		}
+		public long NextLong(long max) => NextLong(0, max);
 
 		public long NextLong(long min, long max)
 		{
@@ -255,7 +237,12 @@ namespace ORESchemes.Shared.Primitives.PRG
 					diff = (ulong)max - (ulong)min;
 				}
 
-				var result = (long)Math.Round(min + ((double)large / UInt64.MaxValue) * (diff + 1));
+				if (large > (ulong.MaxValue / diff) * diff)
+				{
+					continue;
+				}
+
+				var result = (long)Math.Floor(min + ((double)large / UInt64.MaxValue) * (diff + 1));
 
 				if (result > max || result < min)
 				{

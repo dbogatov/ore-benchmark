@@ -209,13 +209,22 @@ namespace Test.ORESchemes.Primitives.PRG
 			Assert.Equal(_runs * 2, values.Count);
 		}
 
-		[Fact]
-		public void Uniformity()
+		[Theory]
+		[InlineData(0, 1)]
+		[InlineData(-5, 5)]
+		[InlineData(0, 5)]
+		[InlineData(0, int.MaxValue / 2 + 5)]
+		[InlineData(int.MinValue, int.MaxValue)]
+		public void Uniformity(int from, int to)
 		{
-			var values = new Dictionary<int, int>(_runs);
-			for (int i = 0; i < _runs * 100; i++)
+			const double STDDEV = 0.003;
+			const int RUNS = _runs * 100;
+			long RANGE = (long)to - from;
+
+			var values = new Dictionary<int, int>();
+			for (int i = 0; i < RUNS; i++)
 			{
-				var value = _prg.Next(_runs);
+				var value = _prg.Next(from, to);
 
 				if (values.ContainsKey(value))
 				{
@@ -229,12 +238,12 @@ namespace Test.ORESchemes.Primitives.PRG
 
 			var stdDev = values.Values.StdDev();
 
-			Assert.InRange(values.Values.StdDev(), 0, _runs * 0.02);
-			Assert.InRange(values.Where(kvp => kvp.Key < 100).Select(kvp => kvp.Value).StdDev(), 0, _runs * 0.02);
-			Assert.InRange(values.Where(kvp => kvp.Key > _runs - 100).Select(kvp => kvp.Value).StdDev(), 0, _runs * 0.02);
+			Assert.InRange(values.Values.StdDev(), 0, RUNS * STDDEV);
+			Assert.InRange(values.Where(kvp => kvp.Key < 100).Select(kvp => kvp.Value).StdDev(), 0, RUNS * STDDEV);
+			Assert.InRange(values.Where(kvp => kvp.Key > RUNS - 100).Select(kvp => kvp.Value).StdDev(), 0, RUNS * STDDEV);
 			Assert.InRange(
-				values.Where(kvp => kvp.Key > _runs / 2 - 50 && kvp.Key < _runs / 2 + 50).Select(kvp => kvp.Value).StdDev(),
-				0, _runs * 0.02
+				values.Where(kvp => kvp.Key > RUNS / 2 - 50 && kvp.Key < RUNS / 2 + 50).Select(kvp => kvp.Value).StdDev(),
+				0, RUNS * STDDEV
 			);
 		}
 
