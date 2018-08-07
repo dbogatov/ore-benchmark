@@ -17,7 +17,7 @@ namespace CLI
 		public int LewiOREN { get; } = 16;
 
 		[Range(32, 48)]
-		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (eq. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
+		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (e.g. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
 		public int CryptDBRange { get; } = 48;
 
 		[Range(0, 100)]

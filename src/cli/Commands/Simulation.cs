@@ -61,7 +61,7 @@ namespace CLI
 		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
 		public int Seed { get; } = new Random().Next();
 
-		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (eq. NoEncryption)")]
+		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (e.g. NoEncryption)")]
 		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
 
 		[Required]

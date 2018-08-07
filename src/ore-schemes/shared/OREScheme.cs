@@ -101,7 +101,7 @@ namespace ORESchemes.Shared
 	{
 		/// <summary>
 		/// Performs some work on initializing the scheme
-		/// Eq. sets up some internal data, sample distributions, generates 
+		/// e.g. sets up some internal data, sample distributions, generates 
 		/// internal keys
 		/// </summary>
 		/// <returns>Self. Syntactic sugar to allow chaining.</returns>

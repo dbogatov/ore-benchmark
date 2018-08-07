@@ -8,7 +8,7 @@ namespace Simulation.Protocol
 {
 	/// <summary>
 	/// Encapsulates a party of a protocol capable of exchanging messages.
-	/// Eq. client and server
+	/// e.g. client and server
 	/// </summary>
 	public abstract class AbsParty : AbsEventHandler
 	{
