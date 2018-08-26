@@ -7,13 +7,17 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-usage() { echo "Usage: $0 [-c <string> -n <string>]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-c <string> -n <string> -j]" 1>&2; exit 1; }
 
 NAME=""
 CATEGORY=""
+JUNIT=""
 
-while getopts "n:c:" o; do
+while getopts "n:c:j" o; do
 	case "${o}" in
+		j)
+			JUNIT="--logger trx"
+			;;
 		n)
 			NAME="--filter FullyQualifiedName~${OPTARG}"
 			;;
@@ -32,6 +36,6 @@ dotnet build --no-restore
 
 echo "Running dotnet tests..."
 
-dotnet test --no-build --no-restore --verbosity n $NAME $CATEGORY
+dotnet test --no-build --no-restore --verbosity n $JUNIT $NAME $CATEGORY
 
 echo "Testing completed!"

@@ -80,9 +80,16 @@ unit-tests:
     GIT_STRATEGY: none
   stage: test
   script:
-  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Unit
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Unit
+  - dotnet tool install --global trx2junit --version 1.0.2
+  - export PATH="$PATH:/root/.dotnet/tools"
+  - trx2junit test/TestResults/*.trx
+  - cp test/TestResults/*.xml unit.xml
   dependencies:
   - build-tests
+  artifacts:
+    reports:
+      junit: unit.xml
   tags:
   - docker
 
@@ -92,7 +99,14 @@ integration-tests:
     GIT_STRATEGY: none
   stage: test
   script:
-  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --filter Category=Integration
+  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Integration
+  - dotnet tool install --global trx2junit --version 1.0.2
+  - export PATH="$PATH:/root/.dotnet/tools"
+  - trx2junit test/TestResults/*.trx
+  - cp test/TestResults/*.xml integration.xml
+  artifacts:
+    reports:
+      junit: integration.xml
   dependencies:
   - build-tests
   tags:
