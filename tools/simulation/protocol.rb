@@ -37,11 +37,9 @@ open('../../results/protocol.json', 'a') do |f|
 end
 
 %w[pope florian adamore fhope lewiore cryptdb practicalore noencryption].each do |scheme|
-  ['range-0.5', 'range-1', 'range-2', 'range-3'].each do |queries|
-    [2, 5, 20, 50].each do |btreebranches|
-      [0, 10, 100].each do |cache|
-        success = false unless run('dataset', queries, scheme, prng.rand(2**30), cache, btreebranches)
-      end
+  ['range-0.5', 'range-3'].each do |queries|
+    [5, 50].each do |btreebranches|
+      success = false unless run('dataset', queries, scheme, prng.rand(2**30), 10, btreebranches)
     end
   end
 end
