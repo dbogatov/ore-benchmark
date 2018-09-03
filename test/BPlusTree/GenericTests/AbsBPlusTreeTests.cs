@@ -1,4 +1,4 @@
-using DataStructures.BPlusTree;
+using BPlusTree;
 using ORESchemes.Shared;
 
 namespace Test.BPlusTree

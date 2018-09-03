@@ -1,10 +1,10 @@
 using System;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using ORESchemes.FHOPE;
 
 namespace Simulation.Protocol.FHOPE
 {
-	public class Server : SimpleORE.Server<Ciphertext>
+	internal class Server : SimpleORE.Server<Ciphertext>
 	{
 		public Server(Options<Ciphertext> options) : base(options) { }
 

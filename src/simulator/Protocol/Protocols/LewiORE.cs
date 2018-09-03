@@ -1,10 +1,10 @@
-using DataStructures.BPlusTree;
+using BPlusTree;
 using ORESchemes.LewiORE;
 using ORESchemes.Shared;
 
 namespace Simulation.Protocol.LewiORE
 {
-	public class Server : SimpleORE.Server<Ciphertext>
+	internal class Server : SimpleORE.Server<Ciphertext>
 	{
 		public Server(Options<Ciphertext> options) : base(options) { }
 

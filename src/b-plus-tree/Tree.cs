@@ -1,12 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using ORESchemes.Shared;
 
-namespace DataStructures.BPlusTree
+[assembly: InternalsVisibleTo("simulator")]
+[assembly: InternalsVisibleTo("test")]
+
+namespace BPlusTree
 {
+	public interface ITree<T, C>
+	{
+		/// <summary>
+		/// Updates a single element of the tree
+		/// </summary>
+		/// <param name="key">Index of the updated element</param>
+		/// <param name="value">New value</param>
+		/// <param name="predicate">Predicate to use for values of the requested index</param>
+		/// <returns>True if element was found, false otherwise</returns>
+		/// <exception cref="System.InvalidOperationException">Thrown if more than one element were retrivied for the index with predicate</exception>  
+		bool UpdateSingle(C key, T value, Func<T, bool> predicate = null);
+
+		/// <summary>
+		/// Updates all matched elements of the tree
+		/// </summary>
+		/// <param name="key">Index of the updated element</param>
+		/// <param name="value">New value</param>
+		/// <param name="predicate">Predicate to use for values of the requested index</param>
+		/// <returns>True if element was found, false otherwise</returns>
+		bool Update(C key, T value, Func<T, bool> predicate = null);
+
+		/// <summary>
+		/// Returns a value of single element of the tree
+		/// </summary>
+		/// <param name="key">Index of the element to find</param>
+		/// <param name="value">Variable to place value to</param>
+		/// <param name="predicate">Predicate to use for values of the requested index</param>
+		/// <returns>True if element was found, false otherwise</returns>
+		bool TryGetSingle(C key, out T value, Func<T, bool> predicate = null);
+
+		/// <summary>
+		/// Returns all values of matched elements of the tree
+		/// </summary>
+		/// <param name="key">Index of the element to find</param>
+		/// <param name="values">List to place values to (should not be null)</param>
+		/// <param name="predicate">Predicate to use for values of the requested index</param>
+		/// <returns>True if element was found, false otherwise</returns>
+		bool TryGet(C key, List<T> values, Func<T, bool> predicate = null);
+
+		/// <summary>
+		/// Returns the value for the key range (both ends inclusive)
+		/// </summary>
+		/// <param name="start">Key for start of the range</param>
+		/// <param name="end">Key for end of the range</param>
+		/// <param name="values">The list to put found values to (should not be null)</param>
+		/// <param name="checkRanges">If unset that ranges check would be skipped</param>
+		/// <returns>True if at least element found, false otherwise</returns>
+		bool TryRange(C start, C end, List<T> values, bool checkRanges = true);
+
+		/// <summary>
+		/// Inserts or updates the value for the key
+		/// </summary>
+		/// <param name="key">Key for value</param>
+		/// <param name="value">Value to insert or update with</param>
+		/// <returns>True if the value with this key did not exist, false otherwise</returns>
+		bool Insert(C key, T value);
+
+		/// <summary>
+		/// Remove an element with a given key from the tree
+		/// </summary>
+		/// <param name="key">The key to remove</param>
+		/// <param name="predicate">Predicate to use for values of the requested index</param>
+		/// <returns>True if element was found, false otherwise</returns>
+		bool Delete(C key, Func<T, bool> predicate = null);
+
+		/// <summary>
+		/// Returns the size of tree in number of elements
+		/// </summary>
+		/// <returns>The size of tree in number of elements</returns>
+		int Size();
+
+		/// <summary>
+		/// Runs checks to verify the integrity of the tree
+		/// Needed for proper testing
+		/// </summary>
+		/// <returns>True if tree satisfies all constraints, false otherwise</returns>
+		bool Validate();
+	}
+
 	/// <typeparam name="T">Data type</typeparam>
 	/// <typeparam name="C">Ciphertext type</typeparam>
-	public partial class Tree<T, C>
+	internal partial class Tree<T, C> : ITree<T, C>
 	{
 		private readonly Options<C> _options;
 
@@ -20,14 +104,6 @@ namespace DataStructures.BPlusTree
 			_root = new LeafNode(options, null, null, null);
 		}
 
-		/// <summary>
-		/// Updates a single element of the tree
-		/// </summary>
-		/// <param name="key">Index of the updated element</param>
-		/// <param name="value">New value</param>
-		/// <param name="predicate">Predicate to use for values of the requested index</param>
-		/// <returns>True if element was found, false otherwise</returns>
-		/// <exception cref="System.InvalidOperationException">Thrown if more than one element were retrivied for the index with predicate</exception>  
 		public bool UpdateSingle(C key, T value, Func<T, bool> predicate = null)
 			=> RetriveRoutine(
 				key: key,
@@ -38,13 +114,6 @@ namespace DataStructures.BPlusTree
 				single: true
 			);
 
-		/// <summary>
-		/// Updates all matched elements of the tree
-		/// </summary>
-		/// <param name="key">Index of the updated element</param>
-		/// <param name="value">New value</param>
-		/// <param name="predicate">Predicate to use for values of the requested index</param>
-		/// <returns>True if element was found, false otherwise</returns>
 		public bool Update(C key, T value, Func<T, bool> predicate = null)
 			=> RetriveRoutine(
 				key: key,
@@ -55,13 +124,6 @@ namespace DataStructures.BPlusTree
 				single: false
 			);
 
-		/// <summary>
-		/// Returns a value of single element of the tree
-		/// </summary>
-		/// <param name="key">Index of the element to find</param>
-		/// <param name="value">Variable to place value to</param>
-		/// <param name="predicate">Predicate to use for values of the requested index</param>
-		/// <returns>True if element was found, false otherwise</returns>
 		public bool TryGetSingle(C key, out T value, Func<T, bool> predicate = null)
 		{
 			value = default(T);
@@ -85,13 +147,6 @@ namespace DataStructures.BPlusTree
 			return found;
 		}
 
-		/// <summary>
-		/// Returns all values of matched elements of the tree
-		/// </summary>
-		/// <param name="key">Index of the element to find</param>
-		/// <param name="values">List to place values to</param>
-		/// <param name="predicate">Predicate to use for values of the requested index</param>
-		/// <returns>True if element was found, false otherwise</returns>
 		public bool TryGet(C key, List<T> values, Func<T, bool> predicate = null)
 			=> RetriveRoutine(
 				key: key,
@@ -144,14 +199,6 @@ namespace DataStructures.BPlusTree
 			return found;
 		}
 
-		/// <summary>
-		/// Returns the value for the key range (both ends inclusive)
-		/// </summary>
-		/// <param name="start">Key for start of the range</param>
-		/// <param name="end">Key for end of the range</param>
-		/// <param name="values">The list to put found values to</param>
-		/// <param name="checkRanges">If unset that ranges check would be skipped</param>
-		/// <returns>True if at least element found, false otherwise</returns>
 		public bool TryRange(C start, C end, List<T> values, bool checkRanges = true)
 		{
 			values = values ?? new List<T>();
@@ -176,12 +223,6 @@ namespace DataStructures.BPlusTree
 			return found;
 		}
 
-		/// <summary>
-		/// Inserts or updates the value for the key
-		/// </summary>
-		/// <param name="key">Key for value</param>
-		/// <param name="value">Value to insert or update with</param>
-		/// <returns>True if the value with this key did not exist, false otherwise</returns>
 		public bool Insert(C key, T value)
 		{
 			var result = _root.Insert(key, value);
@@ -209,12 +250,6 @@ namespace DataStructures.BPlusTree
 			return !result.updated;
 		}
 
-		/// <summary>
-		/// Remove an element with a given key from the tree
-		/// </summary>
-		/// <param name="key">The key to remove</param>
-		/// <param name="predicate">Predicate to use for values of the requested index</param>
-		/// <returns>True if element was found, false otherwise</returns>
 		public bool Delete(C key, Func<T, bool> predicate = null)
 		{
 			var result = _root.Delete(key, predicate);
@@ -240,10 +275,6 @@ namespace DataStructures.BPlusTree
 			return true;
 		}
 
-		/// <summary>
-		/// Returns the size of tree in number of elements
-		/// </summary>
-		/// <returns>The size of tree in number of elements</returns>
 		public int Size()
 		{
 			return _size;
@@ -254,11 +285,6 @@ namespace DataStructures.BPlusTree
 			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
 		}
 
-		/// <summary>
-		/// Runs checks to verify the integrity of the tree
-		/// Needed for proper testing
-		/// </summary>
-		/// <returns>True if tree satisfies all constraints, false otherwise</returns>
 		public bool Validate()
 		{
 			if (_size == 0)
@@ -280,5 +306,54 @@ namespace DataStructures.BPlusTree
 				links &&
 				invariants;
 		}
+	}
+
+	/// <summary>
+	/// A wrapper around Tree class.
+	/// This class is designed to used by package users.
+	/// </summary>
+	/// <typeparam name="T">Type of data in a tree</typeparam>
+	public class BPlusTree<T> : ITree<T, long>
+	{
+		private readonly Tree<T, OPECipher> _tree;
+
+		public BPlusTree(int branches = 60)
+		{
+			var options = new Options<OPECipher>(
+				new NoEncryptionScheme(),
+				branches
+			);
+			options.MinCipher = long.MinValue;
+			options.MaxCipher = long.MaxValue;
+
+			_tree = new Tree<T, OPECipher>(options);
+		}
+
+		public bool UpdateSingle(long key, T value, Func<T, bool> predicate = null) =>
+			_tree.UpdateSingle(new OPECipher(key), value, predicate);
+
+		public bool Update(long key, T value, Func<T, bool> predicate = null) =>
+			_tree.Update(new OPECipher(key), value, predicate);
+
+		public bool TryGetSingle(long key, out T value, Func<T, bool> predicate = null) =>
+			_tree.TryGetSingle(new OPECipher(key), out value, predicate);
+
+		public bool TryGet(long key, List<T> values, Func<T, bool> predicate = null) =>
+			_tree.TryGet(new OPECipher(key), values, predicate);
+
+		public bool TryRange(long start, long end, List<T> values, bool checkRanges = true) =>
+			_tree.TryRange(new OPECipher(start), new OPECipher(end), values, checkRanges);
+
+		public bool Insert(long key, T value) =>
+			_tree.Insert(new OPECipher(key), value);
+
+		public bool Delete(long key, Func<T, bool> predicate = null) =>
+			_tree.Delete(new OPECipher(key), predicate);
+
+		public int Size() => _tree.Size();
+
+		public override string ToString() => _tree.ToString();
+
+		public bool Validate() => _tree.Validate();
 	}
 }

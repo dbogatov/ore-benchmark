@@ -1,7 +1,7 @@
 using System;
 using ORESchemes.Shared;
 
-namespace DataStructures.BPlusTree
+namespace BPlusTree
 {
 	public delegate void NodeVisitedEventHandler(int nodeHash);
 

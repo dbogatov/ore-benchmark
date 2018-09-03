@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 

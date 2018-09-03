@@ -1,7 +1,7 @@
 using System;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using Simulation;
 using CLI.DataReaders;
 using Simulation.Protocol;

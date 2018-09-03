@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,8 +22,9 @@ namespace Test.BPlusTree
 		[Fact]
 		public void SearchRangeEmptyTree()
 		{
-			var result = new Tree<string, C>(
-				_defaultOptions
+			var result = ConstructTree(
+				_defaultOptions,
+				new List<int>()
 			).TryRange(_scheme.Encrypt(2, _key), _scheme.Encrypt(3, _key), null);
 
 			Assert.False(result);
@@ -111,7 +112,7 @@ namespace Test.BPlusTree
 		[InlineData(2, 2)]
 		public void SearchRangeImproper(int start, int end)
 		{
-			var tree = new Tree<string, C>(_defaultOptions);
+			var tree = ConstructTree(_defaultOptions, new List<int>());
 
 			var startCipher = _scheme.Encrypt(start, _key);
 			var endCipher = _scheme.Encrypt(end, _key);

@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
-using DataStructures.BPlusTree;
+using System.Runtime.CompilerServices;
+using BPlusTree;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
+
+// Let Moq use internal classes
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace Simulation.Protocol.SimpleORE
 {
@@ -13,7 +17,7 @@ namespace Simulation.Protocol.SimpleORE
 		public override int GetSize() => _content.Item1.GetSize() + _content.Item2.GetSize();
 	}
 
-	public class Server<C> : AbsParty where C : IGetSize
+	internal class Server<C> : AbsParty where C : IGetSize
 	{
 		protected readonly Options<C> _options;
 		protected readonly Tree<string, C> _tree;
