@@ -5,5 +5,13 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<PackageId>b-plus-tree</PackageId>
+		<Version>1.1.1</Version>
+		<Authors>Dmytro Bogatov</Authors>
+		<Company>Boston University</Company>
+		<Title>In-memory B+ tree</Title>
+		<Description>In-memory implementation of B+ tree designed for research and prototype projects.</Description>
+		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
+		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
 	</PropertyGroup>
 </Project>

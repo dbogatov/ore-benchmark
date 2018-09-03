@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataStructures.BPlusTree
+namespace BPlusTree
 {
-	public partial class Tree<T, C>
+	internal partial class Tree<T, C>
 	{
 		private struct InsertInfo
 		{

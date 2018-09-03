@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +8,9 @@ namespace Test.BPlusTree
 {
 	public abstract partial class AbsBPlusTree<C, K>
 	{
-		private Tree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true, List<string> data = null)
+		protected virtual ITree<string, C> GetTree(Options<C> options) => new Tree<string, C>(options);
+		
+		private ITree<string, C> ConstructTree(Options<C> options, List<int> input, bool print = false, bool validate = true, List<string> data = null)
 		{
 			var tree = new Tree<string, C>(options);
 
@@ -38,9 +40,7 @@ namespace Test.BPlusTree
 		[Fact]
 		public void Initialize()
 		{
-			new Tree<string, C>(
-				_defaultOptions
-			);
+			ConstructTree(_defaultOptions, new List<int>());
 		}
 
 		[Fact]

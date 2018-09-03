@@ -3,6 +3,7 @@
 The goal of this project is to provide an overview of the pros and cons of various order revealing encryption (ORE) schemes.
 By simulating a real client-server range queries protocols using a B+ tree we examine how ORE schemes make efficiency differ for various queries.
 We will be using multiple encryption schemes and protocols from the following papers:
+
 - [Order Preserving Symmetric Encryption (aka CryptDB OPE)](https://eprint.iacr.org/2012/624.pdf)
 - [Practical Order-Revealing Encryption with Limited Leakage (aka Practical ORE)](https://eprint.iacr.org/2015/1125.pdf)
 - [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka Lewi ORE)](https://eprint.iacr.org/2016/612.pdf)
@@ -18,11 +19,11 @@ The canonical project repository is [here](https://git.dbogatov.org/bu/CS-562/Pr
 ## Instructions
 
 Prerequisites:
+
 - .NET Core 2.1 (C# 7.3)
 - Ruby runtime
 - Bash 4
-- [This Docker image](dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine) and 
-	this command `apk add --update bash ruby ruby-bundler` would work
+- [This Docker image dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine](https://hub.docker.com/r/dbogatov/docker-sources/tags/) and this command `apk add --update bash ruby ruby-bundler` would work
 
 Run with
 
@@ -37,3 +38,7 @@ Run with
 
 	# run this command to see help message
 	dotnet ../../src/cli/dist/cli.dll --help
+
+## Packages
+
+- [B+ tree docs and repo](./src/b-plus-tree)

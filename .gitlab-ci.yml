@@ -11,7 +11,7 @@ generate-data:
   artifacts:
     expire_in: 1 day
     paths:
-    - tools/data-gen/tpc-h/*.tbl
+    - ./tools/data-gen/tpc-h/*.tbl
   tags:
   - docker
 
@@ -27,10 +27,10 @@ build-app:
   artifacts:
     expire_in: 1 day
     paths:
-    - src/cli/dist
-    - tools/data-gen/dist
-    - tools/data-gen/generate.sh
-    - tools/simulation/
+    - ./src/cli/dist
+    - ./tools/data-gen/dist
+    - ./tools/data-gen/generate.sh
+    - ./tools/simulation/
   tags:
   - docker
 
@@ -43,8 +43,23 @@ build-tests:
   artifacts:
     expire_in: 1 day
     paths:
-    - test/dist
-    - test/test.csproj
+    - ./test/dist
+    - ./test/test.csproj
+  tags:
+  - docker
+
+build-packages:
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  stage: build
+  script:
+  - apk add --update bash 
+  - ./tools/publish-packages.sh -b -k $NUGET_KEY
+  artifacts:
+    paths:
+    - ./tools/publish-packages.sh
+    - ./version.txt
+    - ./src/b-plus-tree/dist/*.nupkg
+    - ./src/ore-schemes/*/dist/*.nupkg
   tags:
   - docker
 
@@ -55,9 +70,9 @@ build-docs:
   - ./docs/docs.sh
   artifacts:
     paths:
-    - docs/_site
-    - docs/Dockerfile
-    - docs/nginx.conf
+    - ./docs/_site
+    - ./docs/Dockerfile
+    - ./docs/nginx.conf
   tags:
   - docker
 
@@ -89,7 +104,7 @@ unit-tests:
   - build-tests
   artifacts:
     reports:
-      junit: unit.xml
+      junit: ./unit.xml
   tags:
   - docker
 
@@ -106,7 +121,7 @@ integration-tests:
   - cp test/TestResults/*.xml integration.xml
   artifacts:
     reports:
-      junit: integration.xml
+      junit: ./integration.xml
   dependencies:
   - build-tests
   tags:
@@ -123,7 +138,7 @@ system-protocol-tests:
   - ./tools/simulation/protocol.rb
   artifacts:
     paths:
-      - results/protocol.json
+      - ./results/protocol.json
   dependencies:
   - build-app
   - generate-data
@@ -141,12 +156,28 @@ system-schemes-tests:
   - ./tools/simulation/pure-schemes.rb
   artifacts:
     paths:
-      - results/schemes.json
+      - ./results/schemes.json
   dependencies:
   - build-app
   - generate-data
   tags:
   - docker
+
+publish-packages:
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - apk add --update bash 
+  - ./tools/publish-packages.sh -p -k $NUGET_KEY
+  dependencies:
+  - build-packages
+  allow_failure: true
+  tags:
+  - docker
+  only:
+  - master
 
 docs-website:
   variables:

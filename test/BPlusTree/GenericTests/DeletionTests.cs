@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +8,7 @@ namespace Test.BPlusTree
 {
 	public abstract partial class AbsBPlusTree<C, K>
 	{
-		public Tree<string, C> DeleteAndValidate(Tree<string, C> tree, int element, bool print = false)
+		private ITree<string, C> DeleteAndValidate(ITree<string, C> tree, int element, bool print = false)
 		{
 			if (print)
 			{
@@ -42,10 +42,8 @@ namespace Test.BPlusTree
 		[Fact]
 		public void DeleteEmptyTree()
 		{
-			var tree = new Tree<string, C>(
-				_defaultOptions
-			);
-
+			var tree = ConstructTree(_defaultOptions, new List<int>());
+			
 			Assert.False(tree.Delete(_scheme.Encrypt(2, _key)));
 		}
 

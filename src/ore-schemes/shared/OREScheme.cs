@@ -57,6 +57,9 @@ namespace ORESchemes.Shared
 		public int ToInt() => (int)value;
 
 		public override string ToString() => value.ToString();
+
+		public static implicit operator long(OPECipher c) => c.value;
+		public static implicit operator OPECipher(long v) => new OPECipher(v);
 	}
 
 	/// <summary>

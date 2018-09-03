@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +8,10 @@ namespace Test.BPlusTree
 {
 	public abstract partial class AbsBPlusTree<C, K>
 	{
-		private int ProfileVisitedNodes(Action<Tree<string, C>> routine, List<int> seeds = null)
+		private int ProfileVisitedNodes(Action<ITree<string, C>> routine, List<int> seeds = null)
 		{
 			var options = _defaultOptions;
-			var tree = new Tree<string, C>(options);
+			var tree = ConstructTree(options, new List<int>());
 
 			if (seeds != null)
 			{

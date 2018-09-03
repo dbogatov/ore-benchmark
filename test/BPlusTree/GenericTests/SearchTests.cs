@@ -1,5 +1,5 @@
 using Xunit;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,8 +21,9 @@ namespace Test.BPlusTree
 		[Fact]
 		public void SearchEmptyTree()
 		{
-			var result = new Tree<string, C>(
-				_defaultOptions
+			var result = ConstructTree(
+				_defaultOptions,
+				new List<int>()
 			).TryGetSingle(_scheme.Encrypt(2, _key), out _);
 
 			Assert.False(result);

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataStructures.BPlusTree;
+using BPlusTree;
 using ORESchemes.CryptDBOPE;
 using ORESchemes.FHOPE;
 using ORESchemes.LewiORE;

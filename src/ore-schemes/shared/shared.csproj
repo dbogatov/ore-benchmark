@@ -2,5 +2,13 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<PackageId>ore-benchamrk.shared</PackageId>
+		<Version>1.1.1</Version>
+		<Authors>Dmytro Bogatov</Authors>
+		<Company>Boston University</Company>
+		<Title>Internal project dependencies</Title>
+		<Description>Until this is fixed https://github.com/NuGet/Home/issues/3891 this package has to maintained.</Description>
+		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
+		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
 	</PropertyGroup>
 </Project>
