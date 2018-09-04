@@ -2,6 +2,14 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<PackageId>clww-ore</PackageId>
+		<Version>1.2.3</Version>
+		<Authors>Dmytro Bogatov</Authors>
+		<Company>Boston University</Company>
+		<Title>CLWW (Practical) ORE</Title>
+		<Description>ORE scheme as defined in https://eprint.iacr.org/2015/1125.pdf.</Description>
+		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
+		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\shared\shared.csproj" />

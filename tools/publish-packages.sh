@@ -40,6 +40,10 @@ fi
 declare -A PROJECTS
 PROJECTS['ore-schemes/shared']='ore-benchamrk.shared'
 PROJECTS['b-plus-tree']='b-plus-tree'
+PROJECTS['ore-schemes/practical-ore']='clww-ore'
+PROJECTS['ore-schemes/lewi-ore']='lewi-wu-ore'
+PROJECTS['ore-schemes/fh-ope']='fh-ope'
+PROJECTS['ore-schemes/cryptdb-ope']='bclo-ope'
 
 cd ..
 VERSION=$(<version.txt)
