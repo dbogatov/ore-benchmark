@@ -18,7 +18,6 @@ namespace Test.ORESchemes
 		[Fact]
 		public override void PrimitivesEvents()
 		{
-			_scheme.Init();
 			var key = _scheme.KeyGen();
 
 			Dictionary<Primitive, long> primitiveUsage = new Dictionary<Primitive, long>();

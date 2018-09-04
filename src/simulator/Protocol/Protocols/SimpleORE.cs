@@ -98,7 +98,6 @@ namespace Simulation.Protocol.SimpleORE
 		{
 			_scheme = scheme;
 
-			_scheme.Init();
 			_key = _scheme.KeyGen();
 
 			_scheme.OperationOcurred += new SchemeOperationEventHandler(OnOperationOccurred);

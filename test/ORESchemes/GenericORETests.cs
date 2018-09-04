@@ -27,11 +27,6 @@ namespace Test.ORESchemes
 			SetScheme();
 		}
 
-		~GenericORE()
-		{
-			_scheme.Destruct();
-		}
-
 		protected abstract void SetScheme();
 
 		protected virtual void SetParameters() { }
@@ -41,19 +36,6 @@ namespace Test.ORESchemes
 		/// before comparsions
 		/// </summary>
 		protected virtual C ConfigureCiphertext(C cipher, K key) => cipher;
-
-		[Fact]
-		public void Init()
-		{
-			_scheme.Init();
-		}
-
-		[Fact]
-		public void Destruct()
-		{
-			_scheme.Init();
-			_scheme.Destruct();
-		}
 
 		[Fact]
 		public virtual void KeyGen()
@@ -71,8 +53,6 @@ namespace Test.ORESchemes
 		/// </summary>
 		public void Correctness()
 		{
-			_scheme.Init();
-
 			var generator = new Random(456784);
 			var key = _scheme.KeyGen();
 
@@ -102,8 +82,6 @@ namespace Test.ORESchemes
 		[InlineData(-1, -2)]
 		public virtual void OrderCorrectness(int plaintextOne, int plaintextTwo)
 		{
-			_scheme.Init();
-
 			var key = _scheme.KeyGen();
 
 			for (int i = 0; i < _runs; i++)
@@ -137,7 +115,6 @@ namespace Test.ORESchemes
 
 			_scheme.OperationOcurred += new SchemeOperationEventHandler(op => actual[op]++);
 
-			_scheme.Init();
 			var key = _scheme.KeyGen();
 
 			var ciphertexts =
@@ -158,13 +135,9 @@ namespace Test.ORESchemes
 				.Select(val => _scheme.Decrypt(val, key))
 				.ToList();
 
-			_scheme.Destruct();
-
 			var expected = _expectedEvents ?? new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
-				{ SchemeOperation.Init, new Tuple<int, int>(1, 1)} ,
 				{ SchemeOperation.KeyGen, new Tuple<int, int>(1, 1) },
-				{ SchemeOperation.Destruct, new Tuple<int, int>(1, 1) },
 				{ SchemeOperation.Encrypt, new Tuple<int, int>(10, 20) },
 				{ SchemeOperation.Decrypt, new Tuple<int, int>(10, 15) },
 				{ SchemeOperation.Comparison, new Tuple<int, int>(9 * 5, 9 * 5 * 4) },
@@ -179,7 +152,6 @@ namespace Test.ORESchemes
 		[Fact]
 		public void MinMax()
 		{
-			_scheme.Init();
 			var key = _scheme.KeyGen();
 
 			Assert.Equal(
@@ -218,7 +190,6 @@ namespace Test.ORESchemes
 		[Fact]
 		public virtual void PrimitivesEvents()
 		{
-			_scheme.Init();
 			var key = _scheme.KeyGen();
 
 			Dictionary<Primitive, long> primitiveUsage = new Dictionary<Primitive, long>();

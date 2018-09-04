@@ -21,8 +21,6 @@ namespace Test.ORESchemes
 				_entropy
 			);
 
-			scheme.Init();
-
 			BytesKey key = scheme.KeyGen();
 
 			Assert.Throws<ArgumentException>(
@@ -58,8 +56,6 @@ namespace Test.ORESchemes
 				_entropy
 			);
 
-			scheme.Init();
-
 			BytesKey key = scheme.KeyGen();
 
 			for (int i = 0; i < _runs * 100; i++)
@@ -87,8 +83,6 @@ namespace Test.ORESchemes
 				Convert.ToInt64(Int32.MaxValue) * 100000,
 				entropy
 			);
-
-			scheme.Init();
 
 			BytesKey key = scheme.KeyGen();
 
@@ -141,8 +135,6 @@ namespace Test.ORESchemes
 		[Fact]
 		public void MalformedCiphertext()
 		{
-			_scheme.Init();
-
 			BytesKey key = _scheme.KeyGen();
 
 			OPECipher from = new OPECipher(0);
