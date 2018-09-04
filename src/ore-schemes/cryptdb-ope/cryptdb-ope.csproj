@@ -3,7 +3,6 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<PackageId>bclo-ope</PackageId>
-		<Version>1.2.3</Version>
 		<Authors>Dmytro Bogatov</Authors>
 		<Company>Boston University</Company>
 		<Title>BCLO (CryptDB) OPE</Title>

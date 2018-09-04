@@ -73,6 +73,9 @@ namespace ORESchemes.Shared
 		public BytesKey(byte[] value) => this.value = value;
 
 		public int GetSize() => value.Length * sizeof(byte) * 8;
+
+		public static implicit operator byte[](BytesKey k) => k.value;
+		public static implicit operator BytesKey(byte[] v) => new BytesKey(v);
 	}
 
 
