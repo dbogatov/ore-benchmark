@@ -29,8 +29,7 @@ namespace Test.BPlusTree
 			_max = max;
 
 			_scheme = scheme;
-
-			_scheme.Init();
+			
 			_key = scheme.KeyGen();
 		}
 

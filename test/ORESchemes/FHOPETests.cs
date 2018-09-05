@@ -49,9 +49,7 @@ namespace Test.ORESchemes
 
 			_expectedEvents = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
-				{ SchemeOperation.Init, new Tuple<int, int>(1, 1)} ,
 				{ SchemeOperation.KeyGen, new Tuple<int, int>(1, 1) },
-				{ SchemeOperation.Destruct, new Tuple<int, int>(1, 1) },
 				{ SchemeOperation.Encrypt, new Tuple<int, int>(10, 15) },
 				{ SchemeOperation.Decrypt, new Tuple<int, int>(10, 100) },
 				{ SchemeOperation.Comparison, new Tuple<int, int>(9 * 5, 9 * 5 * 4) },
@@ -73,7 +71,6 @@ namespace Test.ORESchemes
 		[Fact]
 		public override void KeyGen()
 		{
-			_scheme.Init();
 			var key = _scheme.KeyGen();
 
 			Assert.NotNull(key);
@@ -109,8 +106,6 @@ namespace Test.ORESchemes
 		public void FHOPEOrderCorrectness(int plaintextOne, int plaintextTwo, bool configureFirst)
 		{
 			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
-
-			scheme.Init();
 
 			var key = scheme.KeyGen();
 

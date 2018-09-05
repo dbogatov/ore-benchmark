@@ -18,7 +18,7 @@ namespace ORESchemes.Shared
 
 	public enum SchemeOperation
 	{
-		Init, Destruct, KeyGen, Encrypt, Decrypt, Comparison
+		KeyGen, Encrypt, Decrypt, Comparison
 	}
 
 	public delegate void SchemeOperationEventHandler(SchemeOperation operation);
@@ -73,6 +73,9 @@ namespace ORESchemes.Shared
 		public BytesKey(byte[] value) => this.value = value;
 
 		public int GetSize() => value.Length * sizeof(byte) * 8;
+
+		public static implicit operator byte[](BytesKey k) => k.value;
+		public static implicit operator BytesKey(byte[] v) => new BytesKey(v);
 	}
 
 
@@ -102,19 +105,6 @@ namespace ORESchemes.Shared
 		where C : IGetSize
 		where K : IGetSize
 	{
-		/// <summary>
-		/// Performs some work on initializing the scheme
-		/// e.g. sets up some internal data, sample distributions, generates 
-		/// internal keys
-		/// </summary>
-		/// <returns>Self. Syntactic sugar to allow chaining.</returns>
-		void Init();
-
-		/// <summary>
-		/// Releases all resources created and managed by the scheme
-		/// </summary>
-		void Destruct();
-
 		/// <summary>
 		/// Randomized routine that generates a valid encryption key
 		/// </summary>
@@ -251,22 +241,6 @@ namespace ORESchemes.Shared
 		public abstract int Decrypt(C ciphertext, K key);
 
 		public abstract C Encrypt(int plaintext, K key);
-
-		public virtual void Destruct()
-		{
-			OnOperation(SchemeOperation.Destruct);
-
-			PrimitiveUsed = null;
-			OperationOcurred = null;
-
-			return;
-		}
-		public virtual void Init()
-		{
-			OnOperation(SchemeOperation.Init);
-
-			return;
-		}
 
 		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
 		{

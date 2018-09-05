@@ -40,21 +40,20 @@ fi
 declare -A PROJECTS
 PROJECTS['ore-schemes/shared']='ore-benchamrk.shared'
 PROJECTS['b-plus-tree']='b-plus-tree'
+PROJECTS['ore-schemes/practical-ore']='clww-ore'
+PROJECTS['ore-schemes/lewi-ore']='lewi-wu-ore'
+PROJECTS['ore-schemes/fh-ope']='fh-ope'
+PROJECTS['ore-schemes/cryptdb-ope']='bclo-ope'
 
 cd ..
 VERSION=$(<version.txt)
 
 if [ "$BUILD" == true ]
 then
-
-	# Update all versions
-	sed -i -e "s#<Version>.*</Version>#<Version>$VERSION</Version>#g" ./src/**/*.csproj && rm -f ./src/**/*.csproj-e
-	sed -i -e "s#<Version>.*</Version>#<Version>$VERSION</Version>#g" ./src/ore-schemes/**/*.csproj && rm -f ./src/ore-schemes/**/*.csproj-e
-
 	# Build packages
 	for project in "${!PROJECTS[@]}"
 	do
-		dotnet pack ./src/$project/ -o ./dist/
+		dotnet pack ./src/$project/ /p:PackageVersion=$VERSION -o ./dist/
 	done
 fi
 
