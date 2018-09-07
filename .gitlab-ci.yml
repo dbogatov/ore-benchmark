@@ -3,18 +3,6 @@ stages:
 - test
 - release
 
-generate-data:
-  image: dbogatov/docker-images:alpine-extras-latest
-  stage: build
-  script:
-  - ./tools/data-gen/tpc-h.sh -s 0.01
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - ./tools/data-gen/tpc-h/*.tbl
-  tags:
-  - docker
-
 build-app:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build

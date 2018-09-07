@@ -10,12 +10,9 @@ CWD=$(pwd)
 usage() { echo "Usage: $0 [-d <number> -q <number> -s <number> -n]" 1>&2; exit 1; }
 
 SEED=$RANDOM
-SCALE=0.01
 QMAX=100
 DMAX=100
 BUILD=true
-
-DATASET="./tpc-h/part.tbl"
 
 while getopts "d:q:s:n" o; do
 	case "${o}" in
@@ -47,12 +44,18 @@ mkdir -p ../../data
 
 set -x # echo ON
 
-dotnet ./dist/data-gen.dll --data-only --dataset $DATASET --data $DMAX > ../../data/dataset.txt
-
-ranges=( 0.5 1 2 3 )
-for range in "${ranges[@]}"
+types=( "uniform" "normal" "zipf" "employees" "forest" )
+for type in "${types[@]}"
 do
-	dotnet ./dist/data-gen.dll --queries-only --dataset $DATASET --queries $QMAX --range-percent $range --seed $SEED > ../../data/range-$range-queries.txt
+	mkdir -p ../../data/$type
+	dotnet ./dist/data-gen.dll \
+		--type $type \
+		--output ../../data/$type \
+		--data-size $DMAX \
+		--query-size $QMAX \
+		--seed $SEED \
+		--employees-url "https://vadim-dolores-space.nyc3.digitaloceanspaces.com/public/state-of-california-2017.csv" \
+		--forest-url "https://vadim-dolores-space.nyc3.digitaloceanspaces.com/public/covtype.data"
 done
 
 echo "Done!"

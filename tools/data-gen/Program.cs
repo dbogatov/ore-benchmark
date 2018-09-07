@@ -107,10 +107,6 @@ namespace DataGen
 		[Option("--query-size <number>", Description = "Size of the query set to generate. Default 1000.")]
 		public int QuerySize { get; } = 1000;
 
-		[Range(0.5, 80)]
-		[Option("--query-range <number>", Description = "Generate query ranges of lengths equal to this percent of data range. Default 0.5.")]
-		public double QueryRange { get; } = 0.5;
-
 		[Option("--seed <number>", Description = "Random seed to use for generation. Default random (depends on system time).")]
 		public int Seed { get; } = new Random().Next();
 
@@ -227,7 +223,7 @@ namespace DataGen
 					throw new ArgumentException();
 			}
 
-			data.Shuffle();
+			data.Shuffle(generator.Next());
 
 			using (StreamWriter sw = new StreamWriter(Path.Combine(Output, "data.txt")))
 			{
@@ -240,21 +236,24 @@ namespace DataGen
 			int min = data.Min();
 			int max = data.Max();
 
-			var range = Math.Ceiling((max - min) * QueryRange / 100);
-			var sampler = new DiscreteUniform(min, max, generator);
-
-			using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"queries-{QueryRange.ToString("#.#")}.txt")))
+			foreach (var percent in new List<double> { 0.5, 1, 2, 3 })
 			{
-				for (int i = 0; i < QuerySize; i++)
-				{
-					var first = sampler.Sample();
+				var range = Math.Ceiling((max - min) * percent / 100);
+				var sampler = new DiscreteUniform(min, max, generator);
 
-					if (first >= max - range)
+				using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"queries-{percent.ToString("#.#")}.txt")))
+				{
+					for (int i = 0; i < QuerySize; i++)
 					{
-						i--;
-						continue;
+						var first = sampler.Sample();
+
+						if (first >= max - range)
+						{
+							i--;
+							continue;
+						}
+						await sw.WriteLineAsync($"{first},{first + range}");
 					}
-					await sw.WriteLineAsync($"{first},{first + range}");
 				}
 			}
 
