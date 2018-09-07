@@ -129,7 +129,6 @@ system-protocol-tests:
       - ./results/protocol.json
   dependencies:
   - build-app
-  - generate-data
   tags:
   - docker
 
@@ -147,7 +146,6 @@ system-schemes-tests:
       - ./results/schemes.json
   dependencies:
   - build-app
-  - generate-data
   tags:
   - docker
 

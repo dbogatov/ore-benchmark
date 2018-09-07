@@ -42,9 +42,15 @@ fi
 
 mkdir -p ../../data
 
+if [ "$BUILD" == true ];
+then
+	types=( "uniform" "normal" "zipf" "employees" "forest" )
+else
+	types=( "uniform" )
+fi
+
 set -x # echo ON
 
-types=( "uniform" "normal" "zipf" "employees" "forest" )
 for type in "${types[@]}"
 do
 	mkdir -p ../../data/$type

@@ -8,6 +8,7 @@ using MathNet.Numerics.Distributions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FileHelpers;
+using System.Diagnostics;
 
 namespace DataGen
 {
@@ -238,8 +239,19 @@ namespace DataGen
 
 			foreach (var percent in new List<double> { 0.5, 1, 2, 3 })
 			{
-				var range = Math.Ceiling((max - min) * percent / 100);
+				uint diff;
+				if (min < 0)
+				{
+					diff = (uint)max + (uint)-min;
+				}
+				else
+				{
+					diff = (uint)max - (uint)min;
+				}
+				var range = Math.Ceiling((diff / 100) * percent);
 				var sampler = new DiscreteUniform(min, max, generator);
+
+				Debug.Assert(range > 0);
 
 				using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"queries-{percent.ToString("#.#")}.txt")))
 				{
