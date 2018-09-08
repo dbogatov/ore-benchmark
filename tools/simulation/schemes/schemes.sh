@@ -31,6 +31,7 @@ set -x # echo ON
 
 for scheme in "${schemes[@]}"
 do
+	echo $scheme
     dotnet ./dist/schemes.dll \
 		--data-dir ../../../data \
 		--ore-scheme $scheme \
