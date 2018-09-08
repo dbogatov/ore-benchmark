@@ -41,7 +41,7 @@ namespace ORESchemes.Shared
 		public OPECipher(long value) => this.value = value;
 		public OPECipher() { }
 
-		public int GetSize() => sizeof(long);
+		public int GetSize() => sizeof(long) * 8;
 
 		public static bool operator <(OPECipher a, OPECipher b) => a.value < b.value;
 		public static bool operator >(OPECipher a, OPECipher b) => a.value > b.value;

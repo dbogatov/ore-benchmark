@@ -11,7 +11,7 @@ namespace Test.ORESchemes
 
 		protected override void SetParameters() => n = 16;
 
-		public override int CipherSize() => 2320;
+		public override int CipherSize() => 2816;
 	}
 
 	[Trait("Category", "Integration")]

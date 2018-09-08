@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
 
@@ -42,6 +43,9 @@ namespace Simulation.PureSchemes
 			routine(ciphers, _dataset, _scheme, _key);
 
 			TimerHandler(stop: true);
+
+			RecordMaxCipherStateSize(isState: true, _key.GetSize());
+			RecordMaxCipherStateSize(isState: false, ciphers.Max(c => c.GetSize()));
 
 			var report = (Report.SubReport)StageReport();
 
@@ -139,7 +143,9 @@ namespace Simulation.PureSchemes
 			{
 				ObservedTime = _totalTime,
 				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
-				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage)
+				PurePrimitiveOperations = CloneDictionary(_purePrimitiveUsage),
+				MaxCipherSize = _maxCipherSize,
+				MaxStateSize = _maxStateSize
 			};
 		}
 	}

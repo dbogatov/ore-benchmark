@@ -36,7 +36,7 @@ namespace ORESchemes.LewiORE
 		public Right right;
 
 		public int GetSize() =>
-			(left != null ? left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(byte)) : 0) +
+			(left != null ? left.pairs.Sum(p => p.Item1.Length * sizeof(byte) * 8 + sizeof(uint) * 8) : 0) +
 			(right != null ?
 				right.nonce.Length * sizeof(byte) * 8 +
 				right.shorts.Sum(s => s.Count) * 2

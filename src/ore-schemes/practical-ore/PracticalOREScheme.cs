@@ -16,13 +16,11 @@ namespace ORESchemes.PracticalORE
 
 	public class PracticalOREScheme : AbsOREScheme<Ciphertext, BytesKey>
 	{
-		private readonly int M = 4;
+		private readonly int M = 3;
 		private readonly IPRF F;
 
 		public PracticalOREScheme(byte[] seed = null) : base(seed)
 		{
-			M = Convert.ToInt32(G.Next(4, Int32.MaxValue));
-
 			F = new PRFFactory().GetPrimitive();
 
 			SubscribePrimitive(F);

@@ -102,6 +102,29 @@ namespace Test.ORESchemes.Primitives.PRP
 			Assert.NotNull(prp);
 			Assert.IsType<TablePRP>(prp);
 		}
+
+		[Fact]
+		public override void Events()
+		{
+			EventsTestsShared.Events<IPRP>(
+				_prp,
+				(P) =>
+				{
+					for (int i = 0; i < 8; i++)
+					{
+						var input = new BitArray(new int[] { i });
+						P.PRP(input, _key, 3);
+						P.InversePRP(input, _key, 3);
+					}
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 1 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.PRP, 1 }
+				}
+			);
+		}
 	}
 
 	[Trait("Category", "Unit")]
@@ -153,7 +176,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		public AbsSimplifiedPRPChecks(ISimplifiedPRP prp) : base(new SimplifiedPRPWrapper(prp)) { }
 
 		[Fact]
-		public void Events()
+		public virtual void Events()
 		{
 			EventsTestsShared.Events<IPRP>(
 				_prp,

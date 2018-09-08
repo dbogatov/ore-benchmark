@@ -75,6 +75,12 @@ namespace Simulation
 			perStage.TimerHandler(stop);
 		}
 
+		public void RecordMaxCipherStateSize(bool isState, long size)
+		{
+			perQuery.RecordMaxCipherStateSize(isState, size);
+			perStage.RecordMaxCipherStateSize(isState, size);
+		}
+
 		/// <summary>
 		/// Runs simulation for the inputs and options provided through
 		/// the constructor.
@@ -108,6 +114,10 @@ namespace Simulation
 		// Timer structures
 		protected TimeSpan _totalTime = TimeSpan.Zero;
 		protected Stopwatch _timer = new Stopwatch();
+
+		// Cipher and state size structures
+		protected long _maxCipherSize = 0;
+		protected long _maxStateSize = 0;
 
 		public AbsTracker() => ClearTrackers();
 
@@ -146,6 +156,9 @@ namespace Simulation
 
 			_totalTime = TimeSpan.Zero;
 			_timer = new Stopwatch();
+
+			_maxCipherSize = 0;
+			_maxStateSize = 0;
 		}
 
 		/// <summary>
@@ -251,6 +264,18 @@ namespace Simulation
 				{
 					_timer.Start();
 				}
+			}
+		}
+
+		public void RecordMaxCipherStateSize(bool isState, long size)
+		{
+			if (isState)
+			{
+				_maxStateSize = Math.Max(_maxStateSize, size);
+			}
+			else
+			{
+				_maxCipherSize = Math.Max(_maxCipherSize, size);
 			}
 		}
 
