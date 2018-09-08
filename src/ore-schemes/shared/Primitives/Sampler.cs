@@ -213,7 +213,13 @@ namespace ORESchemes.Shared.Primitives.Sampler
 			uint[] deadlockCounters = new uint[3] { 0, 0, 0 };
 			ulong? deadlockCheckResult = null;
 
-			Func<ulong> fallbackToUniform = () => Uniform((samples + successes > population ? samples + successes - population : 0), Math.Min(successes, samples));
+			// Dirty fallback
+			Func<ulong> fallbackToUniform = () =>
+			{
+				ulong from = (samples + successes > population ? samples + successes - population : 0);
+				ulong to = Math.Min(successes, samples);
+				return (BitConverter.ToUInt64(G.GetBytes(sizeof(ulong)), 0) % (to - from)) + from;
+			};
 			Func<uint, ulong?> checkDeadlock = (labelId) =>
 			{
 				deadlockCounters[labelId]++;

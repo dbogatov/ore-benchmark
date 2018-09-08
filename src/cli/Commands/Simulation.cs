@@ -53,21 +53,24 @@ namespace CLI
 		private static string Version() => CLI.Version.Value();
 
 		[Option("--verbose|-v", "If present, report summary will be output instead of JSON.", CommandOptionType.NoValue)]
-		public bool Verbose { get; } = false;
+		public bool Verbose { get; set; } = false;
 
 		[Option("--extended|-V", "If present, JSON will contain per-query subreports. Overrides -v flag. WARNING: use with care, files can easily grow gigabytes.", CommandOptionType.NoValue)]
-		public bool Extended { get; } = false;
+		public bool Extended { get; set; } = false;
+
+		[Option("--for-script|-S", "If present, nothing will be put to console. Use when running the simulation from within another program.", CommandOptionType.NoValue)]
+		public bool ForScript { get; set; } = false;
 
 		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
-		public int Seed { get; } = new Random().Next();
+		public int Seed { get; set; } = new Random().Next();
 
-		[Option("--ore-scheme <enum>", Description = "ORE scheme to use (e.g. NoEncryption)")]
-		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
+		[Option("--ore-scheme <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
+		public ORESchemes.Shared.ORESchemes OREScheme { get; set; } = ORESchemes.Shared.ORESchemes.NoEncryption;
 
 		[Required]
 		[FileExists]
 		[Option("--dataset <FILE>", Description = "Required. Path to dataset file.")]
-		public string Dataset { get; }
+		public string Dataset { get; set; }
 
 		protected override int OnExecute(CommandLineApplication app)
 		{

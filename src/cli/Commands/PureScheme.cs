@@ -24,9 +24,16 @@ namespace CLI
 		[Option("--fhope-p <number>", Description = "For imperfect FH-OPE, probability to generate new ciphertext. 0 means using perfect FH-OPE. Must be in range [0, 100]. Default 0.")]
 		public int FHOPEP { get; } = 0;
 
-		private SimulatorCommand Parent { get; set; }
+		public SimulatorCommand Parent { get; set; }
 
 		protected override int OnExecute(CommandLineApplication app)
+		{
+			Simulate();
+
+			return 0;
+		}
+
+		public AbsReport<Stages> Simulate()
 		{
 			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
 			PutToConsole($"Inputs: dataset={Parent.Dataset}, scheme={Parent.OREScheme}", Parent.Verbose);
@@ -98,23 +105,27 @@ namespace CLI
 				report.Stages.Values.ToList().ForEach(s => s.PerQuerySubreports.Clear());
 			}
 
-			System.Console.WriteLine(
-				Parent.Verbose && !Parent.Extended ?
-				report.ToString() : 
-				JsonReport(
-					report.Stages,
-					new {
-						CryptDBRange = CryptDBRange,
-						FHOPEP = FHOPEP,
-						LewiOREN = LewiOREN,
-						Dataset = Parent.Dataset,
-						OREScheme = Parent.OREScheme,
-						Seed = Parent.Seed
-					}
-				)
-			);
+			if (!Parent.ForScript)
+			{
+				System.Console.WriteLine(
+					Parent.Verbose && !Parent.Extended ?
+					report.ToString() :
+					JsonReport(
+						report.Stages,
+						new
+						{
+							CryptDBRange = CryptDBRange,
+							FHOPEP = FHOPEP,
+							LewiOREN = LewiOREN,
+							Dataset = Parent.Dataset,
+							OREScheme = Parent.OREScheme,
+							Seed = Parent.Seed
+						}
+					)
+				);
+			}
 
-			return 0;
+			return report;
 		}
 	}
 }
