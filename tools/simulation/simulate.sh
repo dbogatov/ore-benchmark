@@ -35,10 +35,12 @@ while getopts "psbrS" o; do
 			s3cmd -c config put --recursive ./../../src/benchmark/BenchmarkDotNet.Artifacts/* s3://$SPACE/public/ore-sim-results/primitives/$(date +"%Y-%m-%d_%H-%M-%S")/
 			;;
 		S)
-			mkdir -p ./../../results/
-			./schemes/schemes.sh | tee ./../../results/schemes-sim.script
+			rm -rf ./../../results/schemes-sim
+			mkdir -p ./../../results/schemes-sim/
+			./schemes/schemes.sh 2>&1 | tee ./../../results/schemes-sim/out.script
+			cp -r ./../../data ./../../results/schemes-sim/
 			SIMULATION=true
-			s3cmd -c config put ./../../results/schemes-sim.script s3://$SPACE/public/ore-sim-results/schemes-sim/$(date +"%Y-%m-%d_%H-%M-%S").script
+			s3cmd -c config put --recursive ./../../results/schemes-sim/* s3://$SPACE/public/ore-sim-results/schemes-sim/$(date +"%Y-%m-%d_%H-%M-%S")/
 			;;
 		*)
 			usage

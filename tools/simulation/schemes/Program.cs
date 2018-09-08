@@ -27,8 +27,8 @@ namespace Schemes
 		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
 		public int Seed { get; } = new Random().Next();
 
-		[Option("--runs <number>", Description = "Number of runs to perform. Default 10.")]
-		public int Runs { get; } = 10;
+		[Option("--runs <number>", Description = "Number of runs to perform. Default 100.")]
+		public int Runs { get; } = 100;
 
 		[Option("--ore-scheme <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
 		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
@@ -120,7 +120,7 @@ namespace Schemes
 			encryptReport.SchemeOperations = encryptActions;
 			compareReport.SchemeOperations = compareActions;
 
-			Console.WriteLine("\tReport");
+			Console.WriteLine($"Report ({Runs} runs)");
 			Console.WriteLine("\tEncryption: \n" + encryptReport);
 			Console.WriteLine("\tComparison: \n" + compareReport);
 
