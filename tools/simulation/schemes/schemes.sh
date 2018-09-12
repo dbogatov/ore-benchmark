@@ -11,7 +11,7 @@ usage() { echo "Usage: $0 [-s <number>]" 1>&2; exit 1; }
 
 SEED=$RANDOM
 
-while getopts "d:q:s:n" o; do
+while getopts "s:" o; do
     case "${o}" in
         s)
             SEED=${OPTARG}

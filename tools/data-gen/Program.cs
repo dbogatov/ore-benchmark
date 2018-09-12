@@ -82,7 +82,7 @@ namespace DataGen
 		[Option("--type <number>", Description = "Type / distribution of data to generate.")]
 		public Type Type { get; }
 
-		[Range(10, 1000000)]
+		[Range(10, 247000)] // CA employees data set
 		[Option("--data-size <number>", Description = "Size of the dataset to generate. Default 1000.")]
 		public int DataSize { get; } = 1000;
 
@@ -153,11 +153,18 @@ namespace DataGen
 					}
 					using (var client = new HttpClient())
 					{
+						Log("Downloading file...");
+
 						var responseString = await client.GetStringAsync(EmployeesUrl);
 
 						var set = new HashSet<int>();
 						var tmpList = new List<int>();
+
+						Log("Parsing file...");
+
 						var engine = new FileHelperAsyncEngine<Employee>();
+
+						Log("Prcessing file...");
 
 						using (engine.BeginReadString(responseString))
 						{
@@ -166,6 +173,8 @@ namespace DataGen
 								tmpList.Add((int)Math.Round(employee.TotalPayBenefits));
 							}
 						}
+
+						Log("Generating set of random numbers...");
 
 						var count = tmpList.Count();
 						for (int i = 0; i < DataSize; i++)
@@ -176,6 +185,8 @@ namespace DataGen
 								continue;
 							}
 						}
+
+						Log("Prcessing specific data points...");
 
 						foreach (var index in set)
 						{
@@ -190,11 +201,18 @@ namespace DataGen
 					}
 					using (var client = new HttpClient())
 					{
+						Log("Downloading file...");
+
 						var responseString = await client.GetStringAsync(ForestUrl);
 
 						var set = new HashSet<int>();
 						var tmpList = new List<int>();
+
+						Log("Parsing file...");
+
 						var engine = new FileHelperAsyncEngine<Forest>();
+
+						Log("Prcessing file...");
 
 						using (engine.BeginReadString(responseString))
 						{
@@ -203,6 +221,8 @@ namespace DataGen
 								tmpList.Add(forest.Elevation);
 							}
 						}
+
+						Log("Generating set of random numbers...");
 
 						var count = tmpList.Count();
 						for (int i = 0; i < DataSize; i++)
@@ -213,6 +233,8 @@ namespace DataGen
 								continue;
 							}
 						}
+
+						Log("Prcessing specific data points...");
 
 						foreach (var index in set)
 						{
@@ -270,6 +292,14 @@ namespace DataGen
 			}
 
 			return 0;
+		}
+
+		private void Log(string message)
+		{
+			if (DataSize > 10000)
+			{
+				Console.WriteLine(message);
+			}
 		}
 	}
 
