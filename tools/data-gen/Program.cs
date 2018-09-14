@@ -104,7 +104,7 @@ namespace DataGen
 		[Option("--forest-url <string>", Description = "If Forest type is requested, this is a CSV file's URL.")]
 		public string ForestUrl { get; } // https://vadim-dolores-space.nyc3.digitaloceanspaces.com/public/covtype.data
 
-		[Range(10, 1000000)]
+		[Range(1, 1000000)]
 		[Option("--query-size <number>", Description = "Size of the query set to generate. Default 1000.")]
 		public int QuerySize { get; } = 1000;
 
@@ -278,6 +278,21 @@ namespace DataGen
 				using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"queries-{percent.ToString("#.#")}.txt")))
 				{
 					for (int i = 0; i < QuerySize; i++)
+					{
+						var first = sampler.Sample();
+
+						if (first >= max - range)
+						{
+							i--;
+							continue;
+						}
+						await sw.WriteLineAsync($"{first},{first + range}");
+					}
+				}
+
+				using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"mini-queries-{percent.ToString("#.#")}.txt")))
+				{
+					for (int i = 0; i < 10; i++)
 					{
 						var first = sampler.Sample();
 

@@ -42,7 +42,8 @@ protocols[fhope]=512
 protocols[lewiore]=11 
 protocols[adamore]=8 
 protocols[florian]=256 
-protocols[pope]=256 
+protocols[pope]=256
+protocols[popecold]=256 
 protocols[noencryption]=1024
 
 mkdir -p ../../../results/protocols
@@ -53,13 +54,22 @@ dotnet build -c release ../../../src/cli/ -o dist/
 
 for protocol in "${!protocols[@]}"
 do
+	TOEXECUTE=$protocol
+
+	QPREFIX=""
+	if [ "$protocol" == "popecold" ]
+	then
+		TOEXECUTE="pope"
+		QPREFIX="mini-"
+	fi
+
 	echo "Current timestamp: $(date)"
 	dotnet ../../../src/cli/dist/cli.dll \
 		--dataset ../../../data/$DATA/data.txt \
-		--ore-scheme $protocol \
+		--ore-scheme $TOEXECUTE \
 		--seed $SEED \
 		protocol \
-		--queries ../../../data/$DATA/queries-$QUERIES.txt \
+		--queries ../../../data/$DATA/${QPREFIX}queries-$QUERIES.txt \
 		--cache-size $CACHE \
 		--b-plus-tree-branches ${protocols[$protocol]} > ../../../results/protocols/$protocol-$DATA-$QUERIES-$CACHE-$SEED.json
 done

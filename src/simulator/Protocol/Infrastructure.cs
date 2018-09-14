@@ -112,7 +112,7 @@ namespace Simulation.Protocol
 	{
 		public QueryResponseMessage(List<string> content) : base(content) { }
 
-		public override int GetSize() => _content.Count * sizeof(byte) * 8;
+		public override int GetSize() => 0; // do not include response size
 	}
 
 	public class InsertMessage<C> : SizeableMessage<EncryptedRecord<C>> where C : IGetSize

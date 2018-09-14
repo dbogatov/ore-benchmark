@@ -32,8 +32,6 @@ namespace BPlusTree
 
 			public override bool TryGet(C key, List<Data> values, Func<T, bool> predicate = null, bool checkValue = true)
 			{
-				_options.OnVisit(this.GetHashCode());
-
 				bool found = true;
 
 				if (checkValue)
@@ -61,7 +59,7 @@ namespace BPlusTree
 
 			public override InsertInfo Insert(C key, T value)
 			{
-				_options.OnVisit(this.GetHashCode());
+				// _options.OnVisit(this.GetHashCode());
 
 				bool updated = this.values.Count > 0;
 				this.values.Add(new Data(value));
@@ -75,7 +73,7 @@ namespace BPlusTree
 
 			public override DeleteInfo Delete(C key, Func<T, bool> predicate = null)
 			{
-				_options.OnVisit(this.GetHashCode());
+				// _options.OnVisit(this.GetHashCode());
 
 				if (_options.Comparator.IsEqual(this.key, key))
 				{
@@ -113,7 +111,7 @@ namespace BPlusTree
 
 			public override C LargestIndex()
 			{
-				_options.OnVisit(this.GetHashCode());
+				// _options.OnVisit(this.GetHashCode());
 
 				return this.key;
 			}
