@@ -44,21 +44,23 @@ protocols[adamore]=8
 protocols[florian]=256 
 protocols[pope]=256 
 
+ mkdir -p ../../../results/protocols
+
 set -x # echo ON
 
 dotnet build -c release ../../../src/cli/ -o dist/
 
 for protocol in "${!protocols[@]}"
 do
+	echo "Current timestamp: $(date)"
 	dotnet ../../../src/cli/dist/cli.dll \
 		--dataset ../../../data/$DATA/data.txt \
 		--ore-scheme $protocol \
 		--seed $SEED \
-		-v \
 		protocol \
 		--queries ../../../data/$DATA/queries-$QUERIES.txt \
 		--cache-size $CACHE \
-		--b-plus-tree-branches ${protocols[$protocol]}
+		--b-plus-tree-branches ${protocols[$protocol]} > ../../../results/protocols/$protocol-$DATA-$QUERIES-$CACHE-$SEED.json
 done
 
 echo "Done!"

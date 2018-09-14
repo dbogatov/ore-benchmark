@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Text.RegularExpressions;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 
@@ -40,9 +39,39 @@ namespace Schemes
 				case Type.Schemes:
 					Schemes(data);
 					break;
+				case Type.Primitives:
+					Primitives(data);
+					break;
 			}
 
 			return 0;
+		}
+
+		private void Primitives(dynamic data)
+		{
+			List<ValueTuple<string, string>> primitives = new List<ValueTuple<string, string>> {
+				( "SymmetricEnc", "size=128" ),
+				( "PRGCachedNext", string.Empty ),
+				( "PRF", "size=128" ),
+				( "Hash", "size=128" ),
+				( "PRP", "size=4" ),
+				( "SamplerCachedHG", "population=184467440737095516" )
+			};
+
+			foreach (var primitive in primitives)
+			{
+				foreach (dynamic benchmark in data.Benchmarks)
+				{
+					if (
+						benchmark.Method == primitive.Item1 && 
+						(primitive.Item2 == string.Empty ? true : ((string)(benchmark.Parameters)).Contains(primitive.Item2)) &&
+						!((string)(benchmark.Parameters)).Contains("4096")
+					)
+					{
+						Console.WriteLine(Math.Round((decimal)benchmark.Statistics.Mean));
+					}
+				}
+			}
 		}
 
 		private void Schemes(dynamic data)
@@ -71,7 +100,6 @@ namespace Schemes
 					}
 				}
 			}
-
 		}
 	}
 }
