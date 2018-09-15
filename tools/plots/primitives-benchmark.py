@@ -16,7 +16,7 @@ with open("./data/primitives-benchmark.txt") as fp:
         data.append(int(line.strip()))
         line = fp.readline()
 
-data = ( 8100, 3541, 2993, 1063, 11696, 16751 )
+# data = ( 8100, 3541, 2993, 1063, 11696, 16751 )
 
 ind = np.arange(N)
 width = 0.35

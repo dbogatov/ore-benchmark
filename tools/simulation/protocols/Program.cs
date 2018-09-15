@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 
@@ -42,12 +44,16 @@ namespace Schemes
 		/// <summary>
 		/// Entry point
 		/// </summary>
-		public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+		public static async Task<int> Main(string[] args) => await CommandLineApplication.ExecuteAsync<Program>(args);
 
 		[Required]
 		[DirectoryExists]
 		[Option("--data <DIR>", Description = "Required. Path to the directory with protocol output files in JSON.")]
 		public string ReportDir { get; }
+
+		[DirectoryExists]
+		[Option("--output <DIR>", Description = "Path to the output directory for plots type.")]
+		public string Output { get; }
 
 		[Required]
 		[Option("--tail <string>", Description = "Required. Tail (after protocol and distro) part of file names {protocol}-{distro}-{query-range}-{cache}-{seed}.json.")]
@@ -57,7 +63,7 @@ namespace Schemes
 		[Option("--type <enum>", Description = "Required. Type of output - table or plots.")]
 		public Type Type { get; }
 
-		private int OnExecute()
+		private async Task<int> OnExecute()
 		{
 			AllReports reports = new AllReports();
 
@@ -94,7 +100,11 @@ namespace Schemes
 					Table(reports);
 					break;
 				case Type.Plots:
-					Plots(reports);
+					if (Output == null)
+					{
+						throw new ArgumentException("Output must be set.");
+					}
+					await PlotsAsync(reports);
 					break;
 			}
 
@@ -178,9 +188,38 @@ namespace Schemes
 			ProcessRow(reports.Reports["pope"]["employees"], @"POPE~\cite{pope} warm");
 		}
 
-		private void Plots(AllReports reports)
+		private async Task PlotsAsync(AllReports reports)
 		{
+			foreach (var value in new List<string> { "ios", "vol", "size" })
+			{
+				foreach (var stage in Enum.GetValues(typeof(Stage)).Cast<Stage>().OrderBy(c => c))
+				{
+					using (StreamWriter file = new StreamWriter(Path.Combine(Output, $"protocols-{stage.ToString().ToLower()[0]}{value}.txt")))
+					{
+						foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
+						{
+							foreach (var protocol in new List<string> { "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+							{
+								long result = 0;
+								switch (value)
+								{
+									case "ios":
+										result = reports.Reports[protocol][distribution].Stages[stage].IOs;
+										break;
+									case "vol":
+										result = reports.Reports[protocol][distribution].Stages[stage].CommunicationVolume;
+										break;
+									case "size":
+										result = reports.Reports[protocol][distribution].Stages[stage].CommunicationSize;
+										break;
+								}
 
+								await file.WriteLineAsync(result.ToString());
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

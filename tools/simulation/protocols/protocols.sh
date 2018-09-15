@@ -7,14 +7,15 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-usage() { echo "Usage: $0 [-s <number> -d <string> -q <string> -c <number>]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-s <number> -d <string> -q <string> -c <number> -n]" 1>&2; exit 1; }
 
 SEED=$RANDOM
 DATA=uniform
 QUERIES=1
 CACHE=128
+BUILD=true
 
-while getopts "s:d:q:c:" o; do
+while getopts "s:d:q:c:n" o; do
     case "${o}" in
         s)
 			SEED=${OPTARG}
@@ -28,6 +29,9 @@ while getopts "s:d:q:c:" o; do
 		c)
 			CACHE=${OPTARG}
         	;;
+		n)
+			BUILD=false
+			;;
         *)
             usage
         ;;
@@ -48,9 +52,12 @@ protocols[noencryption]=1024
 
 mkdir -p ../../../results/protocols
 
-set -x # echo ON
+if [ "$BUILD" == true ];
+then
+	dotnet build -c release ../../../src/cli/ -o dist/
+fi
 
-dotnet build -c release ../../../src/cli/ -o dist/
+set -x # echo ON
 
 for protocol in "${!protocols[@]}"
 do
