@@ -12,7 +12,7 @@ namespace Schemes
 {
 	enum Type
 	{
-		Table, Plots
+		Table, Plots, QuerySizes
 	}
 
 	public enum Stage
@@ -22,7 +22,7 @@ namespace Schemes
 
 	public class AllReports
 	{
-		public Dictionary<string, Dictionary<string, Report>> Reports = new Dictionary<string, Dictionary<string, Report>>();
+		public Dictionary<string, Dictionary<string, Dictionary<string, Report>>> Reports = new Dictionary<string, Dictionary<string, Dictionary<string, Report>>>();
 
 		public class Report
 		{
@@ -56,8 +56,14 @@ namespace Schemes
 		public string Output { get; }
 
 		[Required]
-		[Option("--tail <string>", Description = "Required. Tail (after protocol and distro) part of file names {protocol}-{distro}-{query-range}-{cache}-{seed}.json.")]
+		[Option("--tail <string>", Description = "Required. Tail (after protocol, distro and query-range) part of file names {protocol}-{distro}-{query-range}-{cache}-{seed}.json.")]
 		public string Tail { get; }
+
+		[Option("--query-range <string>", Description = "For types Table and Plots, query range for which simulation was run.")]
+		public string QueryRange { get; }
+
+		[Option("--distro <string>", Description = "Distribution for which simulation was run. Required for QuerySizes type.")]
+		public string Distro { get; }
 
 		[Required]
 		[Option("--type <enum>", Description = "Required. Type of output - table or plots.")]
@@ -65,32 +71,66 @@ namespace Schemes
 
 		private async Task<int> OnExecute()
 		{
+			switch (Type)
+			{
+				case Type.Table:
+					if (QueryRange == null)
+					{
+						throw new ArgumentException("QueryRange must be set.");
+					}
+					break;
+				case Type.Plots:
+					if (Output == null)
+					{
+						throw new ArgumentException("Output must be set.");
+					}
+					if (QueryRange == null)
+					{
+						throw new ArgumentException("QueryRange must be set.");
+					}
+					break;
+				case Type.QuerySizes:
+					if (Output == null)
+					{
+						throw new ArgumentException("Output must be set.");
+					}
+					if (Distro == null)
+					{
+						throw new ArgumentException("Distro must be set.");
+					}
+					break;
+			}
+
 			AllReports reports = new AllReports();
 
 			foreach (var protocol in new List<string> { "adamore", "cryptdb", "practicalore", "lewiore", "fhope", "florian", "pope", "noencryption", "popecold" })
 			{
-				reports.Reports.Add(protocol, new Dictionary<string, AllReports.Report>());
+				reports.Reports.Add(protocol, new Dictionary<string, Dictionary<string, AllReports.Report>>());
 
-				foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
+				foreach (var distribution in Type == Type.QuerySizes ? new List<string> { Distro } : new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
 				{
-					AllReports.Report report = new AllReports.Report();
+					reports.Reports[protocol].Add(distribution, new Dictionary<string, AllReports.Report>());
 
-					dynamic data = JsonConvert.DeserializeObject(File.ReadAllText(Path.Combine(ReportDir, $"{protocol}-{distribution}-{Tail}.json")));
-
-					foreach (var stage in Enum.GetValues(typeof(Stage)).Cast<Stage>())
+					foreach (var querySize in Type != Type.QuerySizes ? new List<string> { QueryRange } : new List<double> { 0.5, 1, 1.5, 2, 3 }.Select(s => s.ToString("#.#")))
 					{
-						long actions = data.Report[stage.ToString()].ActionsNumber;
+						AllReports.Report report = new AllReports.Report();
 
-						report.Stages.Add(stage, new AllReports.Report.Subreport
+						dynamic data = JsonConvert.DeserializeObject(File.ReadAllText(Path.Combine(ReportDir, $"{protocol}-{distribution}-{querySize}-{Tail}.json")));
+
+						foreach (var stage in Enum.GetValues(typeof(Stage)).Cast<Stage>())
 						{
+							long actions = data.Report[stage.ToString()].ActionsNumber;
 
-							IOs = (data.Report[stage.ToString()].IOs + actions - 1) / actions,
-							CommunicationVolume = (data.Report[stage.ToString()].MessagesSent + actions - 1) / actions,
-							CommunicationSize = (((data.Report[stage.ToString()].CommunicationVolume + actions - 1) / actions) + 7) / 8
-						});
+							report.Stages.Add(stage, new AllReports.Report.Subreport
+							{
+								IOs = (data.Report[stage.ToString()].IOs + actions - 1) / actions,
+								CommunicationVolume = (data.Report[stage.ToString()].MessagesSent + actions - 1) / actions,
+								CommunicationSize = (((data.Report[stage.ToString()].CommunicationVolume + actions - 1) / actions) + 7) / 8
+							});
+						}
+
+						reports.Reports[protocol][distribution].Add(querySize, report);
 					}
-
-					reports.Reports[protocol].Add(distribution, report);
 				}
 			}
 
@@ -100,11 +140,10 @@ namespace Schemes
 					Table(reports);
 					break;
 				case Type.Plots:
-					if (Output == null)
-					{
-						throw new ArgumentException("Output must be set.");
-					}
 					await PlotsAsync(reports);
+					break;
+				case Type.QuerySizes:
+					await QuerySizesAsync(reports);
 					break;
 			}
 
@@ -173,19 +212,19 @@ namespace Schemes
 
 			ProcessRow(
 				AverageRows(
-					reports.Reports["adamore"]["employees"],
-					reports.Reports["practicalore"]["employees"],
-					reports.Reports["lewiore"]["employees"],
-					reports.Reports["cryptdb"]["employees"],
-					reports.Reports["fhope"]["employees"]
+					reports.Reports["adamore"]["employees"][QueryRange],
+					reports.Reports["practicalore"]["employees"][QueryRange],
+					reports.Reports["lewiore"]["employees"][QueryRange],
+					reports.Reports["cryptdb"]["employees"][QueryRange],
+					reports.Reports["fhope"]["employees"][QueryRange]
 				),
 				"B+ tree w. ORE"
 				);
 			Console.WriteLine(@"\midrule");
-			ProcessRow(reports.Reports["florian"]["employees"], @"Kerschbaum~\cite{florian-protocol}");
+			ProcessRow(reports.Reports["florian"]["employees"][QueryRange], @"Kerschbaum~\cite{florian-protocol}");
 			Console.WriteLine(@"\midrule");
-			ProcessRow(reports.Reports["popecold"]["employees"], @"POPE~\cite{pope} cold");
-			ProcessRow(reports.Reports["pope"]["employees"], @"POPE~\cite{pope} warm");
+			ProcessRow(reports.Reports["popecold"]["employees"][QueryRange], @"POPE~\cite{pope} cold");
+			ProcessRow(reports.Reports["pope"]["employees"][QueryRange], @"POPE~\cite{pope} warm");
 		}
 
 		private async Task PlotsAsync(AllReports reports)
@@ -204,18 +243,49 @@ namespace Schemes
 								switch (value)
 								{
 									case "ios":
-										result = reports.Reports[protocol][distribution].Stages[stage].IOs;
+										result = reports.Reports[protocol][distribution][QueryRange].Stages[stage].IOs;
 										break;
 									case "vol":
-										result = reports.Reports[protocol][distribution].Stages[stage].CommunicationVolume;
+										result = reports.Reports[protocol][distribution][QueryRange].Stages[stage].CommunicationVolume;
 										break;
 									case "size":
-										result = reports.Reports[protocol][distribution].Stages[stage].CommunicationSize;
+										result = reports.Reports[protocol][distribution][QueryRange].Stages[stage].CommunicationSize;
 										break;
 								}
 
 								await file.WriteLineAsync(result.ToString());
 							}
+						}
+					}
+				}
+			}
+		}
+
+		private async Task QuerySizesAsync(AllReports reports)
+		{
+			foreach (var value in new List<string> { "ios", "vol", "size" })
+			{
+				using (StreamWriter file = new StreamWriter(Path.Combine(Output, $"protocols-query-sizes-{value}.txt")))
+				{
+					foreach (var querySize in new List<double> { 0.5, 1, 1.5, 2, 3 }.Select(s => s.ToString("#.#")))
+					{
+						foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+						{
+							long result = 0;
+							switch (value)
+							{
+								case "ios":
+									result = reports.Reports[protocol][Distro][querySize].Stages[Stage.Queries].IOs;
+									break;
+								case "vol":
+									result = reports.Reports[protocol][Distro][querySize].Stages[Stage.Queries].CommunicationVolume;
+									break;
+								case "size":
+									result = reports.Reports[protocol][Distro][querySize].Stages[Stage.Queries].CommunicationSize;
+									break;
+							}
+
+							await file.WriteLineAsync(result.ToString());
 						}
 					}
 				}

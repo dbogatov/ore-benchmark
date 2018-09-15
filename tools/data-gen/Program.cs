@@ -259,7 +259,7 @@ namespace DataGen
 			int min = data.Min();
 			int max = data.Max();
 
-			foreach (var percent in new List<double> { 0.5, 1, 2, 3 })
+			foreach (var percent in new List<double> { 0.5, 1, 1.5, 2, 3 })
 			{
 				uint diff;
 				if (min < 0)
@@ -292,7 +292,7 @@ namespace DataGen
 
 				using (StreamWriter sw = new StreamWriter(Path.Combine(Output, $"mini-queries-{percent.ToString("#.#")}.txt")))
 				{
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1; i++)
 					{
 						var first = sampler.Sample();
 
