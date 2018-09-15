@@ -198,7 +198,7 @@ namespace Schemes
 					{
 						foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
 						{
-							foreach (var protocol in new List<string> { "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
 							{
 								long result = 0;
 								switch (value)

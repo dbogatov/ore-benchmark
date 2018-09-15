@@ -8,7 +8,7 @@ import numpy as np
 
 value = str(sys.argv[1])
 
-names = ('BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE', 'CLOZ',
+names = ('No encryption', 'BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE', 'CLOZ',
          'Kerschbaum', 'POPE cold', 'POPE warm')
 N = len(names)
 
@@ -71,7 +71,7 @@ plt.legend(loc='best')
 plt.grid(linestyle='-', alpha=0.5)
 
 fig = plt.figure(1)
-fig.subplots_adjust(bottom=0.175)
+fig.subplots_adjust(bottom=0.2)
 
 if os.path.exists("results/protocol-charts-{0}.pdf".format(value)):
     os.remove("results/protocol-charts-{0}.pdf".format(value))
