@@ -14,8 +14,9 @@ DATA=uniform
 QUERIES=1
 CACHE=128
 BUILD=true
+DATAPERCENT=100
 
-while getopts "s:d:q:c:n" o; do
+while getopts "p:s:d:q:c:n" o; do
     case "${o}" in
         s)
 			SEED=${OPTARG}
@@ -28,6 +29,9 @@ while getopts "s:d:q:c:n" o; do
         	;;
 		c)
 			CACHE=${OPTARG}
+        	;;
+		p)
+			DATAPERCENT=${OPTARG}
         	;;
 		n)
 			BUILD=false
@@ -78,7 +82,9 @@ do
 		protocol \
 		--queries ../../../data/$DATA/${QPREFIX}queries-$QUERIES.txt \
 		--cache-size $CACHE \
-		--b-plus-tree-branches ${protocols[$protocol]} > ../../../results/protocols/$protocol-$DATA-$QUERIES-$CACHE-$SEED.json
+		--b-plus-tree-branches ${protocols[$protocol]} \
+		--data-percent $DATAPERCENT \
+		> ../../../results/protocols/$protocol-$DATA-$QUERIES-$DATAPERCENT-$CACHE-$SEED.json
 done
 
 echo "Done!"

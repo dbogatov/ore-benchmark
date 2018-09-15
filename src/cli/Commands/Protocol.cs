@@ -31,6 +31,10 @@ namespace CLI
 		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
 		public int BPlusTreeBranching { get; } = 3;
 
+		[Range(1, 100)]
+		[Option("--data-percent <number>", Description = "The fraction (percent) of data to consume for simulation. Default 100 (all the data).")]
+		public int DataPercent { get; } = 100;
+
 		protected override int OnExecute(CommandLineApplication app)
 		{
 			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
@@ -40,6 +44,10 @@ namespace CLI
 
 			var reader = new Protocol(Parent.Dataset, Queries);
 			reader.Inputs.CacheSize = CacheSize;
+			if (DataPercent != 100)
+			{
+				reader.Inputs.Dataset = reader.Inputs.Dataset.Take((int)Math.Round(reader.Inputs.Dataset.Count * (DataPercent / 100.0))).ToList();
+			}
 
 			timer.Stop();
 
