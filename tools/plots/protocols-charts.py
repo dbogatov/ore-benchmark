@@ -68,6 +68,9 @@ else:
 plt.xticks(ind + 2 * width, names, rotation=45)
 plt.legend(loc='best')
 
+ax = plt.gca()
+ax.set_yscale("log", nonposy='clip')
+
 plt.grid(linestyle='-', alpha=0.5)
 
 fig = plt.figure(1)
