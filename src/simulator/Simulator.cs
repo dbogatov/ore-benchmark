@@ -34,6 +34,7 @@ namespace Simulation
 		{
 			var result = perStage.ReadMetrics();
 			result.PerQuerySubreports = perQueryReports;
+			perQueryReports = new List<AbsSubReport>();
 			perStage.ClearTrackers();
 
 			return result;

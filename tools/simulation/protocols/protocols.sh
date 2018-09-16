@@ -15,11 +15,15 @@ QUERIES=1
 CACHE=128
 BUILD=true
 DATAPERCENT=100
+VERBOSE=""
 
-while getopts "p:s:d:q:c:n" o; do
+while getopts "p:s:d:q:c:nv" o; do
     case "${o}" in
         s)
 			SEED=${OPTARG}
+			;;
+		v)
+			VERBOSE="--extended"
 			;;
 		d)
 			DATA=${OPTARG}
@@ -75,7 +79,7 @@ do
 	fi
 
 	echo "Current timestamp: $(date)"
-	dotnet ../../../src/cli/dist/cli.dll \
+	dotnet ../../../src/cli/dist/cli.dll $VERBOSE \
 		--dataset ../../../data/$DATA/data.txt \
 		--ore-scheme $TOEXECUTE \
 		--seed $SEED \
