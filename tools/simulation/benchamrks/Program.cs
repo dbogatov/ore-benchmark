@@ -95,7 +95,7 @@ namespace Schemes
 					{
 						if (benchmark.Method == stage && ((string)(benchmark.Parameters)).Contains($"Scheme=({scheme.Item1}, {scheme.Item2})"))
 						{
-							Console.WriteLine(Math.Round((decimal)benchmark.Statistics.Mean));
+							Console.WriteLine(Math.Round((decimal)benchmark.Statistics.Mean) / 1000);
 						}
 					}
 				}

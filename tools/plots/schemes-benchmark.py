@@ -52,9 +52,6 @@ lewiRects = ax.bar(lewiX, lewiY, width, alpha=0.5,
 fhopeRects = ax.bar(fhopeX, fhopeY, width, alpha=0.5,
                     edgecolor="black", label="FH-OPE")
 
-ax.set_title('Schemes benchmark')
-
-ax.set_ylabel('Time (microseconds)', fontsize=12)
 ax.set_xticks(ind)
 ax.set_xticklabels(('', '', '16', '8', '4', ''), fontsize=12)
 
@@ -63,7 +60,7 @@ plt.grid(linestyle='-', alpha=0.5)
 
 plt.legend(['BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE'], loc='upper right')
 
-if os.path.exists("results/schemes.pdf"):
-	os.remove("results/schemes.pdf")
+if os.path.exists("results/schemes-benchmark.pdf"):
+	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes.pdf', format='pdf', dpi=1000)
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000)

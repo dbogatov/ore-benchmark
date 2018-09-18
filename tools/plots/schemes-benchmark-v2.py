@@ -28,13 +28,12 @@ with open("./data/schemes-benchmark.txt") as fp:
 ind = np.arange(N)
 width = 0.35
 
+plt.style.use('grayscale')
+
 plt.bar(ind, encryptions, width, alpha=0.5,
         edgecolor="black", label='Encryption')
 plt.bar(ind + width, comparisons, width, alpha=0.5,
         edgecolor="black", label='Comparion')
-
-plt.ylabel('Time (microseconds)')
-plt.title('Schemes benchmark')
 
 plt.xticks(ind + width / 2, names, rotation=45)
 plt.legend(loc='best')
@@ -47,7 +46,7 @@ ax.set_yscale("log", nonposy='clip')
 fig = plt.figure(1)
 fig.subplots_adjust(bottom=0.175)
 
-if os.path.exists("results/schemes.pdf"):
-	os.remove("results/schemes.pdf")
+if os.path.exists("results/schemes-benchmark.pdf"):
+	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes.pdf', format='pdf', dpi=1000)
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000)

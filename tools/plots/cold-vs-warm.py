@@ -43,6 +43,8 @@ with open("./data/cold-vs-warm-{0}.txt".format(value)) as fp:
 
 x = np.arange(N)
 
+plt.style.use('grayscale')
+
 plt.plot(x, noencryption)
 plt.plot(x, bclo)
 plt.plot(x, clww)
@@ -50,10 +52,10 @@ plt.plot(x, lewi)
 plt.plot(x, fhope)
 plt.plot(x, cloz)
 plt.plot(x, kerschbaum)
-plt.plot(x, pope)
+plt.plot(x, pope, marker='x', markersize=4)
 
 plt.legend(['No encryption', 'BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE',
-            'CLOZ', 'Kerschbaum', 'POPE cold', 'POPE warm'], loc='best')
+            'CLOZ', 'Kerschbaum', 'POPE'], loc='best')
 
 if os.path.exists("results/cold-vs-warm-{0}.pdf".format(value)):
     os.remove("results/cold-vs-warm-{0}.pdf".format(value))

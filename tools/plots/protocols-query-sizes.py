@@ -3,7 +3,8 @@
 import matplotlib.pyplot as plt
 import os
 import sys
-
+from matplotlib.ticker import MaxNLocator
+import matplotlib as mpl
 import numpy as np
 
 value = str(sys.argv[1])
@@ -40,36 +41,52 @@ width = 1.0 / 6
 
 alpha = 0.5
 
-plt.bar(ind, queries05, width, alpha=alpha, edgecolor="black", label='0.5%')
-plt.bar(ind + width, queries10, width, alpha=alpha,
-        edgecolor="black", label='1%')
-plt.bar(ind + 2 * width, queries15, width, alpha=alpha,
-        edgecolor="black", label='1.5%')
-plt.bar(ind + 3 * width, queries20, width, alpha=alpha,
-        edgecolor="black", label='2%')
-plt.bar(ind + 4 * width, queries30, width, alpha=alpha,
-        edgecolor="black", label='3%')
+plt.style.use('grayscale')
 
-if "ios" in value:
-    plt.ylabel("IO requests")
-    plt.title("IO requests.")
-elif "vol" in value:
-    plt.ylabel("Number of messages")
-    plt.title("Communication volume.")
-else:
-    plt.ylabel("Messages' size")
-    plt.title("Communication size.")
+f, (ax, ax2) = plt.subplots(2, 1, sharex=True)
+
+for axis in [ax, ax2]:
+    axis.bar(ind, queries05, width, alpha=alpha, edgecolor="black", label='0.5%')
+    axis.bar(ind + width, queries10, width, alpha=alpha,
+            edgecolor="black", label='1%')
+    axis.bar(ind + 2 * width, queries15, width, alpha=alpha,
+            edgecolor="black", label='1.5%')
+    axis.bar(ind + 3 * width, queries20, width, alpha=alpha,
+            edgecolor="black", label='2%')
+    axis.bar(ind + 4 * width, queries30, width, alpha=alpha,
+            edgecolor="black", label='3%')
+
+ax.set_ylim(253, 280)  # outliers only
+ax2.set_ylim(0, 19)  # most of the data
+
+ax.spines['bottom'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax.xaxis.tick_top()
+ax.tick_params(labeltop=False)  # don't put tick labels at the top
+ax2.xaxis.tick_bottom()
+
+d = .015  # how big to make the diagonal lines in axes coordinates
+# arguments to pass to plot, just so we don't keep repeating them
+kwargs = dict(transform=ax.transAxes, color='k', clip_on=False)
+ax.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
+ax.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
+
+kwargs.update(transform=ax2.transAxes)  # switch to the bottom axes
+ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
+ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
+
+for axis in [ax, ax2]:
+    axis.grid(linestyle='dotted', alpha=0.5)
+    axis.yaxis.set_major_locator(MaxNLocator(integer=True))
+    axis.get_yaxis().set_major_formatter(
+        mpl.ticker.FuncFormatter(lambda x, p: format(int(x), ','))
+    )
+
+ax.legend(loc='upper left')
 
 plt.xticks(ind + 2 * width, names, rotation=45)
-plt.legend(loc='best')
 
-plt.grid(linestyle='-', alpha=0.5)
-
-ax = plt.gca()
-ax.set_yscale("log", nonposy='clip')
-
-fig = plt.figure(1)
-fig.subplots_adjust(bottom=0.2)
+f.subplots_adjust(bottom=0.2)
 
 if os.path.exists("results/protocol-query-sizes-{0}.pdf".format(value)):
     os.remove("results/protocol-query-sizes-{0}.pdf".format(value))
