@@ -121,7 +121,7 @@ else:
     fig = plt.figure(1)
     fig.subplots_adjust(bottom=0.2)
 
-plt.xticks(ind + 2 * width, names, rotation=45)
+plt.xticks(ind + width, names, rotation=45)
 
 if os.path.exists("results/protocol-charts-{0}.pdf".format(value)):
     os.remove("results/protocol-charts-{0}.pdf".format(value))
