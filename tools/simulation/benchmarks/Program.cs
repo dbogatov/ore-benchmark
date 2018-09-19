@@ -68,7 +68,7 @@ namespace Schemes
 						!((string)(benchmark.Parameters)).Contains("4096")
 					)
 					{
-						Console.WriteLine(Math.Round((decimal)benchmark.Statistics.Mean) * 0.001);
+						Console.WriteLine(Math.Round((double)benchmark.Statistics.Mean) * 0.001);
 					}
 				}
 			}
@@ -95,7 +95,7 @@ namespace Schemes
 					{
 						if (benchmark.Method == stage && ((string)(benchmark.Parameters)).Contains($"Scheme=({scheme.Item1}, {scheme.Item2})"))
 						{
-							Console.WriteLine(Math.Round((decimal)benchmark.Statistics.Mean) * 0.001);
+							Console.WriteLine(Math.Round((double)benchmark.Statistics.Mean) * 0.001);
 						}
 					}
 				}
