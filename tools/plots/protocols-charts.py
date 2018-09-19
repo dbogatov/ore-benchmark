@@ -127,4 +127,4 @@ if os.path.exists("results/protocol-charts-{0}.pdf".format(value)):
     os.remove("results/protocol-charts-{0}.pdf".format(value))
 
 plt.savefig(
-    "results/protocol-charts-{0}.pdf".format(value), format='pdf', dpi=1000)
+    "results/protocol-charts-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight')

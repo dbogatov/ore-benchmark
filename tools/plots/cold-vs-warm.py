@@ -61,4 +61,4 @@ if os.path.exists("results/cold-vs-warm-{0}.pdf".format(value)):
     os.remove("results/cold-vs-warm-{0}.pdf".format(value))
 
 plt.savefig(
-    "results/cold-vs-warm-{0}.pdf".format(value), format='pdf', dpi=1000)
+    "results/cold-vs-warm-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight')

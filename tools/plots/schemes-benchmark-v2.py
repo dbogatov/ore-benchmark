@@ -16,9 +16,9 @@ with open("./data/schemes-benchmark.txt") as fp:
     counter = 0
     while line:
         if counter < N:
-            encryptions.append(int(line.strip()))
+            encryptions.append(float(line.strip()))
         else:
-            comparisons.append(int(line.strip()))
+            comparisons.append(float(line.strip()))
         line = fp.readline()
         counter += 1
 
@@ -38,7 +38,7 @@ plt.bar(ind + width, comparisons, width, alpha=0.5,
 plt.xticks(ind + width / 2, names, rotation=45)
 plt.legend(loc='best')
 
-plt.grid(linestyle='-', alpha=0.5)
+plt.grid(linestyle='dotted', alpha=0.5)
 
 ax = plt.gca()
 ax.set_yscale("log", nonposy='clip')
@@ -49,4 +49,4 @@ fig.subplots_adjust(bottom=0.175)
 if os.path.exists("results/schemes-benchmark.pdf"):
 	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000)
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, bbox_inches='tight')

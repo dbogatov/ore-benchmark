@@ -56,7 +56,7 @@ ax.set_xticks(ind)
 ax.set_xticklabels(('', '', '16', '8', '4', ''), fontsize=12)
 
 ax.set_yscale("log", nonposy='clip')
-plt.grid(linestyle='-', alpha=0.5)
+plt.grid(linestyle='dotted', alpha=0.5)
 
 plt.legend(['BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE'], loc='upper right')
 
