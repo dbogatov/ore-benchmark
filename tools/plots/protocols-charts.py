@@ -70,7 +70,7 @@ if value != "qsize":
         ax.set_ylim(32, 2200)  # outliers only
         ax2.set_ylim(0, 31.5)  # most of the data
     elif value == "qvol":
-        ax.set_ylim(450000, 550000)  # outliers only
+        ax.set_ylim(490000, 505000)  # outliers only
         ax2.set_ylim(0, 1020)  # most of the data
 
     ax.spines['bottom'].set_visible(False)

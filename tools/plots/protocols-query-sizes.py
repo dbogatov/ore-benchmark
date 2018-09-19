@@ -56,8 +56,8 @@ for axis in [ax, ax2]:
     axis.bar(ind + 4 * width, queries30, width, alpha=alpha,
             edgecolor="black", label='3%')
 
-ax.set_ylim(253, 280)  # outliers only
-ax2.set_ylim(0, 19)  # most of the data
+ax.set_ylim(100, 2200)  # outliers only
+ax2.set_ylim(0, 45)  # most of the data
 
 ax.spines['bottom'].set_visible(False)
 ax2.spines['top'].set_visible(False)
