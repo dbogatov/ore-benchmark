@@ -51,7 +51,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 				throw new ArgumentException($"Invalid input {value} for bitness {bits}.");
 			}
 
-			if (!_cacheKey.HasValue || _cacheKey.Value.Item1 != key || _cacheKey.Value.Item2 != bits)
+			if (!_cacheKey.HasValue || !_cacheKey.Value.Item1 .SequenceEqual(key) || _cacheKey.Value.Item2 != bits)
 			{
 				OnUse(Primitive.PRP);
 				

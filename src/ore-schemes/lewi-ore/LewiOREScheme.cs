@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -47,7 +46,7 @@ namespace ORESchemes.LewiORE
 	{
 		private readonly IPRF F;
 		private readonly IHash H;
-		private readonly IPRP P;
+		private readonly ISimplifiedPRP P;
 
 		/// <summary>
 		/// Number of values that fit in a block
@@ -72,7 +71,7 @@ namespace ORESchemes.LewiORE
 
 			F = new PRFFactory().GetPrimitive();
 			H = new HashFactory().GetPrimitive();
-			P = new PRPFactory().GetPrimitive();
+			P = new TablePRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 			SubscribePrimitive(H);
@@ -179,13 +178,13 @@ namespace ORESchemes.LewiORE
 				uint xi = (input << (_bitsInBlock * i)) >> (_bitsInBlock * (n - 1));
 				uint xtoi = shift > 31 ? 0 : input >> shift;
 
-				uint x = P.Permute(
-					xi,
+				uint x = P.PRP(
+					(byte)xi,
 					F.PRF(
 						rightKey,
 						BitConverter.GetBytes(xtoi)
 					),
-					_bitsInBlock
+					(byte)_bitsInBlock
 				);
 
 				byte[] xtoix = Concatenate(xtoi, x);
@@ -226,13 +225,13 @@ namespace ORESchemes.LewiORE
 
 				for (uint j = 0; j < d; j++)
 				{
-					uint js = P.Unpermute(
-						j,
+					uint js = P.InversePRP(
+						(byte)j,
 						F.PRF(
 							rightKey,
 							BitConverter.GetBytes(ytoi)
 						),
-						_bitsInBlock
+						(byte)_bitsInBlock
 					);
 
 					byte[] ytoij = Concatenate(ytoi, j);

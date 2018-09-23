@@ -27,7 +27,7 @@ namespace Test.ORESchemes
 	[Trait("Category", "Integration")]
 	public class LewiOREN4 : AbsLewiORE
 	{
-		public LewiOREN4() : base(30) { }
+		public LewiOREN4() : base(10) { }
 
 		protected override void SetParameters() => n = 4;
 
