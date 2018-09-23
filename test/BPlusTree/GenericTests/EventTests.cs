@@ -56,7 +56,7 @@ namespace Test.BPlusTree
 					.ToList()
 			);
 
-			Assert.InRange(visited, 25, 100);
+			Assert.InRange(visited, 10, 40);
 		}
 
 		[Fact]
@@ -80,6 +80,8 @@ namespace Test.BPlusTree
 		[Fact]
 		public void SearchEvents()
 		{
+			// Data node I/Os do not count
+
 			var visited = ProfileVisitedNodes(
 				tree =>
 					Enumerable
@@ -92,7 +94,7 @@ namespace Test.BPlusTree
 					.ToList()
 			);
 
-			Assert.InRange(visited, 25, 100);
+			Assert.InRange(visited, 10, 40);
 		}
 
 		[Fact]
@@ -114,7 +116,7 @@ namespace Test.BPlusTree
 					.ToList()
 			);
 
-			Assert.InRange(visited, 100, 300);
+			Assert.InRange(visited, 40, 60);
 		}
 	}
 }

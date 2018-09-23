@@ -44,6 +44,8 @@ namespace Simulation
 		public long SchemeOperations { get; set; } = 0;
 		public long AvgSchemeOperations => SchemeOperations / ActionsNumber;
 
+		
+
 		public Dictionary<Primitive, long> TotalPrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
 		public Dictionary<Primitive, long> PurePrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
 
@@ -54,7 +56,7 @@ namespace Simulation
 		/// </summary>
 		protected string PrintPrimitiveUsage()
 		{
-			Func<long, long, long> avg = (a, b) => a == 0 || b == 0 ? 0 : a / b;
+			Func<long, long, long> avg = (a, b) => a == 0 || b == 0 ? 0 : (long)Math.Ceiling((double)a / b);
 
 			string result = "";
 

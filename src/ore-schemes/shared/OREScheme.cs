@@ -41,7 +41,7 @@ namespace ORESchemes.Shared
 		public OPECipher(long value) => this.value = value;
 		public OPECipher() { }
 
-		public int GetSize() => sizeof(long);
+		public int GetSize() => sizeof(long) * 8;
 
 		public static bool operator <(OPECipher a, OPECipher b) => a.value < b.value;
 		public static bool operator >(OPECipher a, OPECipher b) => a.value > b.value;
@@ -51,7 +51,7 @@ namespace ORESchemes.Shared
 		public static bool operator !=(OPECipher a, OPECipher b) => a.value != b.value;
 
 		public override int GetHashCode() => value.GetHashCode();
-		public override bool Equals(object obj) => value.Equals(obj);
+		public override bool Equals(object obj) => obj is OPECipher ? value == ((OPECipher)obj).value : false;
 
 		public static OPECipher FromInt(int from) => new OPECipher { value = from };
 		public int ToInt() => (int)value;

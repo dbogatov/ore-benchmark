@@ -242,6 +242,6 @@ namespace Test.ORESchemes
 		}
 
 		public virtual int KeySize() => 128;
-		public virtual int CipherSize() => 8;
+		public virtual int CipherSize() => 64;
 	}
 }

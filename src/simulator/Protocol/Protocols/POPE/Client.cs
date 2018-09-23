@@ -88,8 +88,6 @@ namespace Simulation.Protocol.POPE
 						}
 					}
 					throw new InvalidOperationException("Should never be here");
-				default:
-					return (IMessage<R>)new FinishMessage();
 			}
 
 			return (IMessage<R>)new FinishMessage();

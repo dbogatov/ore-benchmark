@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using BPlusTree;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
@@ -96,7 +97,6 @@ namespace Simulation.Protocol
 	public class FinishMessage : AbsMessage<object>
 	{
 		public FinishMessage() : base(null) { }
-		public FinishMessage(object content) : base(content) { }
 
 		public override int GetSize() => 0;
 	}
@@ -112,7 +112,7 @@ namespace Simulation.Protocol
 	{
 		public QueryResponseMessage(List<string> content) : base(content) { }
 
-		public override int GetSize() => _content.Count * sizeof(byte) * 8;
+		public override int GetSize() => 0; // do not include response size
 	}
 
 	public class InsertMessage<C> : SizeableMessage<EncryptedRecord<C>> where C : IGetSize
@@ -279,11 +279,9 @@ namespace Simulation.Protocol
 		/// <param name="mediator">If provided, new mediator will not be created</param>
 		protected void SetupProtocol(Mediator mediator = null)
 		{
-			if (_client == null || _server == null)
-			{
-				throw new InvalidOperationException();
-			}
-
+			Debug.Assert(_client != null);
+			Debug.Assert(_server != null);
+			
 			_mediator = mediator ?? new Mediator(_client, _server);
 
 			_client.SetMediator(_mediator);

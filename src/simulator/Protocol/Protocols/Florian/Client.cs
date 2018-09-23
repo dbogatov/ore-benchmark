@@ -171,10 +171,6 @@ namespace Simulation.Protocol.Florian
 						u = j;
 					}
 				}
-				else
-				{
-					throw new InvalidOperationException("Should never happen");
-				}
 			}
 
 			return trueLocation != -1 ? trueLocation : l;

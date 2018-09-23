@@ -170,6 +170,6 @@ namespace Test.ORESchemes
 		}
 
 		public override int KeySize() => 0;
-		public override int CipherSize() => 24;
+		public override int CipherSize() => 192;
 	}
 }

@@ -19,8 +19,6 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 		public byte PRP(byte input, byte[] key, byte bits)
 		{
-			OnUse(Primitive.PRP);
-
 			GeneratePermutation(key, bits, input);
 
 			return _cachePermutation[input];
@@ -28,8 +26,6 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 		public byte InversePRP(byte input, byte[] key, byte bits)
 		{
-			OnUse(Primitive.PRP);
-
 			GeneratePermutation(key, bits, input);
 
 			return (byte)Array.IndexOf(_cachePermutation, input);
@@ -57,6 +53,8 @@ namespace ORESchemes.Shared.Primitives.PRP
 
 			if (!_cacheKey.HasValue || _cacheKey.Value.Item1 != key || _cacheKey.Value.Item2 != bits)
 			{
+				OnUse(Primitive.PRP);
+				
 				_cacheKey = (key, bits);
 				_cachePermutation = new byte[sizeof(byte) * 8];
 

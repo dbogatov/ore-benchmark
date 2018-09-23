@@ -87,7 +87,7 @@ namespace Simulation.Protocol.Florian
 			_structure = @new.ToList();
 
 			// When shift happens, all blocks are accessed
-			for (int i = 0; i <= _structure.Count; i++)
+			for (int i = 0; i <= _structure.Count / _blockSize; i++)
 			{
 				OnNodeVisited(_structure[0].Item1.GetHashCode() * 2 + i * 3);
 			}

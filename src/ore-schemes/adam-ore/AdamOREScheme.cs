@@ -30,13 +30,13 @@ namespace ORESchemes.AdamORE
 	{
 		private readonly IPRF F;
 		private readonly IPPH R;
-		private readonly IPRP P;
+		private readonly ISimplifiedPRP P;
 
 		public AdamOREScheme(byte[] seed = null) : base(seed)
 		{
 			F = new PRFFactory().GetPrimitive();
 			R = new PPHFactory(G.GetBytes(ALPHA / 8)).GetPrimitive();
-			P = new PRPFactory().GetPrimitive();
+			P = new TablePRPFactory().GetPrimitive();
 
 			SubscribePrimitive(F);
 			SubscribePrimitive(R);
@@ -91,7 +91,7 @@ namespace ORESchemes.AdamORE
 					BigInteger.Pow(2, 128)
 				).ToByteArray();
 
-				tuples[P.Permute((uint)i, permutationKey, 5)] = R.Hash(key.pphKey.hashKey, u);
+				tuples[P.PRP((byte)i, permutationKey, 5)] = R.Hash(key.pphKey.hashKey, u);
 			}
 
 			result.tuples = tuples.ToList();

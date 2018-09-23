@@ -12,9 +12,9 @@ namespace ORESchemes.FHOPE
 		public long value;
 
 		public int GetSize() =>
-			sizeof(long) +
+			8 * (sizeof(long) +
 			(min.HasValue ? 0 : sizeof(long)) +
-			(max.HasValue ? 0 : sizeof(long));
+			(max.HasValue ? 0 : sizeof(long)));
 	}
 
 	public class FHOPEScheme : AbsOREScheme<Ciphertext, State>
