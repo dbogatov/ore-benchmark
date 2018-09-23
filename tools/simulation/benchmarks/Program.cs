@@ -51,10 +51,10 @@ namespace Schemes
 		{
 			List<ValueTuple<string, string>> primitives = new List<ValueTuple<string, string>> {
 				( "SymmetricEnc", "size=128" ),
-				( "PRGCachedNext", string.Empty ),
+				( "PRGNext", string.Empty ),
 				( "PRF", "size=128" ),
 				( "Hash", "size=128" ),
-				( "PRP", "size=4" ),
+				( "PRPNoInv", "size=2" ),
 				( "SamplerCachedHG", "population=184467440737095516" )
 			};
 
