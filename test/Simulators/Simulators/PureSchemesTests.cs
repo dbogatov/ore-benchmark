@@ -22,16 +22,19 @@ namespace Test.Simulators
 					.ToList();
 
 			var simulator = new Simulator<Ciphertext, Key>(dataset, new LewiOREScheme(16, entropy));
-			var report = simulator.Simulate();
+			var report = (global::Simulation.PureSchemes.Report)simulator.Simulate();
 
 			var subreports = report.Stages.Values;
 
-			foreach (var subreport in subreports)
+			foreach (global::Simulation.PureSchemes.Report.SubReport subreport in subreports)
 			{
 				Assert.NotEqual(0, subreport.SchemeOperations);
 				Assert.NotEqual(new TimeSpan(0).Ticks, subreport.ObservedTime.Ticks);
 				Assert.NotEqual(0, subreport.PurePrimitiveOperations.Values.Sum());
 				Assert.NotEqual(0, subreport.TotalPrimitiveOperations.Values.Sum());
+
+				Assert.NotEqual(0, subreport.MaxCipherSize);
+				Assert.NotEqual(0, subreport.MaxStateSize);
 			}
 
 			var description = report.ToString();

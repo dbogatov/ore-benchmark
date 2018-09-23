@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using BPlusTree;
 using ORESchemes.Shared;
@@ -425,35 +426,21 @@ namespace Simulation.Protocol.POPE
 			internal override void Validate(Func<C, long> decode, long from, long to)
 			{
 				// number of children
-				if (_children.Count > _options.L)
-				{
-					throw new InvalidOperationException("Children count");
-				}
+				Debug.Assert(_children.Count <= _options.L, "Children count");
 
 				// children bounds
-				if (decode(_children.First().cipher) <= from)
-				{
-					throw new InvalidOperationException("Children lower bound");
-				}
-				if (decode(_children.Last().cipher) > to)
-				{
-					throw new InvalidOperationException("Children upper bound");
-				}
+				Debug.Assert(decode(_children.First().cipher) > from, "Children lower bound");
+
+				Debug.Assert(decode(_children.Last().cipher) <= to, "Children upper bound");
 
 				// children in order
 				for (int i = 0; i < _children.Count - 1; i++)
 				{
-					if (decode(_children[i].cipher) >= decode(_children[i + 1].cipher))
-					{
-						throw new InvalidOperationException("Children order");
-					}
+					Debug.Assert(decode(_children[i].cipher) < decode(_children[i + 1].cipher), "Children order");
 				}
 
 				// has parent
-				if ((!(from == long.MinValue && to == long.MaxValue)) && parent == null)
-				{
-					throw new InvalidOperationException("Parent unset");
-				}
+				Debug.Assert(! ((!(from == long.MinValue && to == long.MaxValue)) && parent == null), "Parent unset");
 
 				// validate children
 				for (int i = 0; i < _children.Count; i++)
@@ -468,10 +455,7 @@ namespace Simulation.Protocol.POPE
 						lower = decode(_children[i - 1].cipher);
 					}
 
-					if (_children[i].child.parent != this)
-					{
-						throw new InvalidOperationException("Child parent relationship");
-					}
+					Debug.Assert(_children[i].child.parent == this, "Child parent relationship");
 
 					_children[i].child.Validate(decode, lower, decode(_children[i].cipher));
 				}
@@ -556,39 +540,22 @@ namespace Simulation.Protocol.POPE
 				// children bounds
 				if (_buffer.Count > 0)
 				{
-					if (_buffer.Min(c => decode(c.cipher)) <= from)
-					{
-						throw new InvalidOperationException("Buffer lower bound");
-					}
-					if (_buffer.Max(c => decode(c.cipher)) > to)
-					{
-						throw new InvalidOperationException("Buffer upper bound");
-					}
+					Debug.Assert(_buffer.Min(c => decode(c.cipher)) > from, "Buffer lower bound");
+
+					Debug.Assert(_buffer.Max(c => decode(c.cipher)) <= to, "Buffer upper bound");
 				}
 				else
 				{
-					if (to != long.MaxValue)
-					{
-						throw new InvalidOperationException("Buffer empty for not last child");
-					}
+					Debug.Assert(to == long.MaxValue, "Buffer empty for not last child");
 				}
 
 				// sibling links
-				if (from != long.MinValue && left == null)
-				{
-					throw new InvalidOperationException("Left unset");
-				}
+				Debug.Assert(!(from != long.MinValue && left == null), "Left unset");
 
-				if (to != long.MaxValue && right == null)
-				{
-					throw new InvalidOperationException("Right unset");
-				}
+				Debug.Assert(!(to != long.MaxValue && right == null), "Right unset");
 
 				// has parent
-				if ((!(from == long.MinValue && to == long.MaxValue)) && parent == null)
-				{
-					throw new InvalidOperationException("Parent unset");
-				}
+				Debug.Assert(!((!(from == long.MinValue && to == long.MaxValue)) && parent == null), "Parent unset");
 			}
 
 			protected override int ElementsNumber() => _buffer.Count;

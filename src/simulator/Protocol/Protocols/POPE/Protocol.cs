@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
@@ -53,11 +54,9 @@ namespace Simulation.Protocol.POPE
 
 		public Value(int value, int nonce, Origin origin)
 		{
-			if (nonce >= Int32.MaxValue / 4 || nonce < 0)
-			{
-				throw new ArgumentException("Nonce must be from 0 to Int32.MaxValue / 4 = {Int32.MaxValue / 4}");
-			}
-
+			Debug.Assert(nonce < Int32.MaxValue / 4, $"Nonce must be from 0 to Int32.MaxValue / 4 = {Int32.MaxValue / 4}");
+			Debug.Assert(nonce >= 0, $"Nonce must be from 0 to Int32.MaxValue / 4 = {Int32.MaxValue / 4}");
+			
 			this.value = value;
 			this.nonce = nonce;
 			this.origin = origin;
