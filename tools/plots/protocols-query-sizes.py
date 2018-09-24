@@ -9,9 +9,9 @@ import numpy as np
 
 value = str(sys.argv[1])
 
-names = ('No encryption', 'BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE', 'CLOZ',
+names = ('No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
          'Kerschbaum', 'POPE cold', 'POPE warm')
-N = len(names)
+N = len(names) + 2
 
 queries05 = []
 queries10 = []
@@ -24,19 +24,24 @@ with open("./data/protocols-query-sizes-{0}.txt".format(value)) as fp:
     counter = 0
     while line:
         if counter < N:
-            queries05.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                queries05.append(int(line.strip()))
         elif counter < 2 * N:
-            queries10.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                queries10.append(int(line.strip()))
         elif counter < 3 * N:
-            queries15.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                queries15.append(int(line.strip()))
         elif counter < 4 * N:
-            queries20.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                queries20.append(int(line.strip()))
         elif counter < 5 * N:
-            queries30.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                queries30.append(int(line.strip()))
         line = fp.readline()
         counter += 1
 
-ind = np.arange(N)
+ind = np.arange(N - 2)
 width = 1.0 / 6
 
 alpha = 0.5

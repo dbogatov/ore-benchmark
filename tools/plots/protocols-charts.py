@@ -9,9 +9,9 @@ import numpy as np
 
 value = str(sys.argv[1])
 
-names = ('No encryption', 'BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE', 'CLOZ',
+names = ('No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
          'Kerschbaum', 'POPE cold', 'POPE warm')
-N = len(names)
+N = len(names) + 2
 
 uniform = []
 normal = []
@@ -24,20 +24,27 @@ with open("./data/protocols-{0}.txt".format(value)) as fp:
     counter = 0
     while line:
         if counter < N:
-            uniform.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                uniform.append(int(line.strip()))
         elif counter < 2 * N:
-            normal.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                normal.append(int(line.strip()))
         elif counter < 3 * N:
-            zipf.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                zipf.append(int(line.strip()))
         elif counter < 4 * N:
-            employees.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                employees.append(int(line.strip()))
         elif counter < 5 * N:
-            forest.append(int(line.strip()))
+            if counter % N != 2 and counter % N != 4:
+                forest.append(int(line.strip()))
         line = fp.readline()
         counter += 1
 
-ind = np.arange(N)
+ind = np.arange(N - 2)
 width = 1.0 / 6
+
+print(len(uniform))
 
 alpha = 0.5
 

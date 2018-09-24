@@ -46,15 +46,15 @@ x = np.arange(N)
 plt.style.use('grayscale')
 
 plt.plot(x, noencryption, linewidth=1.0)
-plt.plot(x, bclo, linewidth=1.0)
+# plt.plot(x, bclo, linewidth=1.0)
 plt.plot(x, clww, linewidth=1.0)
 plt.plot(x, lewi, linewidth=1.0)
-plt.plot(x, fhope, linewidth=1.0)
+# plt.plot(x, fhope, linewidth=1.0)
 plt.plot(x, cloz, marker='1', markersize=2, linewidth=1.0)
 plt.plot(x, kerschbaum, linewidth=1.0)
 plt.plot(x, pope, marker='x', markersize=2, zorder=-1, linewidth=1.0)
 
-plt.legend(['No encryption', 'BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE',
+plt.legend(['No encryption', 'BCLO, CLWW, FH-OPE', 'Lewi-Wu'
             'CLOZ', 'Kerschbaum', 'POPE'], loc='best')
 
 if os.path.exists("results/cold-vs-warm-{0}.pdf".format(value)):
