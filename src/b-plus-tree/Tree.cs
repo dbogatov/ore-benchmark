@@ -275,15 +275,10 @@ namespace BPlusTree
 			return true;
 		}
 
-		public int Size()
-		{
-			return _size;
-		}
+		public int Size() => _size;
 
 		public override string ToString()
-		{
-			return "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
-		}
+			=> "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
 
 		public bool Validate()
 		{

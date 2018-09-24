@@ -13,10 +13,7 @@ namespace Simulation.Protocol
 			this.to = to;
 		}
 
-		public override string ToString()
-		{
-			return $"{{ {from} - {to} }}";
-		}
+		public override string ToString() => $"{{ {from} - {to} }}";
 	}
 
 	public class Record
@@ -30,10 +27,7 @@ namespace Simulation.Protocol
 			this.value = value;
 		}
 
-		public override string ToString()
-		{
-			return $"{{ {index} = \"{value}\" }}";
-		}
+		public override string ToString() => $"{{ {index} = \"{value}\" }}";
 	}
 
 	public class Inputs

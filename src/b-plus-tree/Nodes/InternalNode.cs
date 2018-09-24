@@ -5,7 +5,6 @@ namespace BPlusTree
 {
 	internal partial class Tree<T, C>
 	{
-
 		private class InternalNode : Node
 		{
 			public InternalNode(Options<C> options, Node parent, Node next, Node prev, List<IndexValue> children) : base(options, parent, next, prev)
@@ -80,10 +79,7 @@ namespace BPlusTree
 				};
 			}
 
-			public override string TypeString()
-			{
-				return "I";
-			}
+			public override string TypeString() => "I";
 
 			public override bool Validate(bool isRoot)
 			{
@@ -107,9 +103,7 @@ namespace BPlusTree
 			}
 
 			protected override bool IsUnderflow()
-			{
-				return children.Count < (_options.Branching / 2) + (_options.Branching % 2);
-			}
+				=> children.Count < (_options.Branching / 2) + (_options.Branching % 2);
 		}
 	}
 }

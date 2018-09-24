@@ -138,8 +138,7 @@ namespace Simulation.PureSchemes
 	public class Tracker : AbsTracker
 	{
 		public override AbsSubReport ReadMetrics()
-		{
-			return new Report.SubReport
+			=> new Report.SubReport
 			{
 				ObservedTime = _totalTime,
 				TotalPrimitiveOperations = CloneDictionary(_primitiveUsage),
@@ -147,6 +146,5 @@ namespace Simulation.PureSchemes
 				MaxCipherSize = _maxCipherSize,
 				MaxStateSize = _maxStateSize
 			};
-		}
 	}
 }

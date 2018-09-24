@@ -72,13 +72,11 @@ namespace Simulation.Protocol.POPE
 		/// React to the search request from server
 		/// </summary>
 		private QueryResponseMessage AcceptMessage(QueryMessage<Cipher> query)
-		{
-			return new QueryResponseMessage(
+			=> new QueryResponseMessage(
 				_tree.Search(
 					query.Unpack().Item1,
 					query.Unpack().Item2
 				)
 			);
-		}
 	}
 }

@@ -121,31 +121,16 @@ namespace BPlusTree
 				return result + $"{(last ? "└" : "├")}[{index.ToString().PadRight(3)}]──{string.Join(",", values.Select(v => $"\"{v}\""))}\n";
 			}
 
-			public override string TypeString()
-			{
-				return "D";
-			}
+			public override string TypeString() => "D";
 
-			protected override int Height()
-			{
-				return 1;
-			}
+			protected override int Height() => 1;
 
-			public override bool isBalanced()
-			{
-				return true;
-			}
+			public override bool isBalanced() => true;
 
-			protected override bool IsUnderflow()
-			{
-				// Should never be called
-				return false;
-			}
+			// Should never be called
+			protected override bool IsUnderflow() => false;
 
-			public override bool CheckIndexes()
-			{
-				return true;
-			}
+			public override bool CheckIndexes() => true;
 
 			public override bool CheckNeighborLinks(bool leftMost = false, bool isRoot = false)
 			{

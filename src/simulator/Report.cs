@@ -44,8 +44,6 @@ namespace Simulation
 		public long SchemeOperations { get; set; } = 0;
 		public long AvgSchemeOperations => SchemeOperations / ActionsNumber;
 
-		
-
 		public Dictionary<Primitive, long> TotalPrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
 		public Dictionary<Primitive, long> PurePrimitiveOperations { get; set; } = new Dictionary<Primitive, long>();
 

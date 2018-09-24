@@ -6,14 +6,7 @@ namespace ORESchemes.Shared
 {
 	public enum ORESchemes
 	{
-		NoEncryption,
-		CryptDB,
-		PracticalORE,
-		LewiORE,
-		FHOPE,
-		AdamORE,
-		Florian,
-		POPE
+		NoEncryption, CryptDB, PracticalORE, LewiORE, FHOPE, AdamORE, Florian, POPE
 	}
 
 	public enum SchemeOperation
@@ -243,33 +236,23 @@ namespace ORESchemes.Shared
 		public abstract C Encrypt(int plaintext, K key);
 
 		public virtual bool IsEqual(C ciphertextOne, C ciphertextTwo)
-		{
-			return
+			=>
 				!IsLess(ciphertextOne, ciphertextTwo) &&
 				!IsLess(ciphertextTwo, ciphertextOne);
-		}
 
 		public virtual bool IsGreater(C ciphertextOne, C ciphertextTwo)
-		{
-			return
+			=>
 				!IsLess(ciphertextOne, ciphertextTwo) &&
 				IsLess(ciphertextTwo, ciphertextOne);
-		}
 
 		public virtual bool IsGreaterOrEqual(C ciphertextOne, C ciphertextTwo)
-		{
-			return !IsLess(ciphertextOne, ciphertextTwo);
-		}
+			=> !IsLess(ciphertextOne, ciphertextTwo);
 
 		public virtual bool IsLess(C ciphertextOne, C ciphertextTwo)
-		{
-			return Compare(ciphertextOne, ciphertextTwo);
-		}
+			=> Compare(ciphertextOne, ciphertextTwo);
 
 		public virtual bool IsLessOrEqual(C ciphertextOne, C ciphertextTwo)
-		{
-			return !IsGreater(ciphertextOne, ciphertextTwo);
-		}
+			=> !IsGreater(ciphertextOne, ciphertextTwo);
 
 		public abstract K KeyGen();
 

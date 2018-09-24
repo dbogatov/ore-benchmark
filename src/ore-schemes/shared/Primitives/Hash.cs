@@ -6,10 +6,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 {
 	public class HashFactory : AbsPrimitiveFactory<IHash>
 	{
-		protected override IHash CreatePrimitive(byte[] entropy)
-		{
-			return new SHA256();
-		}
+		protected override IHash CreatePrimitive(byte[] entropy) => new SHA256();
 	}
 
 	public interface IHash : IPrimitive

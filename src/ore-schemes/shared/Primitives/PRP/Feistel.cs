@@ -7,18 +7,12 @@ namespace ORESchemes.Shared.Primitives.PRP
 {
 	public class PRPFactory : AbsPrimitiveFactory<IPRP>
 	{
-		protected override IPRP CreatePrimitive(byte[] entropy)
-		{
-			return new Feistel(3);
-		}
+		protected override IPRP CreatePrimitive(byte[] entropy) => new Feistel(3);
 	}
 
 	public class StrongPRPFactory : AbsPrimitiveFactory<IPRP>
 	{
-		protected override IPRP CreatePrimitive(byte[] entropy)
-		{
-			return new Feistel(4);
-		}
+		protected override IPRP CreatePrimitive(byte[] entropy) => new Feistel(4);
 	}
 
 	/// <summary>

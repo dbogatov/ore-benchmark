@@ -181,9 +181,8 @@ namespace Simulation.Protocol
 		public virtual IMessage<R> SendToServer<Q, R>(IMessage<Q> message)
 		{
 			StopTimer(() =>
-			{
-				OnMessageSent(message.GetSize());
-			});
+				OnMessageSent(message.GetSize())
+			);
 
 			var response = _server.AcceptMessage<Q, R>(message);
 
@@ -211,9 +210,8 @@ namespace Simulation.Protocol
 			var response = _client.AcceptMessage<Q, R>(message);
 
 			StopTimer(() =>
-			{
-				OnMessageSent(response.GetSize());
-			});
+				OnMessageSent(response.GetSize())
+			);
 
 			return response;
 		}
@@ -299,25 +297,22 @@ namespace Simulation.Protocol
 		public virtual void RunConstructionProtocol(List<Record> input)
 		{
 			ResumeTimer(() =>
-			{
-				_client.RunConstruction(input);
-			});
+				_client.RunConstruction(input)
+			);
 		}
 
 		public virtual void RunHandshake()
 		{
 			ResumeTimer(() =>
-			{
-				_client.RunHandshake();
-			});
+				_client.RunHandshake()
+			);
 		}
 
 		public virtual void RunQueryProtocol(List<RangeQuery> input)
 		{
 			ResumeTimer(() =>
-			{
-				_client.RunSearch(input);
-			});
+				_client.RunSearch(input)
+			);
 		}
 
 		/// <summary>

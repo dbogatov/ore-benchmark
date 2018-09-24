@@ -6,10 +6,7 @@ namespace ORESchemes.Shared.Primitives.PRF
 {
 	public class PRFFactory : AbsPrimitiveFactory<IPRF>
 	{
-		protected override IPRF CreatePrimitive(byte[] entropy)
-		{
-			return new AESPRF();
-		}
+		protected override IPRF CreatePrimitive(byte[] entropy) => new AESPRF();
 	}
 
 	public interface IPRF : IPrimitive

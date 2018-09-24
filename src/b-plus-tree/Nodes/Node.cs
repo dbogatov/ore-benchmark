@@ -1,6 +1,6 @@
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BPlusTree
@@ -292,7 +292,7 @@ namespace BPlusTree
 					}
 
 					// should never reach here
-					throw new InvalidOperationException("Could not merge.");
+					Debug.Fail("Could not merge.");
 				}
 
 				return new DeleteInfo();

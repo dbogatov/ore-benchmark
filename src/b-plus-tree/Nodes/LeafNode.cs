@@ -26,7 +26,8 @@ namespace BPlusTree
 					if (
 						_options.Comparator.IsLessOrEqual(start, children[i].index) &&
 						_options.Comparator.IsGreaterOrEqual(end, children[i].index) &&
-						children[i].node != null)
+						children[i].node != null
+					)
 					{
 						found = true;
 
@@ -65,7 +66,8 @@ namespace BPlusTree
 					if (
 						_options.Comparator.IsLessOrEqual(start, children[i].index) &&
 						_options.Comparator.IsGreaterOrEqual(end, children[i].index) &&
-						children[i].node != null)
+						children[i].node != null
+					)
 					{
 						found = true;
 
@@ -172,10 +174,7 @@ namespace BPlusTree
 				};
 			}
 
-			public override string TypeString()
-			{
-				return "L";
-			}
+			public override string TypeString() => "L";
 
 			public override bool Validate(bool isRoot)
 			{
@@ -205,6 +204,5 @@ namespace BPlusTree
 					(children.Count == 1 && children[0].node == null); // or the only node is shadow infinity
 			}
 		}
-
 	}
 }
