@@ -47,9 +47,7 @@ namespace Test.ORESchemes.Primitives
 
 		[Fact]
 		public void HGLargeInputs()
-		{
-			_sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
-		}
+			=> _sampler.HyperGeometric(Int64.MaxValue / 100, (ulong)UInt32.MaxValue, (ulong)UInt32.MaxValue);
 
 		[Fact]
 		/// <summary>

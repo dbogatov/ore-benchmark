@@ -46,10 +46,7 @@ namespace Simulation.Protocol.POPE
 		/// </summary>
 		public long OrderValue
 		{
-			get
-			{
-				return (long)value * (long)Int32.MaxValue + ((long)origin * (long)(Int32.MaxValue / 4)) + (long)nonce;
-			}
+			get => (long)value * (long)Int32.MaxValue + ((long)origin * (long)(Int32.MaxValue / 4)) + (long)nonce;
 		}
 
 		public Value(int value, int nonce, Origin origin)

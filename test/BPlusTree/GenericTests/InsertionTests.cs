@@ -39,69 +39,55 @@ namespace Test.BPlusTree
 
 		[Fact]
 		public void Initialize()
-		{
-			ConstructTree(_defaultOptions, new List<int>());
-		}
+			=> ConstructTree(_defaultOptions, new List<int>());
 
 		[Fact]
 		public void InsertSingleElement()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				_defaultOptions,
 				new List<int> { 3 }
 			);
-		}
 
 		[Fact]
 		public void TriggerRootSplit()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				_defaultOptions,
 				new List<int> { 3, -2, 8 }
 			);
-		}
 
 		[Fact]
 		public void TriggerInternalSplit()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				_defaultOptions,
 				new List<int> { 3, -2, 8, 6 }
 			);
-		}
 
 		[Fact]
 		public void FromLectureSlides()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				_defaultOptions,
 				new List<int> { 30, 120, 100, 179, 5, 11, 200, 180, 150, 101, 3, 35, 110, 130, 156 }
 			);
-		}
 
 		[Fact]
 		public void SquaresSeries()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				_defaultOptions,
 				Enumerable
 					.Range(1, 100)
 					.Select(val => val * val)
 					.ToList()
 			);
-		}
 
 		[Fact]
 		public void OscillatingSeries()
-		{
-			ConstructTree(
+			=> ConstructTree(
 				OptionsWithBranching(5),
 				Enumerable
 					.Range(1, _max)
 					.Select(val => (val % 2 == 0 ? -1 : 1) * 2 * val + 2 * _max)
 					.ToList()
 			);
-		}
 
 		[Fact]
 		public void RandomSequence()

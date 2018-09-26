@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.Sampler;
@@ -32,10 +33,7 @@ namespace ORESchemes.CryptDBOPE
 		private ISampler _s;
 		private ISampler S
 		{
-			get
-			{
-				return _s;
-			}
+			get => _s;
 			set
 			{
 				SubscribePrimitive(value);
@@ -46,10 +44,7 @@ namespace ORESchemes.CryptDBOPE
 		private TapeGen _t;
 		private TapeGen T
 		{
-			get
-			{
-				return _t;
-			}
+			get => _t;
 			set
 			{
 				SubscribePrimitive(value);
@@ -144,13 +139,8 @@ namespace ORESchemes.CryptDBOPE
 					target.From = y + 1;
 				}
 
-				if (domain.Size < 1)
-				{
-					throw new InvalidOperationException("Should never happen.");
-				}
+				Debug.Assert(domain.Size >= 1);
 			}
-
-			throw new InvalidOperationException("Should never reach this.");
 		}
 
 		public override OPECipher Encrypt(int plaintext, BytesKey key)
@@ -211,13 +201,8 @@ namespace ORESchemes.CryptDBOPE
 					target.From = y + 1;
 				}
 
-				if (domain.Size < 1)
-				{
-					throw new InvalidOperationException("Should never happen.");
-				}
+				Debug.Assert(domain.Size >= 1);
 			}
-
-			throw new InvalidOperationException("Should never reach this.");
 		}
 
 		/// <summary>

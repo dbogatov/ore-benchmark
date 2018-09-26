@@ -18,10 +18,7 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		/// Returns an initialized instance of a ISampler that works on 64 bits unsigned integers
 		/// Requires PRG that will be used as source of randomness
 		/// </summary>
-		public ISampler GetPrimitive()
-		{
-			return new CustomSampler(_prg);
-		}
+		public ISampler GetPrimitive() => new CustomSampler(_prg);
 	}
 
 	public interface ISampler : IPrimitive

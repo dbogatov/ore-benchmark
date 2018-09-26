@@ -5,10 +5,7 @@ namespace ORESchemes.Shared.Primitives.Symmetric
 {
 	public class SymmetricFactory : AbsPrimitiveFactory<ISymmetric>
 	{
-		protected override ISymmetric CreatePrimitive(byte[] entropy)
-		{
-			return new AESSymmetric();
-		}
+		protected override ISymmetric CreatePrimitive(byte[] entropy) => new AESSymmetric();
 	}
 
 	public interface ISymmetric : IPrimitive

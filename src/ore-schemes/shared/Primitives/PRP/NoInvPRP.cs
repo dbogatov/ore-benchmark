@@ -5,10 +5,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 {
 	public class NoInvPRPFactory : AbsPrimitiveFactory<ISimplifiedPRP>
 	{
-		protected override ISimplifiedPRP CreatePrimitive(byte[] entropy)
-		{
-			return new NoInvPRP();
-		}
+		protected override ISimplifiedPRP CreatePrimitive(byte[] entropy) => new NoInvPRP();
 	}
 
 	public class NoInvPRP : AbsPrimitive, ISimplifiedPRP
@@ -41,7 +38,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 		{
 			if (bits < 1 || bits > 8)
 			{
-				throw new ArgumentException("Simplified PRP works only within 1 to {sizeof(byte) * 8} bits.");
+				throw new ArgumentException($"Simplified PRP works only within 1 to {sizeof(byte) * 8} bits.");
 			}
 
 			byte[] permutation = new byte[] {

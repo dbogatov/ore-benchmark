@@ -6,10 +6,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 {
 	public class TablePRPFactory : AbsPrimitiveFactory<ISimplifiedPRP>
 	{
-		protected override ISimplifiedPRP CreatePrimitive(byte[] entropy)
-		{
-			return new TablePRP();
-		}
+		protected override ISimplifiedPRP CreatePrimitive(byte[] entropy) => new TablePRP();
 	}
 
 	public class TablePRP : AbsPrimitive, ISimplifiedPRP

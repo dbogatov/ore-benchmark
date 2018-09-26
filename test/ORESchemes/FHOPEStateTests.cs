@@ -21,9 +21,7 @@ namespace Test.ORESchemes
 
 		[Fact]
 		public void SizeZero()
-		{
-			Assert.Equal(0, _state.GetSize());
-		}
+			=> Assert.Equal(0, _state.GetSize());
 
 		[Fact]
 		public void SizeFewElements()
