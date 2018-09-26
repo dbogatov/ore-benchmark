@@ -47,8 +47,6 @@ namespace Test.ORESchemes.Primitives
 
 		[Fact]
 		public void BinomialLargeInputs()
-		{
-			_sampler.Binomial((ulong)Int32.MaxValue, 0.1 / 100000);
-		}
+			=> _sampler.Binomial((ulong)Int32.MaxValue, 0.1 / 100000);
 	}
 }

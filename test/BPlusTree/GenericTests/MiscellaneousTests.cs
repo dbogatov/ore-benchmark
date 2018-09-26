@@ -30,11 +30,9 @@ namespace Test.BPlusTree
 		[InlineData(1)]
 		[InlineData(70000)]
 		public void MalformedOptions(int branches)
-		{
-			Assert.Throws<ArgumentException>(
+			=> Assert.Throws<ArgumentException>(
 				() => new Options<C>(_scheme, branches)
 			);
-		}
 
 		[Theory]
 		[InlineData(0)]

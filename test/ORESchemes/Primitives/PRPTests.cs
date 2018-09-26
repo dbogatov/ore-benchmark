@@ -68,7 +68,7 @@ namespace Test.ORESchemes.Primitives.PRP
 		{
 			EventsTestsShared.Events<IPRP>(
 				_prp,
-				(P) =>
+				P =>
 				{
 					for (int i = 0; i < 8; i++)
 					{

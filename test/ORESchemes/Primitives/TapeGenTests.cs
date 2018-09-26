@@ -52,7 +52,7 @@ namespace Test.ORESchemes.Primitives.LFPRF
 		{
 			EventsTestsShared.Events<TapeGen>(
 				new TapeGen(keyOne, seedOne),
-				(T) =>
+				T =>
 				{
 					byte[] bytes = new byte[10];
 					T.NextBytes(bytes);

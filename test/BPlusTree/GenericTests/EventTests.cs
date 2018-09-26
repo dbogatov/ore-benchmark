@@ -81,7 +81,6 @@ namespace Test.BPlusTree
 		public void SearchEvents()
 		{
 			// Data node I/Os do not count
-
 			var visited = ProfileVisitedNodes(
 				tree =>
 					Enumerable

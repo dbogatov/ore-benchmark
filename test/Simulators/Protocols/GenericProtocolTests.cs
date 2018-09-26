@@ -55,9 +55,7 @@ namespace Test.Simulators.Protocols.Integration
 
 		[Fact]
 		public void Handshake()
-		{
-			_protocol.RunHandshake();
-		}
+			=> _protocol.RunHandshake();
 
 		[Fact]
 		public void Construction()

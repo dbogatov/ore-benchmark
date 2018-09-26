@@ -30,6 +30,5 @@ namespace Test.BPlusTree
 			tree.TryGetSingle(_scheme.Encrypt(5, _key), out result);
 			Assert.Equal("five", result);
 		}
-
 	}
 }
