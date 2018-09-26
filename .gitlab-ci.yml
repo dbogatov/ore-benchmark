@@ -22,7 +22,7 @@ build-app:
   tags:
   - docker
 
-build-tests:
+.build-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
@@ -53,7 +53,7 @@ build-packages:
   only:
   - master
 
-build-docs:
+.build-docs:
   image: dbogatov/docker-sources:tsgkadot-docker-docfx
   stage: build
   script:
@@ -80,7 +80,7 @@ data-gen:
   # only:
   # - master
 
-coverage-report:
+.coverage-report:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: test
   script:
@@ -93,7 +93,7 @@ coverage-report:
   tags:
   - docker
 
-unit-tests:
+.unit-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -112,7 +112,7 @@ unit-tests:
   tags:
   - docker
 
-integration-tests:
+.integration-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -131,7 +131,7 @@ integration-tests:
   tags:
   - docker
 
-system-protocol-tests:
+.system-protocol-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
@@ -148,7 +148,7 @@ system-protocol-tests:
   tags:
   - docker
 
-system-schemes-tests:
+.system-schemes-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
