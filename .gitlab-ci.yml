@@ -36,7 +36,7 @@ build-app:
   tags:
   - docker
 
-build-packages:
+.build-packages:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
@@ -181,7 +181,7 @@ publish-docker-images:
   # only:
   # - master
 
-publish-packages:
+.publish-packages:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -197,7 +197,7 @@ publish-packages:
   only:
   - master
 
-docs-website:
+.docs-website:
   variables:
     GIT_STRATEGY: none
   stage: release
@@ -212,7 +212,7 @@ docs-website:
   only:
   - master
 
-pages:
+.pages:
   image: dbogatov/docker-images:alpine-extras-latest
   variables:
     GIT_STRATEGY: none
