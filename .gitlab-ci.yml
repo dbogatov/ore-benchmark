@@ -24,7 +24,7 @@ build-app:
   tags:
   - docker
 
-.build-tests:
+build-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
@@ -38,7 +38,7 @@ build-app:
   tags:
   - docker
 
-.build-packages:
+build-packages:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: build
   script:
@@ -55,7 +55,7 @@ build-app:
   only:
   - master
 
-.build-docs:
+build-docs:
   image: dbogatov/docker-sources:tsgkadot-docker-docfx
   stage: build
   script:
@@ -79,10 +79,10 @@ data-gen:
     - ./data/
   tags:
   - docker
-  # only:
-  # - master
+  only:
+  - master
 
-.coverage-report:
+coverage-report:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   stage: test
   script:
@@ -95,7 +95,7 @@ data-gen:
   tags:
   - docker
 
-.unit-tests:
+unit-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -114,7 +114,7 @@ data-gen:
   tags:
   - docker
 
-.integration-tests:
+integration-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -133,7 +133,7 @@ data-gen:
   tags:
   - docker
 
-.system-protocol-tests:
+system-protocol-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
@@ -150,7 +150,7 @@ data-gen:
   tags:
   - docker
 
-.system-schemes-tests:
+system-schemes-tests:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
   variables:
     GIT_STRATEGY: none
@@ -180,10 +180,10 @@ publish-docker-images:
   - data-gen
   tags:
   - shell
-  # only:
-  # - master
+  only:
+  - master
 
-.publish-packages:
+publish-packages:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
     GIT_STRATEGY: none
@@ -199,7 +199,7 @@ publish-docker-images:
   only:
   - master
 
-.docs-website:
+docs-website:
   variables:
     GIT_STRATEGY: none
   stage: release
@@ -214,7 +214,7 @@ publish-docker-images:
   only:
   - master
 
-.pages:
+pages:
   image: dbogatov/docker-images:alpine-extras-latest
   variables:
     GIT_STRATEGY: none

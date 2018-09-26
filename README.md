@@ -7,7 +7,7 @@ One of the most promising approaches to perform database queries over encrypted 
 Order Preserving Encryption (OPE) and Order Revealing Encryption (ORE) schemes are examples of encryption schemes that trade security for performance and fit very well database systems approaches. However, until now, there is no clear comparison between the different schemes and protocols that have been proposed in this area.
 In this paper, we present the first comprehensive comparison among a number of important OPE and ORE schemes using a new framework that we implemented from scratch.
 We analyze and compare the schemes and protocols both theoretically and experimentally in a unified setting.
-Our comparison reveals some interest- ing results concerning the relative security and performance of these schemes and protocols.
+Our comparison reveals some interesting results concerning the relative security and performance of these schemes and protocols.
 Furthermore, we propose a number of improvements for some of these schemes and provide a number of suggestions and recommendation that will be valuable to database system designers and practitioners.
 
 ## Analyzed schemes and protocols
