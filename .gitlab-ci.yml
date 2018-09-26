@@ -170,9 +170,9 @@ publish-docker-images:
     GIT_STRATEGY: none
   stage: release
   script:
-  - docker build -t dbogatov/ore-benchmark src/
+  - docker build -t dbogatov/ore-benchmark .
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - docker push dbogatov/ore-benchmark src/
+  - docker push dbogatov/ore-benchmark
   dependencies:
   - build-app
   - data-gen
