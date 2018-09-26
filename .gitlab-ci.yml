@@ -50,6 +50,8 @@ build-packages:
     - ./src/ore-schemes/*/dist/*.nupkg
   tags:
   - docker
+  only:
+  - master
 
 build-docs:
   image: dbogatov/docker-sources:tsgkadot-docker-docfx
@@ -63,6 +65,20 @@ build-docs:
     - ./docs/nginx.conf
   tags:
   - docker
+
+data-gen:
+  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  stage: build
+  script:
+  - apk add --update bash
+  - ./tools/data-gen/generate.sh -d 2500 -q 50 -s 1305
+  artifacts:
+    paths:
+    - ./data/
+  tags:
+  - docker
+  # only:
+  # - master
 
 coverage-report:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
@@ -149,6 +165,22 @@ system-schemes-tests:
   tags:
   - docker
 
+publish-docker-images:
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - docker build -t dbogatov/ore-benchmark src/
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker push dbogatov/ore-benchmark src/
+  dependencies:
+  - build-app
+  - data-gen
+  tags:
+  - shell
+  # only:
+  # - master
+
 publish-packages:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
   variables:
@@ -177,6 +209,8 @@ docs-website:
   - build-docs
   tags:
   - shell
+  only:
+  - master
 
 pages:
   image: dbogatov/docker-images:alpine-extras-latest

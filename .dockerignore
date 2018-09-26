@@ -1,0 +1,6 @@
+# Ignore everything
+**
+
+# Allow these files and directories
+!/data
+!/src/cli/dist
