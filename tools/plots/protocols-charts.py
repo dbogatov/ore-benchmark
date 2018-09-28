@@ -44,8 +44,6 @@ with open("./data/protocols-{0}.txt".format(value)) as fp:
 ind = np.arange(N - 2)
 width = 1.0 / 6
 
-print(len(uniform))
-
 alpha = 0.5
 
 plt.style.use('grayscale')
@@ -54,13 +52,13 @@ if value != "qsize":
     f, (ax, ax2) = plt.subplots(2, 1, sharex=True)
 
     for axis in [ax, ax2]:
-        axis.bar(ind, uniform, width, alpha=alpha, edgecolor="black", label='Uniform')
+        axis.bar(ind, uniform, width, alpha=alpha, edgecolor="black", label='Uniform distribution')
         axis.bar(ind + width, normal, width, alpha=alpha,
-                edgecolor="black", label='Normal')
+                edgecolor="black", label='Normal distribution')
         # plt.bar(ind + 2 * width, zipf, width, alpha=alpha,
         #         edgecolor="black", label='Zipf')
         axis.bar(ind + 2 * width, employees, width, alpha=alpha,
-                edgecolor="black", label='CA employees')
+                edgecolor="black", label='CA public employees dataset')
         # plt.bar(ind + 4 * width, forest, width, alpha=alpha,
         #         edgecolor="black", label='Forest Cover')
 
@@ -108,13 +106,13 @@ if value != "qsize":
 
     f.subplots_adjust(bottom=0.2)
 else:
-    plt.bar(ind, uniform, width, alpha=alpha, edgecolor="black", label='Uniform')
+    plt.bar(ind, uniform, width, alpha=alpha, edgecolor="black", label='Uniform distribution')
     plt.bar(ind + width, normal, width, alpha=alpha,
-            edgecolor="black", label='Normal')
+            edgecolor="black", label='Normal distribution')
     # plt.bar(ind + 2 * width, zipf, width, alpha=alpha,
     #         edgecolor="black", label='Zipf')
     plt.bar(ind + 2 * width, employees, width, alpha=alpha,
-            edgecolor="black", label='CA employees')
+            edgecolor="black", label='CA public employees dataset')
     # plt.bar(ind + 4 * width, forest, width, alpha=alpha,
     #         edgecolor="black", label='Forest Cover')
 

@@ -51,15 +51,15 @@ plt.style.use('grayscale')
 f, (ax, ax2) = plt.subplots(2, 1, sharex=True)
 
 for axis in [ax, ax2]:
-    axis.bar(ind, queries05, width, alpha=alpha, edgecolor="black", label='0.5%')
+    axis.bar(ind, queries05, width, alpha=alpha, edgecolor="black", label='0.5% of query range')
     axis.bar(ind + width, queries10, width, alpha=alpha,
-            edgecolor="black", label='1%')
+            edgecolor="black", label='1% of query range')
     axis.bar(ind + 2 * width, queries15, width, alpha=alpha,
-            edgecolor="black", label='1.5%')
+            edgecolor="black", label='1.5% of query range')
     axis.bar(ind + 3 * width, queries20, width, alpha=alpha,
-            edgecolor="black", label='2%')
+            edgecolor="black", label='2% of query range')
     axis.bar(ind + 4 * width, queries30, width, alpha=alpha,
-            edgecolor="black", label='3%')
+            edgecolor="black", label='3% of query range')
 
 ax.set_ylim(100, 2200)  # outliers only
 ax2.set_ylim(0, 45)  # most of the data

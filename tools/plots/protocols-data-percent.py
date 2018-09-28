@@ -51,15 +51,15 @@ plt.style.use('grayscale')
 f, (ax, ax2) = plt.subplots(2, 1, sharex=True)
 
 for axis in [ax, ax2]:
-    axis.bar(ind, percent5, width, alpha=alpha, edgecolor="black", label='5%')
+    axis.bar(ind, percent5, width, alpha=alpha, edgecolor="black", label='5% of data')
     axis.bar(ind + width, percent10, width, alpha=alpha,
-            edgecolor="black", label='10%')
+            edgecolor="black", label='10% of data')
     axis.bar(ind + 2 * width, percent20, width, alpha=alpha,
-            edgecolor="black", label='20%')
+            edgecolor="black", label='20% of data')
     axis.bar(ind + 3 * width, percent50, width, alpha=alpha,
-            edgecolor="black", label='50%')
+            edgecolor="black", label='50% of data')
     axis.bar(ind + 4 * width, percent100, width, alpha=alpha,
-            edgecolor="black", label='100%')
+            edgecolor="black", label='100% of data')
 
 if value == "cios":
     ax.set_ylim(20, 500)  # outliers only
@@ -68,7 +68,7 @@ if value == "cvol":
     ax.set_ylim(29, 42)  # outliers only
     ax2.set_ylim(0, 5.5)  # most of the data
 elif value == "csize":
-    ax.set_ylim(315, 570)  # outliers only
+    ax.set_ylim(315, 700)  # outliers only
     ax2.set_ylim(0, 55)  # most of the data
 elif value == "qios":
     ax.set_ylim(150, 2200)  # outliers only
