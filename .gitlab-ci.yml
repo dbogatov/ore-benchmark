@@ -2,6 +2,9 @@ stages:
 - build
 - test
 - release
+- deploy
+
+include: 'https://git.dbogatov.org/templates/ci-snippets/raw/master/trigger-websites-deploy.yml'
 
 build-app:
   image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine

@@ -1,5 +1,8 @@
 # ORE Schemes Simulator
 
+The paper is submitted to VLDB.
+See [technical report on eprint](https://eprint.iacr.org/2018/953.pdf).
+
 ## Abstract
 
 Database operations over encrypted data has received a lot of attention recently due to increasing security concerns for many database applications.
