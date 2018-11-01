@@ -8,7 +8,7 @@ cd "${0%/*}"
 CWD=$(pwd)
 
 SIMULATION=false
-SPACE="vadim-dolores-space"
+SPACE="sandor-dolores-space"
 
 usage() { echo "Usage: $0 [-p -s -b -r -S]" 1>&2; exit 1; }
 
