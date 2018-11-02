@@ -200,7 +200,10 @@ publish-packages:
   tags:
   - docker
   only:
-  - master
+    refs:
+      - master
+    changes:
+      - version.txt
 
 docs-website:
   variables:

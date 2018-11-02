@@ -3,6 +3,9 @@
 The paper is submitted to VLDB.
 See [technical report on eprint](https://eprint.iacr.org/2018/953.pdf).
 
+George Kollios and Dmytro Bogatov were supported by an NSF SaTC Frontier Award CNS-1414119.
+Leonid Reyzin was supported in part by NSF grant 1422965.
+
 ## Abstract
 
 Database operations over encrypted data has received a lot of attention recently due to increasing security concerns for many database applications.
