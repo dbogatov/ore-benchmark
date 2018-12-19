@@ -6,8 +6,12 @@ stages:
 
 include: 'https://git.dbogatov.org/templates/ci-snippets/raw/master/trigger-websites-deploy.yml'
 
+variables:
+  DOTNET_SDK_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-sdk-alpine"
+  DOTNET_RUNTIME_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-runtime-alpine"
+
 build-app:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   stage: build
   script:
   - printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
@@ -28,7 +32,7 @@ build-app:
   - docker
 
 build-tests:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   stage: build
   script:
   - dotnet restore --disable-parallel test/
@@ -42,7 +46,7 @@ build-tests:
   - docker
 
 build-packages:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   stage: build
   script:
   - apk add --update bash 
@@ -72,7 +76,7 @@ build-docs:
   - docker
 
 data-gen:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   stage: build
   script:
   - apk add --update bash
@@ -86,7 +90,7 @@ data-gen:
   - master
 
 coverage-report:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   stage: test
   script:
   - apk add --update bash
@@ -99,7 +103,7 @@ coverage-report:
   - docker
 
 unit-tests:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -118,7 +122,7 @@ unit-tests:
   - docker
 
 integration-tests:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -137,7 +141,7 @@ integration-tests:
   - docker
 
 system-protocol-tests:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
+  image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -154,7 +158,7 @@ system-protocol-tests:
   - docker
 
 system-schemes-tests:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-runtime-alpine
+  image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
   stage: test
@@ -187,7 +191,7 @@ publish-docker-images:
   - master
 
 publish-packages:
-  image: dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine
+  image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
   stage: release
