@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Web.Models.Data;
 using Web.Models.View;
 
@@ -26,6 +25,20 @@ namespace Web.Controllers
 		public IActionResult Simulation(int id)
 		{
 			return View(_context.Simulations.First(s => s.Id == id));
+		}
+
+		public IActionResult Raw(int id)
+		{
+			return File(
+				Encoding.ASCII.GetBytes(
+					JsonConvert.SerializeObject(
+						_context.Simulations.First(s => s.Id == id).Result, 
+						new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+					) 
+				),
+				"application/json", 
+				"simulation-result.json"
+			);
 		}
 
 		public IActionResult Queue()

@@ -1,27 +1,165 @@
 @using Web.Models.Data.Entities
+@using Simulation.Protocol
+@using ORESchemes.Shared.Primitives
 @model Web.Models.Data.Entities.SingleSimulation
 
 @{
-    ViewData["Title"] = $"Simulation {Model.Id} result";
+    ViewData["Title"] = $"Simulation #{Model.Id} result";
 }
 
-<div class="row">
-	<div class="col-md-12">
-		Simulation @Model.Id is
+<div class="text-center">
+    <h2 class="display-4">Simulation #@Model.Id</h2>
+	
+    <p>
 		@switch(Model.Status)
 		{
 			case Status.Pending:
-				@: Pending
+				@: Simulation is enqueued. 
+				@: Please check again later.
 				break;
 			case Status.Completed:
-				@: Completed
+				@: Simulation has been completed, please see the results below.<br>
+				<a asp-controller="Home" asp-action="Raw" asp-route-id="@Model.Id">
+					Download JSON with per-query reports
+				</a>
 				break;
 			case Status.InProgress:
-				@: In progress
+				@: Simulation is running, check again soon.
 				break;
 			case Status.Failed:
-				@: Failed
+				@: Simulation has failed. 
+				@: We are investingating the issue. 
+				@: Most likely, malformed inputs were provided (eg. range 6 to 4)
 				break;
 		}
+	</p>
+</div>
+
+@if(Model.Status == Status.Completed)
+{
+	<hr>
+	
+	<div class="row">
+		<div class="col-md-4">
+			<div class="text-center">
+				<h3>Inputs</h3>
+			</div>
+			<p><b>Seed:</b> @Model.Seed</p>
+			<p><b>Protocol:</b> @Model.Protocol</p>
+			<p><b>Cache size:</b> @Model.CacheSize</p>
+			<p><b>Data and query sets are below</b></p>
+		</div>
+		<div class="col-md-8">
+			<div class="text-center">
+				<h3>Legend</h3>
+			</div>
+			<p>
+				Description
+			</p>
+		</div>
+	</div>
+	
+	<hr>
+	
+	@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
+	{
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h3>@stage stage results</h3>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6">
+				<p><b>I/O requests:</b> @(((Report.SubReport)Model.Result.Stages[stage]).IOs)</p>
+				<p><b>Number of queries:</b> @(((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)</p>
+				<p><b>Number of OPE/ORE scheme operations:</b> @(((Report.SubReport)Model.Result.Stages[stage]).SchemeOperations)</p>
+				<p><b>Observed time (may be inaccurate):</b> @(((Report.SubReport)Model.Result.Stages[stage]).ObservedTime)</p>
+				<p><b>Communication volume:</b> @(((Report.SubReport)Model.Result.Stages[stage]).CommunicationVolume / 8) byte(s)</p>
+				<p><b>Communication size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MessagesSent) messages</p>
+				<p><b>Max client storage size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MaxClientStorage / 8) bytes</p>
+			</div>
+			
+			<div class="col-md-6">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Primitive</th>
+							<th scope="col">Total</th>
+							<th scope="col">Pure</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var primitive in Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v))
+						{
+							@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] != 0)
+							{
+								<tr>
+									<th scope="row">@primitive.ToString()</th>
+									<td>@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive])</td>
+									<td>@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive])</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
+}
+
+<hr>
+
+<div class="text-center" style="padding-bottom: 20px;">
+	<h3>Original input data and query sets</h3>
+</div>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h4>Data set</h3>
+		</div>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Index</th>
+					<th scope="col">Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var record in Model.Dataset)
+				{
+					<tr>
+						<th scope="row">@record.index</th>
+						<td>@record.value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="col-md-6">
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h4>Query set</h3>
+		</div>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">From</th>
+					<th scope="col">To</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var query in Model.Queryset)
+				{
+					<tr>
+						<td>@query.from</td>
+						<td>@query.to</td>
+					</tr>
+				}
+			</tbody>
+		</table>
 	</div>
 </div>
+					
+					

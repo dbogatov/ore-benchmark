@@ -1,8 +1,11 @@
+@using Web.Models.Data.Entities
+@using Web.Models.Data.Entities
+@model List<Web.Models.Data.Entities.SingleSimulation>
+
 @{
     ViewData["Title"] = "Simulations Queue";
 }
 
-@model List<Web.Models.Data.Entities.SingleSimulation>
 
 <div class="row">
 	<div class="col-md-12">
@@ -11,6 +14,8 @@
 				<tr>
 					<th scope="col">ID</th>
 					<th scope="col">Created At</th>
+					<th scope="col">Completed At</th>
+					<th scope="col">Elapsed Time</th>
 					<th scope="col">Status</th>
 				</tr>
 			</thead>
@@ -24,7 +29,44 @@
 							</a>
 						</th>
 						<td>@simulation.Created</td>
-						<td>@simulation.Status</td>
+						<td>
+							@if(simulation.Status == Status.Completed)
+							{
+								@simulation.Completed
+							} else {
+								@: Not completed yet
+							}
+						</td>
+						<td>
+							@if(simulation.Status == Status.Completed)
+							{
+								@Math.Round(simulation.Completed.Subtract(simulation.Started).TotalSeconds)
+								@: seconds
+							} else {
+								@: Not completed yet
+							}
+						</td>
+						<td>
+							@switch(simulation.Status)
+							{
+								case Status.Pending:
+									@: Pending
+									break;
+								case Status.Completed:
+									<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+										Completed
+									</a>
+									break;
+								case Status.InProgress:
+									@: Running
+									break;
+								case Status.Failed:
+									<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+										Failed
+									</a>
+									break;
+							}
+						</td>
 					</tr>
 				}
 			</tbody>

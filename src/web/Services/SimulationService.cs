@@ -36,7 +36,6 @@ namespace Web.Services
 		public async Task<bool> SimulateAsync()
 		{
 			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "Simulation service looking for pending simulations...");
-			
 			if (await _context.Simulations.AnyAsync(s => s.Status == Status.Pending))
 			{
 				var simulation = await _context
@@ -61,12 +60,22 @@ namespace Web.Services
 								ActionsNumber = 3,
 								SchemeOperations = 4,
 								ObservedTime = TimeSpan.FromMinutes(6),
-								TotalPrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 25 }
-								},
-								PurePrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 35 }
-								},
+								TotalPrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 15L
+										),
+								PurePrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 25L
+										),
 								CacheSize = 50,
 								IOs = 5,
 								CommunicationVolume = 20,
@@ -80,12 +89,22 @@ namespace Web.Services
 								ActionsNumber = 31,
 								SchemeOperations = 41,
 								ObservedTime = TimeSpan.FromMinutes(61),
-								TotalPrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 251 }
-								},
-								PurePrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 351 }
-								},
+								TotalPrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 15L
+										),
+								PurePrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 25L
+										),
 								CacheSize = 501,
 								IOs = 51,
 								CommunicationVolume = 201,
@@ -99,12 +118,22 @@ namespace Web.Services
 								ActionsNumber = 32,
 								SchemeOperations = 42,
 								ObservedTime = TimeSpan.FromMinutes(62),
-								TotalPrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 252 }
-								},
-								PurePrimitiveOperations = new Dictionary<Primitive, long>{
-									{ Primitive.AES, 352 }
-								},
+								TotalPrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 15L
+										),
+								PurePrimitiveOperations = 
+									Enum
+										.GetValues(typeof(Primitive))
+										.Cast<Primitive>()
+										.ToDictionary(
+											p => p,
+											v => 25L
+										),
 								CacheSize = 502,
 								IOs = 52,
 								CommunicationVolume = 202,
@@ -115,12 +144,22 @@ namespace Web.Services
 										ActionsNumber = 33,
 										SchemeOperations = 43,
 										ObservedTime = TimeSpan.FromMinutes(63),
-										TotalPrimitiveOperations = new Dictionary<Primitive, long>{
-											{ Primitive.AES, 253 }
-										},
-										PurePrimitiveOperations = new Dictionary<Primitive, long>{
-											{ Primitive.AES, 353 }
-										},
+										TotalPrimitiveOperations = 
+											Enum
+												.GetValues(typeof(Primitive))
+												.Cast<Primitive>()
+												.ToDictionary(
+													p => p,
+													v => 15L
+												),
+										PurePrimitiveOperations = 
+											Enum
+												.GetValues(typeof(Primitive))
+												.Cast<Primitive>()
+												.ToDictionary(
+													p => p,
+													v => 25L
+										),
 										CacheSize = 503,
 										IOs = 53,
 										CommunicationVolume = 203,
@@ -131,12 +170,22 @@ namespace Web.Services
 										ActionsNumber = 34,
 										SchemeOperations = 44,
 										ObservedTime = TimeSpan.FromMinutes(64),
-										TotalPrimitiveOperations = new Dictionary<Primitive, long>{
-											{ Primitive.AES, 254 }
-										},
-										PurePrimitiveOperations = new Dictionary<Primitive, long>{
-											{ Primitive.AES, 354 }
-										},
+										TotalPrimitiveOperations = 
+											Enum
+												.GetValues(typeof(Primitive))
+												.Cast<Primitive>()
+												.ToDictionary(
+													p => p,
+													v => 15L
+												),
+										PurePrimitiveOperations = 
+											Enum
+												.GetValues(typeof(Primitive))
+												.Cast<Primitive>()
+												.ToDictionary(
+													p => p,
+													v => 25L
+												),
 										CacheSize = 504,
 										IOs = 54,
 										CommunicationVolume = 204,
