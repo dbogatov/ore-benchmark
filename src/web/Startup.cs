@@ -6,55 +6,131 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
+using Web.Extensions;
+using Web.Models.Data;
+using Web.Services;
 
-namespace web
+namespace Web
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	public class Startup
+	{
+		/// <summary>
+		/// This method gets called by the runtime. Used to build a global configuration object.
+		/// </summary>
+		/// <param name="env"></param>
+		public Startup(IHostingEnvironment env)
+		{
+			var builder = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json", optional: false) // read defaults first
+				.AddJsonFile(
+					$"{(env.IsProduction() ? "/run/secrets/settings/" : "")}appsettings.{env.EnvironmentName.ToLower()}.json",
+					optional: env.IsStaging()
+				) // override with specific settings file
+				.AddJsonFile("version.json", optional: true)
+				.AddEnvironmentVariables();
+			Configuration = builder.Build();
 
-        public IConfiguration Configuration { get; }
+			CurrentEnvironment = env;
+		}
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+		/// <summary>
+		/// Global configuration object.
+		/// Gets built by Startup method.
+		/// </summary>
+		public IConfigurationRoot Configuration { get; }
 
+		private IHostingEnvironment CurrentEnvironment { get; set; }
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-        }
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services
+				.AddEntityFrameworkInMemoryDatabase()
+				.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db"));
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+			services.AddTransient<IDataContext, DataContext>();
 
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
+			services.AddTransient<ISeedService, SeedService>();
+			services.AddTransient<ICleanService, CleanService>();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
-    }
+			services.AddSingleton<IConfiguration>(Configuration);
+			services.AddSingleton<IHostingEnvironment>(CurrentEnvironment);
+
+			services.AddMemoryCache();
+			services.AddSession();
+
+			// Add framework services.
+			services
+				.AddMvc()
+				.AddJsonOptions(opt =>
+					{
+						var resolver = opt.SerializerSettings.ContractResolver;
+						if (resolver != null)
+						{
+							var res = resolver as DefaultContractResolver;
+							res.NamingStrategy = null; // this removes the camelcasing
+						}
+					})
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+			// lowercase all generated url within the app
+			services.AddRouting(options => { options.LowercaseUrls = true; });
+
+			// Add Cross Origin Security service
+			services.AddCors();
+		}
+
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(
+			IApplicationBuilder app,
+			IHostingEnvironment env,
+			ILoggerFactory loggerFactory,
+			IServiceProvider serviceProvider
+		)
+		{
+			loggerFactory
+				.AddExtendedLogger(
+					env.IsTesting() ? LogLevel.Error : Configuration["Logging:MinLogLevel"].ToEnum<LogLevel>(),
+					Configuration.StringsFromArray("Logging:Exclude").ToArray()
+				);
+
+			if (env.IsProduction())
+			{
+				app.UseExceptionHandler("/error"); // All serverside exceptions redirect to error page
+				app.UseStatusCodePagesWithReExecute("/error/{0}");
+			}
+			else
+			{
+				app.UseDatabaseErrorPage();
+				app.UseDeveloperExceptionPage(); // Print full stack trace
+			}
+
+			app.UseSession();
+
+			app.UseCors(builder => builder.WithOrigins("*"));
+
+			app.UseStaticFiles(); // make accessible and cache wwwroot files
+			app.UseDefaultFiles(); // in wwwroot folder, index.html is served when opening a directory
+
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					name: "default",
+					template: "{controller=Home}/{action=Index}/{id?}");
+			});
+
+			using (var context = serviceProvider.GetService<IDataContext>())
+			{
+				// create scheme if it does not exist
+				context.Database.EnsureCreated();
+			}
+
+			serviceProvider.GetRequiredService<ISeedService>().SeedDataAsync().Wait();
+		}
+	}
 }

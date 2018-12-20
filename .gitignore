@@ -2,9 +2,13 @@
 **/bin/
 **/dist/
 
+!src/web/wwwroot/*
+!src/web/wwwroot/**/*
+
 results/
 
 data/
+!src/web/Models/Data/
 
 docs/_site
 docs/index.html

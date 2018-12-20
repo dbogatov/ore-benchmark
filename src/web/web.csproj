@@ -2,12 +2,26 @@
 
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.2</TargetFramework>
-		<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+		<!-- <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel> -->
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<AppSettings Include="appsettings*.*"/>
+	</ItemGroup>
+	<Target Name="CopyAppsettings" AfterTargets="Build">
+		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)/publish" ContinueOnError="false" />
+		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)/" ContinueOnError="false" />
+	</Target>
+	<Target Name="CopyVersion" AfterTargets="Build">
+		<Copy SourceFiles="../version.json" DestinationFolder="$(OutputPath)/publish" ContinueOnError="true" />
+		<Copy SourceFiles="../version.json" DestinationFolder="$(OutputPath)/" ContinueOnError="true" />
+	</Target>
 
 </Project>
