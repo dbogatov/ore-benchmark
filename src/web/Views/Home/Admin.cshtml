@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Admin Page";
+}
+
+@model List<Web.Models.Data.Entities.Simulation>
+
+<div class="row">
+	<div class="col-md-12">
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">TimeStamp</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var simulation in Model)
+				{
+					<tr>
+						<th scope="row">@simulation.Id</th>
+						<td>@simulation.Timestamp</td>
+						<td>@simulation.Status</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
