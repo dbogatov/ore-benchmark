@@ -118,9 +118,53 @@ namespace Web.Services
 					_logger.LogError(
 						LoggingEvents.Daemon.AsInt(),
 						e,
-						"Something terribly wrong happend to Clean Service run in Service Manager"
+						"Something terribly wrong happend to Clean Service run in Daemon"
 					);
 					Thread.Sleep(_intervals[Services.Clean]);
+				}
+			}
+		}
+
+		private async Task RunSimulationServiceAsync()
+		{
+			_logger.LogInformation(LoggingEvents.Daemon.AsInt(), "Simulation service started.");
+
+			while (true)
+			{
+				// Check exit condition
+				if (!_status[Services.Simulation])
+				{
+					_logger.LogInformation(LoggingEvents.Daemon.AsInt(), "Simulation service stopped.");
+					break;
+				}
+
+				try
+				{
+					bool simulationRun;
+					using (var scope = _serviceProvider.CreateScope())
+					{
+						// Run the task, wait to completion
+						simulationRun = await scope
+							.ServiceProvider
+							.GetRequiredService<ISimulationService>()
+							.SimulateAsync();
+					}
+					// Wait
+					if (!simulationRun)
+					{
+						Thread.Sleep(_intervals[Services.Simulation]);
+					}
+
+					_logger.LogInformation(LoggingEvents.Daemon.AsInt(), "Simulation service run complete");
+				}
+				catch (System.Exception e)
+				{
+					_logger.LogError(
+						LoggingEvents.Daemon.AsInt(),
+						e,
+						"Something terribly wrong happend to Simulation Service run in Daemon"
+					);
+					Thread.Sleep(_intervals[Services.Simulation]);
 				}
 			}
 		}
@@ -129,7 +173,8 @@ namespace Web.Services
 		{
 			// Define tasks and run them
 			var tasks = new List<Task>() {
-				Task.Run(RunCleanServiceAsync)
+				Task.Run(RunCleanServiceAsync),
+				Task.Run(RunSimulationServiceAsync)
 			}.ToArray();
 
 			await Task.WhenAll(tasks);

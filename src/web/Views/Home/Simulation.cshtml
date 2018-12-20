@@ -1,0 +1,27 @@
+@using Web.Models.Data.Entities
+@model Web.Models.Data.Entities.SingleSimulation
+
+@{
+    ViewData["Title"] = $"Simulation {Model.Id} result";
+}
+
+<div class="row">
+	<div class="col-md-12">
+		Simulation @Model.Id is
+		@switch(Model.Status)
+		{
+			case Status.Pending:
+				@: Pending
+				break;
+			case Status.Completed:
+				@: Completed
+				break;
+			case Status.InProgress:
+				@: In progress
+				break;
+			case Status.Failed:
+				@: Failed
+				break;
+		}
+	</div>
+</div>

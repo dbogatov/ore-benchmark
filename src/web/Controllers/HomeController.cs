@@ -23,12 +23,12 @@ namespace Web.Controllers
 			return View();
 		}
 
-		public IActionResult Privacy()
+		public IActionResult Simulation(int id)
 		{
-			return View();
+			return View(_context.Simulations.First(s => s.Id == id));
 		}
 
-		public IActionResult Admin()
+		public IActionResult Queue()
 		{
 			return View(_context.Simulations.ToList());
 		}

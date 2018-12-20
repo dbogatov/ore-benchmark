@@ -2,14 +2,19 @@
 
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.2</TargetFramework>
-		<!-- <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel> -->
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\simulator\simulator.csproj" />
+		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+		<PackageReference Include="Moq" Version="4.8.3" />
 	</ItemGroup>
 
 	<ItemGroup>

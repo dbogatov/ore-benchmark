@@ -1,8 +1,8 @@
 @{
-    ViewData["Title"] = "Admin Page";
+    ViewData["Title"] = "Simulations Queue";
 }
 
-@model List<Web.Models.Data.Entities.Simulation>
+@model List<Web.Models.Data.Entities.SingleSimulation>
 
 <div class="row">
 	<div class="col-md-12">
@@ -10,7 +10,7 @@
 			<thead>
 				<tr>
 					<th scope="col">ID</th>
-					<th scope="col">TimeStamp</th>
+					<th scope="col">Created At</th>
 					<th scope="col">Status</th>
 				</tr>
 			</thead>
@@ -18,8 +18,12 @@
 				@foreach (var simulation in Model)
 				{
 					<tr>
-						<th scope="row">@simulation.Id</th>
-						<td>@simulation.Timestamp</td>
+						<th scope="row">
+							<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+								@simulation.Id
+							</a>
+						</th>
+						<td>@simulation.Created</td>
 						<td>@simulation.Status</td>
 					</tr>
 				}

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +14,12 @@ using Web.Services;
 
 namespace Web
 {
+	public static class Global
+	{
+		public static int RunnerID = new Random().Next();
+		public static readonly InMemoryDatabaseRoot InMemoryDatabaseRoot = new InMemoryDatabaseRoot();
+	}
+
 	public class Startup
 	{
 		/// <summary>
@@ -49,17 +52,7 @@ namespace Web
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services
-				.AddEntityFrameworkInMemoryDatabase()
-				.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db"));
-
-			services.AddTransient<IDataContext, DataContext>();
-
-			services.AddTransient<ISeedService, SeedService>();
-			services.AddTransient<ICleanService, CleanService>();
-
-			services.AddSingleton<IConfiguration>(Configuration);
-			services.AddSingleton<IHostingEnvironment>(CurrentEnvironment);
+			services.RegisterSharedServices(CurrentEnvironment, Configuration);
 
 			services.AddMemoryCache();
 			services.AddSession();

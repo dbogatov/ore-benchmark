@@ -5,12 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Web.Models.Data.Entities;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using Simulation.Protocol;
 
 namespace Web.Models.Data
 {
 	public interface IDataContext : IDisposable
 	{
-		DbSet<Simulation> Simulations { get; set; }
+		DbSet<SingleSimulation> Simulations { get; set; }
 
 		DatabaseFacade Database { get; }
 
@@ -29,6 +32,35 @@ namespace Web.Models.Data
 	{
 		public DataContext(DbContextOptions options) : base(options) { }
 
-		public DbSet<Simulation> Simulations { get; set; }
+		public DbSet<SingleSimulation> Simulations { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			builder
+				.Entity<SingleSimulation>()
+				.Property(s => s.Dataset)
+				.HasConversion(
+					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+					v => JsonConvert.DeserializeObject<IList<Record>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+				);
+				
+			builder
+				.Entity<SingleSimulation>()
+				.Property(s => s.Queryset)
+				.HasConversion(
+					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+					v => JsonConvert.DeserializeObject<IList<RangeQuery>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+				);
+				
+			builder
+				.Entity<SingleSimulation>()
+				.Property(s => s.Result)
+				.HasConversion(
+					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+					v => JsonConvert.DeserializeObject<Report>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+				);
+
+			base.OnModelCreating(builder);
+		}
 	}
 }

@@ -210,6 +210,6 @@ namespace Web.Extensions
 	/// </summary>
 	public enum LoggingEvents
 	{
-		Startup = 1, Daemon, Clean
+		Startup = 1, Daemon, Clean, Simulation
 	}
 }

@@ -41,7 +41,7 @@ namespace Web.Services
 			_context = context;
 			_maxAge = new TimeSpan(
 				0, 0, Convert.ToInt32(
-					config["Services:CleanService:MaxAge"]
+					config["Daemon:CleanService:MaxAge"]
 				)
 			);
 		}
@@ -51,16 +51,16 @@ namespace Web.Services
 			var toTimestamp = DateTime.UtcNow - (maxAge ?? _maxAge);
 
 			// Remove data of all types
-			if (await _context.Simulations.AnyAsync(dp => dp.Timestamp < toTimestamp))
+			if (await _context.Simulations.AnyAsync(dp => dp.Completed < toTimestamp))
 			{
 				_context.Simulations.RemoveRange(
-					_context.Simulations.Where(dp => dp.Timestamp < toTimestamp)
+					_context.Simulations.Where(dp => dp.Completed < toTimestamp)
 				);
 			}
 			
 			await _context.SaveChangesAsync();
 
-			_logger.LogDebug(LoggingEvents.Clean.AsInt(), "Cleaned old data.");
+			_logger.LogInformation(LoggingEvents.Clean.AsInt(), "Cleaned old data.");
 		}
 	}
 }
