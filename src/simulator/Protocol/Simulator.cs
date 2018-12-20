@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Linq;
+using BPlusTree;
+using ORESchemes.AdamORE;
+using ORESchemes.CryptDBOPE;
+using ORESchemes.PracticalORE;
+using ORESchemes.Shared;
 
 namespace Simulation.Protocol
 {
@@ -67,6 +72,81 @@ namespace Simulation.Protocol
 			result.Stages[Stages.Queries] = Profile(() => _protocol.RunQueryProtocol(_inputs.Queries), stage: Stages.Queries);
 
 			return result;
+		}
+		
+		public static IProtocol GenerateProtocol(ORESchemes.Shared.ORESchemes scheme, int seed, int branches)
+		{
+			switch (scheme)
+			{
+				case ORESchemes.Shared.ORESchemes.NoEncryption:
+					return
+						new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
+							new Options<OPECipher>(
+								new NoEncryptionFactory().GetScheme(),
+								branches
+							),
+							new NoEncryptionFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.CryptDB:
+					return
+						new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, OPECipher, BytesKey>(
+							new Options<OPECipher>(
+								new CryptDBOPEFactory().GetScheme(),
+								branches
+							),
+							new CryptDBOPEFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.PracticalORE:
+					return
+						new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>(
+							new Options<ORESchemes.PracticalORE.Ciphertext>(
+								new PracticalOREFactory().GetScheme(),
+								branches
+							),
+							new PracticalOREFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.LewiORE:
+					return
+						new Simulation.Protocol.LewiORE.Protocol(
+							new Options<ORESchemes.LewiORE.Ciphertext>(
+								new LewiOREFactory().GetScheme(),
+								branches
+							),
+							new LewiOREFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.FHOPE:
+					return
+						new Simulation.Protocol.FHOPE.Protocol(
+							new Options<ORESchemes.FHOPE.Ciphertext>(
+								new FHOPEFactory().GetScheme(),
+								branches
+							),
+							new FHOPEFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					return
+						new Simulation.Protocol.SimpleORE.Protocol<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
+							new Options<ORESchemes.AdamORE.Ciphertext>(
+								new AdamOREFactory().GetScheme(),
+								branches
+							),
+							new AdamOREFactory(seed).GetScheme()
+						);
+				case ORESchemes.Shared.ORESchemes.Florian:
+					return
+						new Simulation.Protocol.Florian.Protocol(
+							new Random(seed).GetBytes(128 / 8),
+							branches
+						);
+				case ORESchemes.Shared.ORESchemes.POPE:
+					return
+						new Simulation.Protocol.POPE.Protocol(
+							new Random(seed).GetBytes(128 / 8),
+							branches
+						);
+				default:
+					throw new NotImplementedException($"Scheme {scheme} is not yet supported");
+			}
 		}
 	}
 

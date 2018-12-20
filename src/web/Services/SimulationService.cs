@@ -76,154 +76,38 @@ namespace Web.Services
 
 				await _context.SaveChangesAsync();
 
-				// TODO fake simulation
-				Thread.Sleep(10 * 1000);
-				var report = new Report
+				int branches = 0;
+				switch (simulation.Protocol)
 				{
-					Stages = new Dictionary<Stages, Simulation.AbsSubReport> {
-						{
-							Stages.Handshake,
-							new SubReport {
-								ActionsNumber = 3,
-								SchemeOperations = 4,
-								ObservedTime = TimeSpan.FromMinutes(6),
-								TotalPrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 15L
-										),
-								PurePrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 25L
-										),
-								CacheSize = 50,
-								IOs = 5,
-								CommunicationVolume = 20,
-								MessagesSent = 10,
-								MaxClientStorage = 60
-							}
-						},
-						{
-							Stages.Construction,
-							new SubReport {
-								ActionsNumber = 31,
-								SchemeOperations = 41,
-								ObservedTime = TimeSpan.FromMinutes(61),
-								TotalPrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 15L
-										),
-								PurePrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 25L
-										),
-								CacheSize = 501,
-								IOs = 51,
-								CommunicationVolume = 201,
-								MessagesSent = 101,
-								MaxClientStorage = 601
-							}
-						},
-						{
-							Stages.Queries,
-							new SubReport {
-								ActionsNumber = 32,
-								SchemeOperations = 42,
-								ObservedTime = TimeSpan.FromMinutes(62),
-								TotalPrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 15L
-										),
-								PurePrimitiveOperations =
-									Enum
-										.GetValues(typeof(Primitive))
-										.Cast<Primitive>()
-										.ToDictionary(
-											p => p,
-											v => 25L
-										),
-								CacheSize = 502,
-								IOs = 52,
-								CommunicationVolume = 202,
-								MessagesSent = 102,
-								MaxClientStorage = 602,
-								PerQuerySubreports = new List<Simulation.AbsSubReport>{
-									new SubReport {
-										ActionsNumber = 33,
-										SchemeOperations = 43,
-										ObservedTime = TimeSpan.FromMinutes(63),
-										TotalPrimitiveOperations =
-											Enum
-												.GetValues(typeof(Primitive))
-												.Cast<Primitive>()
-												.ToDictionary(
-													p => p,
-													v => 15L
-												),
-										PurePrimitiveOperations =
-											Enum
-												.GetValues(typeof(Primitive))
-												.Cast<Primitive>()
-												.ToDictionary(
-													p => p,
-													v => 25L
-										),
-										CacheSize = 503,
-										IOs = 53,
-										CommunicationVolume = 203,
-										MessagesSent = 103,
-										MaxClientStorage = 603
-									},
-									new SubReport {
-										ActionsNumber = 34,
-										SchemeOperations = 44,
-										ObservedTime = TimeSpan.FromMinutes(64),
-										TotalPrimitiveOperations =
-											Enum
-												.GetValues(typeof(Primitive))
-												.Cast<Primitive>()
-												.ToDictionary(
-													p => p,
-													v => 15L
-												),
-										PurePrimitiveOperations =
-											Enum
-												.GetValues(typeof(Primitive))
-												.Cast<Primitive>()
-												.ToDictionary(
-													p => p,
-													v => 25L
-												),
-										CacheSize = 504,
-										IOs = 54,
-										CommunicationVolume = 204,
-										MessagesSent = 104,
-										MaxClientStorage = 604
-									}
-								}
-							}
-						}
-					}
-				};
+					case ORESchemes.Shared.ORESchemes.PracticalORE:
+					case ORESchemes.Shared.ORESchemes.CryptDB:
+					case ORESchemes.Shared.ORESchemes.FHOPE:
+						branches = 512;
+						break;
+					case ORESchemes.Shared.ORESchemes.Florian:
+					case ORESchemes.Shared.ORESchemes.POPE:
+						branches = 256;
+						break;
+					case ORESchemes.Shared.ORESchemes.NoEncryption:
+						branches = 1024;
+						break;
+					case ORESchemes.Shared.ORESchemes.LewiORE:
+						branches = 11;
+						break;
+					case ORESchemes.Shared.ORESchemes.AdamORE:
+						branches = 8;
+						break;
+				}
+
+				Report report = (Report)new Simulator(
+					new Inputs
+					{
+						Queries = simulation.Queryset.ToList(),
+						Dataset = simulation.Dataset.ToList(),
+						CacheSize = simulation.CacheSize
+					},
+					Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, branches)
+				).Simulate();
 
 				simulation.Result = report;
 				simulation.Completed = DateTime.UtcNow;

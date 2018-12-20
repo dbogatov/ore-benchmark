@@ -56,6 +56,10 @@ namespace Web.Controllers
 						new Random(model.Seed.Value)
 					);
 
+					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 10;
+					simulation.Protocol = model.Protocol;
+					simulation.Seed = model.Seed.Value;
+
 					var id = await _simulations.EnqueueAsync(simulation);
 
 					if (id < 0)
