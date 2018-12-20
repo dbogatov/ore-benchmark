@@ -8,6 +8,7 @@ using Web.Models.Data.Entities;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Simulation.Protocol;
+using Simulation;
 
 namespace Web.Models.Data
 {
@@ -36,31 +37,54 @@ namespace Web.Models.Data
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			var settings = new JsonSerializerSettings();
+			settings.NullValueHandling = NullValueHandling.Ignore;
+			settings.TypeNameHandling = TypeNameHandling.Auto;
+			settings.Converters.Add(new AbsSubReportConverter());
+			
 			builder
 				.Entity<SingleSimulation>()
 				.Property(s => s.Dataset)
 				.HasConversion(
-					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-					v => JsonConvert.DeserializeObject<IList<Record>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+					v => JsonConvert.SerializeObject(v, settings),
+					v => JsonConvert.DeserializeObject<IList<Record>>(v, settings)
 				);
-				
+
 			builder
 				.Entity<SingleSimulation>()
 				.Property(s => s.Queryset)
 				.HasConversion(
-					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-					v => JsonConvert.DeserializeObject<IList<RangeQuery>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+					v => JsonConvert.SerializeObject(v, settings),
+					v => JsonConvert.DeserializeObject<IList<RangeQuery>>(v, settings)
 				);
-				
+
 			builder
 				.Entity<SingleSimulation>()
 				.Property(s => s.Result)
 				.HasConversion(
-					v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-					v => JsonConvert.DeserializeObject<Report>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })
+					v => JsonConvert.SerializeObject(v, settings),
+					v => JsonConvert.DeserializeObject<Report>(v, settings)
 				);
 
 			base.OnModelCreating(builder);
+		}
+
+		class AbsSubReportConverter : JsonConverter
+		{
+			public override bool CanConvert(Type objectType)
+			{
+				return (objectType == typeof(AbsSubReport));
+			}
+
+			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+			{
+				return serializer.Deserialize(reader, typeof(Report.SubReport));
+			}
+
+			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+			{
+				serializer.Serialize(writer, value, typeof(Report.SubReport));
+			}
 		}
 	}
 }

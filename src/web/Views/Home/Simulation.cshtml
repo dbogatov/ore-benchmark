@@ -121,17 +121,23 @@
 		<table class="table">
 			<thead>
 				<tr>
+					<th scope="col">#</th>
 					<th scope="col">Index</th>
 					<th scope="col">Value</th>
 				</tr>
 			</thead>
 			<tbody>
+				@{
+					var i = 1;
+				}
 				@foreach (var record in Model.Dataset)
 				{
 					<tr>
-						<th scope="row">@record.index</th>
+						<th scope="row">@i</th>
+						<td>@record.index</td>
 						<td>@record.value</td>
 					</tr>
+					i++;
 				}
 			</tbody>
 		</table>
@@ -145,17 +151,23 @@
 		<table class="table">
 			<thead>
 				<tr>
+					<th scope="col">#</th>
 					<th scope="col">From</th>
 					<th scope="col">To</th>
 				</tr>
 			</thead>
 			<tbody>
+				@{
+					i = 1;
+				}
 				@foreach (var query in Model.Queryset)
 				{
 					<tr>
+						<th scope="row">@i</th>
 						<td>@query.from</td>
 						<td>@query.to</td>
 					</tr>
+					i++;
 				}
 			</tbody>
 		</table>

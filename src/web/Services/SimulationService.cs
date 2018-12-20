@@ -11,26 +11,53 @@ using Simulation.Protocol;
 using System.Collections.Generic;
 using static Simulation.Protocol.Report;
 using ORESchemes.Shared.Primitives;
+using Microsoft.Extensions.Configuration;
 
 namespace Web.Services
 {
 	public interface ISimulationService
 	{
 		Task<bool> SimulateAsync();
+		Task<int> EnqueueAsync(SingleSimulation simulation);
 	}
 
 	public class SimulationService : ISimulationService
 	{
 		private readonly ILogger<SimulationService> _logger;
 		private readonly IDataContext _context;
+		private readonly IConfiguration _config;
 
 		public SimulationService(
 			ILogger<SimulationService> logger,
-			IDataContext context
+			IDataContext context,
+			IConfiguration config
 		)
 		{
 			_logger = logger;
 			_context = context;
+			_config = config;
+		}
+
+		public async Task<int> EnqueueAsync(SingleSimulation simulation)
+		{
+			var ahead = await _context.Simulations.CountAsync(s => s.Status == Status.Pending);
+			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"{ahead} elements enqueued.");
+
+			if (ahead < Convert.ToInt32(_config["Limits:QueueSize"]))
+			{
+				await _context.Simulations.AddRangeAsync(new List<SingleSimulation> { simulation });
+				await _context.SaveChangesAsync();
+
+				_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"Simulation {simulation.Id} enqueued.");
+
+				return simulation.Id;
+			}
+			else
+			{
+				_logger.LogWarning(LoggingEvents.Simulation.AsInt(), $"Simulation has not been enqueued. The queue is full.");
+
+				return -1;
+			}
 		}
 
 		public async Task<bool> SimulateAsync()
@@ -60,7 +87,7 @@ namespace Web.Services
 								ActionsNumber = 3,
 								SchemeOperations = 4,
 								ObservedTime = TimeSpan.FromMinutes(6),
-								TotalPrimitiveOperations = 
+								TotalPrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -68,7 +95,7 @@ namespace Web.Services
 											p => p,
 											v => 15L
 										),
-								PurePrimitiveOperations = 
+								PurePrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -89,7 +116,7 @@ namespace Web.Services
 								ActionsNumber = 31,
 								SchemeOperations = 41,
 								ObservedTime = TimeSpan.FromMinutes(61),
-								TotalPrimitiveOperations = 
+								TotalPrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -97,7 +124,7 @@ namespace Web.Services
 											p => p,
 											v => 15L
 										),
-								PurePrimitiveOperations = 
+								PurePrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -118,7 +145,7 @@ namespace Web.Services
 								ActionsNumber = 32,
 								SchemeOperations = 42,
 								ObservedTime = TimeSpan.FromMinutes(62),
-								TotalPrimitiveOperations = 
+								TotalPrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -126,7 +153,7 @@ namespace Web.Services
 											p => p,
 											v => 15L
 										),
-								PurePrimitiveOperations = 
+								PurePrimitiveOperations =
 									Enum
 										.GetValues(typeof(Primitive))
 										.Cast<Primitive>()
@@ -144,7 +171,7 @@ namespace Web.Services
 										ActionsNumber = 33,
 										SchemeOperations = 43,
 										ObservedTime = TimeSpan.FromMinutes(63),
-										TotalPrimitiveOperations = 
+										TotalPrimitiveOperations =
 											Enum
 												.GetValues(typeof(Primitive))
 												.Cast<Primitive>()
@@ -152,7 +179,7 @@ namespace Web.Services
 													p => p,
 													v => 15L
 												),
-										PurePrimitiveOperations = 
+										PurePrimitiveOperations =
 											Enum
 												.GetValues(typeof(Primitive))
 												.Cast<Primitive>()
@@ -170,7 +197,7 @@ namespace Web.Services
 										ActionsNumber = 34,
 										SchemeOperations = 44,
 										ObservedTime = TimeSpan.FromMinutes(64),
-										TotalPrimitiveOperations = 
+										TotalPrimitiveOperations =
 											Enum
 												.GetValues(typeof(Primitive))
 												.Cast<Primitive>()
@@ -178,7 +205,7 @@ namespace Web.Services
 													p => p,
 													v => 15L
 												),
-										PurePrimitiveOperations = 
+										PurePrimitiveOperations =
 											Enum
 												.GetValues(typeof(Primitive))
 												.Cast<Primitive>()
@@ -201,17 +228,17 @@ namespace Web.Services
 				simulation.Result = report;
 				simulation.Completed = DateTime.UtcNow;
 				simulation.Status = Status.Completed;
-				
+
 				await _context.SaveChangesAsync();
-				
+
 				_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "Simulation completed.");
-				
+
 				return true;
 			}
 			else
 			{
 				_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "No pending simulations.");
-				
+
 				return false;
 			}
 		}

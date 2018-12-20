@@ -22,9 +22,20 @@ namespace Web.Extensions
 			IHostingEnvironment env,
 			IConfiguration config)
 		{
-			services
-				.AddEntityFrameworkInMemoryDatabase()
-				.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db", Global.InMemoryDatabaseRoot));
+			if (env.IsDevelopment())
+			{
+				services
+					.AddEntityFrameworkSqlite()
+					.AddDbContext<DataContext>(
+						b => b.UseSqlite("Data Source=development.db")
+					);
+			}
+			else // Testing and Staging
+			{
+				services
+					.AddEntityFrameworkInMemoryDatabase()
+					.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db", Global.InMemoryDatabaseRoot));
+			}
 
 			services.AddTransient<IDataContext, DataContext>();
 

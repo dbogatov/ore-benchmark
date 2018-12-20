@@ -1,12 +1,28 @@
 ﻿using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.Symmetric;
+using System.ComponentModel.DataAnnotations;
 
 namespace ORESchemes.Shared
 {
 	public enum ORESchemes
 	{
-		NoEncryption, CryptDB, PracticalORE, LewiORE, FHOPE, AdamORE, Florian, POPE
+		[Display(Name = "No Encryption")]
+		NoEncryption,
+		[Display(Name = "BCLO OPE")]
+		CryptDB,
+		[Display(Name = "CLWW ORE")]
+		PracticalORE,
+		[Display(Name = "Lewi-Wu ORE")]
+		LewiORE,
+		[Display(Name = "FH-OPE")]
+		FHOPE,
+		[Display(Name = "CLOZ ORE")]
+		AdamORE,
+		[Display(Name = "Kerschbaum Protocol")]
+		Florian,
+		[Display(Name = "POPE Protocol")]
+		POPE
 	}
 
 	public enum SchemeOperation
@@ -67,7 +83,7 @@ namespace ORESchemes.Shared
 
 		public int GetSize() => value.Length * sizeof(byte) * 8;
 
-		public static implicit operator byte[](BytesKey k) => k.value;
+		public static implicit operator byte[] (BytesKey k) => k.value;
 		public static implicit operator BytesKey(byte[] v) => new BytesKey(v);
 	}
 

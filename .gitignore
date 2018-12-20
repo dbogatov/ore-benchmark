@@ -30,3 +30,5 @@ tools/data-gen/tpc-h/dbgen
 BenchmarkDotNet.Artifacts
 
 test/TestResults
+
+development.db

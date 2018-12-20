@@ -1,8 +1,64 @@
-﻿@{
-    ViewData["Title"] = "Run Simulation";
+﻿@using Web.Models.View
+@using Microsoft.Extensions.Configuration
+
+@model SimulationViewModel
+
+@inject IConfiguration Config
+
+@{
+	ViewData["Title"] = "Run Simulation";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+	<h1 class="display-4">Run simulation</h1>
 </div>
+
+<form asp-controller="Home" asp-action="Index" method="post">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="text-center">
+				<h3>Inputs</h3>
+				<div asp-validation-summary="All" class="text-danger"></div>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="Seed"></label>
+				<input class="form-control" asp-for="Seed" placeholder="Leave blank for fresh random" />
+				<span class="text-danger" asp-validation-for="Seed"></span>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="Protocol"></label>
+				<select class="form-control" asp-for="Protocol" asp-items="Html.GetEnumSelectList<ORESchemes.Shared.ORESchemes>()"></select>
+				<span asp-validation-for="Protocol"></span>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="Dataset"></label>
+				<textarea class="form-control" rows="3" asp-for="Dataset" placeholder="Maximum @(Config["Limits:Dataset"]) records. Leave blank to smaple uniformly."></textarea>
+				<span asp-validation-for="Dataset"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Queryset"></label>
+				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to smaple uniformly."></textarea>
+				<span asp-validation-for="Dataset"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="CacheSize"></label>
+				<input class="form-control" asp-for="CacheSize" placeholder="From 0 (default) to 100" />
+				<span asp-validation-for="Queryset"></span>
+			</div>
+
+		 	<button type="submit" class="btn btn-primary btn-block">Submit</button>
+		</div>
+		<div class="col-md-8">
+			<div class="text-center">
+				<h3>Legend</h3>
+			</div>
+			<p>
+				Description
+			</p>
+		</div>
+	</div>
+
+</form>
