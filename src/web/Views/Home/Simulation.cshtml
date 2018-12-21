@@ -8,13 +8,13 @@
 @inject IConfiguration Config
 
 @{
-    ViewData["Title"] = $"Simulation #{Model.Id} result";
+	ViewData["Title"] = $"Simulation #{Model.Id} result";
 }
 
 <div class="text-center">
-    <h2 class="display-4">Simulation #@Model.Id</h2>
-	
-    <p>
+	<h2 class="display-4">Simulation #@Model.Id</h2>
+
+	<p>
 		This link is permanent, you can use it to track your simulation status.
 		<br>
 		@switch(Model.Status)
