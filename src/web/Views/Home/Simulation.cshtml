@@ -134,8 +134,17 @@
 				}
 			</div>
 		</div>
+		
+		@if(stage != Stages.Handshake)
+		{
+			<div class="row">
+				<canvas id="chart-@stage" width="100%"></canvas>
+			</div>
+		}
 	}
 }
+
+<hr>
 
 <hr>
 
@@ -210,5 +219,51 @@
 		</table>
 	</div>
 </div>
-					
-					
+
+@section scripts {
+	@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
+	{
+		@if(stage == Stages.Handshake)
+		{
+			continue;
+		}
+		<script>
+			var ctx_@stage = document.getElementById("chart-@stage").getContext('2d');
+			var myChart_@stage = new Chart(ctx_@stage, {
+				type: 'line',
+				data: {
+					labels: [@(  string.Join(",", Enumerable.Range(1, ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Count).Select(s => s.ToString())) )],
+					datasets: [{
+					label: '@stage stage I/Os',
+					borderColor: "#3e95cd",
+					data: [
+						@( string.Join(",", ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Select(sr => ((Report.SubReport)sr).IOs.ToString())) )
+					],
+					fill: false,
+				}]
+			},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: false,
+								callback: function(value) { if ( value % 1 === 0 ) { return value; } }
+							}
+						}],
+						xAxes: [{
+							ticks: {
+								autoSkip: true,
+								maxTicksLimit: 20
+							}
+						}]
+					},
+					elements: {
+						line: {
+							tension: 0, // disables bezier curves
+						}
+					}
+				}
+			});
+		</script>
+	}
+}
