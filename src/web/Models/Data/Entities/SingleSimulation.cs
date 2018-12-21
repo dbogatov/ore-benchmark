@@ -15,6 +15,11 @@ namespace Web.Models.Data.Entities
 
 	public class SingleSimulation
 	{
+		public class MalformedSetException : System.Exception
+		{
+			public string Set { get; set; }
+		}
+
 		public SingleSimulation() { }
 
 		public SingleSimulation(
@@ -35,21 +40,28 @@ namespace Web.Models.Data.Entities
 			}
 			else
 			{
-				Dataset = new List<Record>();
-				var read = 0;
-				using (StringReader reader = new StringReader(dataset))
+				try
 				{
-					string line = string.Empty;
-					do
+					Dataset = new List<Record>();
+					var read = 0;
+					using (StringReader reader = new StringReader(dataset))
 					{
-						line = reader.ReadLine();
-						if (line != null)
+						string line = string.Empty;
+						do
 						{
-							var record = line.Split(',');
-							Dataset.Add(new Record(int.Parse(record[0]), record[1]));
-							read++;
-						}
-					} while (line != null && read < datasetSize);
+							line = reader.ReadLine();
+							if (line != null)
+							{
+								var record = line.Split(',');
+								Dataset.Add(new Record(int.Parse(record[0]), record[1]));
+								read++;
+							}
+						} while (line != null && read < datasetSize);
+					}
+				}
+				catch (System.Exception)
+				{
+					throw new MalformedSetException { Set = "Dataset" };
 				}
 			}
 
@@ -63,21 +75,28 @@ namespace Web.Models.Data.Entities
 			}
 			else
 			{
-				Queryset = new List<RangeQuery>();
-				var read = 0;
-				using (StringReader reader = new StringReader(queryset))
+				try
 				{
-					string line = string.Empty;
-					do
+					Queryset = new List<RangeQuery>();
+					var read = 0;
+					using (StringReader reader = new StringReader(queryset))
 					{
-						line = reader.ReadLine();
-						if (line != null)
+						string line = string.Empty;
+						do
 						{
-							var record = line.Split(',');
-							Queryset.Add(new RangeQuery(int.Parse(record[0]), int.Parse(record[1])));
-							read++;
-						}
-					} while (line != null && read < querysetSize);
+							line = reader.ReadLine();
+							if (line != null)
+							{
+								var record = line.Split(',');
+								Queryset.Add(new RangeQuery(int.Parse(record[0]), int.Parse(record[1])));
+								read++;
+							}
+						} while (line != null && read < querysetSize);
+					}
+				}
+				catch (System.Exception)
+				{
+					throw new MalformedSetException { Set = "Queryset" };
 				}
 			}
 		}

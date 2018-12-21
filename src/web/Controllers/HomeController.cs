@@ -71,9 +71,9 @@ namespace Web.Controllers
 						return RedirectToAction("Simulation", new { id = id });
 					}
 				}
-				catch (System.Exception)
+				catch (SingleSimulation.MalformedSetException e)
 				{
-					ModelState.AddModelError("input", "Malformed dataset or queryset.");
+					ModelState.AddModelError("input", $"Malformed {e.Set}.");
 					return View(model);
 				}
 			}
@@ -102,7 +102,7 @@ namespace Web.Controllers
 
 		public IActionResult Queue()
 		{
-			return View(_context.Simulations.ToList());
+			return View(_context.Simulations.OrderBy(s => s.Created).ToList());
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

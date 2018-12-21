@@ -1,5 +1,4 @@
 @using Web.Models.Data.Entities
-@using Web.Models.Data.Entities
 @model List<Web.Models.Data.Entities.SingleSimulation>
 
 @{
@@ -22,7 +21,23 @@
 			<tbody>
 				@foreach (var simulation in Model)
 				{
-					<tr>
+					var color = "";
+					@switch(simulation.Status)
+					{
+						case Status.Pending:
+							color = "info";
+							break;
+						case Status.Completed:
+							color = "success";
+							break;
+						case Status.InProgress:
+							color = "primary";
+							break;
+						case Status.Failed:
+							color = "danger";
+							break;
+					}
+					<tr class="table-@color">
 						<th scope="row">
 							<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
 								@simulation.Id

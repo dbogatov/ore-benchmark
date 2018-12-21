@@ -1,7 +1,11 @@
 @using Web.Models.Data.Entities
 @using Simulation.Protocol
 @using ORESchemes.Shared.Primitives
+@using Microsoft.Extensions.Configuration
+
 @model Web.Models.Data.Entities.SingleSimulation
+
+@inject IConfiguration Config
 
 @{
     ViewData["Title"] = $"Simulation #{Model.Id} result";
@@ -11,14 +15,18 @@
     <h2 class="display-4">Simulation #@Model.Id</h2>
 	
     <p>
+		This link is permanent, you can use it to track your simulation status.
+		<br>
 		@switch(Model.Status)
 		{
 			case Status.Pending:
 				@: Simulation is enqueued. 
 				@: Please check again later.
+				@: Intervals are being picked up every @(Convert.ToInt32(Config["Daemon:SimulationService:Interval"])) seconds
 				break;
 			case Status.Completed:
 				@: Simulation has been completed, please see the results below.<br>
+				@: This simulation will be persisted at least until @(Model.Completed + TimeSpan.FromSeconds(Convert.ToInt32(Config["Daemon:CleanService:MaxAge"]))).<br>
 				<a asp-controller="Home" asp-action="Raw" asp-route-id="@Model.Id">
 					Download JSON with per-query reports
 				</a>
@@ -47,14 +55,19 @@
 			<p><b>Seed:</b> @Model.Seed</p>
 			<p><b>Protocol:</b> @Model.Protocol</p>
 			<p><b>Cache size:</b> @Model.CacheSize</p>
-			<p><b>Data and query sets are below</b></p>
+			<p><b>Input data and query sets are below</b></p>
 		</div>
 		<div class="col-md-8">
 			<div class="text-center">
 				<h3>Legend</h3>
 			</div>
-			<p>
-				Description
+			<p class="text-justify">
+				Following is a report of this simulation.
+				The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
+				Primitive tables show total and average cryptographic primitive usage.
+				<b>Purity</b> means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
+				The special primitives are <em>symmetric</em>, which is a symmetric encription using AES-CBC, <em>LFPRF</em> and samplers, which are BCLO OPE specific, and <em>TreeTraversal</em>, which is FH-OPE specific.
+				We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
 			</p>
 		</div>
 	</div>
@@ -72,35 +85,53 @@
 				<p><b>I/O requests:</b> @(((Report.SubReport)Model.Result.Stages[stage]).IOs)</p>
 				<p><b>Number of queries:</b> @(((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)</p>
 				<p><b>Number of OPE/ORE scheme operations:</b> @(((Report.SubReport)Model.Result.Stages[stage]).SchemeOperations)</p>
-				<p><b>Observed time (may be inaccurate):</b> @(((Report.SubReport)Model.Result.Stages[stage]).ObservedTime)</p>
 				<p><b>Communication volume:</b> @(((Report.SubReport)Model.Result.Stages[stage]).CommunicationVolume / 8) byte(s)</p>
 				<p><b>Communication size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MessagesSent) messages</p>
 				<p><b>Max client storage size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MaxClientStorage / 8) bytes</p>
 			</div>
 			
 			<div class="col-md-6">
-				<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">Primitive</th>
-							<th scope="col">Total</th>
-							<th scope="col">Pure</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var primitive in Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v))
-						{
-							@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] != 0)
+				@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations.Values.All(v => v == 0))
+				{
+					<div class="text-center" style="padding-bottom: 20px;">
+						<h4>No primitives used</h4>
+					</div>
+				}
+				else
+				{
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Primitive</th>
+								<th scope="col">Total / <em>Per Query</em></th>
+								<th scope="col">Pure / <em>Per Query</em></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var primitive in Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v))
 							{
-								<tr>
-									<th scope="row">@primitive.ToString()</th>
-									<td>@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive])</td>
-									<td>@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive])</td>
-								</tr>
+								@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] != 0)
+								{
+									<tr>
+										<th scope="row">@primitive.ToString()</th>
+										<td>
+											@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive]) / 
+											<em>
+												@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] / ((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)
+											</em>
+										</td>
+										<td>
+											@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive]) / 
+											<em>
+												@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive] / ((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)
+											</em>
+										</td>
+									</tr>
+								}
 							}
-						}
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				}
 			</div>
 		</div>
 	}
@@ -109,10 +140,16 @@
 <hr>
 
 <div class="text-center" style="padding-bottom: 20px;">
-	<h3>Original input data and query sets</h3>
+	<h3 id="input-sets-heading">Original input data and query sets</h3>
+	<p>
+		<a class="input-sets-invisible" onclick="$('.input-sets-visible').removeClass('d-none'); $('.input-sets-invisible').addClass('d-none');" href="#input-sets-heading">Click here to expand</a>
+	</p>
+	<p>	
+		<a class="input-sets-visible d-none" onclick="$('.input-sets-visible').addClass('d-none'); $('.input-sets-invisible').removeClass('d-none');" href="#input-sets-heading">Click here to collapse</a>
+	</p>
 </div>
 
-<div class="row">
+<div class="row d-none input-sets-visible">
 	<div class="col-md-6">
 		<div class="text-center" style="padding-bottom: 20px;">
 			<h4>Data set</h3>
