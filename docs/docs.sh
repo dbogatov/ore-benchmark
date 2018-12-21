@@ -9,15 +9,15 @@ CWD=$(pwd)
 
 SHA1="b26a800bd5c66268e22498eec35277b525b407b8"
 
-# rm -rf _site docfx-tmpl
+rm -rf _site docfx-tmpl
 
-# git clone https://github.com/MathewSachin/docfx-tmpl.git
-# cd docfx-tmpl
-# git reset --hard $SHA1
-# cd ..
+git clone https://github.com/MathewSachin/docfx-tmpl.git
+cd docfx-tmpl
+git reset --hard $SHA1
+cd ..
 
-# cp ../README.md index.md
-# docfx docfx.json --force
+cp ../README.md index.md
+docfx docfx.json --force
 
 cp -r _site ../src/web/wwwroot/documentation
 
