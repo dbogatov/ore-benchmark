@@ -41,7 +41,9 @@ namespace Web
 				.UseUrls($"http://*:{port}")
 				.Build();
 				
+#pragma warning disable CS4014
 			RunDaemon();
+#pragma warning restore CS4014  
 
 			await host.RunAsync();
 

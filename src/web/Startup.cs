@@ -55,7 +55,6 @@ namespace Web
 			services.RegisterSharedServices(CurrentEnvironment, Configuration);
 
 			services.AddMemoryCache();
-			services.AddSession();
 
 			// Add framework services.
 			services
@@ -73,9 +72,6 @@ namespace Web
 
 			// lowercase all generated url within the app
 			services.AddRouting(options => { options.LowercaseUrls = true; });
-
-			// Add Cross Origin Security service
-			services.AddCors();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,20 +88,16 @@ namespace Web
 					Configuration.StringsFromArray("Logging:Exclude").ToArray()
 				);
 
-			if (env.IsProduction())
-			{
-				app.UseExceptionHandler("/error"); // All serverside exceptions redirect to error page
-				app.UseStatusCodePagesWithReExecute("/error/{0}");
-			}
-			else
-			{
-				app.UseDatabaseErrorPage();
-				app.UseDeveloperExceptionPage(); // Print full stack trace
-			}
-
-			app.UseSession();
-
-			app.UseCors(builder => builder.WithOrigins("*"));
+			// if (env.IsProduction())
+			// {
+				app.UseExceptionHandler("/home/error"); // All serverside exceptions redirect to error page
+				app.UseStatusCodePagesWithReExecute("/home/error/{0}");
+			// }
+			// else
+			// {
+			// 	app.UseDatabaseErrorPage();
+			// 	app.UseDeveloperExceptionPage();
+			// }
 
 			app.UseDefaultFiles(); // in wwwroot folder, index.html is served when opening a directory
 			app.UseStaticFiles(); // make accessible and cache wwwroot files
@@ -116,14 +108,6 @@ namespace Web
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
 			});
-
-			using (var context = serviceProvider.GetService<IDataContext>())
-			{
-				// create scheme if it does not exist
-				context.Database.EnsureCreated();
-			}
-
-			serviceProvider.GetRequiredService<ISeedService>().SeedDataAsync().Wait();
 		}
 	}
 }

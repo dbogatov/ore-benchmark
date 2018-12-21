@@ -1,0 +1,10 @@
+﻿@model ErrorViewModel
+
+@{
+	ViewData["Title"] = $"Error {Model.Code}";
+}
+
+<div class="text-center">
+	<h1 class="text-danger">Error @Model.Code</h1>
+	<h2>@Model.Message</h2>
+</div>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Web.Models.Data;
@@ -31,10 +32,7 @@ namespace Web.Controllers
 			_config = config;
 		}
 
-		public IActionResult Index()
-		{
-			return View();
-		}
+		public IActionResult Index() => View();
 
 		[HttpPost]
 		public async Task<IActionResult> Index(SimulationViewModel model)
@@ -81,34 +79,46 @@ namespace Web.Controllers
 			return View(model);
 		}
 
-		public IActionResult Simulation(int id)
+		public async Task<IActionResult> Simulation(int id)
 		{
-			return View(_context.Simulations.First(s => s.Id == id));
+			var simulation = await _context.Simulations.FirstOrDefaultAsync(s => s.Id == id);
+			if (simulation != null)
+			{
+				return View(simulation);
+			}
+			else
+			{
+				return NotFound();
+			}
 		}
 
-		public IActionResult Raw(int id)
+		public async Task<IActionResult> Raw(int id)
 		{
-			return File(
-				Encoding.ASCII.GetBytes(
-					JsonConvert.SerializeObject(
-						_context.Simulations.First(s => s.Id == id).Result,
-						new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
-					)
-				),
-				"application/json",
-				"simulation-result.json"
-			);
+			var simulation = await _context.Simulations.FirstOrDefaultAsync(s => s.Id == id);
+
+			if (simulation != null)
+			{
+				return File(
+					Encoding.ASCII.GetBytes(
+						JsonConvert.SerializeObject(
+							simulation.Result,
+							new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+						)
+					),
+					"application/json",
+					"simulation-result.json"
+				);
+			}
+			else
+			{
+				return NotFound();
+			}
 		}
 
 		public IActionResult Queue()
-		{
-			return View(_context.Simulations.OrderBy(s => s.Created).ToList());
-		}
+			=> View(_context.Simulations.OrderBy(s => s.Created).ToList());
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
+		public IActionResult Error(int id)
+			=> View(new ErrorViewModel { Code = id });
 	}
 }
