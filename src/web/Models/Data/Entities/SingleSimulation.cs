@@ -118,7 +118,7 @@ namespace Web.Models.Data.Entities
 		public ORESchemes.Shared.ORESchemes Protocol { get; set; } = ORESchemes.Shared.ORESchemes.NoEncryption;
 		public IList<Record> Dataset { get; set; }
 		public IList<RangeQuery> Queryset { get; set; }
-		public int CacheSize { get; set; } = 100;
+		public int CacheSize { get; set; } = 0;
 
 		// Output
 		public Report Result { get; set; }

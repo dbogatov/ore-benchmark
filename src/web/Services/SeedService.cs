@@ -26,17 +26,17 @@ namespace Web.Services
 	{
 		private readonly IDataContext _context;
 		private readonly ILogger<SeedService> _logger;
-		private readonly IConfiguration _configuration;
+		private readonly IConfiguration _config;
 
 		public SeedService(
 			IDataContext context,
 			ILogger<SeedService> logger,
-			IConfiguration configuration
+			IConfiguration config
 		)
 		{
 			_context = context;
 			_logger = logger;
-			_configuration = configuration;
+			_config = config;
 		}
 
 		public async Task SeedDataAsync()
@@ -48,21 +48,15 @@ namespace Web.Services
 			{
 				var random = new Random();
 
-				await _context.Simulations.AddRangeAsync(
-					Enumerable
-						.Range(1, 3)
-						.Select(
-							i => new SingleSimulation
-							{
-								Created = DateTime.UtcNow.AddMinutes(1),
-								Dataset = Enumerable.Range(1, 10).Select(n => new Record(n, n.ToString())).OrderBy(e => random.Next()).ToList(),
-								Queryset = Enumerable.Range(1, 10).Select(n => new RangeQuery(n, n + random.Next(1, 10))).OrderBy(e => random.Next()).ToList()
-							}
-						)
-						.ToList()
+				await _context.Simulations.AddAsync(
+					 new SingleSimulation
+					 {
+						 Dataset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Dataset"])).Select(n => new Record(n, n.ToString())).OrderBy(e => random.Next()).ToList(),
+						 Queryset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Queryset"])).Select(n => new RangeQuery(n, n + random.Next(1, 10))).OrderBy(e => random.Next()).ToList()
+					 }
 				);
 				await _context.SaveChangesAsync();
-				
+
 				_logger.LogInformation(LoggingEvents.Startup.AsInt(), "DataSeed finished");
 			}
 			else

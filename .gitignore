@@ -12,6 +12,7 @@ data/
 
 docs/_site
 docs/index.html
+docs/index.md
 
 coverage.json
 coverage-hits.txt
@@ -32,3 +33,5 @@ BenchmarkDotNet.Artifacts
 test/TestResults
 
 development.db
+
+src/web/wwwroot/documentation

@@ -5,86 +5,94 @@
     ViewData["Title"] = "Simulations Queue";
 }
 
-
-<div class="row">
-	<div class="col-md-12">
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">ID</th>
-					<th scope="col">Created At</th>
-					<th scope="col">Completed At</th>
-					<th scope="col">Elapsed Time</th>
-					<th scope="col">Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var simulation in Model)
-				{
-					var color = "";
-					@switch(simulation.Status)
-					{
-						case Status.Pending:
-							color = "info";
-							break;
-						case Status.Completed:
-							color = "success";
-							break;
-						case Status.InProgress:
-							color = "primary";
-							break;
-						case Status.Failed:
-							color = "danger";
-							break;
-					}
-					<tr class="table-@color">
-						<th scope="row">
-							<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
-								@simulation.Id
-							</a>
-						</th>
-						<td>@simulation.Created</td>
-						<td>
-							@if(simulation.Status == Status.Completed)
-							{
-								@simulation.Completed
-							} else {
-								@: Not completed yet
-							}
-						</td>
-						<td>
-							@if(simulation.Status == Status.Completed)
-							{
-								@Math.Round(simulation.Completed.Subtract(simulation.Started).TotalSeconds)
-								@: seconds
-							} else {
-								@: Not completed yet
-							}
-						</td>
-						<td>
-							@switch(simulation.Status)
-							{
-								case Status.Pending:
-									@: Pending
-									break;
-								case Status.Completed:
-									<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
-										Completed
-									</a>
-									break;
-								case Status.InProgress:
-									@: Running
-									break;
-								case Status.Failed:
-									<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
-										Failed
-									</a>
-									break;
-							}
-						</td>
+@if(Model.Count > 0)
+{
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">ID</th>
+						<th scope="col">Created At</th>
+						<th scope="col">Completed At</th>
+						<th scope="col">Elapsed Time</th>
+						<th scope="col">Status</th>
 					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@foreach (var simulation in Model)
+					{
+						var color = "";
+						@switch(simulation.Status)
+						{
+							case Status.Pending:
+								color = "info";
+								break;
+							case Status.Completed:
+								color = "success";
+								break;
+							case Status.InProgress:
+								color = "primary";
+								break;
+							case Status.Failed:
+								color = "danger";
+								break;
+						}
+						<tr class="table-@color">
+							<th scope="row">
+								<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+									@simulation.Id
+								</a>
+							</th>
+							<td>@simulation.Created</td>
+							<td>
+								@if(simulation.Status == Status.Completed)
+								{
+									@simulation.Completed
+								} else {
+									@: Not completed yet
+								}
+							</td>
+							<td>
+								@if(simulation.Status == Status.Completed)
+								{
+									@Math.Round(simulation.Completed.Subtract(simulation.Started).TotalSeconds)
+									@: seconds
+								} else {
+									@: Not completed yet
+								}
+							</td>
+							<td>
+								@switch(simulation.Status)
+								{
+									case Status.Pending:
+										@: Pending
+										break;
+									case Status.Completed:
+										<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+											Completed
+										</a>
+										break;
+									case Status.InProgress:
+										@: Running
+										break;
+									case Status.Failed:
+										<a asp-controller="Home" asp-action="Simulation" asp-route-id="@simulation.Id">
+											Failed
+										</a>
+										break;
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
+} else {
+	
+	<div class="text-center">
+		<h2 class="display-4">Simulation queue is empty</h2>
+	</div>
+
+}

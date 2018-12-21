@@ -56,7 +56,7 @@ namespace Web.Controllers
 						new Random(model.Seed.Value)
 					);
 
-					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 10;
+					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 0;
 					simulation.Protocol = model.Protocol;
 					simulation.Seed = model.Seed.Value;
 

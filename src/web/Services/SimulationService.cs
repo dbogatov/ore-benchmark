@@ -37,10 +37,15 @@ namespace Web.Services
 
 		public async Task<int> EnqueueAsync(SingleSimulation simulation)
 		{
-			var ahead = await _context.Simulations.CountAsync(s => s.Status == Status.Pending);
-			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"{ahead} elements enqueued.");
+			var pending = await _context.Simulations.CountAsync(s => s.Status == Status.Pending);
+			var all = await _context.Simulations.CountAsync();
+			
+			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"{pending} of {all} elements enqueued.");
 
-			if (ahead < Convert.ToInt32(_config["Limits:QueueSize"]))
+			if (
+				pending < Convert.ToInt32(_config["Limits:Queue:Pending"]) &&
+				all < Convert.ToInt32(_config["Limits:Queue:Completed"])
+			)
 			{
 				await _context.Simulations.AddRangeAsync(new List<SingleSimulation> { simulation });
 				await _context.SaveChangesAsync();

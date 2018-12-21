@@ -107,8 +107,8 @@ namespace Web
 
 			app.UseCors(builder => builder.WithOrigins("*"));
 
-			app.UseStaticFiles(); // make accessible and cache wwwroot files
 			app.UseDefaultFiles(); // in wwwroot folder, index.html is served when opening a directory
+			app.UseStaticFiles(); // make accessible and cache wwwroot files
 
 			app.UseMvc(routes =>
 			{

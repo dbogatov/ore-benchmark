@@ -22,7 +22,7 @@
 			case Status.Pending:
 				@: Simulation is enqueued. 
 				@: Please check again later.
-				@: Intervals are being picked up every @(Convert.ToInt32(Config["Daemon:SimulationService:Interval"])) seconds
+				@: Simulations are being picked up every @(Convert.ToInt32(Config["Daemon:SimulationService:Interval"])) seconds
 				break;
 			case Status.Completed:
 				@: Simulation has been completed, please see the results below.<br>
@@ -221,49 +221,52 @@
 </div>
 
 @section scripts {
-	@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
+	@if(Model.Status == Status.Completed)
 	{
-		@if(stage == Stages.Handshake)
+		@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
 		{
-			continue;
-		}
-		<script>
-			var ctx_@stage = document.getElementById("chart-@stage").getContext('2d');
-			var myChart_@stage = new Chart(ctx_@stage, {
-				type: 'line',
-				data: {
-					labels: [@(  string.Join(",", Enumerable.Range(1, ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Count).Select(s => s.ToString())) )],
-					datasets: [{
-					label: '@stage stage I/Os',
-					borderColor: "#3e95cd",
-					data: [
-						@( string.Join(",", ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Select(sr => ((Report.SubReport)sr).IOs.ToString())) )
-					],
-					fill: false,
-				}]
-			},
-				options: {
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: false,
-								callback: function(value) { if ( value % 1 === 0 ) { return value; } }
+			@if(stage == Stages.Handshake)
+			{
+				continue;
+			}
+			<script>
+				var ctx_@stage = document.getElementById("chart-@stage").getContext('2d');
+				var myChart_@stage = new Chart(ctx_@stage, {
+					type: 'line',
+					data: {
+						labels: [@(  string.Join(",", Enumerable.Range(1, ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Count).Select(s => s.ToString())) )],
+						datasets: [{
+						label: '@stage stage I/Os',
+						borderColor: "#3e95cd",
+						data: [
+							@( string.Join(",", ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Select(sr => ((Report.SubReport)sr).IOs.ToString())) )
+						],
+						fill: false,
+					}]
+				},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: false,
+									callback: function(value) { if ( value % 1 === 0 ) { return value; } }
+								}
+							}],
+							xAxes: [{
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20
+								}
+							}]
+						},
+						elements: {
+							line: {
+								tension: 0, // disables bezier curves
 							}
-						}],
-						xAxes: [{
-							ticks: {
-								autoSkip: true,
-								maxTicksLimit: 20
-							}
-						}]
-					},
-					elements: {
-						line: {
-							tension: 0, // disables bezier curves
 						}
 					}
-				}
-			});
-		</script>
+				});
+			</script>
+		}
 	}
 }
