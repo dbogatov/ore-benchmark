@@ -98,7 +98,7 @@ data-gen:
   only:
   - master
 
-.coverage-report:
+coverage-report:
   image: $DOTNET_SDK_IMAGE
   stage: test
   script:
@@ -111,7 +111,7 @@ data-gen:
   tags:
   - docker
 
-.unit-tests:
+unit-tests:
   image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -130,7 +130,7 @@ data-gen:
   tags:
   - docker
 
-.integration-tests:
+integration-tests:
   image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -149,7 +149,7 @@ data-gen:
   tags:
   - docker
 
-.system-protocol-tests:
+system-protocol-tests:
   image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -166,7 +166,7 @@ data-gen:
   tags:
   - docker
 
-.system-schemes-tests:
+system-schemes-tests:
   image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
