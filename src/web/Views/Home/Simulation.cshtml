@@ -12,7 +12,20 @@
 }
 
 <div class="text-center">
-	<h2 class="display-4">Simulation #@Model.Id</h2>
+	<h2 class="display-4">Simulation #@Model.Id
+	@switch(Model.Status)
+		{
+			case Status.Pending:
+				@: engueued 
+				break;
+			case Status.InProgress:
+				@: running 
+				break;
+			case Status.Failed:
+				@: failed 
+				break;
+		}
+	</h2>
 
 	<p>
 		This link is permanent, you can use it to track your simulation status.
@@ -43,35 +56,35 @@
 	</p>
 </div>
 
+<hr>
+
+<div class="row">
+	<div class="col-md-4">
+		<div class="text-center">
+			<h3>Inputs</h3>
+		</div>
+		<p><b>Seed:</b> @Model.Seed</p>
+		<p><b>Protocol:</b> @Model.Protocol</p>
+		<p><b>Cache size:</b> @Model.CacheSize</p>
+		<p><b>Input data and query sets are below</b></p>
+	</div>
+	<div class="col-md-8">
+		<div class="text-center">
+			<h3>Legend</h3>
+		</div>
+		<p class="text-justify">
+			Following is a report of this simulation.
+			The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
+			Primitive tables show total and average cryptographic primitive usage.
+			<b>Purity</b> means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
+			The special primitives are <em>symmetric</em>, which is a symmetric encription using AES-CBC, <em>LFPRF</em> and samplers, which are BCLO OPE specific, and <em>TreeTraversal</em>, which is FH-OPE specific.
+			We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
+		</p>
+	</div>
+</div>
+
 @if(Model.Status == Status.Completed)
 {
-	<hr>
-	
-	<div class="row">
-		<div class="col-md-4">
-			<div class="text-center">
-				<h3>Inputs</h3>
-			</div>
-			<p><b>Seed:</b> @Model.Seed</p>
-			<p><b>Protocol:</b> @Model.Protocol</p>
-			<p><b>Cache size:</b> @Model.CacheSize</p>
-			<p><b>Input data and query sets are below</b></p>
-		</div>
-		<div class="col-md-8">
-			<div class="text-center">
-				<h3>Legend</h3>
-			</div>
-			<p class="text-justify">
-				Following is a report of this simulation.
-				The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
-				Primitive tables show total and average cryptographic primitive usage.
-				<b>Purity</b> means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
-				The special primitives are <em>symmetric</em>, which is a symmetric encription using AES-CBC, <em>LFPRF</em> and samplers, which are BCLO OPE specific, and <em>TreeTraversal</em>, which is FH-OPE specific.
-				We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
-			</p>
-		</div>
-	</div>
-	
 	<hr>
 	
 	@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))

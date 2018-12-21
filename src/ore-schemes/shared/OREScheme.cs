@@ -1,27 +1,18 @@
 ﻿using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.Symmetric;
-using System.ComponentModel.DataAnnotations;
 
 namespace ORESchemes.Shared
 {
 	public enum ORESchemes
 	{
-		[Display(Name = "No Encryption")]
 		NoEncryption,
-		[Display(Name = "BCLO OPE")]
 		CryptDB,
-		[Display(Name = "CLWW ORE")]
 		PracticalORE,
-		[Display(Name = "Lewi-Wu ORE")]
 		LewiORE,
-		[Display(Name = "FH-OPE")]
 		FHOPE,
-		[Display(Name = "CLOZ ORE")]
 		AdamORE,
-		[Display(Name = "Kerschbaum Protocol")]
 		Florian,
-		[Display(Name = "POPE Protocol")]
 		POPE
 	}
 

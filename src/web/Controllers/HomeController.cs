@@ -57,7 +57,7 @@ namespace Web.Controllers
 					);
 
 					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 0;
-					simulation.Protocol = model.Protocol;
+					simulation.Protocol = model.ProtocolReal;
 					simulation.Seed = model.Seed.Value;
 
 					var id = await _simulations.EnqueueAsync(simulation);

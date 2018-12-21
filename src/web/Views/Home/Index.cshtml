@@ -41,24 +41,24 @@
 				
 				<div class="form-group">
 					<label asp-for="Protocol"></label>
-					<select class="form-control" asp-for="Protocol" asp-items="Html.GetEnumSelectList<ORESchemes.Shared.ORESchemes>()"></select>
-					<span asp-validation-for="Protocol"></span>
+					<select class="form-control" asp-for="Protocol" asp-items="Html.GetEnumSelectList<ORESchemesView>()"></select>
+					<span class="text-danger" asp-validation-for="Protocol"></span>
 				</div>
 				
 				<div class="form-group">
 					<label asp-for="Dataset"></label>
 					<textarea class="form-control" rows="3" asp-for="Dataset" placeholder="Maximum @(Config["Limits:Dataset"]) records. Leave blank to sample uniformly."></textarea>
-					<span asp-validation-for="Dataset"></span>
+					<span class="text-danger"  asp-validation-for="Dataset"></span>
 				</div>
 				<div class="form-group">
 					<label asp-for="Queryset"></label>
 					<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly."></textarea>
-					<span asp-validation-for="Dataset"></span>
+					<span class="text-danger"  asp-validation-for="Dataset"></span>
 				</div>
 				<div class="form-group">
 					<label asp-for="CacheSize"></label>
 					<input class="form-control" asp-for="CacheSize" placeholder="From 0 (default) to 100" />
-					<span asp-validation-for="Queryset"></span>
+					<span class="text-danger"  asp-validation-for="Queryset"></span>
 				</div>
 
 				<div class="form-group">
