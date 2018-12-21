@@ -19,6 +19,7 @@ cd ..
 cp ../README.md index.md
 docfx docfx.json --force
 
+rm -rf ../src/web/wwwroot/documentation
 cp -r _site ../src/web/wwwroot/documentation
 
 echo "Done."
