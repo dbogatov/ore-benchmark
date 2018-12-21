@@ -32,7 +32,7 @@ namespace Web
 				.AddJsonFile("appsettings.json", optional: false) // read defaults first
 				.AddJsonFile(
 					$"{(env.IsProduction() ? "/run/secrets/settings/" : "")}appsettings.{env.EnvironmentName.ToLower()}.json",
-					optional: env.IsStaging()
+					optional: true
 				) // override with specific settings file
 				.AddJsonFile("version.json", optional: true)
 				.AddEnvironmentVariables();

@@ -1,4 +1,5 @@
 stages:
+- pre-build
 - build
 - test
 - release
@@ -10,24 +11,45 @@ variables:
   DOTNET_SDK_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-sdk-alpine"
   DOTNET_RUNTIME_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-runtime-alpine"
 
+build-docs:
+  image: dbogatov/docker-sources:tsgkadot-docker-docfx
+  stage: pre-build
+  script:
+  - ./docs/docs.sh
+  artifacts:
+    paths:
+    - ./docs/_site
+    - ./docs/Dockerfile
+    - ./docs/nginx.conf
+    - ./src/web/wwwroot/documentation
+  tags:
+  - docker
+  
 build-app:
   image: $DOTNET_SDK_IMAGE
   stage: build
   script:
   - printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
-  - dotnet restore src/cli/ --disable-parallel 
+  - printf "{\"Version\":{\"GitHash\":\"%s\"}}" $(echo $CI_BUILD_REF | cut -c1-8) > src/web/version.json
+  - dotnet restore src/cli/ --disable-parallel
+  - dotnet restore src/web/ --disable-parallel 
   - dotnet restore tools/data-gen/ --disable-parallel 
   - dotnet publish -c release src/cli/ -o dist/
+  - dotnet publish -c release src/web/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
+  dependencies:
+  - build-docs
   artifacts:
     expire_in: 1 day
     paths:
     - ./src/cli/dist
+    - ./src/web/dist
     - ./tools/data-gen/dist
     - ./tools/data-gen/generate.sh
     - ./tools/simulation/
     - ./Dockerfile
     - ./.dockerignore
+    - ./src/web/Dockerfile
   tags:
   - docker
 
@@ -62,19 +84,6 @@ build-packages:
   only:
   - master
 
-build-docs:
-  image: dbogatov/docker-sources:tsgkadot-docker-docfx
-  stage: build
-  script:
-  - ./docs/docs.sh
-  artifacts:
-    paths:
-    - ./docs/_site
-    - ./docs/Dockerfile
-    - ./docs/nginx.conf
-  tags:
-  - docker
-
 data-gen:
   image: $DOTNET_SDK_IMAGE
   stage: build
@@ -89,7 +98,7 @@ data-gen:
   only:
   - master
 
-coverage-report:
+.coverage-report:
   image: $DOTNET_SDK_IMAGE
   stage: test
   script:
@@ -102,7 +111,7 @@ coverage-report:
   tags:
   - docker
 
-unit-tests:
+.unit-tests:
   image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -121,7 +130,7 @@ unit-tests:
   tags:
   - docker
 
-integration-tests:
+.integration-tests:
   image: $DOTNET_SDK_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -140,7 +149,7 @@ integration-tests:
   tags:
   - docker
 
-system-protocol-tests:
+.system-protocol-tests:
   image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -157,7 +166,7 @@ system-protocol-tests:
   tags:
   - docker
 
-system-schemes-tests:
+.system-schemes-tests:
   image: $DOTNET_RUNTIME_IMAGE
   variables:
     GIT_STRATEGY: none
@@ -224,20 +233,20 @@ docs-website:
   only:
   - master
   
-# docs-website:
-#   variables:
-#     GIT_STRATEGY: none
-#   stage: release
-#   script:
-#   - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME docs/
-#   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
-#   - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME
-#   dependencies:
-#   - build-docs
-#   tags:
-#   - shell
-#   only:
-#   - master
+website:
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  script:
+  - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME src/web/
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
+  - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME
+  dependencies:
+  - build-app
+  tags:
+  - shell
+  # only:
+  # - master
 
 pages:
   image: dbogatov/docker-images:alpine-extras-latest

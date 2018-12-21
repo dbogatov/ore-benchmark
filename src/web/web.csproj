@@ -25,8 +25,8 @@
 		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)/" ContinueOnError="false" />
 	</Target>
 	<Target Name="CopyVersion" AfterTargets="Build">
-		<Copy SourceFiles="../version.json" DestinationFolder="$(OutputPath)/publish" ContinueOnError="true" />
-		<Copy SourceFiles="../version.json" DestinationFolder="$(OutputPath)/" ContinueOnError="true" />
+		<Copy SourceFiles="version.json" DestinationFolder="$(OutputPath)/publish" ContinueOnError="true" />
+		<Copy SourceFiles="version.json" DestinationFolder="$(OutputPath)/" ContinueOnError="true" />
 	</Target>
 
 </Project>
