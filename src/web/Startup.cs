@@ -88,16 +88,16 @@ namespace Web
 					Configuration.StringsFromArray("Logging:Exclude").ToArray()
 				);
 
-			// if (env.IsProduction())
-			// {
+			if (env.IsProduction())
+			{
 				app.UseExceptionHandler("/home/error"); // All serverside exceptions redirect to error page
 				app.UseStatusCodePagesWithReExecute("/home/error/{0}");
-			// }
-			// else
-			// {
-			// 	app.UseDatabaseErrorPage();
-			// 	app.UseDeveloperExceptionPage();
-			// }
+			}
+			else
+			{
+				app.UseDatabaseErrorPage();
+				app.UseDeveloperExceptionPage();
+			}
 
 			app.UseDefaultFiles(); // in wwwroot folder, index.html is served when opening a directory
 			app.UseStaticFiles(); // make accessible and cache wwwroot files
