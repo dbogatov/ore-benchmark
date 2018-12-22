@@ -39,7 +39,7 @@ namespace Web.Services
 		{
 			var pending = await _context.Simulations.CountAsync(s => s.Status == Status.Pending);
 			var all = await _context.Simulations.CountAsync();
-			
+
 			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"{pending} of {all} elements enqueued.");
 
 			if (
@@ -78,47 +78,57 @@ namespace Web.Services
 
 				await _context.SaveChangesAsync();
 
-				int branches = 0;
+				var pageSize = Convert.ToInt32(_config["Daemon:SimulationService:PageSize"]);
+				int cipherSize = 0;
 				switch (simulation.Protocol)
 				{
 					case ORESchemes.Shared.ORESchemes.PracticalORE:
 					case ORESchemes.Shared.ORESchemes.CryptDB:
 					case ORESchemes.Shared.ORESchemes.FHOPE:
-						branches = 512;
+						cipherSize = 64;
 						break;
 					case ORESchemes.Shared.ORESchemes.Florian:
 					case ORESchemes.Shared.ORESchemes.POPE:
-						branches = 256;
+						cipherSize = 128;
 						break;
 					case ORESchemes.Shared.ORESchemes.NoEncryption:
-						branches = 1024;
+						cipherSize = 32;
 						break;
 					case ORESchemes.Shared.ORESchemes.LewiORE:
-						branches = 11;
+						cipherSize = 2816;
 						break;
 					case ORESchemes.Shared.ORESchemes.AdamORE:
-						branches = 8;
+						cipherSize = 4088;
 						break;
 				}
+				var branches = (int)Math.Round((double)pageSize / cipherSize);
 
-				Report report = (Report)new Simulator(
-					new Inputs
-					{
-						Queries = simulation.Queryset.ToList(),
-						Dataset = simulation.Dataset.ToList(),
-						CacheSize = simulation.CacheSize
-					},
-					Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, branches)
-				).Simulate();
+				Report report = null;
+				try
+				{
+					report = (Report)new Simulator(
+						new Inputs
+						{
+							Queries = simulation.Queryset.ToList(),
+							Dataset = simulation.Dataset.ToList(),
+							CacheSize = simulation.CacheSize
+						},
+						Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, branches)
+					).Simulate();
 
+					simulation.Status = Status.Completed;
+				}
+				catch (System.Exception)
+				{
+					simulation.Status = Status.Failed;
+				}
 				simulation.Result = report;
 				simulation.Completed = DateTime.UtcNow;
-				simulation.Status = Status.Completed;
 
 				await _context.SaveChangesAsync();
 
 				_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "Simulation completed.");
-
+				
 				return true;
 			}
 			else

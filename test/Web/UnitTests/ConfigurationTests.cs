@@ -38,6 +38,7 @@ namespace Test.Web.UnitTests
 		public void DaemonSpecific()
 		{
 			TestIntKey("Daemon:CleanService:MaxAge");
+			TestIntKey("Daemon:SimulationService:PageSize");
 		}
 
 		private void TestStringKey(string key)

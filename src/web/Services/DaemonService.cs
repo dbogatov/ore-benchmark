@@ -54,8 +54,7 @@ namespace Web.Services
 		/// Holds intervals to wait for each service.
 		/// Interval says how much time to wait between runing the task again.
 		/// </summary>
-		private Dictionary<Services, TimeSpan> _intervals =
-			new Dictionary<Services, TimeSpan>();
+		private Dictionary<Services, TimeSpan> _intervals = new Dictionary<Services, TimeSpan>();
 
 		public DaemonService(
 			ILogger<DaemonService> logger,

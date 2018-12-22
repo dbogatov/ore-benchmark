@@ -15,7 +15,6 @@ namespace Test.Web.UnitTests.Services
 {
 	public class SeedService
 	{
-		private readonly IServiceProvider _serviceProvider;
 		private readonly IConfiguration _config;
 		private readonly IDataContext _dataContext;
 
@@ -40,9 +39,9 @@ namespace Test.Web.UnitTests.Services
 
 			services.RegisterSharedServices(env, _config);
 
-			_serviceProvider = services.BuildServiceProvider();
+			var serviceProvider = services.BuildServiceProvider();
 
-			_dataContext = _serviceProvider.GetRequiredService<IDataContext>();
+			_dataContext = serviceProvider.GetRequiredService<IDataContext>();
 		}
 
 		[Fact]

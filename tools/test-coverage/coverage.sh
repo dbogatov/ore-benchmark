@@ -22,6 +22,8 @@ dotnet minicover instrument --workdir ../../ --assemblies test/**/bin/**/*.dll -
 # Reset hits count in case minicover was run for this project
 dotnet minicover reset
 
+export ASPNETCORE_ENVIRONMENT="Testing"
+
 dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Category=Unit || true
 
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs

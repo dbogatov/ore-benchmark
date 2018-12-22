@@ -18,6 +18,11 @@ namespace Simulation.Protocol
 		{
 			_inputs = inputs;
 			_protocol = protocol;
+			
+			if (_inputs.CacheSize < 0)
+			{
+				throw new ArgumentException($"Cache size must not be negative. Given {_inputs.CacheSize}.");
+			}
 
 			perQuery = new Tracker(_inputs.CacheSize);
 			perStage = new Tracker(_inputs.CacheSize);

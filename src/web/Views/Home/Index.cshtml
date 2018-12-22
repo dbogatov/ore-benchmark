@@ -89,7 +89,7 @@
 				<br>
 				You should also choose the <b>Protocol</b>.
 				<em>No encryption</em> and OPE / ORE schemes will be used in B+ tree, other protocols are custom.
-				The parameters (such as tree branching factor) will be tuned (best effort) to optimize for I/Os.
+				The parameters (such as tree branching factor) will be tuned (best effort) to optimize for I/Os assuming page size @(Config["Daemon:SimulationService:PageSize"]) bits.
 				<br>
 				<b>Dataset</b> is a list of index-value pair, where index is an integer and value is string.
 				The format is a number, followed by coma, followed by string value without quotes per line.
