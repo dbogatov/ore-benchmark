@@ -15,6 +15,7 @@
 		<PackageReference Include="BenchmarkDotNet" Version="0.10.14.660" />
 		<PackageReference Include="Microsoft.TestPlatform.TestHost" Version="15.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.All" />
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
