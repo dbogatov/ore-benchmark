@@ -15,16 +15,9 @@ namespace Test.Web.UnitTests
 	[Trait("Category", "Unit")]
 	public class Logger
 	{
-		public static IEnumerable<object[]> LogLevels =>
-			Enum
-				.GetValues(typeof(LogLevel))
-				.Cast<LogLevel>()
-				.Where(l => l != LogLevel.None)
-				.Select(v => new object[] { v });
+		private readonly ServiceProvider _provider;
 
-		[Theory]
-		[MemberData(nameof(LogLevels))]
-		public void LoggerNoExceptions(LogLevel level)
+		public Logger()
 		{
 			var services = new ServiceCollection();
 
@@ -36,22 +29,67 @@ namespace Test.Web.UnitTests
 			var mockConfig = new Mock<IConfiguration>();
 
 			services.RegisterSharedServices(mockEnv.Object, mockConfig.Object);
-			
+
 			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 
-			var provider = services.BuildServiceProvider();
+			_provider = services.BuildServiceProvider();
 
-			provider
+			Console.SetOut(TextWriter.Null);
+		}
+
+		public static IEnumerable<object[]> LogLevels =>
+			Enum
+				.GetValues(typeof(LogLevel))
+				.Cast<LogLevel>()
+				.Where(l => l != LogLevel.None)
+				.Select(v => new object[] { v });
+
+		[Theory]
+		[MemberData(nameof(LogLevels))]
+		public void LoggerNoExceptions(LogLevel level)
+		{
+			_provider
 				.GetService<ILoggerFactory>()
 				.AddExtendedLogger(
 					LogLevel.Trace,
 					new string[] { }
 				);
 
-			var logger = provider.GetRequiredService<ILogger<Logger>>();
-			
-			Console.SetOut(TextWriter.Null);
+			var logger = _provider.GetRequiredService<ILogger<Logger>>();
+
 			logger.Log(level, "Hello");
+		}
+
+		[Fact]
+		public void Exceptions()
+		{
+			_provider
+				.GetService<ILoggerFactory>()
+				.AddExtendedLogger(
+					LogLevel.Trace,
+					new string[] { }
+				);
+
+			var logger = _provider.GetRequiredService<ILogger<Logger>>();
+
+			logger.LogError(0, new Exception(), "Error");
+		}
+
+		[Fact]
+		public void Exclusions()
+		{
+			_provider
+				.GetService<ILoggerFactory>()
+				.AddExtendedLogger(
+					LogLevel.Trace,
+					new string[] {
+						"Logger"
+					}
+				);
+
+			var logger = _provider.GetRequiredService<ILogger<Logger>>();
+
+			logger.LogInformation("Hello");
 		}
 	}
 }

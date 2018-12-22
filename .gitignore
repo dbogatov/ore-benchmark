@@ -18,6 +18,7 @@ coverage.json
 coverage-hits.txt
 coverage.hits
 coverage-html/
+cov-report.txt
 
 results/
 
