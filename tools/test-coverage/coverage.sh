@@ -24,10 +24,32 @@ dotnet minicover reset
 
 export ASPNETCORE_ENVIRONMENT="Testing"
 
-dotnet test --no-build --no-restore --verbosity n ./../../test/ --logger trx --filter FullyQualifiedName~HomeController || true
+dotnet test --no-build --no-restore --verbosity n ./../../test/ --logger trx --filter Category=Unit || true
 
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
 dotnet minicover uninstrument --workdir ../../
 
-dotnet minicover report --workdir ../../
-dotnet minicover htmlreport --workdir ../../
+dotnet minicover report --workdir ../../ --threshold 0 | tee cov-report.txt
+dotnet minicover htmlreport --workdir ../../ --threshold 0
+
+alltotal=0
+allhit=0
+
+while IFS='' read -r line || [[ -n "$line" ]]
+do
+	if [[ $line == *"src/"* ]]
+	then
+		total=$(echo $line | cut -d"|" -f 3)
+		hit=$(echo $line | cut -d"|" -f 4)
+		# echo "$((hit)) of $((total))"
+		alltotal=$((alltotal+total))
+		allhit=$((allhit+hit))
+	fi
+done < cov-report.txt
+
+# echo $alltotal
+# echo $allhit
+
+coverage=$(bc -l <<< "scale=2; 100*$allhit/$alltotal")
+
+echo "Final coverage is $coverage%"
