@@ -117,6 +117,7 @@ unit-tests:
     GIT_STRATEGY: none
   stage: test
   script:
+  - export ASPNETCORE_ENVIRONMENT="Testing"
   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Unit
   - dotnet tool install --global trx2junit --version 1.0.2
   - export PATH="$PATH:/root/.dotnet/tools"
