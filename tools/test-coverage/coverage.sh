@@ -24,7 +24,7 @@ dotnet minicover reset
 
 export ASPNETCORE_ENVIRONMENT="Testing"
 
-dotnet test --no-build --no-restore --verbosity n ./../../test/ --filter Category=Unit || true
+dotnet test --no-build --no-restore --verbosity n ./../../test/ --logger trx --filter FullyQualifiedName~HomeController || true
 
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
 dotnet minicover uninstrument --workdir ../../

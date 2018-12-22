@@ -98,38 +98,44 @@ data-gen:
   only:
   - master
 
-coverage-report:
+unit-tests:
   image: $DOTNET_SDK_IMAGE
   stage: test
   script:
   - apk add --update bash
   - ./tools/test-coverage/coverage.sh
+  - dotnet tool install --global trx2junit --version 1.0.2
+  - export PATH="$PATH:/root/.dotnet/tools"
+  - trx2junit test/TestResults/*.trx
+  - cp test/TestResults/*.xml unit.xml
   dependencies: []
   artifacts:
+    reports:
+      junit: ./unit.xml
     paths:
       - coverage-html/
   tags:
   - docker
 
-unit-tests:
-  image: $DOTNET_SDK_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: test
-  script:
-  - export ASPNETCORE_ENVIRONMENT="Testing"
-  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Unit
-  - dotnet tool install --global trx2junit --version 1.0.2
-  - export PATH="$PATH:/root/.dotnet/tools"
-  - trx2junit test/TestResults/*.trx
-  - cp test/TestResults/*.xml unit.xml
-  dependencies:
-  - build-tests
-  artifacts:
-    reports:
-      junit: ./unit.xml
-  tags:
-  - docker
+# unit-tests:
+#   image: $DOTNET_SDK_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - export ASPNETCORE_ENVIRONMENT="Testing"
+#   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Unit
+#   - dotnet tool install --global trx2junit --version 1.0.2
+#   - export PATH="$PATH:/root/.dotnet/tools"
+#   - trx2junit test/TestResults/*.trx
+#   - cp test/TestResults/*.xml unit.xml
+#   dependencies:
+#   - build-tests
+#   artifacts:
+#     reports:
+#       junit: ./unit.xml
+#   tags:
+#   - docker
 
 integration-tests:
   image: $DOTNET_SDK_IMAGE

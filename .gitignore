@@ -16,6 +16,7 @@ docs/index.md
 
 coverage.json
 coverage-hits.txt
+coverage.hits
 coverage-html/
 
 results/
