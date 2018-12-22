@@ -41,9 +41,9 @@ namespace Test.Web.ControllerTests
 				Times.Once()
 			);
 		}
-		
+
 		[Fact]
-		public  async Task IndexQueueFull()
+		public async Task IndexQueueFull()
 		{
 			// Arrange
 			_mockSimulationService
@@ -64,6 +64,25 @@ namespace Test.Web.ControllerTests
 				Times.Once()
 			);
 			Assert.NotEmpty(_controller.ModelState["queue"].Errors);
+		}
+
+		[Fact]
+		public async Task IndexMalformedInput()
+		{
+			// Act
+			var result = await _controller.Index(new SimulationViewModel { Dataset = "Jiberish" });
+
+			// Assert
+			var viewResult = Assert.IsType<ViewResult>(result);
+			var model = Assert.IsAssignableFrom<SimulationViewModel>(
+				viewResult.ViewData.Model
+			);
+			Assert.Equal("Jiberish", model.Dataset);
+			_mockSimulationService.Verify(
+				mock => mock.EnqueueAsync(It.IsAny<SingleSimulation>()),
+				Times.Never()
+			);
+			Assert.NotEmpty(_controller.ModelState["input"].Errors);
 		}
 	}
 }

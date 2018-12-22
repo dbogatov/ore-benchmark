@@ -114,8 +114,8 @@ namespace Web.Controllers
 			}
 		}
 
-		public IActionResult Queue()
-			=> View(_context.Simulations.OrderBy(s => s.Created).ToList());
+		public async Task<IActionResult> Queue()
+			=> View(await _context.Simulations.OrderBy(s => s.Created).ToListAsync());
 
 		public IActionResult Error(int id)
 			=> View(new ErrorViewModel { Code = id });
