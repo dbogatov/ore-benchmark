@@ -36,6 +36,9 @@ dotnet build --no-restore
 
 echo "Running dotnet tests..."
 
+echo "Changing environment to testing..."
+export ASPNETCORE_ENVIRONMENT="Testing"
+
 dotnet test --no-build --no-restore --verbosity n $JUNIT $NAME $CATEGORY
 
 echo "Testing completed!"

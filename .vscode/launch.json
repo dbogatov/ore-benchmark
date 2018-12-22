@@ -10,7 +10,7 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.1/cli.dll",
+			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.2/cli.dll",
 			"args": [
 				"--dataset",
 				"./data/uniform/data.txt",
@@ -38,7 +38,7 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/tools/simulation/schemes/bin/Debug/netcoreapp2.1/schemes.dll",
+			"program": "${workspaceFolder}/tools/simulation/schemes/bin/Debug/netcoreapp2.2/schemes.dll",
 			"args": [
 				"--data-dir",
 				"./data",

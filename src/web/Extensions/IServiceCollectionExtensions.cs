@@ -34,7 +34,7 @@ namespace Web.Extensions
 			{
 				services
 					.AddEntityFrameworkInMemoryDatabase()
-					.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db", Global.InMemoryDatabaseRoot));
+					.AddDbContext<DataContext>(b => b.UseInMemoryDatabase("main-db"));
 			}
 
 			services.AddTransient<IDataContext, DataContext>();

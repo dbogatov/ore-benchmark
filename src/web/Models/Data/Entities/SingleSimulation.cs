@@ -105,8 +105,6 @@ namespace Web.Models.Data.Entities
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		public int? Runner { get; set; } = null;
-
 		public DateTime Created { get; set; } = DateTime.UtcNow;
 		public DateTime Started { get; set; } = DateTime.MaxValue;
 		public DateTime Completed { get; set; } = DateTime.MaxValue;

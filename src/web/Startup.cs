@@ -12,12 +12,6 @@ using Web.Extensions;
 
 namespace Web
 {
-	public static class Global
-	{
-		public static int RunnerID = new Random().Next();
-		public static readonly InMemoryDatabaseRoot InMemoryDatabaseRoot = new InMemoryDatabaseRoot();
-	}
-
 	public class Startup
 	{
 		/// <summary>
