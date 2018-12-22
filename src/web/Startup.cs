@@ -9,8 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Web.Extensions;
-using Web.Models.Data;
-using Web.Services;
 
 namespace Web
 {
