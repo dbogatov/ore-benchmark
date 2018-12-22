@@ -110,7 +110,6 @@ namespace Test.Web.UnitTests.Services
 				);
 		}
 
-		// [Theory(Skip = "Unstable test, needs investigation")]
 		[Theory]
 		[InlineData(global::Web.Services.Services.Simulation)]
 		[InlineData(global::Web.Services.Services.Clean)]
@@ -164,6 +163,60 @@ namespace Test.Web.UnitTests.Services
 								)
 						),
 						It.IsAny<Exception>(),
+						It.IsAny<Func<object, Exception, string>>()
+					)
+				);
+		}
+		
+		[Theory]
+		[InlineData(global::Web.Services.Services.Simulation)]
+		[InlineData(global::Web.Services.Services.Clean)]
+		public async Task FailureDetected(global::Web.Services.Services service)
+		{
+			// Arrange
+			EnableServices(service);
+	
+			Exception e = new Exception("error message");
+
+			_mockSimulationService
+				.Setup(mock => mock.SimulateAsync())
+				.ThrowsAsync(e);
+				
+			_mockCleanService
+				.Setup(mock => mock.CleanDataPointsAsync(null))
+				.ThrowsAsync(e);
+				
+			var daemonService = new global::Web.Services.DaemonService(
+				_mockLog.Object,
+				_mockServiceProvider.Object,
+				_config.Object
+			);
+			
+			// Act
+			var task = daemonService.StartServices();
+			await Task.Delay(3000);
+			daemonService.StopServices();
+
+			// Let it finish its job
+			// Check that services are stopped
+			// If not done in 30 seconds, consider timeout
+			Assert.Equal(await Task.WhenAny(task, Task.Delay(new TimeSpan(0, 0, 30))), task);
+
+			// Assert
+			_mockLog
+				.Verify(
+					log => log.Log(
+						LogLevel.Error,
+						It.IsAny<EventId>(),
+						It.Is<FormattedLogValues>(
+							v => v
+								.ToString()
+								.Contains(
+									$"{service.ToString()}",
+									StringComparison.OrdinalIgnoreCase
+								)
+						),
+						It.Is<Exception>(ex => ex == e),
 						It.IsAny<Func<object, Exception, string>>()
 					)
 				);

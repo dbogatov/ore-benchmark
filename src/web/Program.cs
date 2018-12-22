@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -19,7 +20,9 @@ namespace Web
 {
 	public class Program
 	{
-		public async static Task<int> Main(string[] args)
+		public async static Task<int> Main(string[] args) => await Entrypoint(args);
+		
+		public async static Task<int> Entrypoint(string[] args, CancellationToken cancel = default(CancellationToken))
 		{
 			int port = 80;
 			if (args.Length != 0 && (!Int32.TryParse(args[0], out port) || port < 1024 || port > 65534))
@@ -45,12 +48,12 @@ namespace Web
 			RunDaemon();
 #pragma warning restore CS4014  
 
-			await host.RunAsync();
+			await host.RunAsync(cancel);
 
 			return 0;
 		}
 
-		public async static Task RunDaemon()
+		private async static Task RunDaemon()
 		{
 			var mockEnv = new Mock<IHostingEnvironment>();
 			mockEnv.
@@ -72,7 +75,7 @@ namespace Web
 			
 			services.RegisterSharedServices(env, configuration);
 
-			services.AddLogging();
+			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 
 			var provider = services.BuildServiceProvider();
 			

@@ -64,6 +64,8 @@ namespace Web
 
 			// lowercase all generated url within the app
 			services.AddRouting(options => { options.LowercaseUrls = true; });
+			
+			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
