@@ -16,6 +16,7 @@ using Simulation.Protocol;
 
 namespace Test.Web.UnitTests.Services
 {
+	[Trait("Category", "Unit")]
 	public class SimulationService
 	{
 		private readonly IConfiguration _config;

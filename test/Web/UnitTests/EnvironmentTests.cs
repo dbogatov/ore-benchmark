@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Test.Web.UnitTests
 {
+	[Trait("Category", "Unit")]
 	public class EnvironmentTest
 	{
 		[Fact]

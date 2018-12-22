@@ -1,4 +1,3 @@
-using System;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ using Web.Models.Data.Entities;
 
 namespace Test.Web.UnitTests.Services
 {
+	[Trait("Category", "Unit")]
 	public class SeedService
 	{
 		private readonly IConfiguration _config;

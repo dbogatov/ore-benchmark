@@ -13,6 +13,7 @@ using Web.Models.Data.Entities;
 
 namespace Test.Web.UnitTests.Services
 {
+	[Trait("Category", "Unit")]
 	public class CleanService
 	{
 		private readonly IServiceProvider _serviceProvider;

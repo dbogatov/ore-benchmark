@@ -11,6 +11,7 @@ using Web.Services;
 
 namespace Test.Web.UnitTests.Services
 {
+	[Trait("Category", "Unit")]
 	public class DaemonService
 	{
 		private readonly Mock<IServiceProvider> _mockServiceProvider = new Mock<IServiceProvider>();
