@@ -99,10 +99,10 @@ namespace DataGen
 		public double ZipfParam { get; } = 1.5;
 
 		[Option("--employees-url <string>", Description = "If Employees type is requested, this is a CSV file's URL.")]
-		public string EmployeesUrl { get; } // https://sandor-dolores-space.nyc3.digitaloceanspaces.com/public/state-of-california-2017.csv
+		public string EmployeesUrl { get; } // https://taiwin.nyc3.digitaloceanspaces.com/public/state-of-california-2017.csv
 
 		[Option("--forest-url <string>", Description = "If Forest type is requested, this is a CSV file's URL.")]
-		public string ForestUrl { get; } // https://sandor-dolores-space.nyc3.digitaloceanspaces.com/public/covtype.data
+		public string ForestUrl { get; } // https://taiwin.nyc3.digitaloceanspaces.com/public/covtype.data
 
 		[Range(1, 1000000)]
 		[Option("--query-size <number>", Description = "Size of the query set to generate. Default 1000.")]
