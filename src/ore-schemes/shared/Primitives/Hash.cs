@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Security.Cryptography;
 using ORESchemes.Shared.Primitives.PRF;
 

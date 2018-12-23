@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<LangVersion>latest</LangVersion>
+		<IsTestProject>true</IsTestProject>
 		<NoWarn>$(NoWarn);NU1701</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
@@ -12,6 +13,9 @@
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
 		<PackageReference Include="MathNet.Numerics" Version="4.5.1" />
 		<PackageReference Include="BenchmarkDotNet" Version="0.10.14.660" />
+		<PackageReference Include="Microsoft.TestPlatform.TestHost" Version="15.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.All" />
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
@@ -22,6 +26,13 @@
 		<ProjectReference Include="..\src\ore-schemes\fh-ope\fh-ope.csproj" />
 		<ProjectReference Include="..\src\simulator\simulator.csproj" />
 		<ProjectReference Include="..\src\benchmark\benchmark.csproj" />
+		<ProjectReference Include="..\src\web\web.csproj" />
 		<ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<AppSettings Include="../src/web/appsettings*.*"/>
+	</ItemGroup>
+	<Target Name="CopyAppsettings" AfterTargets="Build">
+		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+	</Target>
 </Project>

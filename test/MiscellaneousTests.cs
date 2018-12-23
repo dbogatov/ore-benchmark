@@ -112,5 +112,23 @@ namespace Test
 				Assert.True(B.value == (byte[])B);
 			}
 		}
+
+		[Fact]
+		public void NegativeCacheSize()
+		{
+			Assert.Throws<ArgumentException>(
+				() =>
+					new Simulation.Protocol.Simulator(
+						new Simulation.Protocol.Inputs { CacheSize = -1 },
+						new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
+								new global::BPlusTree.Options<OPECipher>(
+									new Simulation.NoEncryptionFactory().GetScheme(),
+									3
+								),
+								new Simulation.NoEncryptionFactory(123456).GetScheme()
+							)
+					)
+			);
+		}
 	}
 }

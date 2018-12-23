@@ -20,6 +20,16 @@
 				"${workspaceRoot}/test/test.csproj"
 			],
 			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build-web",
+			"command": "dotnet",
+            "type": "process",
+			"args": [
+				"build",
+				"${workspaceRoot}/src/web/web.csproj"
+			],
+			"problemMatcher": "$msCompile"
 		}
 
     ]

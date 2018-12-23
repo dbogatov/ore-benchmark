@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\simulator\simulator.csproj" />
+		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.All" />
+		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+		<PackageReference Include="Moq" Version="4.8.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AppSettings Include="appsettings*.*"/>
+	</ItemGroup>
+	<Target Name="CopyAppsettings" AfterTargets="Build">
+		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)/publish" ContinueOnError="false" />
+		<Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)/" ContinueOnError="false" />
+	</Target>
+	<Target Name="CopyVersion" AfterTargets="Build">
+		<Copy SourceFiles="version.json" DestinationFolder="$(OutputPath)/publish" ContinueOnError="true" />
+		<Copy SourceFiles="version.json" DestinationFolder="$(OutputPath)/" ContinueOnError="true" />
+	</Target>
+
+</Project>

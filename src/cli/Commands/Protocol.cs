@@ -1,14 +1,8 @@
 using System;
 using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
-using BPlusTree;
-using Simulation;
 using CLI.DataReaders;
 using Simulation.Protocol;
-using ORESchemes.PracticalORE;
-using ORESchemes.CryptDBOPE;
-using ORESchemes.Shared;
-using ORESchemes.AdamORE;
 using System.Linq;
 
 namespace CLI
@@ -55,79 +49,7 @@ namespace CLI
 			PutToConsole($"Queries of {reader.Inputs.QueriesCount()} queries.", Parent.Verbose);
 			PutToConsole($"Inputs read in {timer.ElapsedMilliseconds} ms.", Parent.Verbose);
 
-			IProtocol protocol;
-
-			switch (Parent.OREScheme)
-			{
-				case ORESchemes.Shared.ORESchemes.NoEncryption:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
-							new Options<OPECipher>(
-								new NoEncryptionFactory().GetScheme(),
-								BPlusTreeBranching
-							),
-							new NoEncryptionFactory(Parent.Seed).GetScheme()
-						);
-					break;
-				case ORESchemes.Shared.ORESchemes.CryptDB:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, OPECipher, BytesKey>(
-							new Options<OPECipher>(
-								new CryptDBOPEFactory().GetScheme(),
-								BPlusTreeBranching
-							),
-							new CryptDBOPEFactory(Parent.Seed).GetScheme()
-						);
-					break;
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>(
-						new Options<ORESchemes.PracticalORE.Ciphertext>(
-							new PracticalOREFactory().GetScheme(),
-							BPlusTreeBranching
-						),
-						new PracticalOREFactory(Parent.Seed).GetScheme()
-					);
-					break;
-				case ORESchemes.Shared.ORESchemes.LewiORE:
-					protocol = new Simulation.Protocol.LewiORE.Protocol(
-						new Options<ORESchemes.LewiORE.Ciphertext>(
-							new LewiOREFactory().GetScheme(),
-							BPlusTreeBranching
-						),
-						new LewiOREFactory(Parent.Seed).GetScheme()
-					);
-					break;
-				case ORESchemes.Shared.ORESchemes.FHOPE:
-					protocol = new Simulation.Protocol.FHOPE.Protocol(
-						new Options<ORESchemes.FHOPE.Ciphertext>(
-							new FHOPEFactory().GetScheme(),
-							BPlusTreeBranching
-						),
-						new FHOPEFactory(Parent.Seed).GetScheme()
-					);
-					break;
-				case ORESchemes.Shared.ORESchemes.AdamORE:
-					protocol = new Simulation.Protocol.SimpleORE.Protocol<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
-						new Options<ORESchemes.AdamORE.Ciphertext>(
-							new AdamOREFactory().GetScheme(),
-							BPlusTreeBranching
-						),
-						new AdamOREFactory(Parent.Seed).GetScheme()
-					);
-					break;
-				case ORESchemes.Shared.ORESchemes.Florian:
-					protocol = new Simulation.Protocol.Florian.Protocol(
-						new Random(Parent.Seed).GetBytes(128 / 8),
-						BPlusTreeBranching
-					);
-					break;
-				case ORESchemes.Shared.ORESchemes.POPE:
-					protocol = new Simulation.Protocol.POPE.Protocol(
-						new Random(Parent.Seed).GetBytes(128 / 8),
-						BPlusTreeBranching
-					);
-					break;
-				default:
-					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
-			}
+			IProtocol protocol = Simulator.GenerateProtocol(Parent.OREScheme, Parent.Seed, BPlusTreeBranching);
 
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 

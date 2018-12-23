@@ -1,0 +1,285 @@
+@using Web.Models.Data.Entities
+@using Simulation.Protocol
+@using ORESchemes.Shared.Primitives
+@using Microsoft.Extensions.Configuration
+
+@model Web.Models.Data.Entities.SingleSimulation
+
+@inject IConfiguration Config
+
+@{
+	ViewData["Title"] = $"Simulation #{Model.Id} result";
+}
+
+<div class="text-center">
+	<h2 class="display-4">Simulation #@Model.Id
+	@switch(Model.Status)
+		{
+			case Status.Pending:
+				@: engueued 
+				break;
+			case Status.InProgress:
+				@: running 
+				break;
+			case Status.Failed:
+				@: failed 
+				break;
+		}
+	</h2>
+
+	<p>
+		This link is permanent, you can use it to track your simulation status.
+		<br>
+		@switch(Model.Status)
+		{
+			case Status.Pending:
+				@: Simulation is enqueued. 
+				@: Please check again later.
+				@: Simulations are being picked up every @(Convert.ToInt32(Config["Daemon:SimulationService:Interval"])) seconds
+				break;
+			case Status.Completed:
+				@: Simulation has been completed, please see the results below.<br>
+				@: This simulation will be persisted at least until @(Model.Completed + TimeSpan.FromSeconds(Convert.ToInt32(Config["Daemon:CleanService:MaxAge"]))).<br>
+				<a asp-controller="Home" asp-action="Raw" asp-route-id="@Model.Id">
+					Download JSON with per-query reports
+				</a>
+				break;
+			case Status.InProgress:
+				@: Simulation is running, check again soon.
+				break;
+			case Status.Failed:
+				@: Simulation has failed. 
+				@: We are investingating the issue. 
+				@: Most likely, malformed inputs were provided (eg. range 6 to 4)
+				break;
+		}
+	</p>
+</div>
+
+<hr>
+
+<div class="row">
+	<div class="col-md-4">
+		<div class="text-center">
+			<h3>Inputs</h3>
+		</div>
+		<p><b>Seed:</b> @Model.Seed</p>
+		<p><b>Protocol:</b> @Model.Protocol</p>
+		<p><b>Cache size:</b> @Model.CacheSize</p>
+		<p><b>Input data and query sets are below</b></p>
+	</div>
+	<div class="col-md-8">
+		<div class="text-center">
+			<h3>Legend</h3>
+		</div>
+		<p class="text-justify">
+			Following is a report of this simulation.
+			The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
+			Primitive tables show total and average cryptographic primitive usage.
+			<b>Purity</b> means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
+			The special primitives are <em>symmetric</em>, which is a symmetric encription using AES-CBC, <em>LFPRF</em> and samplers, which are BCLO OPE specific, and <em>TreeTraversal</em>, which is FH-OPE specific.
+			We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
+		</p>
+	</div>
+</div>
+
+@if(Model.Status == Status.Completed)
+{
+	<hr>
+	
+	@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
+	{
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h3>@stage stage results</h3>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6">
+				<p><b>I/O requests:</b> @(((Report.SubReport)Model.Result.Stages[stage]).IOs)</p>
+				<p><b>Number of queries:</b> @(((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)</p>
+				<p><b>Number of OPE/ORE scheme operations:</b> @(((Report.SubReport)Model.Result.Stages[stage]).SchemeOperations)</p>
+				<p><b>Communication volume:</b> @(((Report.SubReport)Model.Result.Stages[stage]).CommunicationVolume / 8) byte(s)</p>
+				<p><b>Communication size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MessagesSent) messages</p>
+				<p><b>Max client storage size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MaxClientStorage / 8) bytes</p>
+			</div>
+			
+			<div class="col-md-6">
+				@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations.Values.All(v => v == 0))
+				{
+					<div class="text-center" style="padding-bottom: 20px;">
+						<h4>No primitives used</h4>
+					</div>
+				}
+				else
+				{
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Primitive</th>
+								<th scope="col">Total / <em>Per Query</em></th>
+								<th scope="col">Pure / <em>Per Query</em></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var primitive in Enum.GetValues(typeof(Primitive)).Cast<Primitive>().OrderBy(v => v))
+							{
+								@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] != 0)
+								{
+									<tr>
+										<th scope="row">@primitive.ToString()</th>
+										<td>
+											@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive]) / 
+											<em>
+												@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] / ((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)
+											</em>
+										</td>
+										<td>
+											@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive]) / 
+											<em>
+												@(((Report.SubReport)Model.Result.Stages[stage]).PurePrimitiveOperations[primitive] / ((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)
+											</em>
+										</td>
+									</tr>
+								}
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</div>
+		
+		@if(stage != Stages.Handshake)
+		{
+			<div class="row">
+				<canvas id="chart-@stage" width="100%"></canvas>
+			</div>
+		}
+	}
+}
+
+<hr>
+
+<hr>
+
+<div class="text-center" style="padding-bottom: 20px;">
+	<h3 id="input-sets-heading">Original input data and query sets</h3>
+	<p>
+		<a class="input-sets-invisible" onclick="$('.input-sets-visible').removeClass('d-none'); $('.input-sets-invisible').addClass('d-none');" href="#input-sets-heading">Click here to expand</a>
+	</p>
+	<p>	
+		<a class="input-sets-visible d-none" onclick="$('.input-sets-visible').addClass('d-none'); $('.input-sets-invisible').removeClass('d-none');" href="#input-sets-heading">Click here to collapse</a>
+	</p>
+</div>
+
+<div class="row d-none input-sets-visible">
+	<div class="col-md-6">
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h4>Data set</h3>
+		</div>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Index</th>
+					<th scope="col">Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					var i = 1;
+				}
+				@foreach (var record in Model.Dataset)
+				{
+					<tr>
+						<th scope="row">@i</th>
+						<td>@record.index</td>
+						<td>@record.value</td>
+					</tr>
+					i++;
+				}
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="col-md-6">
+		<div class="text-center" style="padding-bottom: 20px;">
+			<h4>Query set</h3>
+		</div>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">From</th>
+					<th scope="col">To</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					i = 1;
+				}
+				@foreach (var query in Model.Queryset)
+				{
+					<tr>
+						<th scope="row">@i</th>
+						<td>@query.from</td>
+						<td>@query.to</td>
+					</tr>
+					i++;
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@section scripts {
+	@if(Model.Status == Status.Completed)
+	{
+		@foreach (var stage in Enum.GetValues(typeof(Stages)).Cast<Stages>().OrderBy(v => v))
+		{
+			@if(stage == Stages.Handshake)
+			{
+				continue;
+			}
+			<script>
+				var ctx_@stage = document.getElementById("chart-@stage").getContext('2d');
+				var myChart_@stage = new Chart(ctx_@stage, {
+					type: 'line',
+					data: {
+						labels: [@(  string.Join(",", Enumerable.Range(1, ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Count).Select(s => s.ToString())) )],
+						datasets: [{
+						label: '@stage stage I/Os',
+						borderColor: "#3e95cd",
+						data: [
+							@( string.Join(",", ((Report.SubReport)Model.Result.Stages[stage]).PerQuerySubreports.Select(sr => ((Report.SubReport)sr).IOs.ToString())) )
+						],
+						fill: false,
+					}]
+				},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: false,
+									callback: function(value) { if ( value % 1 === 0 ) { return value; } }
+								}
+							}],
+							xAxes: [{
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20
+								}
+							}]
+						},
+						elements: {
+							line: {
+								tension: 0, // disables bezier curves
+							}
+						}
+					}
+				});
+			</script>
+		}
+	}
+}

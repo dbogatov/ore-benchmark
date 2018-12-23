@@ -7,7 +7,7 @@ shopt -s globstar
 cd "${0%/*}"
 CWD=$(pwd)
 
-rm -rf ../src/**/{dist,obj,bin}
+rm -rf ../src/*/{dist,obj,bin}
 rm -rf ../src/ore-schemes/**/{dist,obj,bin}
 rm -rf ../test/{dist,obj,bin}
 

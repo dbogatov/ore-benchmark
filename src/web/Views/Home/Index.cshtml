@@ -1,0 +1,111 @@
+﻿@using Web.Models.View
+@using Microsoft.Extensions.Configuration
+
+@model SimulationViewModel
+
+@inject IConfiguration Config
+
+@{
+	ViewData["Title"] = "Run Simulation";
+}
+
+<div class="text-center">
+	<h1 class="display-4">Run simulation</h1>
+	<p>
+		This is a simulation website for the "Comparative Evaluation of Order-Preserving and Order-Revealing Schemes and Protocols" project.
+		See the <a href="https://dbogatov.org/assets/custom/docs/ore-benchmark.pdf" target="_blank">whitepaper</a> and the <a href="https://github.com/dbogatov/ore-benchmark" target="_blank">source code</a>.
+	</p>
+</div>
+
+<div class="row">
+	<div class="col-md-4">
+		<div class="text-center">
+			<h3>Inputs</h3>
+		</div>
+		
+		<form asp-controller="Home" asp-action="Index" method="post">
+			<div class="form-group">
+				<button type="submit" class="btn btn-success btn-block">Run default example</button>
+			</div>
+		</form>
+		
+		<form asp-controller="Home" asp-action="Index" method="post">
+			
+			<div asp-validation-summary="All" class="text-danger"></div>
+		
+			<div class="form-group">
+				<label asp-for="Seed"></label>
+				<input class="form-control" asp-for="Seed" placeholder="Leave blank for fresh random" />
+				<span class="text-danger" asp-validation-for="Seed"></span>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="Protocol"></label>
+				<select class="form-control" asp-for="Protocol" asp-items="Html.GetEnumSelectList<ORESchemesView>()"></select>
+				<span class="text-danger" asp-validation-for="Protocol"></span>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="Dataset"></label>
+				<textarea class="form-control" rows="3" asp-for="Dataset" placeholder="Maximum @(Config["Limits:Dataset"]) records. Leave blank to sample uniformly."></textarea>
+				<span class="text-danger"  asp-validation-for="Dataset"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Queryset"></label>
+				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly."></textarea>
+				<span class="text-danger"  asp-validation-for="Dataset"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="CacheSize"></label>
+				<input class="form-control" asp-for="CacheSize" placeholder="From 0 (default) to 100" />
+				<span class="text-danger"  asp-validation-for="Queryset"></span>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary btn-block">Submit</button>
+			</div>
+			
+		</form>
+	</div>
+	<div class="col-md-8">
+		<div class="text-center">
+			<h3>Legend</h3>
+		</div>
+		<p class="text-justify">
+			<b>
+				All simulations are public.
+				Do not supply sensitive data.
+			</b>
+			<br>
+			Use this form to schedule a simulation.
+			Simulations are placed in queue and are executed in order, although the queue is usually empty.
+			Simulation result page will be available immediately and will show its current state and results when available.
+			Results will be persisted at least for @(Config["Daemon:CleanService:MaxAge"]) seconds.
+			<br>
+			Click "Submit" with empty fields to schedule trivial simulation, or use the fields in the form to customized it.
+			<br>
+			<b>Seed</b> value is used to seed the PRG for the whole simulation.
+			Same inputs with the same seed will always produce the same result.
+			<br>
+			You should also choose the <b>Protocol</b>.
+			<em>No encryption</em> and OPE / ORE schemes will be used in B+ tree, other protocols are custom.
+			The parameters (such as tree branching factor) will be tuned (best effort) to optimize for I/Os assuming page size @(Config["Daemon:SimulationService:PageSize"]) bits.
+			<br>
+			<b>Dataset</b> is a list of index-value pair, where index is an integer and value is string.
+			The format is a number, followed by coma, followed by string value without quotes per line.
+			For example, <code>4, elephant</code>.
+			Values are generally discarded, so please do not put special characters in them.
+			<br>
+			<b>Queryset</b> is a list of from-to pairs, where both components are integers and the first is no greater than the second.
+			The format is a number, followed by coma, followed by a number.
+			For example, <code>4, 6</code>.
+			<br>
+			<b>Cache size</b> defines virtual LRU cache capacity.
+			Requests fulfilled by the cache do not count as I/Os.
+			<br>
+			Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
+			Inputs beyond these limits will be discarded.
+			Please, use our docker images (see the <a href="/documentation">docs</a>) to run arbitrary-sized simulations.
+		</p>
+	</div>
+</div>

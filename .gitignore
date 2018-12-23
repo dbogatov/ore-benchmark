@@ -2,16 +2,23 @@
 **/bin/
 **/dist/
 
+!src/web/wwwroot/*
+!src/web/wwwroot/**/*
+
 results/
 
 data/
+!src/web/Models/Data/
 
 docs/_site
 docs/index.html
+docs/index.md
 
 coverage.json
 coverage-hits.txt
+coverage.hits
 coverage-html/
+cov-report.txt
 
 results/
 
@@ -26,3 +33,7 @@ tools/data-gen/tpc-h/dbgen
 BenchmarkDotNet.Artifacts
 
 test/TestResults
+
+development.db
+
+src/web/wwwroot/documentation

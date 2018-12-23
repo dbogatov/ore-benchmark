@@ -6,7 +6,14 @@ namespace ORESchemes.Shared
 {
 	public enum ORESchemes
 	{
-		NoEncryption, CryptDB, PracticalORE, LewiORE, FHOPE, AdamORE, Florian, POPE
+		NoEncryption,
+		CryptDB,
+		PracticalORE,
+		LewiORE,
+		FHOPE,
+		AdamORE,
+		Florian,
+		POPE
 	}
 
 	public enum SchemeOperation
@@ -67,7 +74,7 @@ namespace ORESchemes.Shared
 
 		public int GetSize() => value.Length * sizeof(byte) * 8;
 
-		public static implicit operator byte[](BytesKey k) => k.value;
+		public static implicit operator byte[] (BytesKey k) => k.value;
 		public static implicit operator BytesKey(byte[] v) => new BytesKey(v);
 	}
 
