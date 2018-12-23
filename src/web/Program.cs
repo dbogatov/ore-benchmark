@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,6 +18,12 @@ namespace Web
 	{
 		public async static Task<int> Main(string[] args) => await Entrypoint(args);
 		
+		/// <summary>
+		/// A wrapper around Main for easy testing
+		/// </summary>
+		/// <param name="args">CLI arguments passed from Main</param>
+		/// <param name="cancel">Cancellation token to shut down server when needed</param>
+		/// <returns>Program return code</returns>
 		public async static Task<int> Entrypoint(string[] args, CancellationToken cancel = default(CancellationToken))
 		{
 			int port = 80;
@@ -53,6 +55,10 @@ namespace Web
 			return 0;
 		}
 
+		/// <summary>
+		/// Schedule a daemon thread responsible for running iterative services.
+		/// Not recommended to be awaited.
+		/// </summary>
 		private async static Task RunDaemon()
 		{
 			var mockEnv = new Mock<IHostingEnvironment>();

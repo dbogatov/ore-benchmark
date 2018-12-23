@@ -79,6 +79,13 @@ namespace Simulation.Protocol
 			return result;
 		}
 		
+		/// <summary>
+		/// Generate a protocol of supplied arguments
+		/// </summary>
+		/// <param name="scheme">The scheme / protocol to use</param>
+		/// <param name="seed">Seed value to use (if supplied, deterministic</param>
+		/// <param name="branches">Option that controls the number of elements per page for I/Os (branching factor for B+ tree)</param>
+		/// <returns>An instantiated protocol</returns>
 		public static IProtocol GenerateProtocol(ORESchemes.Shared.ORESchemes scheme, int seed, int branches)
 		{
 			switch (scheme)

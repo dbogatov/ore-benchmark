@@ -14,7 +14,18 @@ namespace Web.Services
 {
 	public interface ISimulationService
 	{
+		/// <summary>
+		/// Grab a pending simulation from the queue and run it.
+		/// Update simulation entity in data provider afterwards.
+		/// </summary>
+		/// <returns>Whether a simulation was run</returns>
 		Task<bool> SimulateAsync();
+		
+		/// <summary>
+		/// Put a simulation into queue
+		/// </summary>
+		/// <param name="simulation">Simulation to put to queue</param>
+		/// <returns>Non-negative simulation ID if enqueued, or negative error number if limits exceeded</returns>
 		Task<int> EnqueueAsync(SingleSimulation simulation);
 	}
 

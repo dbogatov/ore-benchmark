@@ -11,13 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Web.Services
 {
-	/// <summary>
-	/// Service used to initialize some values in the database. Called each time app starts.
-	/// </summary>
 	public interface ISeedService
 	{
 		/// <summary>
-		/// Populates data provider with initial set of records (like enums)
+		/// Populates data provider with initial set of simulations
 		/// </summary>
 		Task SeedDataAsync();
 	}

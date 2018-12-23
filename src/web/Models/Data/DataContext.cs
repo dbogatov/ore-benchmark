@@ -69,6 +69,10 @@ namespace Web.Models.Data
 			base.OnModelCreating(builder);
 		}
 
+		/// <summary>
+		/// Helper class that defines how report should be deserialized
+		/// given that the definition include abstract class
+		/// </summary>
 		class AbsSubReportConverter : JsonConverter
 		{
 			public override bool CanConvert(Type objectType) =>

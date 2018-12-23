@@ -10,17 +10,11 @@ using Web.Extensions;
 
 namespace Web.Services
 {
-	/// <summary>
-	/// Enum of available demonable services
-	/// </summary>
 	public enum Services
 	{
 		Clean, Simulation
 	}
 
-	/// <summary>
-	/// Service used to run some other services as daemons.
-	/// </summary>
 	public interface IDaemonService
 	{
 		/// <summary>
@@ -124,6 +118,10 @@ namespace Web.Services
 			}
 		}
 
+		/// <summary>
+		/// Starts ISimulationService service.
+		/// Does NOT return until _status is set to false.
+		/// </summary>
 		private async Task RunSimulationServiceAsync()
 		{
 			_logger.LogInformation(LoggingEvents.Daemon.AsInt(), "Simulation service started.");
@@ -191,4 +189,3 @@ namespace Web.Services
 		}
 	}
 }
-

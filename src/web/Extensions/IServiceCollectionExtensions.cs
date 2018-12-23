@@ -4,13 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Web.Models.Data;
 using Web.Services;
-using System;
 
 namespace Web.Extensions
 {
-	/// <summary>
-	/// Utility class for testing methods
-	/// </summary>
 	public static class IServiceCollectionExtensions
 	{
 		/// <summary>

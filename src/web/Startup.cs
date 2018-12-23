@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,9 +14,9 @@ namespace Web
 	public class Startup
 	{
 		/// <summary>
-		/// This method gets called by the runtime. Used to build a global configuration object.
+		/// This method gets called by the runtime. 
+		/// Used to build a global configuration object.
 		/// </summary>
-		/// <param name="env"></param>
 		public Startup(IHostingEnvironment env)
 		{
 			var builder = new ConfigurationBuilder()
@@ -41,7 +40,10 @@ namespace Web
 
 		private IHostingEnvironment CurrentEnvironment { get; set; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
+		/// <summary>
+		/// This method gets called by the runtime. 
+		/// Use this method to add services to the container.
+		/// </summary>
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.RegisterSharedServices(CurrentEnvironment, Configuration);
@@ -68,7 +70,10 @@ namespace Web
 			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		/// <summary>
+		/// This method gets called by the runtime. 
+		/// Use this method to configure the HTTP request pipeline.
+		/// </summary>
 		public void Configure(
 			IApplicationBuilder app,
 			IHostingEnvironment env,

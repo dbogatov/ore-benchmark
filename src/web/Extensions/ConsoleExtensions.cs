@@ -2,9 +2,6 @@ using System;
 
 namespace Web.Extensions
 {
-	/// <summary>
-	/// This class is wrapper for a standard System.Console providing convenient helpers for colored output.
-	/// </summary>
 	public static class ColoredConsole
 	{
 		/// <summary>
