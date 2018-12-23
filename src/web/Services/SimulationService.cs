@@ -20,7 +20,7 @@ namespace Web.Services
 		/// </summary>
 		/// <returns>Whether a simulation was run</returns>
 		Task<bool> SimulateAsync();
-		
+
 		/// <summary>
 		/// Put a simulation into queue
 		/// </summary>
@@ -139,7 +139,7 @@ namespace Web.Services
 				await _context.SaveChangesAsync();
 
 				_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "Simulation completed.");
-				
+
 				return true;
 			}
 			else

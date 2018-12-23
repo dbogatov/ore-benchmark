@@ -17,7 +17,7 @@ namespace Web
 	public class Program
 	{
 		public async static Task<int> Main(string[] args) => await Entrypoint(args);
-		
+
 		/// <summary>
 		/// A wrapper around Main for easy testing
 		/// </summary>
@@ -45,10 +45,10 @@ namespace Web
 				)
 				.UseUrls($"http://*:{port}")
 				.Build();
-				
+
 #pragma warning disable CS4014
 			RunDaemon();
-#pragma warning restore CS4014  
+#pragma warning restore CS4014
 
 			await host.RunAsync(cancel);
 
@@ -68,7 +68,7 @@ namespace Web
 			var env = mockEnv.Object;
 
 			var services = new ServiceCollection();
-			
+
 			var builder = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json", optional: false) // read defaults first
 				.AddJsonFile(
@@ -78,13 +78,13 @@ namespace Web
 				.AddJsonFile("version.json", optional: true)
 				.AddEnvironmentVariables();
 			var configuration = builder.Build();
-			
+
 			services.RegisterSharedServices(env, configuration);
 
 			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 
 			var provider = services.BuildServiceProvider();
-			
+
 			provider
 				.GetService<ILoggerFactory>()
 				.AddExtendedLogger(

@@ -10,7 +10,7 @@ namespace Test.Web.UnitTests
 		[Fact]
 		public void SimulationParsingGood()
 		{
-			var simulation = 
+			var simulation =
 				new SingleSimulation(
 					"4, four\n5, five",
 					"4, 5",
@@ -18,7 +18,7 @@ namespace Test.Web.UnitTests
 					5,
 					new Random()
 				);
-				
+
 			Assert.NotEmpty(simulation.Dataset);
 			Assert.NotEmpty(simulation.Queryset);
 		}
@@ -56,11 +56,11 @@ namespace Test.Web.UnitTests
 		[Fact]
 		public void SimulationDefault()
 		{
-			var simulation = 
+			var simulation =
 				new SingleSimulation(
 					"", "", 5, 5, new Random()
 				);
-				
+
 			Assert.NotEmpty(simulation.Dataset);
 			Assert.NotEmpty(simulation.Queryset);
 		}

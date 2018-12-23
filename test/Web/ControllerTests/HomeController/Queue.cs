@@ -14,7 +14,7 @@ namespace Test.Web.ControllerTests
 			// Arrange
 			await _context.Simulations.AddAsync(new SingleSimulation());
 			await _context.SaveChangesAsync();
-			
+
 			// Act
 			var result = await _controller.Queue();
 

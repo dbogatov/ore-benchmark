@@ -18,7 +18,7 @@ namespace Simulation.Protocol
 		{
 			_inputs = inputs;
 			_protocol = protocol;
-			
+
 			if (_inputs.CacheSize < 0)
 			{
 				throw new ArgumentException($"Cache size must not be negative. Given {_inputs.CacheSize}.");
@@ -29,7 +29,7 @@ namespace Simulation.Protocol
 
 			protocol.NodeVisited += RecordNodeVisit;
 			protocol.OperationOcurred += RecordSchemeOperation;
-			protocol.PrimitiveUsed +=  RecordPrimitiveUsage;
+			protocol.PrimitiveUsed += RecordPrimitiveUsage;
 			protocol.MessageSent += RecordCommunivcationVolume;
 			protocol.ClientStorage += RecordClientStorage;
 
@@ -78,7 +78,7 @@ namespace Simulation.Protocol
 
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Generate a protocol of supplied arguments
 		/// </summary>

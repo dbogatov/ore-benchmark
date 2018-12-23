@@ -66,7 +66,7 @@ namespace Web
 
 			// lowercase all generated url within the app
 			services.AddRouting(options => { options.LowercaseUrls = true; });
-			
+
 			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
 		}
 

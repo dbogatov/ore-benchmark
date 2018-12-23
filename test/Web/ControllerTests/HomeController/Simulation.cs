@@ -13,7 +13,7 @@ namespace Test.Web.ControllerTests
 			// Arrange
 			await _context.Simulations.AddAsync(new SingleSimulation { Id = 5 });
 			await _context.SaveChangesAsync();
-			
+
 			// Act
 			var result = await _controller.Simulation(5);
 
@@ -24,7 +24,7 @@ namespace Test.Web.ControllerTests
 			);
 			Assert.Equal(5, model.Id);
 		}
-		
+
 		[Fact]
 		public async Task SimulationNotFound()
 		{

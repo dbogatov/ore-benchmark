@@ -41,7 +41,7 @@ namespace Web.Models.Data
 			settings.NullValueHandling = NullValueHandling.Ignore;
 			settings.TypeNameHandling = TypeNameHandling.Auto;
 			settings.Converters.Add(new AbsSubReportConverter());
-			
+
 			builder
 				.Entity<SingleSimulation>()
 				.Property(s => s.Dataset)
@@ -79,18 +79,18 @@ namespace Web.Models.Data
 				objectType == typeof(AbsSubReport);
 
 			public override object ReadJson(
-				JsonReader reader, 
-				Type objectType, 
-				object existingValue, 
+				JsonReader reader,
+				Type objectType,
+				object existingValue,
 				JsonSerializer serializer
-			) => 
+			) =>
 				serializer.Deserialize(reader, typeof(Report.SubReport));
 
 			public override void WriteJson(
-				JsonWriter writer, 
-				object value, 
+				JsonWriter writer,
+				object value,
 				JsonSerializer serializer
-			) => 
+			) =>
 				serializer.Serialize(writer, value, typeof(Report.SubReport));
 		}
 	}

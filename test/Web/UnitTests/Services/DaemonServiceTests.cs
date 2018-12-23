@@ -28,7 +28,7 @@ namespace Test.Web.UnitTests.Services
 			_mockSimulationService
 				.Setup(simulation => simulation.SimulateAsync())
 				.ReturnsAsync(false);
-			
+
 			_mockServiceProvider
 				.Setup(provider => provider.GetService(typeof(ISimulationService)))
 				.Returns(_mockSimulationService.Object);
@@ -141,7 +141,7 @@ namespace Test.Web.UnitTests.Services
 				clean => clean.CleanDataPointsAsync(It.IsAny<TimeSpan?>()),
 				service == global::Web.Services.Services.Clean ? Times.AtLeastOnce() : Times.Never()
 			);
-			
+
 			// Simulate
 			_mockSimulationService.Verify(
 				simulate => simulate.SimulateAsync(),
@@ -167,7 +167,7 @@ namespace Test.Web.UnitTests.Services
 					)
 				);
 		}
-		
+
 		[Theory]
 		[InlineData(global::Web.Services.Services.Simulation)]
 		[InlineData(global::Web.Services.Services.Clean)]
@@ -175,23 +175,23 @@ namespace Test.Web.UnitTests.Services
 		{
 			// Arrange
 			EnableServices(service);
-	
+
 			Exception e = new Exception("error message");
 
 			_mockSimulationService
 				.Setup(mock => mock.SimulateAsync())
 				.ThrowsAsync(e);
-				
+
 			_mockCleanService
 				.Setup(mock => mock.CleanDataPointsAsync(null))
 				.ThrowsAsync(e);
-				
+
 			var daemonService = new global::Web.Services.DaemonService(
 				_mockLog.Object,
 				_mockServiceProvider.Object,
 				_config.Object
 			);
-			
+
 			// Act
 			var task = daemonService.StartServices();
 			await Task.Delay(3000);

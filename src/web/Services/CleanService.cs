@@ -53,7 +53,7 @@ namespace Web.Services
 					_context.Simulations.Where(dp => dp.Completed < toTimestamp)
 				);
 			}
-			
+
 			await _context.SaveChangesAsync();
 
 			_logger.LogInformation(LoggingEvents.Clean.AsInt(), "Cleaned old data.");
