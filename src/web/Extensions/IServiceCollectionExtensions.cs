@@ -18,7 +18,7 @@ namespace Web.Extensions
 			IHostingEnvironment env,
 			IConfiguration config)
 		{
-			if (env.IsDevelopment())
+			if (!env.IsTesting())
 			{
 				services
 					.AddEntityFrameworkSqlite()

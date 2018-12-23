@@ -232,8 +232,8 @@ website:
   - build-app
   tags:
   - shell
-  # only:
-  # - master
+  only:
+  - master
 
 pages:
   image: dbogatov/docker-images:alpine-extras-latest
