@@ -171,6 +171,10 @@
 	</p>
 </div>
 
+<div class="row">
+	<canvas id="input-data-chart" width="100%"></canvas>
+</div>
+
 <div class="row d-none input-sets-visible">
 	<div class="col-md-6">
 		<div class="text-center" style="padding-bottom: 20px;">
@@ -282,4 +286,50 @@
 			</script>
 		}
 	}
+	
+	<script>
+		var ctx_data = document.getElementById("input-data-chart").getContext('2d');
+		var myChart_data = new Chart(ctx_data, {
+			type: 'bar',
+			data: {
+				labels: [@(  string.Join(",", Enumerable.Range(Model.Dataset.Min(d => d.index), Model.Dataset.Select(d => d.index).Distinct().Count()).Select(s => s.ToString())) )],
+				datasets: [{
+				label: 'Input data histogram',
+				borderColor: "#3e95cd",
+				data: [
+					@{
+						List<string> data = new List<string>();
+						for(var di = Model.Dataset.Min(d => d.index); di <= Model.Dataset.Max(d => d.index); di++)
+						{
+							data.Add(Model.Dataset.Where(e => e.index == di).Count().ToString());
+						}
+					}
+					@( string.Join(",", data) )
+				],
+				fill: false,
+			}]
+		},
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: false,
+							callback: function(value) { if ( value % 1 === 0 ) { return value; } }
+						}
+					}],
+					xAxes: [{
+						ticks: {
+							autoSkip: true,
+							maxTicksLimit: 20
+						}
+					}]
+				},
+				elements: {
+					line: {
+						tension: 0, // disables bezier curves
+					}
+				}
+			}
+		});
+	</script>
 }
