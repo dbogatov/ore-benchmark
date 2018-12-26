@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using BPlusTree;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
@@ -32,6 +33,7 @@ namespace Simulation.Protocol.ORAM
 		private readonly Tree<string, int> _tree;
 		private readonly int _branches;
 		private readonly int _z;
+		private readonly byte[] _gibberish;
 
 		public Client(byte[] entropy, int branches = 1024, int z = 4)
 		{
@@ -39,6 +41,7 @@ namespace Simulation.Protocol.ORAM
 			G = new PRGFactory().GetPrimitive();
 
 			_key = G.GetBytes(128 / 8);
+			_gibberish = E.Encrypt(_key, Encoding.Default.GetBytes("Gibberish"));
 
 			G.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 			E.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
@@ -81,6 +84,8 @@ namespace Simulation.Protocol.ORAM
 					result,
 					checkRanges: true
 				);
+				
+				SampleTreeSize();
 
 				OnQueryCompleted();
 			}
@@ -102,14 +107,16 @@ namespace Simulation.Protocol.ORAM
 				{
 					if (readOrWrite)
 					{
+						E.Decrypt(_key, _gibberish);
 						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
-							new ReadBucketMessage((new byte[_z], size))
+							new ReadBucketMessage((new byte[_z * _branches * sizeof(int)], size))
 						);
 					}
 					else
 					{
+						E.Encrypt(_key, Encoding.Default.GetBytes("Re-encrypt data"));
 						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
-							new ReadBucketMessage((new byte[_z], size))
+							new WriteBucketMessage((new byte[_z * _branches * sizeof(int)], size))
 						);
 					}
 				}

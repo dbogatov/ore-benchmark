@@ -13,26 +13,16 @@ namespace Simulation.Protocol.ORAM
 			_z = z;
 		}
 
-		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
-		{
-			switch (message)
-			{
-				case WriteBucketMessage write:
-					AcceptMessage(write);
-					break;
-				case ReadBucketMessage read:
-					AcceptMessage(read);
-					break;
-			}
+		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message) 
+			=> (IMessage<R>)AcceptMessage((BucketMessage)message);
 
-			return (IMessage<R>)new FinishMessage();
-		}
-
-		private void AcceptMessage(BucketMessage operation)
+		private FinishMessage AcceptMessage(BucketMessage operation)
 		{
 			var nodes = operation.Unpack().Item2 / _z;
 
 			OnNodeVisited(G.Next(0, nodes > 0 ? nodes : 1));
+			
+			return new FinishMessage();
 		}
 	}
 }
