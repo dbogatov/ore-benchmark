@@ -12,7 +12,7 @@ namespace BPlusTree
 
 		public int Branching { get; private set; }
 		public IOREComparator<C> Comparator { get; private set; }
-		public Action<int> NodeAccessHandler { get; private set; }
+		public Action<int> NodeAccessHandler { get; set; }
 
 		public C MaxCipher;
 		public C MinCipher;
@@ -33,7 +33,7 @@ namespace BPlusTree
 			Branching = branching;
 
 			Comparator = comparator;
-			
+
 			NodeAccessHandler = nodeAccessHandler;
 		}
 
@@ -48,7 +48,7 @@ namespace BPlusTree
 			{
 				handler(hash);
 			}
-			
+
 			if (NodeAccessHandler != null)
 			{
 				NodeAccessHandler(hash);

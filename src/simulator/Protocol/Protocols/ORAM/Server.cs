@@ -32,7 +32,7 @@ namespace Simulation.Protocol.ORAM
 		{
 			var nodes = operation.Unpack().Item2 / _z;
 
-			OnNodeVisited(G.Next(0, nodes));
+			OnNodeVisited(G.Next(0, nodes > 0 ? nodes : 1));
 		}
 	}
 }

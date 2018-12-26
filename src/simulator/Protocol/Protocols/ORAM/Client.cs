@@ -46,13 +46,14 @@ namespace Simulation.Protocol.ORAM
 			var options =
 				new Options<int>(
 					new Comparator(),
-					branches,
-					AccessORAM
+					branches
 				);
 
 			_tree = new Tree<string, int>(options);
 			_branches = branches;
 			_z = z;
+			
+			options.NodeAccessHandler = AccessORAM;
 
 			OnClientStorage(_key.Length * 8);
 		}
