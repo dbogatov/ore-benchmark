@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BPlusTree;
 using ORESchemes.Shared;
@@ -30,8 +31,9 @@ namespace Simulation.Protocol.ORAM
 		private readonly byte[] _key;
 		private readonly Tree<string, int> _tree;
 		private readonly int _branches;
+		private readonly int _z;
 
-		public Client(byte[] entropy, int branches = 1024)
+		public Client(byte[] entropy, int branches = 1024, int z = 4)
 		{
 			E = new SymmetricFactory().GetPrimitive();
 			G = new PRGFactory().GetPrimitive();
@@ -44,11 +46,13 @@ namespace Simulation.Protocol.ORAM
 			var options =
 				new Options<int>(
 					new Comparator(),
-					branches
+					branches,
+					AccessORAM
 				);
 
 			_tree = new Tree<string, int>(options);
 			_branches = branches;
+			_z = z;
 
 			OnClientStorage(_key.Length * 8);
 		}
@@ -85,5 +89,30 @@ namespace Simulation.Protocol.ORAM
 			OnClientStorage(
 				_tree.Size() * _branches * sizeof(int) * 8 + _key.Length * 8
 			);
+
+		private void AccessORAM(int hash)
+		{
+			var size = _tree.Size();
+			var heightORAM = (int)Math.Ceiling(Math.Log(size, 2));
+
+			foreach (var readOrWrite in new bool[] { true, false })
+			{
+				for (int i = 0; i < heightORAM; i++)
+				{
+					if (readOrWrite)
+					{
+						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
+							new ReadBucketMessage((new byte[_z], size))
+						);
+					}
+					else
+					{
+						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
+							new ReadBucketMessage((new byte[_z], size))
+						);
+					}
+				}
+			}
+		}
 	}
 }

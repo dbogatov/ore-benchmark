@@ -13,16 +13,9 @@ namespace Simulation.Protocol.ORAM
 	{
 		public WriteBucketMessage(ValueTuple<byte[], int> content) : base(content) { }
 	}
-	
+
 	internal class ReadBucketMessage : BucketMessage
 	{
 		public ReadBucketMessage(ValueTuple<byte[], int> content) : base(content) { }
 	}
-
-	// internal class TotalSizeMessage : AbsMessage<int>
-	// {
-	// 	public TotalSizeMessage(int content) : base(content) { }
-
-	// 	public override int GetSize() => sizeof(int) * 8;
-	// }
 }

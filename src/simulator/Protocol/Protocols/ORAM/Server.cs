@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.ORAM
@@ -10,7 +7,8 @@ namespace Simulation.Protocol.ORAM
 		private readonly IPRG G;
 		private readonly int _z;
 
-		public Server(byte[] entropy, int z) {
+		public Server(byte[] entropy, int z)
+		{
 			G = new PRGFactory(entropy).GetPrimitive();
 			_z = z;
 		}
@@ -26,15 +24,14 @@ namespace Simulation.Protocol.ORAM
 					AcceptMessage(read);
 					break;
 			}
-			
+
 			return (IMessage<R>)new FinishMessage();
 		}
 
 		private void AcceptMessage(BucketMessage operation)
 		{
 			var nodes = operation.Unpack().Item2 / _z;
-			// var height = (int)Math.Ceiling(Math.Log(nodes, 2));
-			
+
 			OnNodeVisited(G.Next(0, nodes));
 		}
 	}

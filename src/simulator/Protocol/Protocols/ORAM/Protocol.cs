@@ -12,7 +12,7 @@ namespace Simulation.Protocol.ORAM
 		{
 			IPRG G = new PRGFactory(entropy).GetPrimitive();
 
-			_client = new Client(G.GetBytes(128 / 8), branches);
+			_client = new Client(G.GetBytes(128 / 8), branches, z);
 			_server = new Server(G.GetBytes(128 / 8), z);
 
 			SetupProtocol();

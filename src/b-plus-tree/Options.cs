@@ -12,6 +12,7 @@ namespace BPlusTree
 
 		public int Branching { get; private set; }
 		public IOREComparator<C> Comparator { get; private set; }
+		public Action<int> NodeAccessHandler { get; private set; }
 
 		public C MaxCipher;
 		public C MinCipher;
@@ -20,7 +21,8 @@ namespace BPlusTree
 
 		public Options(
 			IOREComparator<C> comparator,
-			int branching = 60
+			int branching = 60,
+			Action<int> nodeAccessHandler = null
 		)
 		{
 			if (branching < 2 || branching > 65536)
@@ -31,6 +33,8 @@ namespace BPlusTree
 			Branching = branching;
 
 			Comparator = comparator;
+			
+			NodeAccessHandler = nodeAccessHandler;
 		}
 
 		/// <summary>
@@ -43,6 +47,11 @@ namespace BPlusTree
 			if (handler != null)
 			{
 				handler(hash);
+			}
+			
+			if (NodeAccessHandler != null)
+			{
+				NodeAccessHandler(hash);
 			}
 		}
 
