@@ -52,7 +52,7 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="Queryset"></label>
-				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly."></textarea>
+				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly 1%-wide ranges."></textarea>
 				<span class="text-danger"  asp-validation-for="Dataset"></span>
 			</div>
 			<div class="form-group">
@@ -103,9 +103,11 @@
 			<b>Cache size</b> defines virtual LRU cache capacity.
 			Requests fulfilled by the cache do not count as I/Os.
 			<br>
-			Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
-			Inputs beyond these limits will be discarded.
-			Please, use our docker images (see the <a href="/documentation">docs</a>) to run arbitrary-sized simulations.
+			<blockquote class="blockquote">
+				Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
+				Inputs beyond these limits will be discarded.
+				Please, use our docker images (see the <a href="/documentation">docs</a>) to run arbitrary-sized simulations.
+			</blockquote>
 		</p>
 	</div>
 </div>
