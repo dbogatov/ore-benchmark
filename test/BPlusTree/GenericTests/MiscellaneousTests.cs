@@ -3,6 +3,7 @@ using Xunit;
 using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
+using ORESchemes.Shared;
 
 namespace Test.BPlusTree
 {
@@ -52,6 +53,27 @@ namespace Test.BPlusTree
 			);
 
 			Assert.Equal(expected, tree.Size());
+		}
+
+		[Fact]
+		public void CustomVisitHandler()
+		{
+			// Arrange
+			HashSet<int> hashes = new HashSet<int>();
+
+			var options = new Options<C>(_scheme, 3);
+			options.MinCipher = _scheme.MinCiphertextValue(_key);
+			options.MaxCipher = _scheme.MaxCiphertextValue(_key);
+			options.NodeAccessHandler = hash => hashes.Add(hash);
+			
+			// Act
+			var tree = ConstructTree(
+				options,
+				Enumerable.Range(1, 5).ToList()
+			);
+
+			// Assert
+			Assert.True(hashes.Count >= 5);
 		}
 	}
 }

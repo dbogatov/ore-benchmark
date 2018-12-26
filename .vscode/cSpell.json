@@ -2,10 +2,14 @@
     "version": "0.1",
     "language": "en",
     "words": [
+        "DBOPE",
+        "FHOPE",
+        "Florian",
         "IORE",
         "IPRG",
         "Lewi",
-        "ORAM"
+        "ORAM",
+        "Xunit"
     ],
     "flagWords": [],
     "dictionaries": [

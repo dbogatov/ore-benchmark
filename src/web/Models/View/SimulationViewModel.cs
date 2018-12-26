@@ -19,7 +19,9 @@ namespace Web.Models.View
 		[Display(Name = "Kerschbaum Protocol")]
 		Florian,
 		[Display(Name = "POPE Protocol")]
-		POPE
+		POPE,
+		[Display(Name = "ORAM Protocol")]
+		ORAM
 	}
 
 	public class SimulationViewModel
