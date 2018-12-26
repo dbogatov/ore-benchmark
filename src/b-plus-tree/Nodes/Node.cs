@@ -517,6 +517,18 @@ namespace BPlusTree
 					.Where(ch => ch.node != null)
 					.Max(ch => ch.node.Height());
 			}
+			
+			/// <summary>
+			/// Returns the number of nodes in a subtree counting this node as a root
+			/// </summary>
+			/// <param name="includeDataNodes">Whether to include data nodes in calculations</param>
+			/// <returns>The number of nodes in a subtree</returns>
+			public virtual int Nodes(bool includeDataNodes = true)
+			{
+				return 1 + children
+					.Where(ch => ch.node != null)
+					.Sum(ch => ch.node.Nodes(includeDataNodes));
+			}
 
 			/// <summary>
 			/// Verifies that the tree is balanced;

@@ -86,14 +86,14 @@ namespace Simulation.Protocol.ORAM
 				);
 				
 				SampleTreeSize();
-
+				
 				OnQueryCompleted();
 			}
 		}
 
 		private void SampleTreeSize() =>
 			OnClientStorage(
-				_tree.Size() * _branches * sizeof(int) * 8 + _key.Length * 8
+				_tree.Nodes(includeDataNodes: false) * _branches * sizeof(int) * 8 + _key.Length * 8
 			);
 
 		private void AccessORAM(int hash)

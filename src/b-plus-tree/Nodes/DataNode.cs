@@ -125,6 +125,8 @@ namespace BPlusTree
 
 			protected override int Height() => 1;
 
+			public override int Nodes(bool includeDataNodes = true) => includeDataNodes ? 1 : 0;
+
 			public override bool isBalanced() => true;
 
 			// Should never be called

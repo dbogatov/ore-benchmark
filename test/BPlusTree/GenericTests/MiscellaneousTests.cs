@@ -65,7 +65,7 @@ namespace Test.BPlusTree
 			options.MinCipher = _scheme.MinCiphertextValue(_key);
 			options.MaxCipher = _scheme.MaxCiphertextValue(_key);
 			options.NodeAccessHandler = hash => hashes.Add(hash);
-			
+
 			// Act
 			var tree = ConstructTree(
 				options,
@@ -74,6 +74,36 @@ namespace Test.BPlusTree
 
 			// Assert
 			Assert.True(hashes.Count >= 5);
+		}
+
+		[Theory]
+		[InlineData(0)]
+		[InlineData(1)]
+		[InlineData(5)]
+		[InlineData(10)]
+		[InlineData(50)]
+		public void Nodes(int expected)
+		{
+			var options = new Options<C>(_scheme, 3);
+			options.MinCipher = _scheme.MinCiphertextValue(_key);
+			options.MaxCipher = _scheme.MaxCiphertextValue(_key);
+
+			var tree = ConstructTree(
+				options,
+				expected > 0 ?
+					Enumerable
+						.Range(1, expected * 3)
+						.ToList()
+					:
+					new List<int>()
+			);
+
+			var withDataNodes = tree.Nodes();
+			var withoutDataNodes = tree.Nodes(includeDataNodes: false);
+
+			Assert.True(withDataNodes >= expected);
+			Assert.True(withoutDataNodes >= expected);
+			Assert.True(expected > 0 ? withDataNodes > withoutDataNodes : withDataNodes == withoutDataNodes);
 		}
 	}
 }
