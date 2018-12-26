@@ -47,7 +47,7 @@ while getopts "p:s:d:q:c:nv" o; do
 done
 shift $((OPTIND-1))
 
-declare -A protocols     # Create an associative array
+declare -A protocols # Create an associative array
 protocols[practicalore]=512
 protocols[cryptdb]=512 
 protocols[fhope]=512 

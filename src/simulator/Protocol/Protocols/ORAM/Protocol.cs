@@ -1,0 +1,21 @@
+using System.Runtime.CompilerServices;
+using ORESchemes.Shared;
+using ORESchemes.Shared.Primitives.PRG;
+
+[assembly: InternalsVisibleTo("test")]
+
+namespace Simulation.Protocol.ORAM
+{
+	public class Protocol : AbsProtocol
+	{
+		public Protocol(byte[] entropy, int branches = 1024, int z = 4)
+		{
+			IPRG G = new PRGFactory(entropy).GetPrimitive();
+
+			_client = new Client(G.GetBytes(128 / 8), branches);
+			_server = new Server(G.GetBytes(128 / 8), z);
+
+			SetupProtocol();
+		}
+	}
+}

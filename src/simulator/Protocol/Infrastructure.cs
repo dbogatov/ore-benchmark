@@ -35,7 +35,7 @@ namespace Simulation.Protocol
 		/// <summary>
 		/// Initiates handshake protocol stage
 		/// </summary>
-		public abstract void RunHandshake();
+		public virtual void RunHandshake() => OnQueryCompleted();
 
 		/// <summary>
 		/// Initiates construction protocol stage
