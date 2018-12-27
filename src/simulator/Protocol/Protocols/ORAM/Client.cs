@@ -11,6 +11,9 @@ namespace Simulation.Protocol.ORAM
 {
 	public class Client : AbsClient
 	{
+		/// <summary>
+		/// A helper class that defines trivial comparison rules for B+ tree
+		/// </summary>
 		private class Comparator : IOREComparator<int>
 		{
 			public event SchemeOperationEventHandler OperationOcurred;
@@ -91,11 +94,19 @@ namespace Simulation.Protocol.ORAM
 			}
 		}
 
+		/// <summary>
+		/// Records the current size of the B+ tree
+		/// </summary>
 		private void SampleTreeSize() =>
 			OnClientStorage(
 				_tree.Nodes(includeDataNodes: false) * _branches * sizeof(int) * 8 + _key.Length * 8
 			);
 
+		/// <summary>
+		/// Handler to use when a B+ tree nodes gets accessed.
+		/// In particular, it initiates a communication with the ORAM server.
+		/// </summary>
+		/// <param name="hash"></param>
 		private void AccessORAM(int hash)
 		{
 			var size = _tree.Size();

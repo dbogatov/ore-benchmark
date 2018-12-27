@@ -16,9 +16,16 @@ namespace Simulation.Protocol.ORAM
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message) 
 			=> (IMessage<R>)AcceptMessage((BucketMessage)message);
 
-		private FinishMessage AcceptMessage(BucketMessage operation)
+		/// <summary>
+		/// React to a message from ORAM client.
+		/// In this fake version of ORAM, just report I/Os that would have
+		/// been made for a real PathORAM.
+		/// </summary>
+		/// <param name="message">A write or read buck message</param>
+		/// <returns>A stub finish message</returns>
+		private FinishMessage AcceptMessage(BucketMessage message)
 		{
-			var nodes = operation.Unpack().Item2 / _z;
+			var nodes = message.Unpack().Item2 / _z;
 
 			OnNodeVisited(G.Next(0, nodes > 0 ? nodes : 1));
 			
