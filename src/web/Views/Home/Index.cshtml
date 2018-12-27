@@ -1,4 +1,4 @@
-﻿@using Web.Models.View
+@using Web.Models.View
 @using Microsoft.Extensions.Configuration
 
 @model SimulationViewModel
@@ -53,7 +53,7 @@
 			<div class="form-group">
 				<label asp-for="Queryset"></label>
 				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly 1%-wide ranges."></textarea>
-				<span class="text-danger"  asp-validation-for="Dataset"></span>
+				<span class="text-danger"  asp-validation-for="Queryset"></span>
 			</div>
 			<div class="form-group">
 				<label asp-for="CacheSize"></label>
