@@ -79,6 +79,13 @@ namespace BPlusTree
 		/// </summary>
 		/// <returns>The size of tree in number of elements</returns>
 		int Size();
+		
+		/// <summary>
+		/// Returns the size of tree in number of nodes
+		/// </summary>
+		/// <param name="includeDataNodes">Whether to include data nodes in the calculation</param>
+		/// <returns>The size of tree in number of nodes</returns>
+		int Nodes(bool includeDataNodes = true);
 
 		/// <summary>
 		/// Runs checks to verify the integrity of the tree
@@ -276,6 +283,8 @@ namespace BPlusTree
 		}
 
 		public int Size() => _size;
+		
+		public int Nodes(bool includeDataNodes = true) => _size > 0 ? _root.Nodes(includeDataNodes) : 0;
 
 		public override string ToString()
 			=> "Tree: \n" + _root.ToString(1, true, new List<bool> { false }, _options.MinCipher);
@@ -346,6 +355,8 @@ namespace BPlusTree
 			_tree.Delete(new OPECipher(key), predicate);
 
 		public int Size() => _tree.Size();
+		
+		public int Nodes(bool includeDataNodes) => _tree.Nodes(includeDataNodes = true);
 
 		public override string ToString() => _tree.ToString();
 

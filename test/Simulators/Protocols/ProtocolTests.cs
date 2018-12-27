@@ -56,7 +56,7 @@ namespace Test.Simulators.Protocols.Integration
 			SetupHandlers();
 		}
 	}
-	
+
 	[Trait("Category", "Unit")]
 	public class PracticalOREProtocol : AbsProtocol
 	{
@@ -129,6 +129,27 @@ namespace Test.Simulators.Protocols.Integration
 		public POPEProtocol()
 		{
 			_protocol = new global::Simulation.Protocol.POPE.Protocol(new Random(123456).GetBytes(128 / 8));
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.SchemeOperation);
+				return set;
+			}
+		}
+	}
+
+	[Trait("Category", "Unit")]
+	public class ORAMProtocol : AbsProtocol
+	{
+		public ORAMProtocol()
+		{
+			_protocol = new global::Simulation.Protocol.ORAM.Protocol(new Random(123456).GetBytes(128 / 8));
 
 			SetupHandlers();
 		}

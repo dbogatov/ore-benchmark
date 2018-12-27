@@ -10,14 +10,15 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.2/cli.dll",
+			"program": "${workspaceFolder}/src/cli/bin/Debug/netcoreapp2.1/cli.dll",
 			"args": [
+				"--verbose",
 				"--dataset",
 				"./data/uniform/data.txt",
 				"--ore-scheme",
-				"pope",
+				"oram",
 				"--seed",
-				"203276911",
+				"1305",
 				"protocol",
 				"--queries",
 				"./data/uniform/queries-3.txt",

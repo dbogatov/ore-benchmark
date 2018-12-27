@@ -1,8 +1,4 @@
 {
-	"cSpell.words": [
-		"IOPE",
-		"Xunit"
-	],
 	"files.exclude": {
 		"**/.git": true,
 		"**/.svn": true,

@@ -1,0 +1,32 @@
+{
+    "version": "0.1",
+    "language": "en",
+    "words": [
+        "DBOPE",
+        "FHOPE",
+        "Florian",
+        "IORE",
+        "IPRG",
+        "Lewi",
+        "ORAM",
+        "Xunit"
+    ],
+    "flagWords": [],
+    "dictionaries": [
+        "companies",
+        "filetypes",
+        "misc",
+        "softwareTerms",
+        "en_us",
+        "latex"
+    ],
+    "ignoreRegExpList": [
+        "^\\\\\\w+{?",
+        "\\\\textcite{.*}",
+        "\\\\cite{.*}",
+        "\\\\begin{\\w+}",
+        "\\\\end{\\w+}",
+        "\\\\usepackage{\\w+}",
+        "\\\\bibliographystyle{\\w+}"
+    ]
+}

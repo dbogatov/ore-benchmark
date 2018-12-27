@@ -175,7 +175,7 @@ namespace Test.Simulators.Protocols.SimpleORE
 
 		public Server()
 		{
-			_options = new Mock<Options<OPECipher>>(_scheme.Object, 60);
+			_options = new Mock<Options<OPECipher>>(_scheme.Object, 60, null);
 			_server = new Server<OPECipher>(_options.Object);
 		}
 

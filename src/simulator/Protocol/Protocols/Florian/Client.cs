@@ -26,8 +26,6 @@ namespace Simulation.Protocol.Florian
 			OnClientStorage(_key.Length * 8);
 		}
 
-		public override void RunHandshake() => OnQueryCompleted();
-
 		public override void RunConstruction(List<Record> input)
 		{
 			foreach (var record in input)

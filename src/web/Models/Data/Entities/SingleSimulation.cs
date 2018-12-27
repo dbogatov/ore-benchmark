@@ -33,9 +33,9 @@ namespace Web.Models.Data.Entities
 			if (string.IsNullOrEmpty(dataset))
 			{
 				Dataset = Enumerable
-					.Range(1, datasetSize)
-					.Select(n => new Record(n, n.ToString()))
-					.OrderBy(e => random.Next())
+					.Range(0, datasetSize)
+					.Select(e => random.Next(0, datasetSize / 2))
+					.Select(e => new Record(e, e.ToString()))
 					.ToList();
 			}
 			else
@@ -68,9 +68,9 @@ namespace Web.Models.Data.Entities
 			if (string.IsNullOrEmpty(queryset))
 			{
 				Queryset = Enumerable
-					.Range(1, (int)Math.Round(querysetSize * 0.9))
+					.Range(0, querysetSize)
+					.Select(e => random.Next(0, (int)Math.Round(datasetSize * 0.4)))
 					.Select(n => new RangeQuery(n, n + (int)Math.Round(querysetSize * 0.1)))
-					.OrderBy(e => random.Next())
 					.ToList();
 			}
 			else

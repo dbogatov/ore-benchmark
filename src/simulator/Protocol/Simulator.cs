@@ -156,6 +156,13 @@ namespace Simulation.Protocol
 							new Random(seed).GetBytes(128 / 8),
 							branches
 						);
+				case ORESchemes.Shared.ORESchemes.ORAM:
+					return
+						new Simulation.Protocol.ORAM.Protocol(
+							new Random(seed).GetBytes(128 / 8),
+							branches,
+							4
+						);
 				default:
 					throw new NotImplementedException($"Scheme {scheme} is not yet supported");
 			}

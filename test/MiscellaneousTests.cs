@@ -2,6 +2,8 @@ using System;
 using Xunit;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Test
 {
@@ -128,6 +130,25 @@ namespace Test
 								new Simulation.NoEncryptionFactory(123456).GetScheme()
 							)
 					)
+			);
+		}
+
+		[Fact]
+		public void ORESchemesEnumViewCorrelation()
+		{
+			List<string> constructEnumList<T>()
+			{
+				return Enum
+					.GetValues(typeof(T))
+					.Cast<T>()
+					.OrderBy(e => e)
+					.Select(v => v.ToString())
+					.ToList();
+			}
+
+			Assert.Equal(
+				constructEnumList<global::ORESchemes.Shared.ORESchemes>(),
+				constructEnumList<global::Web.Models.View.ORESchemesView>()
 			);
 		}
 	}

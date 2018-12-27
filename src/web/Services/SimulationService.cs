@@ -93,6 +93,9 @@ namespace Web.Services
 				int cipherSize = 0;
 				switch (simulation.Protocol)
 				{
+					case ORESchemes.Shared.ORESchemes.ORAM:
+						cipherSize = 32;
+						break;
 					case ORESchemes.Shared.ORESchemes.PracticalORE:
 					case ORESchemes.Shared.ORESchemes.CryptDB:
 					case ORESchemes.Shared.ORESchemes.FHOPE:

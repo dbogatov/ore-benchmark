@@ -88,11 +88,11 @@ namespace DataGen
 
 		[Range(10, int.MaxValue - 1)]
 		[Option("--uniform-range <number>", Description = "Defines the range of the uniform distribution. Eg. value 10 means range [-10, 10]. Default whole int32 range.")]
-		public int UniformRange { get; } = int.MaxValue - 1;
+		public int UniformRange { get; } = 250;
 
 		[Range(10, int.MaxValue / 4)]
 		[Option("--normal-stddev <number>", Description = "Defines the standard deviation of the normal distribution. Default 1000.")]
-		public int NormalStdDev { get; } = 1000;
+		public int NormalStdDev { get; } = 10;
 
 		[Range(1, double.MaxValue)]
 		[Option("--zipf-param <number>", Description = "Defines the Zipf distribution parameter. Default 1.5.")]
