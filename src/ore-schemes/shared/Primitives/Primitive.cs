@@ -4,7 +4,7 @@ namespace ORESchemes.Shared.Primitives
 {
 	public enum Primitive
 	{
-		AES, PRF, Symmetric, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal
+		AES, PRF, Symmetric, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal, ORAMPath, ORAMLevel
 	}
 
 	public delegate void PrimitiveUsageEventHandler(Primitive primitive, bool impure);

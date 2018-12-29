@@ -23,6 +23,36 @@ namespace Web.Models.View
 		[Display(Name = "ORAM Protocol")]
 		ORAM
 	}
+	
+	public enum PrimitiveView
+	{
+		AES, 
+		[Display(Name = "PRF (function)")]
+		PRF, 
+		[Display(Name = "Symmetric encryption")]
+		Symmetric, 
+		[Display(Name = "PRG (generator)")]
+		PRG,
+		Hash,
+		[Display(Name = "Length-flexible PRF")]
+		LFPRF,
+		[Display(Name = "PRP (permutation)")]
+		PRP, 
+		[Display(Name = "Hyper-geometric sampler")]
+		HGSampler,
+		[Display(Name = "Uniform sampler")]
+		UniformSampler, 
+		[Display(Name = "Binomial sampler")]
+		BinomialSampler, 
+		[Display(Name = "Property-preserving hash")]
+		PPH, 
+		[Display(Name = "Tree traversal (FH-OPE)")]
+		TreeTraversal, 
+		[Display(Name = "ORAM path read / write")]
+		ORAMPath, 
+		[Display(Name = "ORAM read / write request")]
+		ORAMLevel
+	}
 
 	public class SimulationViewModel
 	{

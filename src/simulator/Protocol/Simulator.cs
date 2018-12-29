@@ -161,7 +161,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.ORAM.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage,
-							1024
+							128
 						);
 				default:
 					throw new NotImplementedException($"Scheme {scheme} is not yet supported");

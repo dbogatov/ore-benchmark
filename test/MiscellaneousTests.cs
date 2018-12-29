@@ -4,6 +4,8 @@ using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives.PRG;
 using System.Linq;
 using System.Collections.Generic;
+using Web.Models.View;
+using Web.Extensions;
 
 namespace Test
 {
@@ -132,24 +134,56 @@ namespace Test
 					)
 			);
 		}
-
+		
 		[Fact]
-		public void ORESchemesEnumViewCorrelation()
+		public void DisplayNameExtension()
 		{
-			List<string> constructEnumList<T>()
-			{
-				return Enum
-					.GetValues(typeof(T))
-					.Cast<T>()
-					.OrderBy(e => e)
-					.Select(v => v.ToString())
-					.ToList();
-			}
-
 			Assert.Equal(
-				constructEnumList<global::ORESchemes.Shared.ORESchemes>(),
-				constructEnumList<global::Web.Models.View.ORESchemesView>()
+				PrimitiveView.Hash.ToString(),
+				PrimitiveView.Hash.GetDescription<PrimitiveView>()
+			);
+			Assert.Equal(
+				"PRF (function)",
+				PrimitiveView.PRF.GetDescription<PrimitiveView>()
 			);
 		}
+
+		public abstract class EnumViewCorrelation<E, V> 
+			where E : Enum
+			where V : Enum
+		{
+			[Fact]
+			public void Correalate()
+			{
+				List<string> constructEnumList<T>()
+				{
+					return Enum
+						.GetValues(typeof(T))
+						.Cast<T>()
+						.OrderBy(e => e)
+						.Select(v => v.ToString())
+						.ToList();
+				}
+
+				Assert.Equal(
+					constructEnumList<E>(),
+					constructEnumList<V>()
+				);
+			}
+		}
+
+		public class ORESchemesCorrelation : EnumViewCorrelation
+			<
+				global::ORESchemes.Shared.ORESchemes,
+				global::Web.Models.View.ORESchemesView
+			>
+		{ }
+		
+		public class PrimitivesCorrelation : EnumViewCorrelation
+			<
+				global::ORESchemes.Shared.Primitives.Primitive,
+				global::Web.Models.View.PrimitiveView
+			>
+		{ }
 	}
 }

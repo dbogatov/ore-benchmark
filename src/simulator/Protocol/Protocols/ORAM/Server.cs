@@ -1,3 +1,4 @@
+using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.ORAM
@@ -27,6 +28,8 @@ namespace Simulation.Protocol.ORAM
 		/// <returns>A stub finish message</returns>
 		private FinishMessage AcceptMessage(BucketMessage message)
 		{
+			OnPrimitiveUsed(Primitive.ORAMLevel, false);
+			
 			var pagesAccessed = (_z + _elementsPerPage - 1) / _elementsPerPage;
 			var nodes = message.Unpack().Item2;
 			var pages = (_z + _elementsPerPage - 1) / _elementsPerPage;

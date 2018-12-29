@@ -114,6 +114,8 @@ namespace Simulation.Protocol.ORAM
 
 			foreach (var readOrWrite in new bool[] { true, false })
 			{
+				OnPrimitiveUsed(Primitive.ORAMPath, true);
+
 				for (int i = 0; i < heightORAM; i++)
 				{
 					if (readOrWrite)

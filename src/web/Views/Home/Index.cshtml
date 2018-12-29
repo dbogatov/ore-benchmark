@@ -110,6 +110,7 @@
 
 				I/O performance heavily depends on the page size and the **number of elements per I/O page**.
 				Default values will be assigned such that elements (ciphertexts) and B+ tree nodes fit in a page, assuming page size of @(Config["Daemon:SimulationService:PageSize"]) bits.
+				For ORAM, client's B+ tree branching factor is 128.
 				
 				> Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
 				> Inputs beyond these limits will be discarded.

@@ -1,4 +1,6 @@
 @using Web.Models.Data.Entities
+@using Web.Extensions
+
 @model List<Web.Models.Data.Entities.SingleSimulation>
 
 @{
@@ -13,6 +15,7 @@
 				<thead>
 					<tr>
 						<th scope="col">ID</th>
+						<th scope="col">Protocol</th>
 						<th scope="col">Created At</th>
 						<th scope="col">Completed At</th>
 						<th scope="col">Elapsed Time</th>
@@ -44,6 +47,7 @@
 									@simulation.Id
 								</a>
 							</th>
+							<td>@( ((ORESchemesView)simulation.Protocol).GetDescription<ORESchemesView>() )</td>
 							<td>@simulation.Created</td>
 							<td>
 								@if(simulation.Status == Status.Completed)

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Web.Extensions
@@ -77,6 +79,31 @@ namespace Web.Extensions
 			}
 
 			return tuples[level];
+		}
+
+		/// <summary>
+		/// Return the value of Display property.
+		/// https://stackoverflow.com/a/479417/1644554
+		/// </summary>
+		/// <param name="enumerationValue">The enum argument for which to extract value</param>
+		/// <typeparam name="T">The specific enum type</typeparam>
+		/// <returns>Value of Display attribute, or this enum ToString if attribute no supplied</returns>
+		public static string GetDescription<T>(this T enumerationValue) where T : Enum
+		{
+			Type type = enumerationValue.GetType();
+
+			MemberInfo[] memberInfo = type.GetMember(enumerationValue.ToString());
+			if (memberInfo != null && memberInfo.Length > 0)
+			{
+				object[] attrs = memberInfo[0].GetCustomAttributes(typeof(DisplayAttribute), false);
+
+				if (attrs != null && attrs.Length > 0)
+				{
+					return ((DisplayAttribute)attrs[0]).Name;
+				}
+			}
+
+			return enumerationValue.ToString();
 		}
 	}
 
