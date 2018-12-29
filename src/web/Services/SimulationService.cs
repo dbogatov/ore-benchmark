@@ -51,7 +51,7 @@ namespace Web.Services
 			var pending = await _context.Simulations.CountAsync(s => s.Status == Status.Pending);
 			var all = await _context.Simulations.CountAsync();
 
-			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), $"{pending} of {all} elements enqueued.");
+			_logger.LogDebug(LoggingEvents.Simulation.AsInt(), $"{pending} of {all} elements enqueued.");
 
 			if (
 				pending < Convert.ToInt32(_config["Limits:Queue:Pending"]) &&
@@ -75,7 +75,7 @@ namespace Web.Services
 
 		public async Task<bool> SimulateAsync()
 		{
-			_logger.LogInformation(LoggingEvents.Simulation.AsInt(), "Simulation service looking for pending simulations...");
+			_logger.LogDebug(LoggingEvents.Simulation.AsInt(), "Simulation service looking for pending simulations...");
 			if (await _context.Simulations.AnyAsync(s => s.Status == Status.Pending))
 			{
 				var simulation = await _context
@@ -88,35 +88,7 @@ namespace Web.Services
 				simulation.Status = Status.InProgress;
 
 				await _context.SaveChangesAsync();
-
-				var pageSize = Convert.ToInt32(_config["Daemon:SimulationService:PageSize"]);
-				int cipherSize = 0;
-				switch (simulation.Protocol)
-				{
-					case ORESchemes.Shared.ORESchemes.ORAM:
-						cipherSize = 32;
-						break;
-					case ORESchemes.Shared.ORESchemes.PracticalORE:
-					case ORESchemes.Shared.ORESchemes.CryptDB:
-					case ORESchemes.Shared.ORESchemes.FHOPE:
-						cipherSize = 64;
-						break;
-					case ORESchemes.Shared.ORESchemes.Florian:
-					case ORESchemes.Shared.ORESchemes.POPE:
-						cipherSize = 128;
-						break;
-					case ORESchemes.Shared.ORESchemes.NoEncryption:
-						cipherSize = 32;
-						break;
-					case ORESchemes.Shared.ORESchemes.LewiORE:
-						cipherSize = 2816;
-						break;
-					case ORESchemes.Shared.ORESchemes.AdamORE:
-						cipherSize = 4088;
-						break;
-				}
-				var branches = (int)Math.Round((double)pageSize / cipherSize);
-
+				
 				Report report = null;
 				try
 				{
@@ -127,7 +99,7 @@ namespace Web.Services
 							Dataset = simulation.Dataset.ToList(),
 							CacheSize = simulation.CacheSize
 						},
-						Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, branches)
+						Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, simulation.ElementsPerPage)
 					).Simulate();
 
 					simulation.Status = Status.Completed;

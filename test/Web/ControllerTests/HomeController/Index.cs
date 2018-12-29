@@ -81,5 +81,30 @@ namespace Test.Web.ControllerTests
 			);
 			Assert.NotEmpty(_controller.ModelState["input"].Errors);
 		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public async Task IndexTooLongSet(bool dataVsQuery)
+		{
+			// Arrange
+			var goodInput = new SimulationViewModel();
+			var badInput = new SimulationViewModel();
+			
+			if (dataVsQuery)
+			{
+				badInput.Dataset = new string('D', 64 * 10 * 1000 + 50);
+				goodInput.Dataset = new string('D', 64 * 10 * 1000 - 50);
+			}
+			else
+			{
+				badInput.Queryset = new string('Q', 64 * 10 * 1000 + 50);
+				goodInput.Queryset = new string('Q', 64 * 10 * 1000 - 50);
+			}
+
+			// Act and Assert
+    		Assert.NotEmpty(Validate(badInput));
+			Assert.Empty(Validate(goodInput));
+		}
 	}
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Web.Extensions;
+using Westwind.AspNetCore.Markdown;
 
 namespace Web
 {
@@ -68,6 +69,8 @@ namespace Web
 			services.AddRouting(options => { options.LowercaseUrls = true; });
 
 			services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace));
+			
+			services.AddMarkdown();
 		}
 
 		/// <summary>
@@ -107,6 +110,8 @@ namespace Web
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
 			});
+			
+			app.UseMarkdown();
 		}
 	}
 }

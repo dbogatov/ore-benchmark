@@ -50,12 +50,17 @@ namespace Web.Controllers
 						model.Queryset,
 						Convert.ToInt32(_config["Limits:Dataset"]),
 						Convert.ToInt32(_config["Limits:Queryset"]),
+						Convert.ToInt32(_config["Daemon:SimulationService:PageSize"]),
+						model.ProtocolReal,
 						new Random(model.Seed.Value)
 					);
 
 					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 0;
-					simulation.Protocol = model.ProtocolReal;
 					simulation.Seed = model.Seed.Value;
+					if (model.ElementsPerPage.HasValue)
+					{
+						simulation.ElementsPerPage = model.ElementsPerPage.Value;
+					}
 
 					var id = await _simulations.EnqueueAsync(simulation);
 

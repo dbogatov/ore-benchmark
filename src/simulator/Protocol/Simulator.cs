@@ -84,9 +84,9 @@ namespace Simulation.Protocol
 		/// </summary>
 		/// <param name="scheme">The scheme / protocol to use</param>
 		/// <param name="seed">Seed value to use (if supplied, deterministic</param>
-		/// <param name="branches">Option that controls the number of elements per page for I/Os (branching factor for B+ tree)</param>
+		/// <param name="elementsPerPage">Option that controls the number of elements per page for I/Os (branching factor for B+ tree)</param>
 		/// <returns>An instantiated protocol</returns>
-		public static IProtocol GenerateProtocol(ORESchemes.Shared.ORESchemes scheme, int seed, int branches)
+		public static IProtocol GenerateProtocol(ORESchemes.Shared.ORESchemes scheme, int seed, int elementsPerPage)
 		{
 			switch (scheme)
 			{
@@ -95,7 +95,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
 							new Options<OPECipher>(
 								new NoEncryptionFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new NoEncryptionFactory(seed).GetScheme()
 						);
@@ -104,7 +104,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, OPECipher, BytesKey>(
 							new Options<OPECipher>(
 								new CryptDBOPEFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new CryptDBOPEFactory(seed).GetScheme()
 						);
@@ -113,7 +113,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>(
 							new Options<ORESchemes.PracticalORE.Ciphertext>(
 								new PracticalOREFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new PracticalOREFactory(seed).GetScheme()
 						);
@@ -122,7 +122,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.LewiORE.Protocol(
 							new Options<ORESchemes.LewiORE.Ciphertext>(
 								new LewiOREFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new LewiOREFactory(seed).GetScheme()
 						);
@@ -131,7 +131,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.FHOPE.Protocol(
 							new Options<ORESchemes.FHOPE.Ciphertext>(
 								new FHOPEFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new FHOPEFactory(seed).GetScheme()
 						);
@@ -140,7 +140,7 @@ namespace Simulation.Protocol
 						new Simulation.Protocol.SimpleORE.Protocol<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
 							new Options<ORESchemes.AdamORE.Ciphertext>(
 								new AdamOREFactory().GetScheme(),
-								branches
+								elementsPerPage
 							),
 							new AdamOREFactory(seed).GetScheme()
 						);
@@ -148,20 +148,20 @@ namespace Simulation.Protocol
 					return
 						new Simulation.Protocol.Florian.Protocol(
 							new Random(seed).GetBytes(128 / 8),
-							branches
+							elementsPerPage
 						);
 				case ORESchemes.Shared.ORESchemes.POPE:
 					return
 						new Simulation.Protocol.POPE.Protocol(
 							new Random(seed).GetBytes(128 / 8),
-							branches
+							elementsPerPage
 						);
 				case ORESchemes.Shared.ORESchemes.ORAM:
 					return
 						new Simulation.Protocol.ORAM.Protocol(
 							new Random(seed).GetBytes(128 / 8),
-							branches,
-							4
+							elementsPerPage,
+							128
 						);
 				default:
 					throw new NotImplementedException($"Scheme {scheme} is not yet supported");

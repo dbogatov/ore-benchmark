@@ -48,8 +48,9 @@ namespace Web.Services
 				await _context.Simulations.AddAsync(
 					 new SingleSimulation
 					 {
-						 Dataset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Dataset"])).Select(n => new Record(n, n.ToString())).OrderBy(e => random.Next()).ToList(),
-						 Queryset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Queryset"])).Select(n => new RangeQuery(n, n + random.Next(1, 10))).OrderBy(e => random.Next()).ToList()
+						Dataset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Dataset"])).Select(n => new Record(n, n.ToString())).OrderBy(e => random.Next()).ToList(),
+						Queryset = Enumerable.Range(1, Convert.ToInt32(_config["Limits:Queryset"])).Select(n => new RangeQuery(n, n + random.Next(1, 10))).OrderBy(e => random.Next()).ToList(),
+						ElementsPerPage = 512
 					 }
 				);
 				await _context.SaveChangesAsync();

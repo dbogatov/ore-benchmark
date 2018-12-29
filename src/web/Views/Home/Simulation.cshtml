@@ -2,6 +2,7 @@
 @using Simulation.Protocol
 @using ORESchemes.Shared.Primitives
 @using Microsoft.Extensions.Configuration
+@using Web.Extensions
 
 @model Web.Models.Data.Entities.SingleSimulation
 
@@ -63,23 +64,34 @@
 		<div class="text-center">
 			<h3>Inputs</h3>
 		</div>
-		<p><b>Seed:</b> @Model.Seed</p>
-		<p><b>Protocol:</b> @Model.Protocol</p>
-		<p><b>Cache size:</b> @Model.CacheSize</p>
-		<p><b>Input data and query sets are below</b></p>
+		<div class="text-justify markdown">
+			<markdown>
+				**Seed:** @Model.Seed
+				
+				**Protocol:** @( ((ORESchemesView)Model.Protocol).GetDescription<ORESchemesView>() )
+				
+				**Cache size:** @Model.CacheSize
+				
+				**Elements per I/O page:** @Model.ElementsPerPage
+				
+				**Input data and query sets are below**
+			</markdown>
+		</div>
 	</div>
 	<div class="col-md-8">
 		<div class="text-center">
 			<h3>Legend</h3>
 		</div>
-		<p class="text-justify">
-			Following is a report of this simulation.
-			The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
-			Primitive tables show total and average cryptographic primitive usage.
-			<b>Purity</b> means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
-			The special primitives are <em>symmetric</em>, which is a symmetric encription using AES-CBC, <em>LFPRF</em> and samplers, which are BCLO OPE specific, and <em>TreeTraversal</em>, which is FH-OPE specific.
-			We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
-		</p>
+		<div class="text-justify markdown">
+			<markdown>
+				Following is a report of this simulation.
+				The subreports are generated for each stage - handshake (when parties exchange metadata), construction (when client inserts elements iteratively) and query (when server responds to client's range queries).
+				Primitive tables show total and average cryptographic primitive usage.
+				**Purity** means that the primitive was not executed as a component of another primitive (eg. AES in PRG).
+				The special primitives are *symmetric*, which is a symmetric encription using AES-CBC, *LFPRF* and samplers, which are BCLO OPE specific, and *TreeTraversal*, which is FH-OPE specific.
+				We do not report ellapsed time since it is inaccurate in a website setting and is not scientifically intersting - in real life it will depend on hardware and I/O devices.
+			</markdown>
+		</div>
 	</div>
 </div>
 
@@ -94,16 +106,25 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-md-6">
-				<p><b>I/O requests:</b> @(((Report.SubReport)Model.Result.Stages[stage]).IOs)</p>
-				<p><b>Number of queries:</b> @(((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)</p>
-				<p><b>Number of OPE/ORE scheme operations:</b> @(((Report.SubReport)Model.Result.Stages[stage]).SchemeOperations)</p>
-				<p><b>Communication volume:</b> @(((Report.SubReport)Model.Result.Stages[stage]).CommunicationVolume / 8) byte(s)</p>
-				<p><b>Communication size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MessagesSent) messages</p>
-				<p><b>Max client storage size:</b> @(((Report.SubReport)Model.Result.Stages[stage]).MaxClientStorage / 8) bytes</p>
+			<div class="col-md-4">
+				<div class="text-justify markdown">
+					<markdown>
+						**I/O requests:** @(((Report.SubReport)Model.Result.Stages[stage]).IOs)
+						
+						**Number of queries:** @(((Report.SubReport)Model.Result.Stages[stage]).ActionsNumber)
+						
+						**Number of OPE/ORE scheme operations:** @(((Report.SubReport)Model.Result.Stages[stage]).SchemeOperations)
+						
+						**Communication volume:** @(((Report.SubReport)Model.Result.Stages[stage]).CommunicationVolume / 8) bytes
+						
+						**Communication size:** @(((Report.SubReport)Model.Result.Stages[stage]).MessagesSent) messages
+						
+						**Max client storage size:** @(((Report.SubReport)Model.Result.Stages[stage]).MaxClientStorage / 8) bytes
+					</markdown>
+				</div>
 			</div>
 			
-			<div class="col-md-6">
+			<div class="col-md-8">
 				@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations.Values.All(v => v == 0))
 				{
 					<div class="text-center" style="padding-bottom: 20px;">
@@ -126,7 +147,7 @@
 								@if(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive] != 0)
 								{
 									<tr>
-										<th scope="row">@primitive.ToString()</th>
+										<th scope="row">@( ((PrimitiveView)primitive).GetDescription<PrimitiveView>() )</th>
 										<td>
 											@(((Report.SubReport)Model.Result.Stages[stage]).TotalPrimitiveOperations[primitive]) / 
 											<em>

@@ -12,11 +12,13 @@ namespace Test.Web.UnitTests
 		{
 			var simulation =
 				new SingleSimulation(
-					"4, four\n5, five",
-					"4, 5",
-					5,
-					5,
-					new Random()
+					dataset: "4, four\n5, five",
+					queryset: "4, 5",
+					datasetSize: 5,
+					querysetSize: 5,
+					pageSize: 5,
+					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					random: new Random()
 				);
 
 			Assert.NotEmpty(simulation.Dataset);
@@ -29,11 +31,13 @@ namespace Test.Web.UnitTests
 			Assert.Throws<SingleSimulation.MalformedSetException>(
 				() =>
 				new SingleSimulation(
-					"4, four\n5",
-					"4, 5",
-					5,
-					5,
-					new Random()
+					dataset: "4, four\n5",
+					queryset: "4, 5",
+					datasetSize: 5,
+					querysetSize: 5,
+					pageSize: 5,
+					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					random: new Random()
 				)
 			);
 		}
@@ -44,11 +48,13 @@ namespace Test.Web.UnitTests
 			Assert.Throws<SingleSimulation.MalformedSetException>(
 				() =>
 				new SingleSimulation(
-					"4, four\n5, five",
-					"4",
-					5,
-					5,
-					new Random()
+					dataset: "4, four\n5, five",
+					queryset: "4",
+					datasetSize: 5,
+					querysetSize: 5,
+					pageSize: 5,
+					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					random: new Random()
 				)
 			);
 		}
@@ -58,7 +64,13 @@ namespace Test.Web.UnitTests
 		{
 			var simulation =
 				new SingleSimulation(
-					"", "", 5, 5, new Random()
+					dataset: "",
+					queryset: "",
+					datasetSize: 5,
+					querysetSize: 5,
+					pageSize: 5,
+					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					random: new Random()
 				);
 
 			Assert.NotEmpty(simulation.Dataset);

@@ -6,6 +6,8 @@ using Web.Models.Data;
 using Web.Services;
 using Web.Extensions;
 using Xunit;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Test.Web.ControllerTests
 {
@@ -48,6 +50,15 @@ namespace Test.Web.ControllerTests
 				_mockSimulationService.Object,
 				_config
 			);
+		}
+		
+		public static IList<ValidationResult> Validate(object model)
+		{
+			var results = new List<ValidationResult>();
+			var validationContext = new ValidationContext(model, null, null);
+			Validator.TryValidateObject(model, validationContext, results, true);
+			if (model is IValidatableObject) (model as IValidatableObject).Validate(validationContext);
+			return results;
 		}
 	}
 }

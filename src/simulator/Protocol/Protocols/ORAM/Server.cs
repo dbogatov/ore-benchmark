@@ -1,3 +1,4 @@
+using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.ORAM
@@ -6,11 +7,13 @@ namespace Simulation.Protocol.ORAM
 	{
 		private readonly IPRG G;
 		private readonly int _z;
+		private readonly int _elementsPerPage;
 
-		public Server(byte[] entropy, int z)
+		public Server(byte[] entropy, int z, int elementsPerPage)
 		{
 			G = new PRGFactory(entropy).GetPrimitive();
 			_z = z;
+			_elementsPerPage = elementsPerPage;
 		}
 
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message) 
@@ -25,10 +28,17 @@ namespace Simulation.Protocol.ORAM
 		/// <returns>A stub finish message</returns>
 		private FinishMessage AcceptMessage(BucketMessage message)
 		{
-			var nodes = message.Unpack().Item2 / _z;
-
-			OnNodeVisited(G.Next(0, nodes > 0 ? nodes : 1));
+			OnPrimitiveUsed(Primitive.ORAMLevel, false);
 			
+			var pagesAccessed = (_z + _elementsPerPage - 1) / _elementsPerPage;
+			var nodes = message.Unpack().Item2;
+			var pages = (_z + _elementsPerPage - 1) / _elementsPerPage;
+
+			for (int i = 0; i < pagesAccessed; i++)
+			{	
+				OnNodeVisited(pages > 0 ? 0 : G.Next(0, pages));
+			}
+
 			return new FinishMessage();
 		}
 	}
