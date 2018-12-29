@@ -149,7 +149,7 @@ namespace Test.Simulators.Protocols.Integration
 	{
 		public ORAMProtocol()
 		{
-			_protocol = new global::Simulation.Protocol.ORAM.Protocol(new Random(123456).GetBytes(128 / 8));
+			_protocol = new global::Simulation.Protocol.ORAM.Protocol(new Random(123456).GetBytes(128 / 8), 64);
 
 			SetupHandlers();
 		}

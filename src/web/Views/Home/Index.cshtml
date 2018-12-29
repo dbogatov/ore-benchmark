@@ -58,7 +58,13 @@
 			<div class="form-group">
 				<label asp-for="CacheSize"></label>
 				<input class="form-control" asp-for="CacheSize" placeholder="From 0 (default) to 100" />
-				<span class="text-danger"  asp-validation-for="Queryset"></span>
+				<span class="text-danger"  asp-validation-for="CacheSize"></span>
+			</div>
+			
+			<div class="form-group">
+				<label asp-for="ElementsPerPage"></label>
+				<input class="form-control" asp-for="ElementsPerPage" placeholder="Leave blank for default per protocol value" />
+				<span class="text-danger"  asp-validation-for="ElementsPerPage"></span>
 			</div>
 
 			<div class="form-group">
@@ -71,43 +77,45 @@
 		<div class="text-center">
 			<h3>Legend</h3>
 		</div>
-		<p class="text-justify">
-			<b>
-				All simulations are public.
-				Do not supply sensitive data.
-			</b>
-			<br>
-			Use this form to schedule a simulation.
-			Simulations are placed in queue and are executed in order, although the queue is usually empty.
-			Simulation result page will be available immediately and will show its current state and results when available.
-			Results will be persisted at least for @(Config["Daemon:CleanService:MaxAge"]) seconds.
-			<br>
-			Click "Submit" with empty fields to schedule trivial simulation, or use the fields in the form to customized it.
-			<br>
-			<b>Seed</b> value is used to seed the PRG for the whole simulation.
-			Same inputs with the same seed will always produce the same result.
-			<br>
-			You should also choose the <b>Protocol</b>.
-			<em>No encryption</em> and OPE / ORE schemes will be used in B+ tree, other protocols are custom.
-			The parameters (such as tree branching factor) will be tuned (best effort) to optimize for I/Os assuming page size @(Config["Daemon:SimulationService:PageSize"]) bits.
-			<br>
-			<b>Dataset</b> is a list of index-value pair, where index is an integer and value is string.
-			The format is a number, followed by coma, followed by string value without quotes per line.
-			For example, <code>4, elephant</code>.
-			Values are generally discarded, so please do not put special characters in them.
-			<br>
-			<b>Queryset</b> is a list of from-to pairs, where both components are integers and the first is no greater than the second.
-			The format is a number, followed by coma, followed by a number.
-			For example, <code>4, 6</code>.
-			<br>
-			<b>Cache size</b> defines virtual LRU cache capacity.
-			Requests fulfilled by the cache do not count as I/Os.
-			<br>
-			<blockquote class="blockquote">
-				Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
-				Inputs beyond these limits will be discarded.
-				Please, use our docker images (see the <a href="/documentation">docs</a>) to run arbitrary-sized simulations.
-			</blockquote>
-		</p>
+		<div class="text-justify markdown">
+			<markdown>
+				**All simulations are public.**
+				**Do not supply sensitive data.**
+
+				Use this form to schedule a simulation.
+				Simulations are placed in queue and are executed in order, although the queue is usually empty.
+				Simulation result page will be available immediately and will show its current state and results when available.
+				Results will be persisted at least for @(Config["Daemon:CleanService:MaxAge"]) seconds.
+
+				Click "Run dewfault example" to schedule a trivial simulation, or use the fields in the form to customized it.
+
+				**Seed** value is used to seed the PRG for the whole simulation.
+				Same inputs with the same seed will always produce the same result.
+
+				You should also choose the **Protocol**.
+				*No encryption* and OPE / ORE schemes will be used in a B+ tree, other protocols are custom.
+				We refer to the [paper](https://dbogatov.org/assets/custom/docs/ore-benchmark.pdf) for protocol descriptions.
+
+				**Dataset** is a list of index-value pair, where index is an integer and value is string.
+				The format is a number, followed by coma, followed by string value without quotes per line.
+				For example, `4, elephant`.
+				Values are generally discarded, so please do not put special characters in them.
+
+				**Queryset** is a list of from-to pairs, where both components are integers and the first is no greater than the second.
+				The format is a number, followed by coma, followed by a number.
+				For example, `4, 6`.
+
+				**Cache size** defines virtual LRU cache capacity.
+				Requests fulfilled by the cache do not count as I/Os.
+
+				I/O performance heavily depends on the page size and the **number of elements per I/O page**.
+				Default values will be assigned such that elements (ciphertexts) and B+ tree nodes fit in a page, assuming page size of @(Config["Daemon:SimulationService:PageSize"]) bits.
+				
+				> Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
+				> Inputs beyond these limits will be discarded.
+				> Please, use our docker images (see the [docs](/documentation)) to run arbitrary-sized simulations.
+
+			</markdown>
+		</div>
 	</div>
 </div>

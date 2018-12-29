@@ -27,6 +27,8 @@ namespace Web.Models.Data.Entities
 			string queryset,
 			int datasetSize,
 			int querysetSize,
+			int pageSize,
+			ORESchemes.Shared.ORESchemes protocol,
 			Random random
 		)
 		{
@@ -99,6 +101,32 @@ namespace Web.Models.Data.Entities
 					throw new MalformedSetException { Set = "Queryset" };
 				}
 			}
+
+			int cipherSize = 0;
+			switch (protocol)
+			{
+				case ORESchemes.Shared.ORESchemes.PracticalORE:
+				case ORESchemes.Shared.ORESchemes.CryptDB:
+				case ORESchemes.Shared.ORESchemes.FHOPE:
+					cipherSize = 64;
+					break;
+				case ORESchemes.Shared.ORESchemes.ORAM:
+				case ORESchemes.Shared.ORESchemes.Florian:
+				case ORESchemes.Shared.ORESchemes.POPE:
+					cipherSize = 128;
+					break;
+				case ORESchemes.Shared.ORESchemes.NoEncryption:
+					cipherSize = 32;
+					break;
+				case ORESchemes.Shared.ORESchemes.LewiORE:
+					cipherSize = 2816;
+					break;
+				case ORESchemes.Shared.ORESchemes.AdamORE:
+					cipherSize = 4088;
+					break;
+			}
+			ElementsPerPage = (int)Math.Round((double)pageSize / cipherSize);
+			Protocol = protocol;
 		}
 
 		[Key]
@@ -117,6 +145,7 @@ namespace Web.Models.Data.Entities
 		public IList<Record> Dataset { get; set; }
 		public IList<RangeQuery> Queryset { get; set; }
 		public int CacheSize { get; set; } = 0;
+		public int ElementsPerPage { get; set; } = 2;
 
 		// Output
 		public Report Result { get; set; }

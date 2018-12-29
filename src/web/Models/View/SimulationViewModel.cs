@@ -37,11 +37,20 @@ namespace Web.Models.View
 				return (ORESchemes.Shared.ORESchemes)Protocol;
 			}
 		}
+		
+		// Allow maximum of 10K lines of 64 characters
+		[StringLength(64*10*1000, ErrorMessage = "Max dataset size is 640000 characters!")]
 		public string Dataset { get; set; }
+		
+		[StringLength(64*10*1000, ErrorMessage = "Max queryset size is 640000 characters!")]
 		public string Queryset { get; set; }
 
 		[Range(0, 100)]
 		[Display(Name = "Cache size")]
 		public int? CacheSize { get; set; }
+		
+		[Range(2, 1024)]
+		[Display(Name = "Elements per I/O page")]
+		public int? ElementsPerPage { get; set; }
 	}
 }
