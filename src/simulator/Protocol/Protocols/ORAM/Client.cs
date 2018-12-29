@@ -70,7 +70,7 @@ namespace Simulation.Protocol.ORAM
 			{
 				_tree.Insert(record.index, record.value);
 
-				SampleTreeSize();
+				RecordStorage();
 
 				OnQueryCompleted();
 			}
@@ -88,7 +88,7 @@ namespace Simulation.Protocol.ORAM
 					checkRanges: true
 				);
 				
-				SampleTreeSize();
+				RecordStorage();
 				
 				OnQueryCompleted();
 			}
@@ -97,9 +97,12 @@ namespace Simulation.Protocol.ORAM
 		/// <summary>
 		/// Records the current size of the B+ tree
 		/// </summary>
-		private void SampleTreeSize() =>
+		private void RecordStorage() =>
 			OnClientStorage(
-				_tree.Nodes(includeDataNodes: false) * _branches * sizeof(int) * 8 + _key.Length * 8
+				_tree.Nodes(includeDataNodes: false) * _branches * sizeof(int) * 8 + // all B+ tree nodes
+				_key.Length * 8 + // a key
+				_tree.Nodes(includeDataNodes: false) * sizeof(int) * 8 + // an ORAM position table (N integers)
+				(int)Math.Ceiling(Math.Log(_tree.Nodes(includeDataNodes: false), 2)) // an ORAM stash (log N)
 			);
 
 		/// <summary>
