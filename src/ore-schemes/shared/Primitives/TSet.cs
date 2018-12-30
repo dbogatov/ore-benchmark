@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using ORESchemes.Shared.Primitives.Hash;
@@ -36,9 +37,9 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 	public interface ITSet : IPrimitive
 	{
-		ValueTuple<List<List<Record>>, byte[]> Setup(Dictionary<IWord, List<BitArray>> T);
-		BitArray GetTag(byte[] Kt, IWord w);
-		List<BitArray> Retrive(List<List<Record>> TSet, byte[] stag);
+		ValueTuple<Record[][], byte[]> Setup(Dictionary<IWord, BitArray[]> T);
+		byte[] GetTag(byte[] Kt, IWord w);
+		BitArray[] Retrive(Record[][] TSet, byte[] stag);
 	}
 
 	public class CashTSet : AbsPrimitive, ITSet
@@ -48,6 +49,9 @@ namespace ORESchemes.Shared.Primitives.TSet
 		private readonly IPRG G;
 		private readonly IPRF F;
 		private readonly IHash H;
+
+		private int? B;
+		private int? S;
 
 		public CashTSet(byte[] entropy = null)
 		{
@@ -60,63 +64,65 @@ namespace ORESchemes.Shared.Primitives.TSet
 			RegisterPrimitive(H);
 		}
 
-		public BitArray GetTag(byte[] Kt, IWord w)
+		public byte[] GetTag(byte[] Kt, IWord w)
 		{
 			// Output stag <- F^-(Kt , w)
-			return new BitArray(F.PRF(Kt, w.ToBytes()));
+			return F.PRF(Kt, w.ToBytes());
 		}
 
-		public List<BitArray> Retrive(List<List<Record>> TSet, byte[] stag)
+		public BitArray[] Retrive(Record[][] TSet, byte[] stag)
 		{
 			// Initialize t as an empty list, bit Beta as 1, and counter i as 1
 			var t = new List<BitArray>();
 			var Beta = true;
 			var i = 0;
-			
+
 			// Repeat the following loop while Beta = 1:
 			while (Beta)
 			{
 				// Set (b, L, K) <- H(F(stag, i)) and retrieve an array B <- TSet[b]
 				(var b, var L, var K) = DecomposeFromHash(stag, i);
 				var B = TSet[b];
-				
+
 				// Search for index j in {1, ..., S} s.t. B[j].label = L.
 				var S = B.Count();
 				var jFound = -1;
 				for (int j = 0; j < S; j++)
 				{
-					if (B[j].Label == L)
+					if (B[j] != null && B[j].Label == L)
 					{
 						jFound = j;
 						break;
 					}
 				}
-				
+
 				if (jFound < 0)
 				{
-					throw new InvalidOperationException($"No j such that B[j].label = L (i = {i})");
+					// throw new InvalidOperationException($"No j such that B[j].label = L (i = {i})");
+					i++;
+					continue;
 				}
-				
+
 				// Let v <- B[j].value XOR K. Let Beta be the first bit of v, and s the remaining n(λ) bits of v
 				var v = B[jFound].Value.Xor(K);
 				Beta = v[0];
-				
+
 				var s = new BitArray(Enumerable.Repeat(false, 128).ToArray());
 				for (int j = 1; j < 128 + 1; j++)
 				{
 					s[j] = v[j];
 				}
-				
+
 				// Add string s to the list t and increment i.
 				t.Add(s);
 				i++;
 			}
-			
+
 			// Output t.
-			return t;
+			return t.ToArray();
 		}
 
-		public (List<List<Record>>, byte[]) Setup(Dictionary<IWord, List<BitArray>> T)
+		public (Record[][], byte[]) Setup(Dictionary<IWord, BitArray[]> T)
 		{
 			var failures = 0;
 			while (true)
@@ -128,18 +134,25 @@ namespace ORESchemes.Shared.Primitives.TSet
 					var S = (int)Math.Ceiling(3 * Math.Log(N, 2));
 					var B = 2 * N / S;
 
+					// At least some reasonable minimum values
+					S = S >= 5 ? S : 5;
+					B = B >= 5 ? B : 5;
+
+					this.S = S;
+					this.B = B;
+
 					// Initialize an array TSet of size B whose every element is an array of S records of type record
-					var TSet = new List<List<Record>>(B);
+					var TSet = new Record[B][];
 					for (int i = 0; i < B; i++)
 					{
-						TSet[i] = new List<Record>(S);
+						TSet[i] = new Record[S];
 					}
 
 					// Initialize an array Free of size B whose elements are integer sets, initially all set to {1, ..., S}.
-					var Free = new List<HashSet<int>>(B);
+					var Free = new HashSet<int>[B];
 					for (int i = 0; i < B; i++)
 					{
-						Free[i] = new HashSet<int>(Enumerable.Range(1, S));
+						Free[i] = new HashSet<int>(Enumerable.Range(0, S));
 					}
 
 					// Choose a random key Kt of PRF F^-
@@ -163,23 +176,26 @@ namespace ORESchemes.Shared.Primitives.TSet
 							(var b, var L, var K) = DecomposeFromHash(stag, i);
 
 							// If Free[b] is an empty set, restart TSetSetup(T) with fresh key Kt .
-							if (Free[b].Count() == 0)
+							var size = Free[b].Count();
+							if (size == 0)
 							{
 								throw new OverflowException();
 							}
-							
+
 							// Choose j <-$ Free[b] and remove j from set Free[b], i.e. set Free[b] <- Free[b] \ {j}.
 							// https://stackoverflow.com/a/15960061/1644554
-							var j = Free[b].ElementAt(G.Next(Free[b].Count()));
-							
+							var j = Free[b].ElementAt(size == 1 ? 0 : G.Next(0, size - 1));
+
 							// Set bit Beta as 1 if i < |t| and 0 if i = |t|.
 							var Beta = i < t.Count();
-							
+
 							// Set TSet[b, j].label <- L and TSet[b, j].value <- (Beta|si) XOR K.
-							TSet[b][j].Label = L;
-							TSet[b][j].Value = si.Prepend(new BitArray(new bool[] { Beta })).Xor(K);
+							TSet[b][j] = new Record {
+								Label = L,
+								Value = si.Prepend(new BitArray(new bool[] { Beta })).Xor(K)
+							};
 						}
-						
+
 						// Output (TSet, Kt).
 						return (TSet, Kt);
 					}
@@ -207,6 +223,8 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 			var bits = new BitArray(output);
 
+			Debug.Assert(bits.Length == 512);
+
 			var bBits = new BitArray(Enumerable.Repeat(false, sizeof(int) * 8).ToArray());
 			for (int j = 0; j < sizeof(int) * 8; j++)
 			{
@@ -216,19 +234,26 @@ namespace ORESchemes.Shared.Primitives.TSet
 			var LBits = new BitArray(Enumerable.Repeat(false, 128).ToArray());
 			for (int j = sizeof(int) * 8; j < sizeof(int) * 8 + 128; j++)
 			{
-				LBits[j] = bits[j];
+				LBits[j - sizeof(int) * 8] = bits[j];
 			}
 
 			var KBits = new BitArray(Enumerable.Repeat(false, 129).ToArray());
 			for (int j = sizeof(int) * 8 + 128; j < sizeof(int) * 8 + 128 + 129; j++)
 			{
-				KBits[j] = bits[j];
+				KBits[j - (sizeof(int) * 8 + 128)] = bits[j];
 			}
 
 			// https://stackoverflow.com/a/5283199/1644554
 			int[] bArray = new int[1];
 			bBits.CopyTo(bArray, 0);
 			int b = bArray[0];
+
+			if (!this.B.HasValue)
+			{
+				throw new InvalidOperationException("TSet.Setup must have been called first.");
+			}
+
+			b = Math.Abs(b % this.B.Value);
 
 			return (b, LBits, KBits);
 		}

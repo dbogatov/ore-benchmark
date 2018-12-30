@@ -41,7 +41,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 		int Next(int max);
 
 		/// <summary>
-		/// Returns a 32-bits intger withing the specified range
+		/// Returns a 32-bits intger within the specified range
 		/// inclusive sampled uniformly at (pseudo)random
 		/// </summary>
 		int Next(int min, int max);
@@ -59,7 +59,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 		long NextLong(long max);
 
 		/// <summary>
-		/// Returns a 64-bits intger withing the specified range
+		/// Returns a 64-bits intger within the specified range
 		/// inclusive sampled uniformly at (pseudo)random
 		/// </summary>
 		long NextLong(long min, long max);
@@ -80,7 +80,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 
 		/// <summary>
 		/// Returns a double-precision floating-point number 
-		/// withing the specified range
+		/// within the specified range
 		/// inclusive sampled uniformly at (pseudo)random
 		/// </summary>
 		double NextDouble(double min, double max);
