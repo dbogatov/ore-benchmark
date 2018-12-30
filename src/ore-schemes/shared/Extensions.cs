@@ -192,5 +192,14 @@ namespace ORESchemes.Shared
 				yield return toReturn;
 			}
 		}
+
+		// https://stackoverflow.com/a/518558/1644554
+		public static BitArray Prepend(this BitArray current, BitArray before)
+		{
+			var bools = new bool[current.Count + before.Count];
+			before.CopyTo(bools, 0);
+			current.CopyTo(bools, before.Count);
+			return new BitArray(bools);
+		}
 	}
 }

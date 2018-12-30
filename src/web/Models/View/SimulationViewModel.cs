@@ -51,7 +51,9 @@ namespace Web.Models.View
 		[Display(Name = "ORAM path read / write")]
 		ORAMPath, 
 		[Display(Name = "ORAM read / write request")]
-		ORAMLevel
+		ORAMLevel,
+		[Display(Name = "Tuple-set (SSE scheme)")]
+		TSet,
 	}
 
 	public class SimulationViewModel
