@@ -11,19 +11,15 @@ namespace ORESchemes.Shared.Primitives.TSet
 {
 	public class TSetFactory : AbsPrimitiveFactory<ITSet>
 	{
-		protected override ITSet CreatePrimitive(byte[] entropy) => new CashTSet();
+		public TSetFactory(byte[] entropy = null) : base(entropy) { }
+
+		protected override ITSet CreatePrimitive(byte[] entropy) => new CashTSet(entropy);
 	}
 
 	/// <summary>
 	/// An abstraction over keyword
 	/// </summary>
-	public interface IWord
-	{
-		/// <summary>
-		/// A keyword will be put through PRF, so byte representation is required
-		/// </summary>
-		byte[] ToBytes();
-	}
+	public interface IWord : IByteable { }
 
 	/// <summary>
 	/// A particular keyword implementation based on primitive strings
@@ -60,7 +56,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// </summary>
 		/// <param name="T">Mapping of keywords to lists of encrypted indices</param>
 		/// <returns>An encrypted index data structure and a secret key</returns>
-		ValueTuple<TSetStructure, byte[]> Setup(Dictionary<IWord, BitArray[]> T);
+		(TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T);
 
 		/// <summary>
 		/// Generates a token to search over encrypted index data structure
@@ -165,7 +161,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		public (TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T)
 		{
 			OnUse(Primitive.TSet);
-			
+
 			while (true)
 			{
 				try // until no overflow
@@ -256,7 +252,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// <param name="i">An index</param>
 		/// <param name="B">A global B value chosen in Setup</param>
 		/// <returns>A tuple of: number from 0 to B exclusive, 128-bits string and 129-bits string</returns>
-		private ValueTuple<int, BitArray, BitArray> DecomposeFromHash(byte[] stag, int i, int B)
+		private (int, BitArray, BitArray) DecomposeFromHash(byte[] stag, int i, int B)
 		{
 			var input = stag.Concat(BitConverter.GetBytes(i)).ToArray();
 
