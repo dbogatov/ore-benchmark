@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using ORESchemes.Shared.Primitives.Hash;
@@ -66,12 +65,16 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 		public byte[] GetTag(byte[] Kt, IWord w)
 		{
+			OnUse(Primitive.TSet);
+			
 			// Output stag <- F^-(Kt , w)
 			return F.PRF(Kt, w.ToBytes());
 		}
 
 		public BitArray[] Retrive(Record[][] TSet, byte[] stag)
 		{
+			OnUse(Primitive.TSet);
+			
 			// Initialize t as an empty list, bit Beta as 1, and counter i as 1
 			var t = new List<BitArray>();
 			var Beta = true;
@@ -121,6 +124,8 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 		public (Record[][], byte[]) Setup(Dictionary<IWord, BitArray[]> T)
 		{
+			OnUse(Primitive.TSet);
+			
 			var failures = 0;
 			while (true)
 			{
@@ -182,6 +187,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 							// Choose j <-$ Free[b] and remove j from set Free[b], i.e. set Free[b] <- Free[b] \ {j}.
 							// https://stackoverflow.com/a/15960061/1644554
 							var j = Free[b].ElementAt(size == 1 ? 0 : G.Next(0, size - 1));
+							Free[b].Remove(j);
 
 							// Set bit Beta as 1 if i < |t| and 0 if i = |t|.
 							var Beta = i < t.Count() - 1;
@@ -193,10 +199,10 @@ namespace ORESchemes.Shared.Primitives.TSet
 								Value = si.Prepend(new BitArray(new bool[] { Beta })).Xor(K)
 							};
 						}
-
-						// Output (TSet, Kt).
-						return (TSet, Kt);
 					}
+					
+					// Output (TSet, Kt).
+					return (TSet, Kt);
 				}
 				catch (OverflowException)
 				{

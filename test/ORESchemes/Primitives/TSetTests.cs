@@ -8,6 +8,7 @@ using ORESchemes.Shared.Primitives.TSet;
 using ORESchemes.Shared;
 using Xunit;
 using System.Numerics;
+using ORESchemes.Shared.Primitives;
 
 namespace Test.ORESchemes.Primitives.TSet
 {
@@ -18,10 +19,11 @@ namespace Test.ORESchemes.Primitives.TSet
 		private readonly IPRF F;
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
-		private readonly int RUNS = 1000;
+		private readonly int RUNS = 50;
 		private readonly byte[] _prfKey = new byte[128 / 8];
 
 		private readonly Dictionary<IWord, BitArray[]> _sampleInput;
+
 
 		public CashTSet()
 		{
@@ -72,11 +74,11 @@ namespace Test.ORESchemes.Primitives.TSet
 			Assert.False(first.IsEqualTo(fourth));
 		}
 
-		private BitArray[] RunPipeline(Dictionary<IWord, BitArray[]> input, string keyword)
+		private BitArray[] RunPipeline(Dictionary<IWord, BitArray[]> input, IWord keyword)
 		{
 			(var TSet, var key) = T.Setup(input);
 
-			var stag = T.GetTag(key, new StringWord { Value = keyword });
+			var stag = T.GetTag(key, keyword);
 
 			return T.Retrive(TSet, stag);
 		}
@@ -98,12 +100,12 @@ namespace Test.ORESchemes.Primitives.TSet
 		}
 
 		[Fact]
-		public void NoExceptions() => RunPipeline(_sampleInput, "Dmytro");
+		public void NoExceptions() => RunPipeline(_sampleInput, new StringWord { Value = "Dmytro" });
 
 		[Fact]
 		public void CorrectnessSimple()
 		{
-			var output = RunPipeline(_sampleInput, "Dmytro");
+			var output = RunPipeline(_sampleInput, new StringWord { Value = "Dmytro" });
 
 			Assert.True(OutputAsExpected(
 				new BitArray[] {
@@ -114,29 +116,89 @@ namespace Test.ORESchemes.Primitives.TSet
 			));
 		}
 
-		// [Fact]
-		// public void Events()
-		// {
-		// 	EventsTestsShared.Events<IPPH>(
-		// 		R,
-		// 		pph =>
-		// 		{
-		// 			var key = pph.KeyGen();
-		// 			pph.Test(
-		// 				key.testKey,
-		// 				pph.Hash(key.hashKey, new byte[] { }),
-		// 				pph.Hash(key.hashKey, new byte[] { })
-		// 			);
-		// 		},
-		// 		new Dictionary<Primitive, int> {
-		// 			{ Primitive.PPH, 3 },
-		// 			{ Primitive.PRG, 2 },
-		// 			{ Primitive.AES, 2 }
-		// 		},
-		// 		new Dictionary<Primitive, int> {
-		// 			{ Primitive.PPH, 3 }
-		// 		}
-		// 	);
-		// }
+		[Fact]
+		public void Correctness()
+		{
+			string randomString(int length)
+			{
+				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+				return new string(
+					Enumerable
+						.Repeat(chars, length)
+						.Select(s => s[G.Next(s.Length)])
+						.ToArray()
+				);
+			}
+
+			for (int i = 0; i < RUNS; i++)
+			{
+				var input = Enumerable
+					.Range(1, RUNS * 10)
+					.ToDictionary(
+						_ => (IWord)new StringWord { Value = randomString(G.Next(5, 16)) },
+						_ => Enumerable
+							.Range(1, RUNS / 10)
+							.Select(
+								__ => new BitArray(
+									F.PRF(
+										_prfKey,
+										Encoding.Default.GetBytes(
+											randomString(G.Next(5, 16))
+										)
+									)
+								)
+							)
+							.ToArray()
+					);
+
+				(var TSet, var key) = T.Setup(input);
+
+				foreach (var keywordIndices in input)
+				{
+					var stag = T.GetTag(key, keywordIndices.Key);
+
+					var output = T.Retrive(TSet, stag);
+
+					Assert.True(OutputAsExpected(
+						input[keywordIndices.Key],
+						output
+					));
+				}
+			}
+		}
+
+		[Fact]
+		public void MalformedWord()
+		{
+			Assert.Throws<InvalidOperationException>(
+				() => RunPipeline(_sampleInput, new StringWord { Value = "Malformed" })
+			);
+		}
+
+		[Fact]
+		public void Events()
+		{
+			EventsTestsShared.Events<ITSet>(
+				T,
+				set =>
+				{
+					(var TSet, var key) = set.Setup(_sampleInput);
+
+					var stag = set.GetTag(key, new StringWord { Value = "Dmytro" });
+
+					set.Retrive(TSet, stag);
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.TSet, 3 },
+					{ Primitive.PRG, 5 },
+					{ Primitive.PRF, 3 },
+					{ Primitive.AES, 8 },
+					{ Primitive.Hash, 6 }
+				},
+				new Dictionary<Primitive, int> {
+					{ Primitive.TSet, 3 }
+				}
+			);
+		}
 	}
 }

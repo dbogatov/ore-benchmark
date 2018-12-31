@@ -209,7 +209,7 @@ namespace ORESchemes.Shared
 				return false;
 			}
 
-			return current.Xor(other).Not().Cast<bool>().All(e => e);
+			return new BitArray(current).Xor(new BitArray(other)).Not().Cast<bool>().All(e => e);
 		}
 
 		// https://stackoverflow.com/a/4619295/1644554
