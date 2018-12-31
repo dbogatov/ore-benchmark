@@ -7,6 +7,7 @@ using ORESchemes.Shared.Primitives.PRF;
 using ORESchemes.Shared.Primitives.TSet;
 using ORESchemes.Shared;
 using Xunit;
+using System.Numerics;
 
 namespace Test.ORESchemes.Primitives.TSet
 {
@@ -20,42 +21,19 @@ namespace Test.ORESchemes.Primitives.TSet
 		private readonly int RUNS = 1000;
 		private readonly byte[] _prfKey = new byte[128 / 8];
 
+		private readonly Dictionary<IWord, BitArray[]> _sampleInput;
+
 		public CashTSet()
 		{
 			byte[] entropy = new byte[128 / 8];
 			G.NextBytes(entropy);
 			G.NextBytes(_prfKey);
-			
+
 			F = new PRFFactory().GetPrimitive();
 
 			T = new global::ORESchemes.Shared.Primitives.TSet.CashTSet(entropy);
-		}
-		
-		[Fact]
-		public void BitArrayIsEqualTo()
-		{
-			byte[] seedBytes = new byte[128 / 8];
-			G.NextBytes(seedBytes);
-			var seedBits = new BitArray(seedBytes);
-			
-			var first = new BitArray(seedBits);
-			var second = new BitArray(seedBits);
-			
-			var third = new BitArray(seedBits);
-			third[65] = !third[65];
-			
-			var fourth = new BitArray(seedBits);
-			fourth = fourth.Prepend(new BitArray(new bool[] { false }));
-			
-			Assert.True(first.IsEqualTo(second));
-			Assert.False(first.IsEqualTo(third));
-			Assert.False(first.IsEqualTo(fourth));
-		}
 
-		[Fact]
-		public void NoExceptions()
-		{
-			var input = new Dictionary<IWord, BitArray[]> {
+			_sampleInput = new Dictionary<IWord, BitArray[]> {
 				{
 					new StringWord { Value = "Dmytro" },
 					new BitArray[] {
@@ -71,12 +49,69 @@ namespace Test.ORESchemes.Primitives.TSet
 					}
 				}
 			};
-			
+		}
+
+		[Fact]
+		public void BitArrayIsEqualTo()
+		{
+			byte[] seedBytes = new byte[128 / 8];
+			G.NextBytes(seedBytes);
+			var seedBits = new BitArray(seedBytes);
+
+			var first = new BitArray(seedBits);
+			var second = new BitArray(seedBits);
+
+			var third = new BitArray(seedBits);
+			third[65] = !third[65];
+
+			var fourth = new BitArray(seedBits);
+			fourth = fourth.Prepend(new BitArray(new bool[] { false }));
+
+			Assert.True(first.IsEqualTo(second));
+			Assert.False(first.IsEqualTo(third));
+			Assert.False(first.IsEqualTo(fourth));
+		}
+
+		private BitArray[] RunPipeline(Dictionary<IWord, BitArray[]> input, string keyword)
+		{
 			(var TSet, var key) = T.Setup(input);
-			
-			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
-			
-			var t = T.Retrive(TSet, stag);
+
+			var stag = T.GetTag(key, new StringWord { Value = keyword });
+
+			return T.Retrive(TSet, stag);
+		}
+
+		private bool OutputAsExpected(BitArray[] expected, BitArray[] actual)
+		{
+			if (expected.Count() != actual.Count())
+			{
+				return false;
+			}
+
+			var expectedSorted = expected.OrderBy(e => new BigInteger(e.ToBytes()));
+			var actualSorted = actual.OrderBy(e => new BigInteger(e.ToBytes()));
+
+			return
+				expectedSorted
+					.Zip(actualSorted, (a, b) => a.IsEqualTo(b))
+					.All(e => e);
+		}
+
+		[Fact]
+		public void NoExceptions() => RunPipeline(_sampleInput, "Dmytro");
+
+		[Fact]
+		public void CorrectnessSimple()
+		{
+			var output = RunPipeline(_sampleInput, "Dmytro");
+
+			Assert.True(OutputAsExpected(
+				new BitArray[] {
+					new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("WPI"))),
+					new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("BU")))
+				},
+				output
+			));
 		}
 
 		// [Fact]

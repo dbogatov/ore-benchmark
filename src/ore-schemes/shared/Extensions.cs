@@ -201,15 +201,28 @@ namespace ORESchemes.Shared
 			current.CopyTo(bools, before.Count);
 			return new BitArray(bools);
 		}
-		
+
 		public static bool IsEqualTo(this BitArray current, BitArray other)
 		{
 			if (current.Length != other.Length)
 			{
 				return false;
 			}
-			
+
 			return current.Xor(other).Not().Cast<bool>().All(e => e);
+		}
+
+		// https://stackoverflow.com/a/4619295/1644554
+		public static byte[] ToBytes(this BitArray bits)
+		{
+			if (bits.Length == 0)
+			{
+				return new byte[] { };
+			}
+
+			byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
+			bits.CopyTo(ret, 0);
+			return ret;
 		}
 	}
 }
