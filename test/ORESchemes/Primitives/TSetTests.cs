@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 using System.Text;
-using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.PRF;
 using ORESchemes.Shared.Primitives.TSet;
+using ORESchemes.Shared;
 using Xunit;
 
 namespace Test.ORESchemes.Primitives.TSet
@@ -30,8 +30,29 @@ namespace Test.ORESchemes.Primitives.TSet
 
 			T = new global::ORESchemes.Shared.Primitives.TSet.CashTSet(entropy);
 		}
+		
+		[Fact]
+		public void BitArrayIsEqualTo()
+		{
+			byte[] seedBytes = new byte[128 / 8];
+			G.NextBytes(seedBytes);
+			var seedBits = new BitArray(seedBytes);
+			
+			var first = new BitArray(seedBits);
+			var second = new BitArray(seedBits);
+			
+			var third = new BitArray(seedBits);
+			third[65] = !third[65];
+			
+			var fourth = new BitArray(seedBits);
+			fourth = fourth.Prepend(new BitArray(new bool[] { false }));
+			
+			Assert.True(first.IsEqualTo(second));
+			Assert.False(first.IsEqualTo(third));
+			Assert.False(first.IsEqualTo(fourth));
+		}
 
-		// [Fact]
+		[Fact]
 		public void NoExceptions()
 		{
 			var input = new Dictionary<IWord, BitArray[]> {

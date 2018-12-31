@@ -85,11 +85,10 @@ namespace ORESchemes.Shared.Primitives.TSet
 				var B = TSet[b];
 
 				// Search for index j in {1, ..., S} s.t. B[j].label = L.
-				var S = B.Count();
 				var jFound = -1;
-				for (int j = 0; j < S; j++)
+				for (int j = 0; j < B.Count(); j++)
 				{
-					if (B[j] != null && B[j].Label == L)
+					if (B[j] != null && B[j].Label.IsEqualTo(L))
 					{
 						jFound = j;
 						break;
@@ -98,9 +97,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 				if (jFound < 0)
 				{
-					// throw new InvalidOperationException($"No j such that B[j].label = L (i = {i})");
-					i++;
-					continue;
+					throw new InvalidOperationException($"No j such that B[j].label = L (i = {i}). Most likely, malformed word supplied.");
 				}
 
 				// Let v <- B[j].value XOR K. Let Beta be the first bit of v, and s the remaining n(λ) bits of v
@@ -110,7 +107,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 				var s = new BitArray(Enumerable.Repeat(false, 128).ToArray());
 				for (int j = 1; j < 128 + 1; j++)
 				{
-					s[j] = v[j];
+					s[j - 1] = v[j];
 				}
 
 				// Add string s to the list t and increment i.
@@ -172,7 +169,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 						{
 							var si = t[i];
 
-							// Set (b, L, K) ← H(F(stag, i))
+							// Set (b, L, K) <- H(F(stag, i))
 							(var b, var L, var K) = DecomposeFromHash(stag, i);
 
 							// If Free[b] is an empty set, restart TSetSetup(T) with fresh key Kt .
@@ -187,11 +184,12 @@ namespace ORESchemes.Shared.Primitives.TSet
 							var j = Free[b].ElementAt(size == 1 ? 0 : G.Next(0, size - 1));
 
 							// Set bit Beta as 1 if i < |t| and 0 if i = |t|.
-							var Beta = i < t.Count();
+							var Beta = i < t.Count() - 1;
 
 							// Set TSet[b, j].label <- L and TSet[b, j].value <- (Beta|si) XOR K.
-							TSet[b][j] = new Record {
-								Label = L,
+							TSet[b][j] = new Record
+							{
+								Label = new BitArray(L),
 								Value = si.Prepend(new BitArray(new bool[] { Beta })).Xor(K)
 							};
 						}
@@ -222,8 +220,6 @@ namespace ORESchemes.Shared.Primitives.TSet
 			var output = H.ComputeHash(input);
 
 			var bits = new BitArray(output);
-
-			Debug.Assert(bits.Length == 512);
 
 			var bBits = new BitArray(Enumerable.Repeat(false, sizeof(int) * 8).ToArray());
 			for (int j = 0; j < sizeof(int) * 8; j++)
