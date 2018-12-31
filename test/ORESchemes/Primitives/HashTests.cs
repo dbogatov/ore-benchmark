@@ -22,6 +22,12 @@ namespace Test.ORESchemes.Primitives.Hash
 
 	}
 
+	[Trait("Category", "Unit")]
+	public class SHA512Hash : AbsHash
+	{
+		public SHA512Hash() : base(new SHA512()) { }
+	}
+
 	public abstract class AbsHash
 	{
 		protected readonly IHash _hash;
