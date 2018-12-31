@@ -194,6 +194,9 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/518558/1644554
+		/// <summary>
+		/// Prepends a BitArray to this one, returns a new BitArray instance
+		/// </summary>
 		public static BitArray Prepend(this BitArray current, BitArray before)
 		{
 			var bools = new bool[current.Count + before.Count];
@@ -202,6 +205,9 @@ namespace ORESchemes.Shared
 			return new BitArray(bools);
 		}
 
+		/// <summary>
+		/// Returns true if two BitArray instances have equal content
+		/// </summary>
 		public static bool IsEqualTo(this BitArray current, BitArray other)
 		{
 			if (current.Length != other.Length)
@@ -213,6 +219,9 @@ namespace ORESchemes.Shared
 		}
 
 		// https://stackoverflow.com/a/4619295/1644554
+		/// <summary>
+		/// Converts BitArray instance to an array of bytes
+		/// </summary>
 		public static byte[] ToBytes(this BitArray bits)
 		{
 			if (bits.Length == 0)

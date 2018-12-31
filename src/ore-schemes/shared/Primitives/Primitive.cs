@@ -35,6 +35,10 @@ namespace ORESchemes.Shared.Primitives
 			}
 		}
 		
+		/// <summary>
+		/// Hooks up the event handler to proxy primitive events through this instance
+		/// </summary>
+		/// <param name="primitive">The child primitive to proxy from</param>
 		protected void RegisterPrimitive(IPrimitive primitive)
 		{
 			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(
