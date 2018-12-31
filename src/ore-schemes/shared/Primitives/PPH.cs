@@ -59,9 +59,7 @@ namespace ORESchemes.Shared.Primitives.PPH
 
 			PR = predicate;
 
-			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) => base.OnUse(prim, true)
-			);
+			RegisterPrimitive(G);
 		}
 
 		public Key KeyGen() => new Key

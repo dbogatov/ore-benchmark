@@ -59,18 +59,14 @@ namespace ORESchemes.Shared.Primitives.Sampler
 		{
 			G = new PRGCachedFactory(entropy).GetPrimitive();
 
-			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) => base.OnUse(prim, true)
-			);
+			RegisterPrimitive(G);
 		}
 
 		public CustomSampler(IPRG prg)
 		{
 			G = prg;
 
-			G.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) => base.OnUse(prim, true)
-			);
+			RegisterPrimitive(G);
 		}
 
 		// https://stackoverflow.com/a/23574723/1644554

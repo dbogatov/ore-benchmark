@@ -192,5 +192,46 @@ namespace ORESchemes.Shared
 				yield return toReturn;
 			}
 		}
+
+		// https://stackoverflow.com/a/518558/1644554
+		/// <summary>
+		/// Prepends a BitArray to this one, returns a new BitArray instance
+		/// </summary>
+		public static BitArray Prepend(this BitArray current, BitArray before)
+		{
+			var bools = new bool[current.Count + before.Count];
+			before.CopyTo(bools, 0);
+			current.CopyTo(bools, before.Count);
+			return new BitArray(bools);
+		}
+
+		/// <summary>
+		/// Returns true if two BitArray instances have equal content
+		/// </summary>
+		public static bool IsEqualTo(this BitArray current, BitArray other)
+		{
+			if (current.Length != other.Length)
+			{
+				return false;
+			}
+
+			return new BitArray(current).Xor(new BitArray(other)).Not().Cast<bool>().All(e => e);
+		}
+
+		// https://stackoverflow.com/a/4619295/1644554
+		/// <summary>
+		/// Converts BitArray instance to an array of bytes
+		/// </summary>
+		public static byte[] ToBytes(this BitArray bits)
+		{
+			if (bits.Length == 0)
+			{
+				return new byte[] { };
+			}
+
+			byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
+			bits.CopyTo(ret, 0);
+			return ret;
+		}
 	}
 }

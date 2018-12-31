@@ -56,6 +56,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 				_cachePermutation = new byte[sizeof(byte) * 8];
 
 				IPRG G = new PRGCachedFactory(key).GetPrimitive();
+				RegisterPrimitive(G);
 
 				_cachePermutation = Enumerable.Range(byte.MinValue, max + 1).Select(v => Convert.ToByte(v)).ToArray();
 

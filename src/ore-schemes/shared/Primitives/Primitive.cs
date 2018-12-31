@@ -4,7 +4,7 @@ namespace ORESchemes.Shared.Primitives
 {
 	public enum Primitive
 	{
-		AES, PRF, Symmetric, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal, ORAMPath, ORAMLevel
+		AES, PRF, Symmetric, PRG, Hash, LFPRF, PRP, HGSampler, UniformSampler, BinomialSampler, PPH, TreeTraversal, ORAMPath, ORAMLevel, TSet
 	}
 
 	public delegate void PrimitiveUsageEventHandler(Primitive primitive, bool impure);
@@ -33,6 +33,17 @@ namespace ORESchemes.Shared.Primitives
 			{
 				handler(primitive, impure);
 			}
+		}
+		
+		/// <summary>
+		/// Hooks up the event handler to proxy primitive events through this instance
+		/// </summary>
+		/// <param name="primitive">The child primitive to proxy from</param>
+		protected void RegisterPrimitive(IPrimitive primitive)
+		{
+			primitive.PrimitiveUsed += new PrimitiveUsageEventHandler(
+				(prim, impure) => OnUse(prim, true)
+			);
 		}
 	}
 

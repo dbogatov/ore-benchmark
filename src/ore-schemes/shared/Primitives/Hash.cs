@@ -8,6 +8,11 @@ namespace ORESchemes.Shared.Primitives.Hash
 		protected override IHash CreatePrimitive(byte[] entropy) => new SHA256();
 	}
 
+	public class Hash512Factory : AbsPrimitiveFactory<IHash>
+	{
+		protected override IHash CreatePrimitive(byte[] entropy) => new SHA512();
+	}
+
 	public interface IHash : IPrimitive
 	{
 		/// <summary>
@@ -34,9 +39,7 @@ namespace ORESchemes.Shared.Primitives.Hash
 		{
 			F = new PRFFactory().GetPrimitive();
 
-			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) => base.OnUse(prim, true)
-			);
+			RegisterPrimitive(F);
 		}
 
 		public abstract byte[] ComputeHash(byte[] input);
@@ -51,6 +54,16 @@ namespace ORESchemes.Shared.Primitives.Hash
 			OnUse(Primitive.Hash);
 
 			return new SHA256Managed().ComputeHash(input);
+		}
+	}
+
+	public class SHA512 : AbsHash
+	{
+		public override byte[] ComputeHash(byte[] input)
+		{
+			OnUse(Primitive.Hash);
+
+			return new SHA512Managed().ComputeHash(input);
 		}
 	}
 }

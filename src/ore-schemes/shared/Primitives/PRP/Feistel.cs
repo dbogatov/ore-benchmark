@@ -29,9 +29,7 @@ namespace ORESchemes.Shared.Primitives.PRP
 			Rounds = rounds;
 			F = new PRFFactory().GetPrimitive();
 
-			F.PrimitiveUsed += new PrimitiveUsageEventHandler(
-				(prim, impure) => base.OnUse(prim, true)
-			);
+			RegisterPrimitive(F);
 		}
 
 		public override BitArray InversePRP(BitArray input, byte[] key, int? bits = null)
