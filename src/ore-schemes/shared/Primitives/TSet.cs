@@ -35,14 +35,15 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 	public class Record
 	{
-		public BitArray Label { get; set; } // 128 bit
-		public BitArray Value { get; set; } // 129 bit
+		public BitArray Label { get; set; } // ALPHA bit
+		public BitArray Value { get; set; } // ALPHA+1 bit
 	}
 
 	public class TSetStructure
 	{
 		public Record[][] Set { get; set; }
 		public int B { get; set; }
+		public int alpha { get; set; }
 	}
 
 	/// <summary>
@@ -120,7 +121,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 			while (Beta)
 			{
 				// Set (b, L, K) <- H(F(stag, i)) and retrieve an array B <- TSet[b]
-				(var b, var L, var K) = DecomposeFromHash(stag, i, TSet.B);
+				(var b, var L, var K) = DecomposeFromHash(stag, i, TSet.B, TSet.alpha);
 				var B = TSet.Set[b];
 
 				// Search for index j in {1, ..., S} s.t. B[j].label = L.
@@ -143,8 +144,8 @@ namespace ORESchemes.Shared.Primitives.TSet
 				var v = B[jFound].Value.Xor(K);
 				Beta = v[0];
 
-				var s = new BitArray(Enumerable.Repeat(false, 128).ToArray());
-				for (int j = 1; j < 128 + 1; j++)
+				var s = new BitArray(Enumerable.Repeat(false, TSet.alpha).ToArray());
+				for (int j = 1; j < TSet.alpha + 1; j++)
 				{
 					s[j - 1] = v[j];
 				}
@@ -161,6 +162,14 @@ namespace ORESchemes.Shared.Primitives.TSet
 		public (TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T)
 		{
 			OnUse(Primitive.TSet);
+
+			// Extract ALPHA
+			var alpha = 0;
+			if (T.Count() > 0)
+			{
+				var word = T.FirstOrDefault(a => a.Value.Length > 0);
+				alpha = word.Value[0].Length;
+			}
 
 			while (true)
 			{
@@ -206,8 +215,16 @@ namespace ORESchemes.Shared.Primitives.TSet
 						{
 							var si = t[i];
 
+							if (t[i].Length != alpha)
+							{
+								throw new ArgumentException($@"
+									All bitstrings must be of same length.
+									In word {w} string {i} is of length {t[i].Length}, while ALPHA is set to {alpha}.
+								");
+							}
+
 							// Set (b, L, K) <- H(F(stag, i))
-							(var b, var L, var K) = DecomposeFromHash(stag, i, B);
+							(var b, var L, var K) = DecomposeFromHash(stag, i, B, alpha);
 
 							// If Free[b] is an empty set, restart TSetSetup(T) with fresh key Kt .
 							var size = Free[b].Count();
@@ -234,7 +251,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 					}
 
 					// Output (TSet, Kt).
-					return (new TSetStructure { Set = TSet, B = B }, Kt);
+					return (new TSetStructure { Set = TSet, B = B, alpha = alpha }, Kt);
 				}
 				catch (OverflowException)
 				{
@@ -251,12 +268,19 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// <param name="stag">A token</param>
 		/// <param name="i">An index</param>
 		/// <param name="B">A global B value chosen in Setup</param>
-		/// <returns>A tuple of: number from 0 to B exclusive, 128-bits string and 129-bits string</returns>
-		private (int, BitArray, BitArray) DecomposeFromHash(byte[] stag, int i, int B)
+		/// <returns>A tuple of: number from 0 to B exclusive, ALPHA-bits string and (ALPHA+1)-bits string</returns>
+		private (int, BitArray, BitArray) DecomposeFromHash(byte[] stag, int i, int B, int alpha)
 		{
 			var input = stag.Concat(BitConverter.GetBytes(i)).ToArray();
 
 			var output = H.ComputeHash(input);
+
+			while (output.Length * 8 < sizeof(int) * 8 + alpha + alpha + 1)
+			{
+				var upper = output.Skip(output.Length - 512 / 8 / 2).Take(512 / 8 / 2).ToArray();
+				output = output.Take(output.Length - 512 / 8 / 2).ToArray();
+				output = output.Concat(H.ComputeHash(upper)).ToArray();
+			}
 
 			var bits = new BitArray(output);
 
@@ -266,16 +290,16 @@ namespace ORESchemes.Shared.Primitives.TSet
 				bBits[j] = bits[j];
 			}
 
-			var LBits = new BitArray(Enumerable.Repeat(false, 128).ToArray());
-			for (int j = sizeof(int) * 8; j < sizeof(int) * 8 + 128; j++)
+			var LBits = new BitArray(Enumerable.Repeat(false, alpha).ToArray());
+			for (int j = sizeof(int) * 8; j < sizeof(int) * 8 + alpha; j++)
 			{
 				LBits[j - sizeof(int) * 8] = bits[j];
 			}
 
-			var KBits = new BitArray(Enumerable.Repeat(false, 129).ToArray());
-			for (int j = sizeof(int) * 8 + 128; j < sizeof(int) * 8 + 128 + 129; j++)
+			var KBits = new BitArray(Enumerable.Repeat(false, alpha + 1).ToArray());
+			for (int j = sizeof(int) * 8 + alpha; j < sizeof(int) * 8 + alpha + alpha + 1; j++)
 			{
-				KBits[j - (sizeof(int) * 8 + 128)] = bits[j];
+				KBits[j - (sizeof(int) * 8 + alpha)] = bits[j];
 			}
 
 			// https://stackoverflow.com/a/5283199/1644554

@@ -11,26 +11,17 @@ using ORESchemes.Shared.Primitives.TSet;
 
 namespace CJJKRS
 {
-	public interface IWord : IByteable { }
+	public abstract class Wrapper<T>
+	{
+		public T Value { get; set; }
+	}
+
+	public interface IWord : global::ORESchemes.Shared.Primitives.TSet.IWord { }
 	public interface IIndex : IByteable { }
 
-	// public class Key
-	// {
-	// 	public byte[] Ks { get; set; }
-	// 	public byte[] Kt { get; set; }
-	// }
-
-	public class Database : TSetStructure { }
-
-	public class Token
-	{
-		public byte[] STag { get; set; }
-	}
-
-	public class EncryptedIndices
-	{
-		public BitArray[] Indices { get; set; }
-	}
+	public class Database : Wrapper<TSetStructure> { }
+	public class Token : Wrapper<byte[]> { }
+	public class EncryptedIndices : Wrapper<BitArray[]> { }
 
 	// TODO events
 	public class Client
@@ -65,7 +56,7 @@ namespace CJJKRS
 				var Ke = F.PRF(_ks, word.ToBytes());
 
 
-				for (int i = indices.Length; i > 0; i--)
+				for (int i = indices.Length - 1; i >= 0; i--)
 				{
 					// TODO PRP event
 					int j = G.Next(0, i);
@@ -77,27 +68,27 @@ namespace CJJKRS
 
 				var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
 
-				TInput[(ORESchemes.Shared.Primitives.TSet.IWord)word] = t;
+				TInput[word] = t;
 			}
 
 			(var TSet, var Kt) = T.Setup(TInput);
 
 			_kt = Kt;
 
-			return (Database)TSet;
+			return new Database { Value = TSet };
 		}
 
 		public Token Trapdoor(IWord keyword)
 		{
-			return new Token { STag = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
+			return new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
 		}
 
 		public IIndex[] Decrypt(EncryptedIndices encrypted, IWord keyword, Func<byte[], IIndex> decode)
 		{
 			var Ke = F.PRF(_ks, keyword.ToBytes());
 
-			var decrypted = encrypted.Indices.Select(enc => decode(E.Decrypt(Ke, enc.ToBytes()))).ToArray();
-			
+			var decrypted = encrypted.Value.Select(enc => decode(E.Decrypt(Ke, enc.ToBytes()))).ToArray();
+
 			return decrypted;
 		}
 	}
@@ -116,7 +107,7 @@ namespace CJJKRS
 
 		public EncryptedIndices Search(Token token)
 		{
-			return new EncryptedIndices { Indices = T.Retrive(_database, token.STag) };
+			return new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
 		}
 	}
 }
