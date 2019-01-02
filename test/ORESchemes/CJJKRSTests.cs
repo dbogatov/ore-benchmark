@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CJJKRS;
 using Xunit;
@@ -34,18 +35,9 @@ namespace Test.ORESchemes
 
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
-
-		public CJJKRS()
-		{
-			byte[] entropy = new byte[128 / 8];
-
-			_client = new Client(entropy);
-		}
-
-		[Fact]
-		public void NoExceptions()
-		{
-			var input = new Dictionary<IWord, IIndex[]> {
+		private readonly int RUNS = 50;
+		private readonly Dictionary<IWord, IIndex[]> _input =
+			new Dictionary<IWord, IIndex[]> {
 				{
 					new StringWord { Value = "Dmytro" },
 					new NumericIndex[] {
@@ -62,15 +54,107 @@ namespace Test.ORESchemes
 				}
 			};
 
-			var database = _client.Setup(input);
+		public CJJKRS()
+		{
+			byte[] entropy = new byte[128 / 8];
+
+			_client = new Client(entropy);
+		}
+
+		public IIndex[] PrimitiveRun(string word)
+		{
+			var database = _client.Setup(_input);
 
 			_server = new Server(database);
 
 			// Search protocol
-			var keyword = new StringWord { Value = "Dmytro" };
+			var keyword = new StringWord { Value = word };
 			var token = _client.Trapdoor(keyword);
 			var encrypted = _server.Search(token);
-			var result = _client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			return _client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+		}
+
+		private bool OutputAsExpected(int[] expected, IIndex[] actual)
+		{
+			if (expected.Count() != actual.Count())
+			{
+				return false;
+			}
+
+			var expectedSorted = expected.OrderBy(e => e);
+			var actualSorted = actual.Select(e => ((NumericIndex)e).Value).OrderBy(e => e);
+
+			return
+				expectedSorted
+					.Zip(actualSorted, (a, b) => a == b)
+					.All(e => e);
+		}
+
+		[Fact]
+		public void NoExceptions() => PrimitiveRun("Dmytro");
+
+		[Fact]
+		public void PrimitiveCorrectness()
+		{
+			var result = PrimitiveRun("Dmytro");
+
+			Assert.True(OutputAsExpected(new int[] { 21, 05 }, result));
+		}
+
+		[Fact]
+		public void Correctness()
+		{
+			string randomString(int length)
+			{
+				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+				return new string(
+					Enumerable
+						.Repeat(chars, length)
+						.Select(s => s[G.Next(s.Length)])
+						.ToArray()
+				);
+			}
+
+			for (int i = 0; i < RUNS; i++)
+			{
+				var input = Enumerable
+					.Range(1, RUNS * 10)
+					.ToDictionary(
+						_ => (IWord)new StringWord { Value = randomString(G.Next(5, 16)) },
+						_ => Enumerable
+							.Range(1, RUNS / 10)
+							.Select(__ => (IIndex)new NumericIndex { Value = G.Next() })
+							.ToArray()
+					);
+
+				var database = _client.Setup(input);
+
+				_server = new Server(database);
+
+				foreach (var keywordIndices in input)
+				{
+					var keyword = keywordIndices.Key;
+
+					var token = _client.Trapdoor(keyword);
+
+					var encrypted = _server.Search(token);
+
+					var result = _client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+
+					Assert.True(OutputAsExpected(
+						input[keywordIndices.Key].Cast<NumericIndex>().Select(e => e.Value).ToArray(),
+						result
+					));
+				}
+			}
+		}
+		
+		[Fact]
+		public void MalformedKeyword()
+		{
+			Assert.Throws<InvalidOperationException>(
+				() => PrimitiveRun("Malformed")
+			);
 		}
 	}
 }

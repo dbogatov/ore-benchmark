@@ -55,7 +55,6 @@ namespace CJJKRS
 
 				var Ke = F.PRF(_ks, word.ToBytes());
 
-
 				for (int i = indices.Length - 1; i >= 0; i--)
 				{
 					// TODO PRP event
