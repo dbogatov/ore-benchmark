@@ -8,6 +8,11 @@ namespace Test.ORESchemes.Primitives
 {
 	public static class EventsTestsShared
 	{
+		public class Reference<T>
+		{
+			public T Value { get; set; }
+		}
+		
 		/// <summary>
 		/// Runs primitive events test for given parameters
 		/// </summary>

@@ -37,6 +37,11 @@ namespace ORESchemes.Shared.Primitives.TSet
 	{
 		public BitArray Label { get; set; } // ALPHA bit
 		public BitArray Value { get; set; } // ALPHA+1 bit
+
+		public int Size
+		{
+			get => Label.Length + Value.Length;
+		}
 	}
 
 	public class TSetStructure
@@ -47,7 +52,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 		public int Size
 		{
-			get => Set.Sum(s => s.Sum(r => r.Label.Length + r.Value.Length));
+			get => Set?.Sum(s => s?.Sum(r => r?.Label.Length + r?.Value.Length)) ?? 0;
 		}
 	}
 
@@ -181,10 +186,23 @@ namespace ORESchemes.Shared.Primitives.TSet
 			{
 				var totalBits = TSet.Size;
 				var totalPages = (totalBits + PageSize.Value - 1) / PageSize.Value;
+				var pagesPerAccess = 1;
+				if (TSet.Set.Length > 0)
+				{
+					var record = TSet.Set[0].FirstOrDefault();
+					if (record != null)
+					{
+						pagesPerAccess = (PageSize.Value + record.Size - 1) / record.Size;
+					}
+				}
 
 				for (int j = 0; j < i; j++)
 				{
-					OnVisit(_G.Next(1, totalPages));
+					var hash = _G.Next(1, totalPages);
+					for (int k = 0; k < pagesPerAccess; k++)
+					{
+						OnVisit((hash + pagesPerAccess) % totalPages);
+					}
 				}
 			}
 

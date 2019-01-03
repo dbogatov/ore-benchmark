@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CJJKRS;
+using ORESchemes.Shared;
+using ORESchemes.Shared.Primitives;
 using Xunit;
+using static Test.ORESchemes.Primitives.EventsTestsShared;
 using Scheme = CJJKRS.CJJKRS<Test.ORESchemes.CJJKRS.StringWord, Test.ORESchemes.CJJKRS.NumericIndex>;
 
 namespace Test.ORESchemes
@@ -156,6 +159,116 @@ namespace Test.ORESchemes
 			Assert.Throws<InvalidOperationException>(
 				() => PrimitiveRun("Malformed")
 			);
+		}
+
+		[Fact]
+		public void PrimitiveEvents()
+		{
+			var expectedTotal =
+				new Dictionary<Primitive, int> {
+					{ Primitive.TSet, 3 },
+					{ Primitive.PRG, 9 },
+					{ Primitive.PRF, 6 },
+					{ Primitive.AES, 21 },
+					{ Primitive.Hash, 12 },
+					{ Primitive.PRP, 2 },
+					{ Primitive.Symmetric, 6 }
+				};
+			var expectedPure =
+				new Dictionary<Primitive, int> {
+					{ Primitive.TSet, 3 },
+					{ Primitive.PRF, 3 },
+					{ Primitive.Symmetric, 6 },
+					{ Primitive.PRP, 2 }
+				};
+
+			var actualTotal = new Dictionary<Primitive, int>();
+			var actualPure = new Dictionary<Primitive, int>();
+
+			foreach (var primitive in Enum.GetValues(typeof(Primitive)).Cast<Primitive>())
+			{
+				actualTotal.Add(primitive, 0);
+				actualPure.Add(primitive, 0);
+
+				if (!expectedTotal.ContainsKey(primitive))
+				{
+					expectedTotal.Add(primitive, 0);
+				}
+
+				if (!expectedPure.ContainsKey(primitive))
+				{
+					expectedPure.Add(primitive, 0);
+				}
+			}
+
+			var handler = new PrimitiveUsageEventHandler((p, impure) =>
+			{
+				actualTotal[p]++;
+				if (!impure)
+				{
+					actualPure[p]++;
+				}
+			});
+			_client.PrimitiveUsed += handler;
+
+			var database = _client.Setup(_input);
+			_server = new Scheme.Server(database);
+
+			_server.PrimitiveUsed += handler;
+
+			// Search protocol
+			var keyword = new StringWord { Value = "Dmytro" };
+			var token = _client.Trapdoor(keyword);
+			var encrypted = _server.Search(token);
+			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+
+			Assert.Equal(expectedTotal, actualTotal);
+			Assert.Equal(expectedPure, actualPure);
+		}
+
+		[Fact]
+		public void NodeVisitedEvents()
+		{
+			var count = new Reference<int>();
+			count.Value = 0;
+
+			var database = _client.Setup(_input);
+			_server = new Scheme.Server(database);
+			_server.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
+			_server.PageSize = 600;
+
+			var keyword = new StringWord { Value = "Dmytro" };
+			var token = _client.Trapdoor(keyword);
+			var encrypted = _server.Search(token);
+			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+
+			Assert.NotEqual(0, count.Value);
+		}
+
+		[Fact]
+		public void NodeVisitedEventsNoPageSize()
+		{
+			var triggered = new Reference<bool>();
+			triggered.Value = false;
+
+			var database = _client.Setup(_input);
+			_server = new Scheme.Server(database);
+			_server.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
+
+			var keyword = new StringWord { Value = "Dmytro" };
+			var token = _client.Trapdoor(keyword);
+			var encrypted = _server.Search(token);
+			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+
+			Assert.False(triggered.Value);
+		}
+
+		[Fact]
+		public void DatabaseSize()
+		{
+			var database = _client.Setup(_input);
+
+			Assert.InRange(database.Size, 512 * 4, 512 * 5);
 		}
 	}
 }

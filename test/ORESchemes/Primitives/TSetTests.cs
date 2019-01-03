@@ -10,6 +10,7 @@ using Xunit;
 using System.Numerics;
 using ORESchemes.Shared.Primitives;
 using ORESchemes.Shared.Primitives.Symmetric;
+using static Test.ORESchemes.Primitives.EventsTestsShared;
 
 namespace Test.ORESchemes.Primitives.TSet
 {
@@ -222,7 +223,7 @@ namespace Test.ORESchemes.Primitives.TSet
 		}
 
 		[Fact]
-		public void Events()
+		public void PrimitiveEvents()
 		{
 			EventsTestsShared.Events<ITSet>(
 				T,
@@ -245,6 +246,39 @@ namespace Test.ORESchemes.Primitives.TSet
 					{ Primitive.TSet, 3 }
 				}
 			);
+		}
+		
+		[Fact]
+		public void NodeVisitedEventsForNoPageSize()
+		{
+			var triggered = new Reference<bool>();
+			triggered.Value = false;
+
+			T.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
+
+			(var TSet, var key) = T.Setup(_sampleInput);
+			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
+
+			T.Retrive(TSet, stag);
+
+			Assert.False(triggered.Value);
+		}
+
+		[Fact]
+		public void NodeVisitedEvents()
+		{
+			var count = new Reference<int>();
+			count.Value = 0;
+
+			T.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
+			T.PageSize = _alpha * 3;
+
+			(var TSet, var key) = T.Setup(_sampleInput);
+			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
+
+			T.Retrive(TSet, stag);
+
+			Assert.NotEqual(0, count.Value);
 		}
 	}
 }

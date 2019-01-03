@@ -47,12 +47,13 @@ namespace CJJKRS
 				E = new SymmetricFactory().GetPrimitive();
 				T = new TSetFactory(G.GetBytes(128 / 8)).GetPrimitive();
 
-				SubscribePrimitive(G);
+				_ks = G.GetBytes(128 / 8);
+				OnPrimitive(Primitive.PRG);
+
+				G.PrimitiveUsed += new PrimitiveUsageEventHandler((prim, impure) => OnPrimitive(prim, true));
+				T.PrimitiveUsed += new PrimitiveUsageEventHandler((prim, impure) => OnPrimitive(prim, prim != Primitive.TSet));
 				SubscribePrimitive(F);
 				SubscribePrimitive(E);
-				SubscribePrimitive(T);
-
-				_ks = G.GetBytes(128 / 8);
 			}
 
 			public Database Setup(Dictionary<W, I[]> input)
@@ -105,6 +106,8 @@ namespace CJJKRS
 		{
 			private readonly Database _database;
 			private readonly ITSet T;
+
+			public int? PageSize { set { T.PageSize = value; } }
 
 			public Server(Database database)
 			{
