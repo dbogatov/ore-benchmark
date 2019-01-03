@@ -85,7 +85,7 @@ namespace Test.Web.ControllerTests
 		[Theory]
 		[InlineData(true)]
 		[InlineData(false)]
-		public async Task IndexTooLongSet(bool dataVsQuery)
+		public void IndexTooLongSet(bool dataVsQuery)
 		{
 			// Arrange
 			var goodInput = new SimulationViewModel();

@@ -223,6 +223,15 @@ namespace Test.ORESchemes.Primitives.TSet
 		}
 
 		[Fact]
+		public void UnequalStrings()
+		{
+			_sampleInput.First().Value[0] = new BitArray(_alpha + 5);
+			Assert.Throws<ArgumentException>(
+				() => RunPipeline(_sampleInput, new StringWord { Value = "Dmytro" })
+			);
+		}
+
+		[Fact]
 		public void PrimitiveEvents()
 		{
 			EventsTestsShared.Events<ITSet>(
@@ -247,7 +256,7 @@ namespace Test.ORESchemes.Primitives.TSet
 				}
 			);
 		}
-		
+
 		[Fact]
 		public void NodeVisitedEventsForNoPageSize()
 		{

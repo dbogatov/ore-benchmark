@@ -187,12 +187,22 @@ namespace ORESchemes.Shared.Primitives.TSet
 				var totalBits = TSet.Size;
 				var totalPages = (totalBits + PageSize.Value - 1) / PageSize.Value;
 				var pagesPerAccess = 1;
-				if (TSet.Set.Length > 0)
+				var set = false;
+
+				foreach (var records in TSet.Set)
 				{
-					var record = TSet.Set[0].FirstOrDefault();
-					if (record != null)
+					foreach (var record in records)
 					{
-						pagesPerAccess = (PageSize.Value + record.Size - 1) / record.Size;
+						if (record != null)
+						{
+							pagesPerAccess = (PageSize.Value + record.Size - 1) / record.Size;
+							set = true;
+							break;
+						}
+					}
+					if (set)
+					{
+						break;
 					}
 				}
 
