@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CJJKRS;
+using ORESchemes.CJJKRS;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
 using Xunit;
 using static Test.ORESchemes.Primitives.EventsTestsShared;
-using Scheme = CJJKRS.CJJKRS<Test.ORESchemes.CJJKRS.StringWord, Test.ORESchemes.CJJKRS.NumericIndex>;
+using Scheme = ORESchemes.CJJKRS.CJJKRS<Test.ORESchemes.CJJKRS.StringWord, Test.ORESchemes.CJJKRS.NumericIndex>;
 
 namespace Test.ORESchemes
 {

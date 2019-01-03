@@ -9,7 +9,7 @@ using ORESchemes.Shared.Primitives.PRG;
 using ORESchemes.Shared.Primitives.Symmetric;
 using ORESchemes.Shared.Primitives.TSet;
 
-namespace CJJKRS
+namespace ORESchemes.CJJKRS
 {
 	/// <summary>
 	/// A byteable keyword for SSE
