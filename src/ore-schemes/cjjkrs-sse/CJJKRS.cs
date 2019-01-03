@@ -14,7 +14,7 @@ namespace CJJKRS
 	public interface IWord : global::ORESchemes.Shared.Primitives.TSet.IWord { }
 	public interface IIndex : IByteable { }
 
-	public static class CJJKRS<W, I> 
+	public static class CJJKRS<W, I>
 		where W : IWord
 		where I : IIndex
 	{
@@ -23,12 +23,14 @@ namespace CJJKRS
 			public T Value { get; set; }
 		}
 
-		public class Database : Wrapper<TSetStructure> { }
 		public class Token : Wrapper<byte[]> { }
 		public class EncryptedIndices : Wrapper<BitArray[]> { }
+		public class Database : Wrapper<TSetStructure>
+		{
+			public int Size { get => ((TSetStructure)Value).Size; }
+		}
 
-		// TODO events
-		public class Client
+		public class Client : EventHandlers
 		{
 			private readonly IPRG G;
 			private readonly IPRF F;
@@ -44,6 +46,11 @@ namespace CJJKRS
 				F = new PRFFactory().GetPrimitive();
 				E = new SymmetricFactory().GetPrimitive();
 				T = new TSetFactory(G.GetBytes(128 / 8)).GetPrimitive();
+
+				SubscribePrimitive(G);
+				SubscribePrimitive(F);
+				SubscribePrimitive(E);
+				SubscribePrimitive(T);
 
 				_ks = G.GetBytes(128 / 8);
 			}
@@ -61,13 +68,13 @@ namespace CJJKRS
 
 					for (int i = indices.Length - 1; i >= 0; i--)
 					{
-						// TODO PRP event
 						int j = G.Next(0, i);
 
 						I temp = indices[i];
 						indices[i] = indices[j];
 						indices[j] = temp;
 					}
+					OnPrimitive(Primitive.PRP);
 
 					var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
 
@@ -82,9 +89,7 @@ namespace CJJKRS
 			}
 
 			public Token Trapdoor(W keyword)
-			{
-				return new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
-			}
+				=> new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
 
 			public I[] Decrypt(EncryptedIndices encrypted, W keyword, Func<byte[], I> decode)
 			{
@@ -96,7 +101,7 @@ namespace CJJKRS
 			}
 		}
 
-		public class Server
+		public class Server : EventHandlers
 		{
 			private readonly Database _database;
 			private readonly ITSet T;
@@ -106,12 +111,14 @@ namespace CJJKRS
 				_database = database;
 
 				T = new TSetFactory().GetPrimitive();
+
+				SubscribePrimitive(T);
+
+				T.NodeVisited += new NodeVisitedEventHandler(OnVisit);
 			}
 
 			public EncryptedIndices Search(Token token)
-			{
-				return new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
-			}
+				=> new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
 		}
 
 	}

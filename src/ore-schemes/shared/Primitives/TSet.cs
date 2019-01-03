@@ -44,6 +44,11 @@ namespace ORESchemes.Shared.Primitives.TSet
 		public Record[][] Set { get; set; }
 		public int B { get; set; }
 		public int alpha { get; set; }
+
+		public int Size
+		{
+			get => Set.Sum(s => s.Sum(r => r.Label.Length + r.Value.Length));
+		}
 	}
 
 	/// <summary>
@@ -75,23 +80,37 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// <param name="stag">A token generated with Setup</param>
 		/// <returns>A list of encrypted indices</returns>
 		BitArray[] Retrive(TSetStructure TSet, byte[] stag);
+
+		/// <summary>
+		/// Optional page size in bits.
+		/// If set, NodeVisited event will be emitted on Retrive.
+		/// </summary>
+		int? PageSize { get; set; }
+
+		event NodeVisitedEventHandler NodeVisited;
 	}
 
 	public class CashTSet : AbsPrimitive, ITSet
 	{
+		public virtual event NodeVisitedEventHandler NodeVisited;
+
 		/// <summary>
 		/// Thrown when overlow in a bucket occurs.
 		/// If so, Setup is restarted with a fresh key.
 		/// </summary>
 		private class OverflowException : Exception { }
 
-		private readonly IPRG G;
+		private readonly IPRG G; // unregistered internal generator
 		private readonly IPRF F;
 		private readonly IHash H;
+		private readonly IPRG _G;
+
+		public int? PageSize { get; set; }
 
 		public CashTSet(byte[] entropy = null)
 		{
 			G = new PRGFactory(entropy).GetPrimitive();
+			_G = new PRGFactory(entropy).GetPrimitive();
 			F = new PRFFactory().GetPrimitive();
 			H = new Hash512Factory().GetPrimitive();
 
@@ -153,6 +172,20 @@ namespace ORESchemes.Shared.Primitives.TSet
 				// Add string s to the list t and increment i.
 				t.Add(s);
 				i++;
+			}
+
+			// Be design, the algorithm randomizes uniformly the blocks and buckets
+			// where relevant records reside. Thus, it suffices to treat every record
+			// access as a uniformly I/O request
+			if (PageSize.HasValue)
+			{
+				var totalBits = TSet.Size;
+				var totalPages = (totalBits + PageSize.Value - 1) / PageSize.Value;
+
+				for (int j = 0; j < i; j++)
+				{
+					OnVisit(_G.Next(1, totalPages));
+				}
 			}
 
 			// Output t.
@@ -310,6 +343,15 @@ namespace ORESchemes.Shared.Primitives.TSet
 			b = Math.Abs(b % B);
 
 			return (b, LBits, KBits);
+		}
+
+		private void OnVisit(int hash)
+		{
+			var handler = NodeVisited;
+			if (handler != null)
+			{
+				handler(hash);
+			}
 		}
 	}
 }
