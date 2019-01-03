@@ -11,13 +11,29 @@ using ORESchemes.Shared.Primitives.TSet;
 
 namespace CJJKRS
 {
+	/// <summary>
+	/// A byteable keyword for SSE
+	/// </summary>
 	public interface IWord : global::ORESchemes.Shared.Primitives.TSet.IWord { }
+	/// <summary>
+	/// A byteable index for SSE
+	/// </summary>
 	public interface IIndex : IByteable { }
 
+	/// <summary>
+	/// A namespace wrapper that ensures that the same generic types are provided
+	/// to Client and Server
+	/// </summary>
+	/// <typeparam name="W">Word type</typeparam>
+	/// <typeparam name="I">Index type</typeparam>
 	public static class CJJKRS<W, I>
 		where W : IWord
 		where I : IIndex
 	{
+		/// <summary>
+		/// Convenience wrapper class to wrap around TSet types
+		/// </summary>
+		/// <typeparam name="T">Wrapped type</typeparam>
 		public abstract class Wrapper<T>
 		{
 			public T Value { get; set; }
@@ -56,6 +72,11 @@ namespace CJJKRS
 				SubscribePrimitive(E);
 			}
 
+			/// <summary>
+			/// EDBSetup(DB) routine from https://eprint.iacr.org/2013/169.pdf
+			/// </summary>
+			/// <param name="input">A keyword to indices map</param>
+			/// <returns>An SSE encrypted database</returns>
 			public Database Setup(Dictionary<W, I[]> input)
 			{
 				var TInput = new Dictionary<ORESchemes.Shared.Primitives.TSet.IWord, BitArray[]>();
@@ -89,9 +110,21 @@ namespace CJJKRS
 				return new Database { Value = TSet };
 			}
 
+			/// <summary>
+			/// A trapdoor function, a part from Search protocol in https://eprint.iacr.org/2013/169.pdf
+			/// </summary>
+			/// <param name="keyword">A keyword for which to generate token</param>
+			/// <returns>A token for server to search on</returns>
 			public Token Trapdoor(W keyword)
 				=> new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
 
+			/// <summary>
+			/// Decryption procedure, a part from Search protocol in https://eprint.iacr.org/2013/169.pdf
+			/// </summary>
+			/// <param name="encrypted">Encrypted indices returned by Server's search procedure</param>
+			/// <param name="keyword">A keyword for which the search protocol was run</param>
+			/// <param name="decode">A decoding routine that converts bytes representation of indices to user's type</param>
+			/// <returns>An array of (user's type) indices for given keyword</returns>
 			public I[] Decrypt(EncryptedIndices encrypted, W keyword, Func<byte[], I> decode)
 			{
 				var Ke = F.PRF(_ks, keyword.ToBytes());
@@ -107,6 +140,10 @@ namespace CJJKRS
 			private readonly Database _database;
 			private readonly ITSet T;
 
+			/// <summary>
+			/// I/O page size in bits.
+			/// If set, NodeVisited event will be fired.
+			/// </summary>
 			public int? PageSize { set { T.PageSize = value; } }
 
 			public Server(Database database)
@@ -120,6 +157,11 @@ namespace CJJKRS
 				T.NodeVisited += new NodeVisitedEventHandler(OnVisit);
 			}
 
+			/// <summary>
+			/// Server's part of Search protocol in https://eprint.iacr.org/2013/169.pdf
+			/// </summary>
+			/// <param name="token">A client-generated search token</param>
+			/// <returns>An array of encrypted indices</returns>
 			public EncryptedIndices Search(Token token)
 				=> new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
 		}

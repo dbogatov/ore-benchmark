@@ -211,6 +211,9 @@ namespace ORESchemes.Shared
 		where K : IGetSize
 	{ }
 
+	/// <summary>
+	/// A class that encapsulate event handling functionality
+	/// </summary>
 	public abstract class EventHandlers
 	{
 		public event SchemeOperationEventHandler OperationOcurred;
@@ -219,6 +222,10 @@ namespace ORESchemes.Shared
 		
 		public event NodeVisitedEventHandler NodeVisited;
 
+		/// <summary>
+		/// Emits the event that the construction has made an I/O request
+		/// </summary>
+		/// <param name="hash">An identifier of I/O page (for caching puposes)</param>
 		public void OnVisit(int hash)
 		{
 			var handler = NodeVisited;

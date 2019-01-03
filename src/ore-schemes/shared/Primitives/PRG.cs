@@ -158,7 +158,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 					diff = (uint)max - (uint)min;
 				}
 				
-				if (diff == 0) // TODO test
+				if (diff == 0)
 				{
 					return min;
 				}
@@ -233,7 +233,7 @@ namespace ORESchemes.Shared.Primitives.PRG
 					diff = (ulong)max - (ulong)min;
 				}
 				
-				if (diff == 0) // TODO test
+				if (diff == 0)
 				{
 					return min;
 				}

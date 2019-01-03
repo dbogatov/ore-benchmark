@@ -50,6 +50,9 @@ namespace ORESchemes.Shared.Primitives.TSet
 		public int B { get; set; }
 		public int alpha { get; set; }
 
+		/// <summary>
+		/// Set's size in bits (not counting empty records)
+		/// </summary>
 		public int Size
 		{
 			get => Set?.Sum(s => s?.Sum(r => r?.Label.Length + r?.Value.Length)) ?? 0;
@@ -105,10 +108,10 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// </summary>
 		private class OverflowException : Exception { }
 
-		private readonly IPRG G; // unregistered internal generator
+		private readonly IPRG G;
 		private readonly IPRF F;
 		private readonly IHash H;
-		private readonly IPRG _G;
+		private readonly IPRG _G; // unregistered internal generator
 
 		public int? PageSize { get; set; }
 
@@ -329,6 +332,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// <param name="stag">A token</param>
 		/// <param name="i">An index</param>
 		/// <param name="B">A global B value chosen in Setup</param>
+		/// <param name="alpha">A security parameter</param>
 		/// <returns>A tuple of: number from 0 to B exclusive, ALPHA-bits string and (ALPHA+1)-bits string</returns>
 		private (int, BitArray, BitArray) DecomposeFromHash(byte[] stag, int i, int B, int alpha)
 		{
@@ -373,6 +377,10 @@ namespace ORESchemes.Shared.Primitives.TSet
 			return (b, LBits, KBits);
 		}
 
+		/// <summary>
+		/// NodeVisited event handler
+		/// </summary>
+		/// <param name="hash">An identifier of an accessed I/O page</param>
 		private void OnVisit(int hash)
 		{
 			var handler = NodeVisited;
