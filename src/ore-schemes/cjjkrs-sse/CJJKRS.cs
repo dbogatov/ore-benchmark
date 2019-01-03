@@ -11,102 +11,108 @@ using ORESchemes.Shared.Primitives.TSet;
 
 namespace CJJKRS
 {
-	public abstract class Wrapper<T>
-	{
-		public T Value { get; set; }
-	}
-
 	public interface IWord : global::ORESchemes.Shared.Primitives.TSet.IWord { }
 	public interface IIndex : IByteable { }
 
-	public class Database : Wrapper<TSetStructure> { }
-	public class Token : Wrapper<byte[]> { }
-	public class EncryptedIndices : Wrapper<BitArray[]> { }
-
-	// TODO events
-	public class Client
+	public static class CJJKRS<W, I> 
+		where W : IWord
+		where I : IIndex
 	{
-		private readonly IPRG G;
-		private readonly IPRF F;
-		private readonly ISymmetric E;
-		private readonly ITSet T;
-
-		private readonly byte[] _ks;
-		private byte[] _kt;
-
-		public Client(byte[] entropy = null)
+		public abstract class Wrapper<T>
 		{
-			G = new PRGFactory(entropy).GetPrimitive();
-			F = new PRFFactory().GetPrimitive();
-			E = new SymmetricFactory().GetPrimitive();
-			T = new TSetFactory(G.GetBytes(128 / 8)).GetPrimitive();
-
-			_ks = G.GetBytes(128 / 8);
+			public T Value { get; set; }
 		}
 
-		public Database Setup(Dictionary<IWord, IIndex[]> input)
+		public class Database : Wrapper<TSetStructure> { }
+		public class Token : Wrapper<byte[]> { }
+		public class EncryptedIndices : Wrapper<BitArray[]> { }
+
+		// TODO events
+		public class Client
 		{
-			var TInput = new Dictionary<ORESchemes.Shared.Primitives.TSet.IWord, BitArray[]>();
+			private readonly IPRG G;
+			private readonly IPRF F;
+			private readonly ISymmetric E;
+			private readonly ITSet T;
 
-			foreach (var wordIndices in input)
+			private readonly byte[] _ks;
+			private byte[] _kt;
+
+			public Client(byte[] entropy = null)
 			{
-				var word = wordIndices.Key;
-				var indices = wordIndices.Value;
+				G = new PRGFactory(entropy).GetPrimitive();
+				F = new PRFFactory().GetPrimitive();
+				E = new SymmetricFactory().GetPrimitive();
+				T = new TSetFactory(G.GetBytes(128 / 8)).GetPrimitive();
 
-				var Ke = F.PRF(_ks, word.ToBytes());
-
-				for (int i = indices.Length - 1; i >= 0; i--)
-				{
-					// TODO PRP event
-					int j = G.Next(0, i);
-
-					IIndex temp = indices[i];
-					indices[i] = indices[j];
-					indices[j] = temp;
-				}
-
-				var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
-
-				TInput[word] = t;
+				_ks = G.GetBytes(128 / 8);
 			}
 
-			(var TSet, var Kt) = T.Setup(TInput);
+			public Database Setup(Dictionary<W, I[]> input)
+			{
+				var TInput = new Dictionary<ORESchemes.Shared.Primitives.TSet.IWord, BitArray[]>();
 
-			_kt = Kt;
+				foreach (var wordIndices in input)
+				{
+					var word = wordIndices.Key;
+					var indices = wordIndices.Value;
 
-			return new Database { Value = TSet };
+					var Ke = F.PRF(_ks, word.ToBytes());
+
+					for (int i = indices.Length - 1; i >= 0; i--)
+					{
+						// TODO PRP event
+						int j = G.Next(0, i);
+
+						I temp = indices[i];
+						indices[i] = indices[j];
+						indices[j] = temp;
+					}
+
+					var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
+
+					TInput[word] = t;
+				}
+
+				(var TSet, var Kt) = T.Setup(TInput);
+
+				_kt = Kt;
+
+				return new Database { Value = TSet };
+			}
+
+			public Token Trapdoor(W keyword)
+			{
+				return new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
+			}
+
+			public I[] Decrypt(EncryptedIndices encrypted, W keyword, Func<byte[], I> decode)
+			{
+				var Ke = F.PRF(_ks, keyword.ToBytes());
+
+				var decrypted = encrypted.Value.Select(enc => decode(E.Decrypt(Ke, enc.ToBytes()))).ToArray();
+
+				return decrypted;
+			}
 		}
 
-		public Token Trapdoor(IWord keyword)
+		public class Server
 		{
-			return new Token { Value = T.GetTag(_kt, (ORESchemes.Shared.Primitives.TSet.IWord)keyword) };
+			private readonly Database _database;
+			private readonly ITSet T;
+
+			public Server(Database database)
+			{
+				_database = database;
+
+				T = new TSetFactory().GetPrimitive();
+			}
+
+			public EncryptedIndices Search(Token token)
+			{
+				return new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
+			}
 		}
 
-		public IIndex[] Decrypt(EncryptedIndices encrypted, IWord keyword, Func<byte[], IIndex> decode)
-		{
-			var Ke = F.PRF(_ks, keyword.ToBytes());
-
-			var decrypted = encrypted.Value.Select(enc => decode(E.Decrypt(Ke, enc.ToBytes()))).ToArray();
-
-			return decrypted;
-		}
-	}
-
-	public class Server
-	{
-		private readonly Database _database;
-		private readonly ITSet T;
-
-		public Server(Database database)
-		{
-			_database = database;
-
-			T = new TSetFactory().GetPrimitive();
-		}
-
-		public EncryptedIndices Search(Token token)
-		{
-			return new EncryptedIndices { Value = T.Retrive(_database.Value, token.Value) };
-		}
 	}
 }

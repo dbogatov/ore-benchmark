@@ -85,8 +85,8 @@ Running the tool locally without docker is more trivial (just omit all docker wr
 
 Prerequisites:
 
-- .NET Core 2.1 (C# 7.3), or
-- [This Docker image dbogatov/docker-sources:microsoft-dotnet-2.1-sdk-alpine](https://hub.docker.com/r/dbogatov/docker-sources/tags/)
+- .NET Core 2.2 (C# 7.3), or
+- [This Docker image dbogatov/docker-sources:microsoft-dotnet-2.2-sdk-alpine](https://hub.docker.com/r/dbogatov/docker-sources/tags/)
 
 ```bash
 # build with
@@ -99,5 +99,5 @@ dotnet ./src/cli/dist/cli.dll --help
 
 ## Packages
 
-- [B+ tree docs and repo](./src/b-plus-tree)
-- [ORE/ OPE schemes docs and repo](./src/ore-schemes)
+- [B+ tree docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
+- [ORE/ OPE schemes docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/ore-schemes)

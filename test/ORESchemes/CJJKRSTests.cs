@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CJJKRS;
 using Xunit;
+using Scheme = CJJKRS.CJJKRS<Test.ORESchemes.CJJKRS.StringWord, Test.ORESchemes.CJJKRS.NumericIndex>;
 
 namespace Test.ORESchemes
 {
@@ -30,14 +31,14 @@ namespace Test.ORESchemes
 			public override int GetHashCode() => Value.GetHashCode();
 		}
 
-		private readonly Client _client;
-		private Server _server;
+		private readonly Scheme.Client _client;
+		private Scheme.Server _server;
 
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
 		private readonly int RUNS = 50;
-		private readonly Dictionary<IWord, IIndex[]> _input =
-			new Dictionary<IWord, IIndex[]> {
+		private readonly Dictionary<StringWord, NumericIndex[]> _input =
+			new Dictionary<StringWord, NumericIndex[]> {
 				{
 					new StringWord { Value = "Dmytro" },
 					new NumericIndex[] {
@@ -58,14 +59,14 @@ namespace Test.ORESchemes
 		{
 			byte[] entropy = new byte[128 / 8];
 
-			_client = new Client(entropy);
+			_client = new Scheme.Client(entropy);
 		}
 
 		public IIndex[] PrimitiveRun(string word)
 		{
 			var database = _client.Setup(_input);
 
-			_server = new Server(database);
+			_server = new Scheme.Server(database);
 
 			// Search protocol
 			var keyword = new StringWord { Value = word };
@@ -120,16 +121,16 @@ namespace Test.ORESchemes
 				var input = Enumerable
 					.Range(1, RUNS * 10)
 					.ToDictionary(
-						_ => (IWord)new StringWord { Value = randomString(G.Next(5, 16)) },
+						_ => new StringWord { Value = randomString(G.Next(5, 16)) },
 						_ => Enumerable
 							.Range(1, RUNS / 10)
-							.Select(__ => (IIndex)new NumericIndex { Value = G.Next() })
+							.Select(__ => new NumericIndex { Value = G.Next() })
 							.ToArray()
 					);
 
 				var database = _client.Setup(input);
 
-				_server = new Server(database);
+				_server = new Scheme.Server(database);
 
 				foreach (var keywordIndices in input)
 				{
@@ -148,7 +149,7 @@ namespace Test.ORESchemes
 				}
 			}
 		}
-		
+
 		[Fact]
 		public void MalformedKeyword()
 		{
