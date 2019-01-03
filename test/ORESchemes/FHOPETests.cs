@@ -94,6 +94,16 @@ namespace Test.ORESchemes
 			Assert.Throws<InvalidOperationException>(
 				() => scheme.Decrypt(new Ciphertext { value = 100 }, key)
 			);
+
+			Assert.Throws<ArgumentNullException>(
+				() =>
+				{
+					var ciphertextOne = scheme.Encrypt(5, key);
+					var ciphertextTwo = scheme.Encrypt(10, key);
+
+					scheme.IsEqual(ciphertextOne, ciphertextTwo);
+				}
+			);
 		}
 
 #pragma warning disable xUnit1026

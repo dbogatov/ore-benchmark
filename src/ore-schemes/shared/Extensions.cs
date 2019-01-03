@@ -117,40 +117,6 @@ namespace ORESchemes.Shared
 			return bytes;
 		}
 
-		/// <summary>
-		/// Helper that wraps PRP when uint input is provided instead of generic bit array
-		/// </summary>
-		public static uint Permute(this IPRP P, uint input, byte[] key, int bits)
-		{
-			BitArray permutation =
-				P.PRP(
-					new BitArray(new int[] { (int)input }),
-					key,
-					bits
-				);
-			int[] result = new int[1];
-			permutation.CopyTo(result, 0);
-
-			return (uint)result[0];
-		}
-
-		/// <summary>
-		/// Helper that wraps PRP when uint input is provided instead of generic bit array
-		/// </summary>
-		public static uint Unpermute(this IPRP P, uint input, byte[] key, int bits)
-		{
-			BitArray permutation =
-				P.InversePRP(
-					new BitArray(new int[] { (int)input }),
-					key,
-					bits
-				);
-			int[] result = new int[1];
-			permutation.CopyTo(result, 0);
-
-			return (uint)result[0];
-		}
-
 		// https://stackoverflow.com/a/1262619/1644554
 		/// <summary>
 		/// Helper routine that shuffles a list using Knuth shuffle using entropy generated

@@ -29,8 +29,8 @@ dotnet test --no-build --no-restore --verbosity n ./../../test/ --logger trx --f
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
 dotnet minicover uninstrument --workdir ../../
 
-dotnet minicover report --workdir ../../ --threshold 0 | tee cov-report.txt
-dotnet minicover htmlreport --workdir ../../ --threshold 0
+dotnet minicover report --workdir ../../ --threshold 90 | tee cov-report.txt
+dotnet minicover htmlreport --workdir ../../ --threshold 90
 
 alltotal=0
 allhit=0

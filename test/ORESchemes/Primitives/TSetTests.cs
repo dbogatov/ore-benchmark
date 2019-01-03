@@ -49,11 +49,25 @@ namespace Test.ORESchemes.Primitives.TSet
 			third[65] = !third[65];
 
 			var fourth = new BitArray(seedBits);
-			fourth = fourth.Prepend(new BitArray(new bool[] { false }));
+			fourth = new BitArray(fourth.Prepend(new BitArray(new bool[] { false })));
 
 			Assert.True(first.IsEqualTo(second));
 			Assert.False(first.IsEqualTo(third));
 			Assert.False(first.IsEqualTo(fourth));
+		}
+		
+		[Fact]
+		public void BitArrayToBytes()
+		{
+			var G = new Random(123456);
+			byte[] bytes = new byte[128 / 8];
+			G.NextBytes(bytes);
+			
+			var bits = new BitArray(bytes);
+			var shorter = new BitArray(64);
+
+			Assert.Equal(bytes, bits.ToBytes());
+			Assert.NotEqual(bytes, shorter.ToBytes());
 		}
 	}
 
