@@ -60,5 +60,42 @@ namespace Test.ORESchemes
 		}
 
 		public override int KeySize() => 256;
+
+		[Fact]
+		public void InvertedNulls()
+		{
+			var key = _scheme.KeyGen();
+
+			var ciphertextOne = _scheme.Encrypt(10, key);
+			var ciphertextTwo = _scheme.Encrypt(15, key);
+
+			ciphertextOne.left = null;
+			ciphertextTwo.right = null;
+
+			Assert.False(_scheme.IsEqual(ciphertextOne, ciphertextTwo));
+			Assert.True(_scheme.IsLess(ciphertextOne, ciphertextTwo));
+			Assert.True(_scheme.IsLessOrEqual(ciphertextOne, ciphertextTwo));
+			Assert.False(_scheme.IsGreater(ciphertextOne, ciphertextTwo));
+			Assert.False(_scheme.IsGreaterOrEqual(ciphertextOne, ciphertextTwo));
+		}
+
+		[Fact]
+		public void RightLeftViolation()
+		{
+			Assert.Throws<InvalidOperationException>(
+				() =>
+				{
+					var key = _scheme.KeyGen();
+
+					var ciphertextOne = _scheme.Encrypt(10, key);
+					var ciphertextTwo = _scheme.Encrypt(15, key);
+
+					ciphertextOne.left = null;
+					ciphertextTwo.left = null;
+
+					_scheme.IsEqual(ciphertextOne, ciphertextTwo);
+				}
+			);
+		}
 	}
 }

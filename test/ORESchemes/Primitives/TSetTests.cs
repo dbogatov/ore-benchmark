@@ -9,53 +9,35 @@ using ORESchemes.Shared;
 using Xunit;
 using System.Numerics;
 using ORESchemes.Shared.Primitives;
+using ORESchemes.Shared.Primitives.Symmetric;
+using static Test.ORESchemes.Primitives.EventsTestsShared;
 
 namespace Test.ORESchemes.Primitives.TSet
 {
 	[Trait("Category", "Unit")]
-	public class CashTSet
+	public class CashTSet128 : CashTSet
 	{
-		private readonly ITSet T;
-		private readonly IPRF F;
-		static readonly int SEED = 123456;
-		private readonly Random G = new Random(SEED);
-		private readonly int RUNS = 50;
-		private readonly byte[] _prfKey = new byte[128 / 8];
+		public CashTSet128() : base(alpha: 128) { }
+	}
 
-		private readonly Dictionary<IWord, BitArray[]> _sampleInput;
+	[Trait("Category", "Unit")]
+	public class CashTSet256 : CashTSet
+	{
+		public CashTSet256() : base(alpha: 128) { }
+	}
 
+	[Trait("Category", "Unit")]
+	public class CashTSet1024 : CashTSet
+	{
+		public CashTSet1024() : base(alpha: 1024) { }
+	}
 
-		public CashTSet()
-		{
-			byte[] entropy = new byte[128 / 8];
-			G.NextBytes(entropy);
-			G.NextBytes(_prfKey);
-
-			F = new PRFFactory().GetPrimitive();
-
-			T = new global::ORESchemes.Shared.Primitives.TSet.CashTSet(entropy);
-
-			_sampleInput = new Dictionary<IWord, BitArray[]> {
-				{
-					new StringWord { Value = "Dmytro" },
-					new BitArray[] {
-						new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("WPI"))),
-						new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("BU")))
-					}
-				},
-				{
-					new StringWord { Value = "Alex" },
-					new BitArray[] {
-						new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("KPI"))),
-						new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("WPI")))
-					}
-				}
-			};
-		}
-
+	public class BitArrayChecks
+	{
 		[Fact]
 		public void BitArrayIsEqualTo()
 		{
+			var G = new Random(123456);
 			byte[] seedBytes = new byte[128 / 8];
 			G.NextBytes(seedBytes);
 			var seedBits = new BitArray(seedBytes);
@@ -67,11 +49,100 @@ namespace Test.ORESchemes.Primitives.TSet
 			third[65] = !third[65];
 
 			var fourth = new BitArray(seedBits);
-			fourth = fourth.Prepend(new BitArray(new bool[] { false }));
+			fourth = new BitArray(fourth.Prepend(new BitArray(new bool[] { false })));
 
 			Assert.True(first.IsEqualTo(second));
 			Assert.False(first.IsEqualTo(third));
 			Assert.False(first.IsEqualTo(fourth));
+		}
+		
+		[Fact]
+		public void BitArrayToBytes()
+		{
+			var G = new Random(123456);
+			byte[] bytes = new byte[128 / 8];
+			G.NextBytes(bytes);
+			
+			var bits = new BitArray(bytes);
+			var shorter = new BitArray(64);
+
+			Assert.Equal(bytes, bits.ToBytes());
+			Assert.NotEqual(bytes, shorter.ToBytes());
+		}
+	}
+
+	public abstract class CashTSet
+	{
+		private readonly ITSet T;
+		private readonly IPRF F;
+		private readonly ISymmetric E;
+
+
+		static readonly int SEED = 123456;
+		private readonly Random G = new Random(SEED);
+		private readonly int RUNS = 50;
+		private readonly byte[] _encKey = new byte[128 / 8];
+
+		private readonly Dictionary<IWord, BitArray[]> _sampleInput;
+
+		private readonly int _alpha;
+
+		public CashTSet(int alpha)
+		{
+			_alpha = alpha;
+
+			RUNS = (int)Math.Round(50 * 128 / (1.0 * _alpha));
+			RUNS = Math.Max(RUNS, 10);
+			RUNS = Math.Min(RUNS, 50);
+
+			byte[] entropy = new byte[128 / 8];
+			G.NextBytes(entropy);
+			G.NextBytes(_encKey);
+
+			F = new PRFFactory().GetPrimitive();
+			E = new SymmetricFactory().GetPrimitive();
+
+			T = new global::ORESchemes.Shared.Primitives.TSet.CashTSet(entropy);
+
+			_sampleInput = new Dictionary<IWord, BitArray[]> {
+				{
+					new StringWord { Value = "Dmytro" },
+					new BitArray[] {
+						EncryptForTSet("WPI"),
+						EncryptForTSet("BU")
+					}
+				},
+				{
+					new StringWord { Value = "Alex" },
+					new BitArray[] {
+						EncryptForTSet("KPI"),
+						EncryptForTSet("WPI")
+					}
+				}
+			};
+		}
+
+		private BitArray EncryptForTSet(string input)
+		{
+			var bytesIn = Encoding.Default.GetBytes(input);
+			byte[] bytesOut;
+
+			switch (_alpha)
+			{
+				case 128:
+					bytesOut = F.PRF(_encKey, bytesIn);
+					break;
+				case 256:
+					bytesOut = E.Encrypt(_encKey, bytesIn);
+					break;
+				case var _ when _alpha > 256 && _alpha % 8 == 0:
+					bytesOut = E.Encrypt(_encKey, bytesIn).Concat(new byte[(_alpha - 256) / 8]).ToArray();
+					break;
+				default:
+					throw new ArgumentException($"ALPHA = {_alpha} is not allowed.");
+			}
+
+			return new BitArray(bytesOut);
 		}
 
 		private BitArray[] RunPipeline(Dictionary<IWord, BitArray[]> input, IWord keyword)
@@ -108,10 +179,7 @@ namespace Test.ORESchemes.Primitives.TSet
 			var output = RunPipeline(_sampleInput, new StringWord { Value = "Dmytro" });
 
 			Assert.True(OutputAsExpected(
-				new BitArray[] {
-					new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("WPI"))),
-					new BitArray(F.PRF(_prfKey, Encoding.Default.GetBytes("BU")))
-				},
+				_sampleInput.Where(v => ((StringWord)v.Key).Value == "Dmytro").First().Value,
 				output
 			));
 		}
@@ -139,14 +207,7 @@ namespace Test.ORESchemes.Primitives.TSet
 						_ => Enumerable
 							.Range(1, RUNS / 10)
 							.Select(
-								__ => new BitArray(
-									F.PRF(
-										_prfKey,
-										Encoding.Default.GetBytes(
-											randomString(G.Next(5, 16))
-										)
-									)
-								)
+								__ => EncryptForTSet(randomString(G.Next(5, 16)))
 							)
 							.ToArray()
 					);
@@ -176,7 +237,16 @@ namespace Test.ORESchemes.Primitives.TSet
 		}
 
 		[Fact]
-		public void Events()
+		public void UnequalStrings()
+		{
+			_sampleInput.First().Value[0] = new BitArray(_alpha + 5);
+			Assert.Throws<ArgumentException>(
+				() => RunPipeline(_sampleInput, new StringWord { Value = "Dmytro" })
+			);
+		}
+
+		[Fact]
+		public void PrimitiveEvents()
 		{
 			EventsTestsShared.Events<ITSet>(
 				T,
@@ -193,12 +263,45 @@ namespace Test.ORESchemes.Primitives.TSet
 					{ Primitive.PRG, 5 },
 					{ Primitive.PRF, 3 },
 					{ Primitive.AES, 8 },
-					{ Primitive.Hash, 6 }
+					{ Primitive.Hash, 6 * (_alpha / 128) }
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.TSet, 3 }
 				}
 			);
+		}
+
+		[Fact]
+		public void NodeVisitedEventsForNoPageSize()
+		{
+			var triggered = new Reference<bool>();
+			triggered.Value = false;
+
+			T.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
+
+			(var TSet, var key) = T.Setup(_sampleInput);
+			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
+
+			T.Retrive(TSet, stag);
+
+			Assert.False(triggered.Value);
+		}
+
+		[Fact]
+		public void NodeVisitedEvents()
+		{
+			var count = new Reference<int>();
+			count.Value = 0;
+
+			T.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
+			T.PageSize = _alpha * 3;
+
+			(var TSet, var key) = T.Setup(_sampleInput);
+			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
+
+			T.Retrive(TSet, stag);
+
+			Assert.NotEqual(0, count.Value);
 		}
 	}
 }

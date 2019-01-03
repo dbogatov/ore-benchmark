@@ -34,7 +34,7 @@ namespace ORESchemes.Shared.Primitives
 				handler(primitive, impure);
 			}
 		}
-		
+
 		/// <summary>
 		/// Hooks up the event handler to proxy primitive events through this instance
 		/// </summary>
@@ -69,5 +69,13 @@ namespace ORESchemes.Shared.Primitives
 		/// Returns an initialized instance of a the primitive
 		/// </summary>
 		protected abstract P CreatePrimitive(byte[] entropy);
+	}
+
+	public interface IByteable
+	{
+		/// <summary>
+		/// An object will be put through PRF, so byte representation is required
+		/// </summary>
+		byte[] ToBytes();
 	}
 }

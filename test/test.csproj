@@ -24,6 +24,7 @@
 		<ProjectReference Include="..\src\ore-schemes\adam-ore\adam-ore.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\lewi-ore\lewi-ore.csproj" />
 		<ProjectReference Include="..\src\ore-schemes\fh-ope\fh-ope.csproj" />
+		<ProjectReference Include="..\src\ore-schemes\cjjkrs-sse\cjjkrs-sse.csproj" />
 		<ProjectReference Include="..\src\simulator\simulator.csproj" />
 		<ProjectReference Include="..\src\benchmark\benchmark.csproj" />
 		<ProjectReference Include="..\src\web\web.csproj" />

@@ -3,8 +3,6 @@ using ORESchemes.Shared;
 
 namespace BPlusTree
 {
-	public delegate void NodeVisitedEventHandler(int nodeHash);
-
 	/// <typeparam name="C">Ciphertext type</typeparam>
 	public class Options<C>
 	{

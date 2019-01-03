@@ -286,6 +286,16 @@ namespace Test.ORESchemes.Primitives.PRG
 
 			CheckMax<double>(a => random.NextDouble(), _prg.NextDouble, 0);
 		}
+		
+		[Fact]
+		public void ZeroRange()
+		{
+			const int minMax = 5;
+			
+			Assert.Equal(minMax, _prg.Next(minMax, minMax));
+			Assert.Equal(minMax, _prg.NextLong(minMax, minMax));
+			Assert.Equal(minMax, _prg.NextDouble(minMax, minMax));
+		}
 
 		[Fact]
 		public void Events()
