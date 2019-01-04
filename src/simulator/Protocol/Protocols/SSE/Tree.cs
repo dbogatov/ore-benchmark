@@ -57,7 +57,7 @@ namespace Simulation.Protocol.SSE
 					{
 						if (_left == null)
 						{
-							_left = new Node(middle, _level + 1, this, _options);
+							_left = new Node((min + middle) / 2, _level + 1, this, _options);
 						}
 						_left.Insert(value, min, middle);
 					}
@@ -65,7 +65,7 @@ namespace Simulation.Protocol.SSE
 					{
 						if (_right == null)
 						{
-							_right = new Node(middle, _level + 1, this, _options);
+							_right = new Node((middle + max) / 2, _level + 1, this, _options);
 						}
 						_right.Insert(value, middle, max);
 					}
@@ -76,7 +76,7 @@ namespace Simulation.Protocol.SSE
 			{
 				if (_left != null && _right != null)
 				{
-					return (_index <= index ? _left : _right).Find(index);
+					return (index <= _index ? _left : _right).Find(index);
 				}
 
 				if (_left != null)
@@ -161,10 +161,10 @@ namespace Simulation.Protocol.SSE
 				_root.Insert(tuple, min, max);
 			}
 
-			_first = tuples[0];
+			_first = tuples.FirstOrDefault();
 		}
 
-		public int? FirstInRange(int min)
+		internal int? FirstInRange(int min)
 		{
 			var current = _first;
 			while (current != null)
@@ -173,7 +173,7 @@ namespace Simulation.Protocol.SSE
 				{
 					return current.Value;
 				}
-				current = _first.Next;
+				current = current.Next;
 			}
 
 			return null;
