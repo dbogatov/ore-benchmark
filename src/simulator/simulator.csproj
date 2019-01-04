@@ -6,6 +6,7 @@
 		<ProjectReference Include="..\ore-schemes\adam-ore\adam-ore.csproj" />
 		<ProjectReference Include="..\ore-schemes\lewi-ore\lewi-ore.csproj" />
 		<ProjectReference Include="..\ore-schemes\fh-ope\fh-ope.csproj" />
+		<ProjectReference Include="..\ore-schemes\cjjkrs-sse\cjjkrs-sse.csproj" />
 		<ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,0 +1,4 @@
+namespace Simulation.Protocol.SSE
+{
+
+}
