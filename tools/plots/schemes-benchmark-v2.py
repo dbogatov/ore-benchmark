@@ -49,4 +49,4 @@ fig.subplots_adjust(bottom=0.175)
 if os.path.exists("results/schemes-benchmark.pdf"):
 	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, bbox_inches='tight', transparent=True)
