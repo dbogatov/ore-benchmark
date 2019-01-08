@@ -102,7 +102,8 @@ if value != "qsize":
             mpl.ticker.FuncFormatter(lambda x, p: format(int(x), ','))
         )
 
-    ax.legend(loc='upper left')
+    legend = ax.legend(loc='upper left')
+    legend.get_frame().set_facecolor('#eaf0fb')
 
     f.subplots_adjust(bottom=0.2)
 else:
@@ -116,7 +117,8 @@ else:
     # plt.bar(ind + 4 * width, forest, width, alpha=alpha,
     #         edgecolor="black", label='Forest Cover')
 
-    plt.legend(loc='best')
+    legend = plt.legend(loc='best')
+    legend.get_frame().set_facecolor('#eaf0fb')
 
     ax = plt.gca()
     ax.set_yscale("log", nonposy='clip')
@@ -132,4 +134,4 @@ if os.path.exists("results/protocol-charts-{0}.pdf".format(value)):
     os.remove("results/protocol-charts-{0}.pdf".format(value))
 
 plt.savefig(
-    "results/protocol-charts-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight')
+    "results/protocol-charts-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight', transparent=True)

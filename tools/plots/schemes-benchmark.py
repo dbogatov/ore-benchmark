@@ -63,4 +63,4 @@ plt.legend(['BCLO', 'CLWW', 'Lewi-Wu', 'FH-OPE'], loc='upper right')
 if os.path.exists("results/schemes-benchmark.pdf"):
 	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000)
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, transparent=True)

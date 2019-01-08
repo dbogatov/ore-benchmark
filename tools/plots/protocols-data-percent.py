@@ -116,4 +116,4 @@ if os.path.exists("results/protocol-data-percent-{0}.pdf".format(value)):
     os.remove("results/protocol-data-percent-{0}.pdf".format(value))
 
 plt.savefig(
-    "results/protocol-data-percent-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight')
+    "results/protocol-data-percent-{0}.pdf".format(value), format='pdf', dpi=1000, bbox_inches='tight', transparent=True)

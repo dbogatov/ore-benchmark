@@ -43,10 +43,13 @@ plt.grid(linestyle='dotted', alpha=0.5)
 ax = plt.gca()
 ax.set_yscale("log", nonposy='clip')
 
+legend = ax.legend(loc='upper left')
+legend.get_frame().set_facecolor('#eaf0fb')
+
 fig = plt.figure(1)
 fig.subplots_adjust(bottom=0.175)
 
 if os.path.exists("results/schemes-benchmark.pdf"):
 	os.remove("results/schemes-benchmark.pdf")
 
-plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+plt.savefig('results/schemes-benchmark.pdf', format='pdf', dpi=1000, bbox_inches='tight', transparent=True)
