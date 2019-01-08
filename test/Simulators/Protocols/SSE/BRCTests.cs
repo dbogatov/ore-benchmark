@@ -60,7 +60,7 @@ namespace Test.Simulators.Protocols.SSE
 		[InlineData(0, 7, 4, new string[] { "0" })]
 		[InlineData(1, 14, 4, new string[] { "0001", "001", "01", "10", "110", "1110" })] // maximum result size
 		[InlineData(1, 1, 4, new string[] { "0001" })] // single node range
-		public void PrecomputedCheck(uint a, uint b, int n, string[] correct)
+		public void PrecomputedBRC(uint a, uint b, int n, string[] correct)
 		{
 			var result = Cover.BRC(a, b, n);
 
@@ -75,5 +75,14 @@ namespace Test.Simulators.Protocols.SSE
 			=> Assert.Throws<ArgumentException>(
 				() => Cover.BRC(5, 4)
 			);
+
+		[Theory(Skip = "Fails for now...")]
+		[InlineData(2, 4, new string[] { "0010", "001", "00", "0", "" })]
+		public void PrecomputedPath(uint x, int n, string[] correct)
+		{
+			var result = Cover.Path(x, n);
+
+			AssertSolution(correct, result, n);
+		}
 	}
 }

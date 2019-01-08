@@ -8,29 +8,46 @@ namespace Simulation.Protocol.SSE
 {
 	public static class Cover
 	{
+		private static bool[] BitsFromUInt(uint x)
+		{
+			var bitArray = new BitArray(BitConverter.GetBytes(x));
+			bool[] bits = new bool[bitArray.Length];
+			bitArray.CopyTo(bits, 0);
+
+			return bits;
+		}
+
+		private static BitArray ExtractRange(bool[] input, int from, int to)
+		{
+			var result = new bool[to - from + 1];
+			for (int i = from; i <= to; i++)
+			{
+				result[i - from] = input[i];
+			}
+
+			return new BitArray(result);
+		}
+
+		public static List<(BitArray, int)> Path(uint x, int n = -1)
+		{
+			var xBits = BitsFromUInt(x);
+
+			n = n < 0 ? xBits.Length : n;
+
+			var Theta = new List<(BitArray, int)>();
+
+			for (int i = 0; i < n; i++)
+			{
+				Theta.Add((ExtractRange(xBits, 0, i), n - i - 1));
+			}
+			Theta.Add((new BitArray(new bool[] { }), n));
+
+			return Theta;
+		}
+
 		public static List<(BitArray, int)> BRC(uint a, uint b, int n = -1)
 		{
-			bool[] BitsFromUInt(uint x)
-			{
-				var bitArray = new BitArray(BitConverter.GetBytes(x));
-				bool[] bits = new bool[bitArray.Length];
-				bitArray.CopyTo(bits, 0);
-				// Array.Reverse(bits);
 
-				return bits;
-			}
-
-			BitArray ExtractRange(bool[] input, int from, int to)
-			{
-				var result = new bool[to - from + 1];
-				for (int i = from; i <= to; i++)
-				{
-					result[i - from] = input[i];
-				}
-				// Array.Reverse(result);
-
-				return new BitArray(result);
-			}
 
 			// tau <- {}
 			var Tau = new List<(BitArray, int)>();
@@ -38,7 +55,7 @@ namespace Simulation.Protocol.SSE
 			var aBits = BitsFromUInt(a);
 			var bBits = BitsFromUInt(b);
 			n = n < 0 ? aBits.Length : n;
-			
+
 			if (a > b)
 			{
 				throw new ArgumentException($"a ({a}) > b {b}");
