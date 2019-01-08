@@ -44,7 +44,8 @@ mkdir -p ../../data
 
 if [ "$BUILD" == true ];
 then
-	types=( "uniform" "normal" "zipf" "employees" "forest" )
+	# TODO
+	types=( "uniform" "normal" "zipf" ) # "employees" "forest" )
 else
 	types=( "uniform" )
 fi
