@@ -32,21 +32,21 @@ namespace Simulation.Protocol.SSE
 				return new BitArray(result);
 			}
 
-			if (a > b)
-			{
-				throw new ArgumentException($"a ({a}) > b {b}");
-			}
-			if (a == b)
-			{
-				return new List<(BitArray, int)> { (new BitArray(BitConverter.GetBytes(a)), 0) };
-			}
-
 			// tau <- {}
 			var Tau = new List<(BitArray, int)>();
 
 			var aBits = BitsFromUInt(a);
 			var bBits = BitsFromUInt(b);
 			n = n < 0 ? aBits.Length : n;
+			
+			if (a > b)
+			{
+				throw new ArgumentException($"a ({a}) > b {b}");
+			}
+			if (a == b)
+			{
+				return new List<(BitArray, int)> { (ExtractRange(aBits, 0, n - 1), 0) };
+			}
 
 			// t <- max{i | a_i != b_i}
 			var t = -1;

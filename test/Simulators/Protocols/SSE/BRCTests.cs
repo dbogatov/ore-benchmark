@@ -9,7 +9,7 @@ namespace Test.Simulators.Protocols.SSE
 {
 	public class BRC
 	{
-		private readonly bool _print = true;
+		private readonly bool _print = false;
 
 		private string BitArrayToString(BitArray bits)
 			=> string.Join("", bits.Cast<bool>().Reverse().Select(b => (b ? 1 : 0).ToString()));
@@ -27,12 +27,15 @@ namespace Test.Simulators.Protocols.SSE
 
 		private void PrintInputs(uint a, uint b, int n = -1)
 		{
-			n = n < 0 ? sizeof(uint) * 8 : n;
-			string UIntBits(uint x)
-				=> string.Join("", new BitArray(BitConverter.GetBytes(x)).Cast<bool>().Take(n).Reverse().Select(bit => (bit ? 1 : 0).ToString()));
+			if (_print)
+			{
+				n = n < 0 ? sizeof(uint) * 8 : n;
+				string UIntBits(uint x)
+					=> string.Join("", new BitArray(BitConverter.GetBytes(x)).Cast<bool>().Take(n).Reverse().Select(bit => (bit ? 1 : 0).ToString()));
 
-			Console.WriteLine($"From ({a.ToString().PadLeft(3)}): {UIntBits(a)}");
-			Console.WriteLine($"To   ({b.ToString().PadLeft(3)}): {UIntBits(b)}");
+				Console.WriteLine($"From ({a.ToString().PadLeft(3)}): {UIntBits(a)}");
+				Console.WriteLine($"To   ({b.ToString().PadLeft(3)}): {UIntBits(b)}");
+			}
 		}
 
 		private void AssertSolution(string[] expected, List<(BitArray, int)> actual, int n)
@@ -53,9 +56,10 @@ namespace Test.Simulators.Protocols.SSE
 		[InlineData(4, 5, 4, new string[] { "010" })]
 		[InlineData(3, 12, 4, new string[] { "01", "0011", "10", "1100" })]
 		[InlineData(11, 12, 4, new string[] { "1011", "1100" })]
-		[InlineData(0, 15, 4, new string[] { "" })]
+		[InlineData(0, 15, 4, new string[] { "" })] // all domain
 		[InlineData(0, 7, 4, new string[] { "0" })]
-		[InlineData(1, 14, 4, new string[] { "0001", "001", "01", "10", "110", "1110" })]
+		[InlineData(1, 14, 4, new string[] { "0001", "001", "01", "10", "110", "1110" })] // maximum result size
+		[InlineData(1, 1, 4, new string[] { "0001" })] // single node range
 		public void PrecomputedCheck(uint a, uint b, int n, string[] correct)
 		{
 			var result = Cover.BRC(a, b, n);
@@ -65,5 +69,11 @@ namespace Test.Simulators.Protocols.SSE
 
 			AssertSolution(correct, result, n);
 		}
+
+		[Fact]
+		public void ImproperRange()
+			=> Assert.Throws<ArgumentException>(
+				() => Cover.BRC(5, 4)
+			);
 	}
 }
