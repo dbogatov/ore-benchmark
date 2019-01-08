@@ -43,6 +43,9 @@ plt.grid(linestyle='dotted', alpha=0.5)
 ax = plt.gca()
 ax.set_yscale("log", nonposy='clip')
 
+legend = ax.legend(loc='upper left')
+legend.get_frame().set_facecolor('#eaf0fb')
+
 fig = plt.figure(1)
 fig.subplots_adjust(bottom=0.175)
 

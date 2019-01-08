@@ -60,8 +60,8 @@ do
 		--data-size $DMAX \
 		--query-size $QMAX \
 		--seed $SEED \
-		--employees-url "https://taiwin.nyc3.digitaloceanspaces.com/public/state-of-california-2017.csv" \
-		--forest-url "https://taiwin.nyc3.digitaloceanspaces.com/public/covtype.data"
+		--employees-url "https://spaces.dbogatov.org/public/state-of-california-2017.csv" \
+		--forest-url "https://spaces.dbogatov.org/public/covtype.data"
 done
 
 echo "Done!"
