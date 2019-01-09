@@ -46,7 +46,7 @@ namespace Test.Simulators.Protocols.SSE
 
 			foreach (var correct in expected)
 			{
-				Assert.True(actual.Any(t => BitArrayToString(t.Item1).Equals(correct)));
+				Assert.Contains(actual, t => BitArrayToString(t.Item1).Equals(correct));
 			}
 		}
 
@@ -76,11 +76,17 @@ namespace Test.Simulators.Protocols.SSE
 				() => Cover.BRC(5, 4)
 			);
 
-		[Theory(Skip = "Fails for now...")]
+		[Theory]
 		[InlineData(2, 4, new string[] { "0010", "001", "00", "0", "" })]
+		[InlineData(7, 4, new string[] { "0111", "011", "01", "0", "" })]
+		[InlineData(0, 4, new string[] { "0000", "000", "00", "0", "" })]
+		[InlineData(15, 4, new string[] { "1111", "111", "11", "1", "" })]
 		public void PrecomputedPath(uint x, int n, string[] correct)
 		{
 			var result = Cover.Path(x, n);
+			
+			PrintInputs(x, x, n);
+			PrintBRCResult(result);
 
 			AssertSolution(correct, result, n);
 		}

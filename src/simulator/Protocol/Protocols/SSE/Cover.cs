@@ -38,7 +38,7 @@ namespace Simulation.Protocol.SSE
 
 			for (int i = 0; i < n; i++)
 			{
-				Theta.Add((ExtractRange(xBits, 0, i), n - i - 1));
+				Theta.Add((ExtractRange(xBits, i, n - 1), i));
 			}
 			Theta.Add((new BitArray(new bool[] { }), n));
 
