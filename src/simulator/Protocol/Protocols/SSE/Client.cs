@@ -13,6 +13,10 @@ namespace Simulation.Protocol.SSE
 		public Client(byte[] entropy)
 		{
 			SSEClient = new CJJKRS<Word, Index>.Client(entropy);
+
+			SSEClient.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
+			SSEClient.NodeVisited += hash => OnNodeVisited(hash);
+			SSEClient.OperationOcurred += operation => OnOperationOccurred(operation);
 		}
 
 		public override void RunConstruction(List<Record> input)
