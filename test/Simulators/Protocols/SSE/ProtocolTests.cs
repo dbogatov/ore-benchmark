@@ -91,11 +91,6 @@ namespace Test.Simulators.Protocols.SSE
 						.Distinct()
 						.OrderBy(s => s);
 
-					if (i == 2 && query.from == 16)
-					{
-						System.Diagnostics.Debugger.Break();
-					}
-
 					var actual = _protocol
 						.ExposeClient()
 						.Search(query.from, query.to)
@@ -103,11 +98,7 @@ namespace Test.Simulators.Protocols.SSE
 						.OrderBy(s => s);
 
 					Assert.Equal(expected, actual);
-
-					// Console.WriteLine($"Query: {query} completed");
 				}
-
-				Console.WriteLine($"RUN: {i} completed");
 			}
 		}
 	}

@@ -32,22 +32,6 @@ namespace Simulation.Protocol.SSE
 				)
 				.SelectMany(l => l);
 
-			// foreach (var number in new List<int> { 36, 37, 39 })
-			// {
-			// 	System.Console.WriteLine($"{number} pairs: {pairs.Count(p => p.index.Value == number.ToString())}");
-			// }
-
-			// var database = new Dictionary<Word, Index[]>();
-			// var uniqueKeywords = pairs.Select(p => p.keyword).Distinct();
-			// System.Console.WriteLine($"unique keywords: {uniqueKeywords.Count()}");
-
-			// foreach (var keyword in uniqueKeywords)
-			// {
-			// 	database.Add(
-			// 		new Word { Value = keyword },
-			// 		pairs.Where(p => p.keyword.Equals(keyword)).Select(p => new Index { Value = p.value }).ToArray());
-			// }
-
 			var database = pairs
 				.GroupBy(
 					pair => pair.word,
@@ -57,28 +41,6 @@ namespace Simulation.Protocol.SSE
 					group => group.Key,
 					group => group.ToArray()
 				);
-
-			// var hashSets = new List<HashSet<Word>>();
-			// var intersection = new HashSet<Word>();
-			// var levelTwo = new List<Word>();
-			// foreach (var number in new List<int> { 36, 37, 39 })
-			// {
-			// 	System.Console.WriteLine($"{number} keys: {database.Values.Count(p => p.Any(i => i.Value == number.ToString()))}");
-			// 	var hashSet = new HashSet<Word>(database.Where(kvp => kvp.Value.Any(i => i.Value == number.ToString())).Select(kvp => kvp.Key));
-			// 	System.Console.WriteLine($"{number} distinct keys: {hashSet.Count}");
-			// 	if (intersection.Count == 0)
-			// 	{
-			// 		intersection.Union(hashSet);
-			// 	}
-			// 	else
-			// 	{
-			// 		intersection.Intersect(hashSet);
-			// 	}
-			// 	levelTwo.Add(hashSet.Single(w => w.Value.Item2 == 2));
-			// }
-
-			// System.Console.WriteLine($"Hashset intersection size: {intersection.Count}");
-			// System.Console.WriteLine($"LevelTwo size: {levelTwo.Count}");
 
 			var encrypted = SSEClient.Setup(database);
 

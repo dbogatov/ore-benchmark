@@ -42,12 +42,7 @@ namespace Simulation.Protocol.SSE
 		public string Value { get; set; }
 
 		public byte[] ToBytes()
-		{
-			var enc = Encoding.Default.GetBytes(Value);
-			// Console.WriteLine(enc.Length);
-			System.Diagnostics.Debug.Assert(enc.Length < 16 && enc.Length > 0);
-			return enc;
-		}
+			=> Encoding.Default.GetBytes(Value);
 
 		public static Index FromBytes(byte[] bytes)
 			=> new Index { Value = Encoding.Default.GetString(bytes) };
