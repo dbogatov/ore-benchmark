@@ -199,5 +199,36 @@ namespace ORESchemes.Shared
 			bits.CopyTo(ret, 0);
 			return ret;
 		}
+
+		public static int ProperHashCode(this BitArray bits)
+		{
+			var bytes = bits.ToBytes();
+
+			unchecked
+			{
+				if (bytes == null)
+				{
+					return 0;
+				}
+				int hash = 17;
+				foreach (var @byte in bytes)
+				{
+					hash = hash * 31 + @byte;
+				}
+				return hash;
+			}
+		}
+
+		public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+		{
+			HashSet<TKey> seenKeys = new HashSet<TKey>();
+			foreach (TSource element in source)
+			{
+				if (seenKeys.Add(keySelector(element)))
+				{
+					yield return element;
+				}
+			}
+		}
 	}
 }

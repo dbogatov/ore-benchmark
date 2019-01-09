@@ -101,7 +101,32 @@ namespace ORESchemes.CJJKRS
 					}
 					OnPrimitive(Primitive.PRP);
 
-					var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
+					var t = indices.Select(
+						ind =>
+						{
+							var bytes = E.Encrypt(Ke, ind.ToBytes());
+							var encryptred = new BitArray(bytes);
+							// var tmp = encryptred.ToBytes();
+							// System.Diagnostics.Debug.Assert(tmp.Zip(bytes, (a, b) => a == b).All(c => c));
+							// if (bytes[0] == 184 && bytes[1] == 149 && bytes[2] == 90)
+							// {
+							// 	// System.Diagnostics.Debug.Assert(false);
+							// }
+
+							// if (
+							// 	new BitArray(encryptred.Cast<bool>().Take(12).ToArray())
+							// 	.IsEqualTo(new BitArray(new bool[] {
+							// 		false, true, false, false, false, true, true, false, false, false, false,false
+							// 	}))
+							// )
+							// {
+							// 	System.Diagnostics.Debug.Assert(true);
+							// 	// System.Diagnostics.Debugger.Break();
+							// }
+
+							return encryptred;
+						}
+					).ToArray();
 
 					TInput[word] = t;
 				}

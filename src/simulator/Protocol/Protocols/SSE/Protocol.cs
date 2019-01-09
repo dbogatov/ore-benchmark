@@ -21,6 +21,20 @@ namespace Simulation.Protocol.SSE
 		/// </summary>
 		public byte[] ToBytes()
 			=> Value.Item1.ToBytes().Concat(BitConverter.GetBytes(Value.Item2)).ToArray();
+
+		public override int GetHashCode() => Value.Item1.ProperHashCode() * 41 + Value.Item2.GetHashCode() * 37;
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+			{
+				return false;
+			}
+
+			return
+				Value.Item1.IsEqualTo(((Word)obj).Value.Item1) &&
+				Value.Item2 == ((Word)obj).Value.Item2;
+		}
 	}
 
 	public class Index : IIndex
@@ -28,10 +42,17 @@ namespace Simulation.Protocol.SSE
 		public string Value { get; set; }
 
 		public byte[] ToBytes()
-			=> Encoding.Default.GetBytes(Value);
-			
+		{
+			var enc = Encoding.Default.GetBytes(Value);
+			// Console.WriteLine(enc.Length);
+			System.Diagnostics.Debug.Assert(enc.Length < 16 && enc.Length > 0);
+			return enc;
+		}
+
 		public static Index FromBytes(byte[] bytes)
 			=> new Index { Value = Encoding.Default.GetString(bytes) };
+
+		public override int GetHashCode() => Value.GetHashCode();
 	}
 
 	public class Protocol : AbsProtocol
@@ -43,5 +64,7 @@ namespace Simulation.Protocol.SSE
 
 			SetupProtocol();
 		}
+
+		internal Client ExposeClient() => (Client)_client;
 	}
 }
