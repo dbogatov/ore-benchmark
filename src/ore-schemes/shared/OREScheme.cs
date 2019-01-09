@@ -14,7 +14,8 @@ namespace ORESchemes.Shared
 		AdamORE,
 		Florian,
 		POPE,
-		ORAM
+		ORAM,
+		SSE
 	}
 
 	public enum SchemeOperation

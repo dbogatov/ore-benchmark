@@ -56,6 +56,13 @@ namespace Web.Models.Data.Entities
 							{
 								var record = line.Split(',');
 								Dataset.Add(new Record(int.Parse(record[0]), record[1]));
+								if (record[1].Length > 10)
+								{
+									throw new ArgumentException($@"
+										String must be of maximum 10 characters length. 
+										Length {record[1].Length} supplied"
+									);
+								}
 								read++;
 							}
 						} while (line != null && read < datasetSize);
@@ -123,6 +130,9 @@ namespace Web.Models.Data.Entities
 					break;
 				case ORESchemes.Shared.ORESchemes.AdamORE:
 					cipherSize = 4088;
+					break;
+				case ORESchemes.Shared.ORESchemes.SSE:
+					cipherSize = 257;
 					break;
 			}
 			ElementsPerPage = (int)Math.Round((double)pageSize / cipherSize);

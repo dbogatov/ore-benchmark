@@ -47,8 +47,6 @@ namespace Simulation.Protocol.SSE
 
 		public static List<(BitArray, int)> BRC(uint a, uint b, int n = -1)
 		{
-
-
 			// tau <- {}
 			var Tau = new List<(BitArray, int)>();
 

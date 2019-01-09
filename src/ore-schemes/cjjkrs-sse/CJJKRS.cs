@@ -101,7 +101,7 @@ namespace ORESchemes.CJJKRS
 					}
 					OnPrimitive(Primitive.PRP);
 
-					var t = indices.Select(ind => new BitArray( E.Encrypt(Ke, ind.ToBytes()))).ToArray();
+					var t = indices.Select(ind => new BitArray(E.Encrypt(Ke, ind.ToBytes()))).ToArray();
 
 					TInput[word] = t;
 				}
