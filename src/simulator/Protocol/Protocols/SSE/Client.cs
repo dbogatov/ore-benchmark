@@ -21,6 +21,7 @@ namespace Simulation.Protocol.SSE
 
 		public override void RunConstruction(List<Record> input)
 		{
+			// generate keyword - index pairs
 			var pairs = input
 				.DistinctBy(r => r.index)
 				.Select(
@@ -36,6 +37,8 @@ namespace Simulation.Protocol.SSE
 				)
 				.SelectMany(l => l);
 
+			// invert index - generate a hash table where key is a keyword and
+			// value is a list of indices
 			var database = pairs
 				.GroupBy(
 					pair => pair.word,
@@ -67,6 +70,12 @@ namespace Simulation.Protocol.SSE
 			}
 		}
 
+		/// <summary>
+		/// An extraction of search logic for ease of testing
+		/// </summary>
+		/// <param name="from">Left endpoint of a query</param>
+		/// <param name="to">Right endpoint of a query</param>
+		/// <returns>A list of indices corresponding to given range</returns>
 		internal List<Index> Search(int from, int to)
 		{
 			var keywords =

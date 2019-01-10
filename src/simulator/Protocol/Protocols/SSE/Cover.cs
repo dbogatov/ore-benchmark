@@ -8,6 +8,9 @@ namespace Simulation.Protocol.SSE
 {
 	public static class Cover
 	{
+		/// <summary>
+		/// Helper that translates unsigned integer to BitArray
+		/// </summary>
 		private static bool[] BitsFromUInt(uint x)
 		{
 			var bitArray = new BitArray(BitConverter.GetBytes(x));
@@ -17,6 +20,13 @@ namespace Simulation.Protocol.SSE
 			return bits;
 		}
 
+		/// <summary>
+		/// Helper that returns bits of input corresponding to the given range
+		/// </summary>
+		/// <param name="input">Input bits</param>
+		/// <param name="from">Left inclusive endpoint</param>
+		/// <param name="to">Right inclusive endpoint</param>
+		/// <returns>BitArray of the range</returns>
 		private static BitArray ExtractRange(bool[] input, int from, int to)
 		{
 			var result = new bool[to - from + 1];
@@ -28,6 +38,12 @@ namespace Simulation.Protocol.SSE
 			return new BitArray(result);
 		}
 
+		/// <summary>
+		/// Generates a "path" of keywords from root to the given node
+		/// </summary>
+		/// <param name="x">Node given by number</param>
+		/// <param name="n">Number of bits to consider (default for integer size)</param>
+		/// <returns>List of keywords: level-bits pairs</returns>
 		public static List<(BitArray, int)> Path(uint x, int n = -1)
 		{
 			var xBits = BitsFromUInt(x);
@@ -45,6 +61,13 @@ namespace Simulation.Protocol.SSE
 			return Theta;
 		}
 
+		/// <summary>
+		/// Computes Best-Range Cover as in https://eprint.iacr.org/2013/379.pdf page 11.
+		/// </summary>
+		/// <param name="a">Left endpoint of the range given by node (number)</param>
+		/// <param name="b">Right endpoint of the range given by node (number)</param>
+		/// <param name="n">Number of bits to consider (default for integer size)</param>
+		/// <returns>List of keywords: level-bits pairs</returns>
 		public static List<(BitArray, int)> BRC(uint a, uint b, int n = -1)
 		{
 			// tau <- {}

@@ -32,7 +32,6 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 		public override int GetHashCode() => Value.GetHashCode();
 
-		// override object.Equals
 		public override bool Equals(object obj)
 			=> this.Value == ((StringWord)obj).Value;
 	}
