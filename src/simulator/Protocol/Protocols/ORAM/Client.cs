@@ -101,7 +101,7 @@ namespace Simulation.Protocol.ORAM
 		/// </summary>
 		private void RecordStorage() =>
 			OnClientStorage(
-				_tree.Nodes(includeDataNodes: false) * _branches * sizeof(int) * 8 + // all B+ tree nodes
+				sizeof(int) * 8 + // B+ root ID in ORAM
 				_key.Length * 8 + // a key
 				_tree.Nodes(includeDataNodes: false) * sizeof(int) * 8 + // an ORAM position table (N integers)
 				(int)Math.Ceiling(Math.Log(_tree.Nodes(includeDataNodes: false), 2)) // an ORAM stash (log N)
@@ -133,6 +133,7 @@ namespace Simulation.Protocol.ORAM
 					else
 					{
 						E.Encrypt(_key, Encoding.Default.GetBytes("Re-encrypt data"));
+						G.Next(); // remap value in position table
 						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
 							new WriteBucketMessage((new byte[_z * _branches * sizeof(int)], size))
 						);
