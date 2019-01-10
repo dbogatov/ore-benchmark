@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using Simulation;
 using Simulation.Protocol;
 
 namespace Web.Models.Data.Entities
@@ -155,6 +156,7 @@ namespace Web.Models.Data.Entities
 		public IList<Record> Dataset { get; set; }
 		public IList<RangeQuery> Queryset { get; set; }
 		public int CacheSize { get; set; } = 0;
+		public CachePolicy CachePolicy { get; set; } = CachePolicy.LFU;
 		public int ElementsPerPage { get; set; } = 2;
 
 		// Output

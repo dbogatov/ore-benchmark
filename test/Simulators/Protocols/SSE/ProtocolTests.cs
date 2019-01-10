@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Test.Simulators.Protocols.SSE
 {
+	[Trait("Category", "Unit")]
 	public class Protocol
 	{
 		private readonly int RUNS = 20;

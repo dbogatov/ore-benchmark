@@ -1,21 +1,19 @@
-using System;
-
 namespace Simulation.Protocol.ORAM
 {
-	internal abstract class BucketMessage : AbsMessage<ValueTuple<byte[], int>>
+	internal abstract class BucketMessage : AbsMessage<(byte[] buckets, int level, int total)>
 	{
-		public BucketMessage(ValueTuple<byte[], int> content) : base(content) { }
+		public BucketMessage((byte[] buckets, int level, int total) content) : base(content) { }
 
 		public override int GetSize() => _content.Item1.Length * sizeof(byte);
 	}
 
 	internal class WriteBucketMessage : BucketMessage
 	{
-		public WriteBucketMessage(ValueTuple<byte[], int> content) : base(content) { }
+		public WriteBucketMessage((byte[] buckets, int level, int total) content) : base(content) { }
 	}
 
 	internal class ReadBucketMessage : BucketMessage
 	{
-		public ReadBucketMessage(ValueTuple<byte[], int> content) : base(content) { }
+		public ReadBucketMessage((byte[] buckets, int level, int total) content) : base(content) { }
 	}
 }

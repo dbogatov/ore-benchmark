@@ -37,6 +37,7 @@ namespace Simulation.Protocol
 		public List<RangeQuery> Queries = new List<RangeQuery>();
 
 		public int CacheSize { get; set; }
+		public CachePolicy CachePolicy { get; set; } = CachePolicy.LFU;
 
 		/// <summary>
 		/// Returns the number of queries in the inputs.

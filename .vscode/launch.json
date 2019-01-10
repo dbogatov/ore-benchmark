@@ -21,11 +21,11 @@
 				"1305",
 				"protocol",
 				"--queries",
-				"./data/uniform/queries-1.txt",
+				"./data/uniform/queries-3.txt",
 				"--cache-size",
-				"0",
+				"100",
 				"--b-plus-tree-branches",
-				"64"
+				"4"
 			],
 			"cwd": "${workspaceFolder}",
 			// For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
