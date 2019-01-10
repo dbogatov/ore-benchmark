@@ -314,7 +314,7 @@ namespace BPlusTree
 
 	/// <summary>
 	/// A wrapper around Tree class.
-	/// This class is designed to used by package users.
+	/// This class is designed to be used by package users.
 	/// </summary>
 	/// <typeparam name="T">Type of data in a tree</typeparam>
 	public class BPlusTree<T> : ITree<T, long>

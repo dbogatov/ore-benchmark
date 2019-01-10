@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Test.Simulators.Protocols.SSE
 {
+	[Trait("Category", "Unit")]
 	public class BRC
 	{
 		private readonly bool _print = false;

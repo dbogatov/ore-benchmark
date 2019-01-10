@@ -56,6 +56,8 @@ namespace Simulation.Protocol.ORAM
 					new Comparator(),
 					branches
 				);
+			options.MinCipher = int.MinValue;
+			options.MaxCipher = int.MaxValue;
 
 			_tree = new Tree<string, int>(options);
 			_branches = branches;
@@ -114,8 +116,7 @@ namespace Simulation.Protocol.ORAM
 		/// <param name="hash"></param>
 		private void AccessORAM(int hash)
 		{
-			var size = _tree.Size();
-			var heightORAM = (int)Math.Ceiling(Math.Log(size, 2));
+			var heightORAM = (int)Math.Ceiling(Math.Log(_tree.Size(), 2));
 
 			foreach (var readOrWrite in new bool[] { true, false })
 			{
@@ -126,16 +127,16 @@ namespace Simulation.Protocol.ORAM
 					if (readOrWrite)
 					{
 						E.Decrypt(_key, _gibberish);
-						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
-							new ReadBucketMessage((new byte[_z * _branches * sizeof(int)], size))
+						_mediator.SendToServer<(byte[], int, int), object>(
+							new ReadBucketMessage((new byte[_z * _branches * sizeof(int)], i, heightORAM))
 						);
 					}
 					else
 					{
 						E.Encrypt(_key, Encoding.Default.GetBytes("Re-encrypt data"));
 						G.Next(); // remap value in position table
-						_mediator.SendToServer<ValueTuple<byte[], int>, object>(
-							new WriteBucketMessage((new byte[_z * _branches * sizeof(int)], size))
+						_mediator.SendToServer<(byte[], int, int), object>(
+							new WriteBucketMessage((new byte[_z * _branches * sizeof(int)], i, heightORAM))
 						);
 					}
 				}

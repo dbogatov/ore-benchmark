@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Test.Simulators.Protocols
 {
+	[Trait("Category", "Unit")]
 	public class CachePolicies
 	{
 		private readonly int RUNS = 100;
