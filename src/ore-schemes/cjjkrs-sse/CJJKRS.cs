@@ -39,7 +39,10 @@ namespace ORESchemes.CJJKRS
 			public T Value { get; set; }
 		}
 
-		public class Token : Wrapper<byte[]> { }
+		public class Token : Wrapper<byte[]>
+		{
+			public int Size { get => Value.Count() * 8; }
+		}
 		public class EncryptedIndices : Wrapper<BitArray[]> { }
 		public class Database : Wrapper<TSetStructure>
 		{

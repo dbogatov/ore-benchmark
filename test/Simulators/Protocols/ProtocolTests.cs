@@ -164,4 +164,25 @@ namespace Test.Simulators.Protocols.Integration
 			}
 		}
 	}
+
+	[Trait("Category", "Unit")]
+	public class SSEProtocol : AbsProtocol
+	{
+		public SSEProtocol()
+		{
+			_protocol = new global::Simulation.Protocol.SSE.Protocol(new Random(123456).GetBytes(128 / 8), 64);
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.SchemeOperation);
+				return set;
+			}
+		}
+	}
 }

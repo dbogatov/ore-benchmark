@@ -97,9 +97,9 @@
 				We refer to the [paper](https://dbogatov.org/assets/custom/docs/ore-benchmark.pdf) for protocol descriptions.
 
 				**Dataset** is a list of index-value pair, where index is an integer and value is string.
-				The format is a number, followed by coma, followed by string value without quotes per line.
+				The format is a number, followed by coma, followed by string value of maximum 10 characters without quotes per line.
 				For example, `4, elephant`.
-				Values are generally discarded, so please do not put special characters in them.
+				Values do not play a special role in simulations, so you may put index as a string for value.
 
 				**Queryset** is a list of from-to pairs, where both components are integers and the first is no greater than the second.
 				The format is a number, followed by coma, followed by a number.
@@ -111,6 +111,7 @@
 				I/O performance heavily depends on the page size and the **number of elements per I/O page**.
 				Default values will be assigned such that elements (ciphertexts) and B+ tree nodes fit in a page, assuming page size of @(Config["Daemon:SimulationService:PageSize"]) bits.
 				For ORAM, client's B+ tree branching factor is 128.
+				An *element* is specific to protocol: a node for B+ tree and POPE, symmetric encryption cipher for Kerschbaum, block of ORAM or T-set record for SSE.
 				
 				> Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
 				> Inputs beyond these limits will be discarded.

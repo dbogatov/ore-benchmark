@@ -199,5 +199,51 @@ namespace ORESchemes.Shared
 			bits.CopyTo(ret, 0);
 			return ret;
 		}
+
+		/// <summary>
+		/// An override of BitArray default GetHashCode.
+		/// This one takes into account the contents of the array, not its address.
+		/// </summary>
+		public static int ProperHashCode(this BitArray bits)
+		{
+			var bytes = bits.ToBytes();
+
+			unchecked
+			{
+				if (bytes == null)
+				{
+					return 0;
+				}
+				int hash = 17;
+				foreach (var @byte in bytes)
+				{
+					hash = hash * 31 + @byte;
+				}
+				return hash;
+			}
+		}
+
+		/// <summary>
+		/// A convenient extension for applying Distinct combinator for property of an object.
+		/// https://stackoverflow.com/a/489421/1644554
+		/// </summary>
+		/// <param name="keySelector">Lambda that returns a key for which Distinct needs to compute</param>
+		/// <typeparam name="TSource">Type of the enumerable element</typeparam>
+		/// <typeparam name="TKey">Type of the key</typeparam>
+		/// <returns>
+		/// This list with all elements filtered such that particular property
+		/// identified by the key is distinct
+		/// </returns>
+		public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+		{
+			HashSet<TKey> seenKeys = new HashSet<TKey>();
+			foreach (TSource element in source)
+			{
+				if (seenKeys.Add(keySelector(element)))
+				{
+					yield return element;
+				}
+			}
+		}
 	}
 }

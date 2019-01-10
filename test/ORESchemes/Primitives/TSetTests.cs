@@ -55,14 +55,14 @@ namespace Test.ORESchemes.Primitives.TSet
 			Assert.False(first.IsEqualTo(third));
 			Assert.False(first.IsEqualTo(fourth));
 		}
-		
+
 		[Fact]
 		public void BitArrayToBytes()
 		{
 			var G = new Random(123456);
 			byte[] bytes = new byte[128 / 8];
 			G.NextBytes(bytes);
-			
+
 			var bits = new BitArray(bytes);
 			var shorter = new BitArray(64);
 
@@ -229,11 +229,15 @@ namespace Test.ORESchemes.Primitives.TSet
 		}
 
 		[Fact]
-		public void MalformedWord()
+		public void NonExistentWord()
 		{
-			Assert.Throws<InvalidOperationException>(
-				() => RunPipeline(_sampleInput, new StringWord { Value = "Malformed" })
-			);
+			(var TSet, var key) = T.Setup(_sampleInput);
+
+			var stag = T.GetTag(key, new StringWord { Value = "NonExistent" });
+
+			var empty = T.Retrive(TSet, stag);
+
+			Assert.Empty(empty);
 		}
 
 		[Fact]
@@ -302,6 +306,31 @@ namespace Test.ORESchemes.Primitives.TSet
 			T.Retrive(TSet, stag);
 
 			Assert.NotEqual(0, count.Value);
+		}
+
+		[Fact]
+		/// <summary>
+		/// This one actually tests a bug fix
+		/// </summary>
+		public void DuplicateQuery()
+		{
+			(var TSet, var key) = T.Setup(_sampleInput);
+			var keyword = new StringWord { Value = "Dmytro" };
+
+			var stag = T.GetTag(key, keyword);
+
+			var first = T.Retrive(TSet, stag);
+			var second = T.Retrive(TSet, stag);
+
+			Assert.True(OutputAsExpected(
+				_sampleInput[keyword],
+				first
+			));
+			
+			Assert.True(OutputAsExpected(
+				_sampleInput[keyword],
+				second
+			));
 		}
 	}
 }

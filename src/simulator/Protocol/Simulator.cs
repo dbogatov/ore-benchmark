@@ -163,8 +163,14 @@ namespace Simulation.Protocol
 							elementsPerPage,
 							128
 						);
+				case ORESchemes.Shared.ORESchemes.SSE:
+					return
+						new Simulation.Protocol.SSE.Protocol(
+							new Random(seed).GetBytes(128 / 8),
+							elementsPerPage
+						);
 				default:
-					throw new NotImplementedException($"Scheme {scheme} is not yet supported");
+					throw new NotImplementedException($"Protocol {scheme} is not yet supported");
 			}
 		}
 	}

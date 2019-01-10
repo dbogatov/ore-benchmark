@@ -16,8 +16,10 @@ namespace Simulation.Protocol.ORAM
 		/// </summary>
 		private class Comparator : IOREComparator<int>
 		{
+#pragma warning disable 67
 			public event SchemeOperationEventHandler OperationOcurred;
 			public event PrimitiveUsageEventHandler PrimitiveUsed;
+#pragma warning restore 67
 
 			public bool IsEqual(int ciphertextOne, int ciphertextTwo) => ciphertextOne == ciphertextTwo;
 
@@ -58,7 +60,7 @@ namespace Simulation.Protocol.ORAM
 			_tree = new Tree<string, int>(options);
 			_branches = branches;
 			_z = z;
-			
+
 			options.NodeAccessHandler = AccessORAM;
 
 			OnClientStorage(_key.Length * 8);
@@ -87,9 +89,9 @@ namespace Simulation.Protocol.ORAM
 					result,
 					checkRanges: true
 				);
-				
+
 				RecordStorage();
-				
+
 				OnQueryCompleted();
 			}
 		}

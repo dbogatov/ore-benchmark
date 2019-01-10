@@ -21,7 +21,9 @@ namespace Web.Models.View
 		[Display(Name = "POPE Protocol")]
 		POPE,
 		[Display(Name = "ORAM Protocol")]
-		ORAM
+		ORAM,
+		[Display(Name = "Logarithmic-BRC SSE Protocol")]
+		SSE
 	}
 	
 	public enum PrimitiveView
@@ -53,7 +55,7 @@ namespace Web.Models.View
 		[Display(Name = "ORAM read / write request")]
 		ORAMLevel,
 		[Display(Name = "Tuple-set (SSE scheme)")]
-		TSet,
+		TSet
 	}
 
 	public class SimulationViewModel

@@ -154,11 +154,18 @@ namespace Test.ORESchemes
 		}
 
 		[Fact]
-		public void MalformedKeyword()
+		public void NonExistentKeyword()
 		{
-			Assert.Throws<InvalidOperationException>(
-				() => PrimitiveRun("Malformed")
-			);
+			var database = _client.Setup(_input);
+
+			_server = new Scheme.Server(database);
+
+			// Search protocol
+			var keyword = new StringWord { Value = "NonExistent" };
+			var token = _client.Trapdoor(keyword);
+			var encrypted = _server.Search(token);
+			
+			Assert.Empty(encrypted.Value);
 		}
 
 		[Fact]
