@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using CLI.DataReaders;
 using Simulation.Protocol;
 using System.Linq;
+using Simulation;
 
 namespace CLI
 {
@@ -20,6 +21,9 @@ namespace CLI
 		[Range(0, Int32.MaxValue)]
 		[Option("--cache-size <number>", Description = "Cache size for node of data structure. 0 means no cache. Default 100.")]
 		public int CacheSize { get; } = 100;
+		
+		[Option("--cache-policy <enum>", Description = "Cache policy to use for I/O. Default LFU.")]
+		public CachePolicy CachePolicy { get; } = CachePolicy.LFU;
 
 		[Range(2, 1024)]
 		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
@@ -38,6 +42,7 @@ namespace CLI
 
 			var reader = new Protocol(Parent.Dataset, Queries);
 			reader.Inputs.CacheSize = CacheSize;
+			reader.Inputs.CachePolicy = CachePolicy;
 			if (DataPercent != 100)
 			{
 				reader.Inputs.Dataset = reader.Inputs.Dataset.Take((int)Math.Round(reader.Inputs.Dataset.Count * (DataPercent / 100.0))).ToList();

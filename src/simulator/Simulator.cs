@@ -7,6 +7,11 @@ using System.Diagnostics;
 
 namespace Simulation
 {
+	public enum CachePolicy
+	{
+		LRU, LFU, FIFO
+	}
+
 	/// <summary>
 	/// Undocumented methods mirror corresponding Tracker's methods
 	/// </summary>
@@ -93,8 +98,9 @@ namespace Simulation
 	public abstract class AbsTracker
 	{
 		// Cache structures
-		protected List<Tuple<int, long>> _cache;
+		protected List<(int hash, long timestamp, long frequency)> _cache;
 		protected int _cacheSize = 0;
+		protected CachePolicy _cachePolicy = CachePolicy.LFU;
 		protected long _visited = 0;
 		protected long _clock = 0;
 
@@ -128,7 +134,7 @@ namespace Simulation
 		public void ClearTrackers()
 		{
 			_visited = 0;
-			_cache = new List<Tuple<int, long>>(_cacheSize);
+			_cache = new List<(int hash, long timestamp, long frequency)>(_cacheSize);
 			_cache.Clear();
 
 			_schemeOperations.Clear();
@@ -166,9 +172,11 @@ namespace Simulation
 		/// Handler for the event that node has been visited
 		/// </summary>
 		/// <param name="nodeHash">hash of the node</param>
-		public void RecordNodeVisit(int nodeHash)
+		/// <returns>The hash of the evicted page, or null if nothing was evicted</returns>
+		public int? RecordNodeVisit(int nodeHash)
 		{
 			_clock++;
+			int? evicted = null;
 
 			if (_cacheSize > 0)
 			{
@@ -178,15 +186,26 @@ namespace Simulation
 				{
 					var tuple = _cache[i];
 
-					if (tuple.Item1 == nodeHash)
+					if (tuple.hash == nodeHash)
 					{
 						// cache hit
-						return;
+						_cache[i] = (
+							hash: tuple.hash,
+							timestamp: _cachePolicy == CachePolicy.LRU ? _clock : tuple.timestamp, // update only for LRU
+							frequency: tuple.frequency + 1
+						);
+						return null;
 					}
 
-					if (tuple.Item2 < min)
+					if (_cachePolicy == CachePolicy.LRU && tuple.timestamp < min)
 					{
-						min = tuple.Item2;
+						min = tuple.timestamp;
+						toEvict = i;
+					}
+
+					if (_cachePolicy == CachePolicy.LFU && tuple.frequency < min)
+					{
+						min = tuple.frequency;
 						toEvict = i;
 					}
 				}
@@ -194,17 +213,19 @@ namespace Simulation
 				if (_cache.Count == _cacheSize)
 				{
 					// Need to evict
-					_cache[toEvict] = new Tuple<int, long>(nodeHash, _clock);
+					evicted = _cache[toEvict].hash;
+					_cache[toEvict] = (nodeHash, _clock, 1);
 				}
 				else
 				{
 					// No need to evict
-					_cache.Add(new Tuple<int, long>(nodeHash, _clock));
+					_cache.Add((nodeHash, _clock, 1));
 				}
-
 			}
 
 			_visited++;
+			
+			return evicted;
 		}
 
 		/// <summary>

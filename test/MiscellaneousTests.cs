@@ -134,7 +134,7 @@ namespace Test
 					)
 			);
 		}
-		
+
 		[Fact]
 		public void DisplayNameExtension()
 		{
@@ -148,7 +148,7 @@ namespace Test
 			);
 		}
 
-		public abstract class EnumViewCorrelation<E, V> 
+		public abstract class EnumViewCorrelation<E, V>
 			where E : Enum
 			where V : Enum
 		{
@@ -178,11 +178,18 @@ namespace Test
 				global::Web.Models.View.ORESchemesView
 			>
 		{ }
-		
+
 		public class PrimitivesCorrelation : EnumViewCorrelation
 			<
 				global::ORESchemes.Shared.Primitives.Primitive,
 				global::Web.Models.View.PrimitiveView
+			>
+		{ }
+
+		public class CachePolicyCorrelation : EnumViewCorrelation
+			<
+				global::Simulation.CachePolicy,
+				global::Web.Models.View.CachePolicyView
 			>
 		{ }
 	}

@@ -97,7 +97,8 @@ namespace Web.Services
 						{
 							Queries = simulation.Queryset.ToList(),
 							Dataset = simulation.Dataset.ToList(),
-							CacheSize = simulation.CacheSize
+							CacheSize = simulation.CacheSize,
+							CachePolicy = simulation.CachePolicy
 						},
 						Simulator.GenerateProtocol(simulation.Protocol, simulation.Seed, simulation.ElementsPerPage)
 					).Simulate();

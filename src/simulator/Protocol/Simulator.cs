@@ -24,8 +24,8 @@ namespace Simulation.Protocol
 				throw new ArgumentException($"Cache size must not be negative. Given {_inputs.CacheSize}.");
 			}
 
-			perQuery = new Tracker(_inputs.CacheSize);
-			perStage = new Tracker(_inputs.CacheSize);
+			perQuery = new Tracker(_inputs.CacheSize, _inputs.CachePolicy);
+			perStage = new Tracker(_inputs.CacheSize, _inputs.CachePolicy);
 
 			protocol.NodeVisited += RecordNodeVisit;
 			protocol.OperationOcurred += RecordSchemeOperation;
@@ -177,9 +177,10 @@ namespace Simulation.Protocol
 
 	public class Tracker : AbsTracker
 	{
-		public Tracker(int cacheSize)
+		public Tracker(int cacheSize, CachePolicy cachePolicy)
 		{
 			_cacheSize = cacheSize;
+			_cachePolicy = cachePolicy;
 		}
 
 		public override AbsSubReport ReadMetrics()

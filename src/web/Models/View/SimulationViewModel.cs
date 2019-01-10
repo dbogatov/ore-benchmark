@@ -1,7 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using Simulation;
 
 namespace Web.Models.View
 {
+	public enum CachePolicyView
+	{
+		[Display(Name = "Least-frequently used (LFU)")]
+		LFU,
+		[Display(Name = "Least-recently used (LRU)")]
+		LRU,
+		[Display(Name = "First-in, First-out (FIFO)")]
+		FIFO
+	}
+
 	public enum ORESchemesView
 	{
 		[Display(Name = "No Encryption")]
@@ -25,33 +36,33 @@ namespace Web.Models.View
 		[Display(Name = "Logarithmic-BRC SSE Protocol")]
 		SSE
 	}
-	
+
 	public enum PrimitiveView
 	{
-		AES, 
+		AES,
 		[Display(Name = "PRF (function)")]
-		PRF, 
+		PRF,
 		[Display(Name = "Symmetric encryption")]
-		Symmetric, 
+		Symmetric,
 		[Display(Name = "PRG (generator)")]
 		PRG,
 		Hash,
 		[Display(Name = "Length-flexible PRF")]
 		LFPRF,
 		[Display(Name = "PRP (permutation)")]
-		PRP, 
+		PRP,
 		[Display(Name = "Hyper-geometric sampler")]
 		HGSampler,
 		[Display(Name = "Uniform sampler")]
-		UniformSampler, 
+		UniformSampler,
 		[Display(Name = "Binomial sampler")]
-		BinomialSampler, 
+		BinomialSampler,
 		[Display(Name = "Property-preserving hash")]
-		PPH, 
+		PPH,
 		[Display(Name = "Tree traversal (FH-OPE)")]
-		TreeTraversal, 
+		TreeTraversal,
 		[Display(Name = "ORAM path read / write")]
-		ORAMPath, 
+		ORAMPath,
 		[Display(Name = "ORAM read / write request")]
 		ORAMLevel,
 		[Display(Name = "Tuple-set (SSE scheme)")]
@@ -71,18 +82,29 @@ namespace Web.Models.View
 				return (ORESchemes.Shared.ORESchemes)Protocol;
 			}
 		}
-		
+
+		[EnumDataType(typeof(CachePolicyView))]
+		[Display(Name = "Cache policy")]
+		public CachePolicyView CachePolicy { get; set; } = CachePolicyView.LFU;
+		public CachePolicy CachePolicyReal
+		{
+			get
+			{
+				return (CachePolicy)CachePolicy;
+			}
+		}
+
 		// Allow maximum of 10K lines of 64 characters
-		[StringLength(64*10*1000, ErrorMessage = "Max dataset size is 640000 characters!")]
+		[StringLength(64 * 10 * 1000, ErrorMessage = "Max dataset size is 640000 characters!")]
 		public string Dataset { get; set; }
-		
-		[StringLength(64*10*1000, ErrorMessage = "Max queryset size is 640000 characters!")]
+
+		[StringLength(64 * 10 * 1000, ErrorMessage = "Max queryset size is 640000 characters!")]
 		public string Queryset { get; set; }
 
 		[Range(0, 100)]
 		[Display(Name = "Cache size")]
 		public int? CacheSize { get; set; }
-		
+
 		[Range(2, 1024)]
 		[Display(Name = "Elements per I/O page")]
 		public int? ElementsPerPage { get; set; }

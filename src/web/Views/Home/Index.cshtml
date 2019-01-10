@@ -50,11 +50,19 @@
 				<textarea class="form-control" rows="3" asp-for="Dataset" placeholder="Maximum @(Config["Limits:Dataset"]) records. Leave blank to sample uniformly."></textarea>
 				<span class="text-danger"  asp-validation-for="Dataset"></span>
 			</div>
+			
 			<div class="form-group">
 				<label asp-for="Queryset"></label>
 				<textarea class="form-control" rows="3" asp-for="Queryset" placeholder="Maximum @(Config["Limits:Queryset"]) queries. Leave blank to sample uniformly 1%-wide ranges."></textarea>
 				<span class="text-danger"  asp-validation-for="Queryset"></span>
 			</div>
+			
+			<div class="form-group">
+				<label asp-for="CachePolicy"></label>
+				<select class="form-control" asp-for="CachePolicy" asp-items="Html.GetEnumSelectList<CachePolicyView>()"></select>
+				<span class="text-danger" asp-validation-for="CachePolicy"></span>
+			</div>
+
 			<div class="form-group">
 				<label asp-for="CacheSize"></label>
 				<input class="form-control" asp-for="CacheSize" placeholder="From 0 (default) to 100" />

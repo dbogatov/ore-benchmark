@@ -72,6 +72,8 @@
 				
 				**Cache size:** @Model.CacheSize
 				
+				**Cache policy:** @( ((CachePolicyView)Model.CachePolicy).GetDescription<CachePolicyView>() )
+				
 				**Elements per I/O page:** @Model.ElementsPerPage
 				
 				**Input data and query sets are below**

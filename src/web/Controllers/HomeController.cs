@@ -56,6 +56,7 @@ namespace Web.Controllers
 					);
 
 					simulation.CacheSize = model.CacheSize.HasValue ? model.CacheSize.Value : 0;
+					simulation.CachePolicy = model.CachePolicyReal;
 					simulation.Seed = model.Seed.Value;
 					if (model.ElementsPerPage.HasValue)
 					{
