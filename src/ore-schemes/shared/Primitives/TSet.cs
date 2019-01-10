@@ -31,7 +31,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		public byte[] ToBytes() => Encoding.Default.GetBytes(Value);
 
 		public override int GetHashCode() => Value.GetHashCode();
-		
+
 		// override object.Equals
 		public override bool Equals(object obj)
 			=> this.Value == ((StringWord)obj).Value;
@@ -142,7 +142,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 		{
 			OnUse(Primitive.TSet);
 
-			var traversedLengths = new List<int>();
+			var traversed = new List<int>();
 
 			// Initialize t as an empty list, bit Beta as 1, and counter i as 1
 			var t = new List<BitArray>();
@@ -158,13 +158,19 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 				// Search for index j in {1, ..., S} s.t. B[j].label = L.
 				var jFound = -1;
+				var recordsTraversed = 0;
 				for (int j = 0; j < B.Count(); j++)
 				{
-					if (B[j] != null && B[j].Label.IsEqualTo(L))
+					if (B[j] != null)
 					{
-						jFound = j;
-						traversedLengths.Add(j);
-						break;
+						recordsTraversed++;
+						
+						if (B[j].Label.IsEqualTo(L))
+						{
+							jFound = j;
+							traversed.Add(recordsTraversed);
+							break;
+						}
 					}
 				}
 
@@ -172,7 +178,7 @@ namespace ORESchemes.Shared.Primitives.TSet
 				{
 					// throw new InvalidOperationException($"No j such that B[j].label = L (i = {i}). Most likely, malformed word supplied.");
 					// here we deviate from the standard construction to allow keywords which were not supplied upon setup
-					traversedLengths.Add(B.Count());
+					traversed.Add(B.Count());
 					break;
 				}
 
@@ -218,11 +224,11 @@ namespace ORESchemes.Shared.Primitives.TSet
 					}
 				}
 
-				foreach (var length in traversedLengths)
+				foreach (var records in traversed)
 				{
 					var hash = _G.Next(1, totalPages);
-					var traversed = length * recordSize;
-					var pagesPerAccess = (int)Math.Ceiling(1.0 * traversed / PageSize.Value);
+					var traversedBits = records * recordSize;
+					var pagesPerAccess = (int)Math.Ceiling(1.0 * traversedBits / PageSize.Value);
 					for (int k = 0; k < pagesPerAccess; k++)
 					{
 						OnVisit((hash + pagesPerAccess) % totalPages);
