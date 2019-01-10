@@ -197,7 +197,7 @@ namespace Simulation
 						return null;
 					}
 
-					if (_cachePolicy == CachePolicy.LRU && tuple.timestamp < min)
+					if ((_cachePolicy == CachePolicy.LRU || _cachePolicy == CachePolicy.FIFO) && tuple.timestamp < min)
 					{
 						min = tuple.timestamp;
 						toEvict = i;
@@ -224,7 +224,7 @@ namespace Simulation
 			}
 
 			_visited++;
-			
+
 			return evicted;
 		}
 
