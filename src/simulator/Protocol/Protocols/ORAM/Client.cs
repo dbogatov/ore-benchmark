@@ -103,7 +103,7 @@ namespace Simulation.Protocol.ORAM
 		/// </summary>
 		private void RecordStorage() =>
 			OnClientStorage(
-				sizeof(int) * 8 + // B+ root ID in ORAM
+				sizeof(int) * 8 + // B+ tree root ID in ORAM
 				_key.Length * 8 + // a key
 				_tree.Nodes(includeDataNodes: false) * sizeof(int) * 8 + // an ORAM position table (N integers)
 				(int)Math.Ceiling(Math.Log(_tree.Nodes(includeDataNodes: false), 2)) // an ORAM stash (log N)

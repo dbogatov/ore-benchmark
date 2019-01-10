@@ -5,10 +5,10 @@ namespace Web.Models.View
 {
 	public enum CachePolicyView
 	{
-		[Display(Name = "Least-frequently used (LFU)")]
-		LFU,
 		[Display(Name = "Least-recently used (LRU)")]
 		LRU,
+		[Display(Name = "Least-frequently used (LFU)")]
+		LFU,
 		[Display(Name = "First-in, First-out (FIFO)")]
 		FIFO
 	}
