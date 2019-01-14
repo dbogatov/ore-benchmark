@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ORESchemes.Shared.Primitives.PRG;
-using ORESchemes.Shared.Primitives.PRP;
 
 namespace ORESchemes.Shared
 {
@@ -106,6 +105,9 @@ namespace ORESchemes.Shared
 			G.NextBytes(bytes);
 			return bytes;
 		}
+
+		public static BitArray GetBits(this IPRG G, int n)
+			=> new BitArray(new BitArray(G.GetBytes((n + 7) / 8)).Cast<bool>().Take(n).ToArray());
 
 		/// <summary>
 		/// Helper that returns an array of uniformly sampled bytes of given size
