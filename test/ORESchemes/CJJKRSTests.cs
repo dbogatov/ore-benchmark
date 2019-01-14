@@ -164,7 +164,7 @@ namespace Test.ORESchemes
 			var keyword = new StringWord { Value = "NonExistent" };
 			var token = _client.Trapdoor(keyword);
 			var encrypted = _server.Search(token);
-			
+
 			Assert.Empty(encrypted.Value);
 		}
 
@@ -174,9 +174,9 @@ namespace Test.ORESchemes
 			var expectedTotal =
 				new Dictionary<Primitive, int> {
 					{ Primitive.TSet, 3 },
-					{ Primitive.PRG, 9 },
+					{ Primitive.PRG, 61 },
 					{ Primitive.PRF, 6 },
-					{ Primitive.AES, 21 },
+					{ Primitive.AES, 73 },
 					{ Primitive.Hash, 12 },
 					{ Primitive.PRP, 2 },
 					{ Primitive.Symmetric, 6 }
@@ -275,7 +275,7 @@ namespace Test.ORESchemes
 		{
 			var database = _client.Setup(_input);
 
-			Assert.InRange(database.Size, 512 * 4, 512 * 5);
+			Assert.InRange(database.Size, 513 * 5 * 5, 513 * 5 * 5 * 2);
 		}
 	}
 }
