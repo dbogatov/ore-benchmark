@@ -210,9 +210,14 @@ namespace ORESchemes.Shared
 		/// This one takes into account the contents of the array, not its address.
 		/// </summary>
 		public static int ProperHashCode(this BitArray bits)
-		{
-			var bytes = bits.ToBytes();
+			=> bits.ToBytes().ProperHashCode();
 
+		/// <summary>
+		/// An override of byte array default GetHashCode.
+		/// This one takes into account the contents of the array, not its address.
+		/// </summary>
+		public static int ProperHashCode(this byte[] bytes)
+		{
 			unchecked
 			{
 				if (bytes == null)

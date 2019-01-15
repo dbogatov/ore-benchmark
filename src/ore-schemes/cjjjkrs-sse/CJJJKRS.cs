@@ -24,7 +24,7 @@ namespace ORESchemes.CJJJKRS
 	/// </summary>
 	/// <typeparam name="W">Word type</typeparam>
 	/// <typeparam name="I">Index type</typeparam>
-	public static class CJJKRS<W, I>
+	public static class CJJJKRS<W, I>
 		where W : IWord
 		where I : IIndex
 	{
@@ -39,6 +39,32 @@ namespace ORESchemes.CJJJKRS
 
 		public class Database : Wrapper<Dictionary<byte[], byte[]>>
 		{
+			/// <summary>
+			/// Needed for correct behavior of dictionary with byte array key
+			/// </summary>
+			public class ByteArrayComparer : EqualityComparer<byte[]>
+			{
+				// https://stackoverflow.com/a/30353296/1644554
+				public override bool Equals(byte[] first, byte[] second)
+				{
+					if (first == null || second == null)
+					{
+						return first == second;
+					}
+					if (ReferenceEquals(first, second))
+					{
+						return true;
+					}
+					if (first.Length != second.Length)
+					{
+						return false;
+					}
+					return first.SequenceEqual(second);
+				}
+				public override int GetHashCode(byte[] obj)
+					=> obj == null ? 0 : obj.ProperHashCode();
+			}
+
 			public int Size { get => 8 * Value.Sum(kvp => kvp.Key.Length + kvp.Value.Length); }
 		}
 
@@ -67,7 +93,7 @@ namespace ORESchemes.CJJJKRS
 			public (Database, byte[]) Setup(Dictionary<W, I[]> input)
 			{
 				var key = G.GetBytes(256 / 8);
-				var result = new Dictionary<byte[], byte[]>();
+				var result = new Dictionary<byte[], byte[]>(new Database.ByteArrayComparer());
 
 				foreach (var wordIndices in input)
 				{
@@ -134,6 +160,7 @@ namespace ORESchemes.CJJJKRS
 						var d = _database.Value[dictKey];
 						var id = E.Decrypt(token.Value.k2, d);
 						result.Add(decode(id));
+						c++;
 					}
 					else
 					{
