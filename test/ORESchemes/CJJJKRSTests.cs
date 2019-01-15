@@ -64,7 +64,7 @@ namespace Test.ORESchemes
 		{
 			byte[] entropy = new byte[128 / 8];
 
-			_client = new Scheme.Client(entropy);
+			_client = new Scheme.Client(int.MaxValue, 1, entropy);
 		}
 
 		public IIndex[] PrimitiveRun(string word)

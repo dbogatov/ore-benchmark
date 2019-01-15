@@ -79,8 +79,14 @@ namespace ORESchemes.CJJJKRS
 			private readonly IPRF F;
 			private readonly ISymmetric E;
 
-			public Client(byte[] entropy = null)
+			private readonly int _b;
+			private readonly int _B;
+
+			public Client(int b = int.MaxValue, int B = 1, byte[] entropy = null)
 			{
+				_b = b;
+				_B = B;
+
 				G = new PRGFactory(entropy).GetPrimitive();
 				F = new PRFFactory().GetPrimitive();
 				E = new SymmetricFactory().GetPrimitive();
@@ -103,12 +109,39 @@ namespace ORESchemes.CJJJKRS
 					var k1 = F.PRF(key.Take(128 / 8).ToArray(), word.ToBytes());
 					var k2 = F.PRF(key.Skip(128 / 8).ToArray(), word.ToBytes());
 
-					for (int c = 0; c < indices.Length; c++)
+					if (indices.Length < _b)
 					{
-						var l = F.PRF(k1, BitConverter.GetBytes(c));
-						var d = E.Encrypt(k2, indices[c].ToBytes());
-						result.Add(l, d);
+						for (int c = 0; c < indices.Length; c++)
+						{
+							var l = F.PRF(k1, BitConverter.GetBytes(c));
+							var d = E.Encrypt(k2, indices[c].ToBytes());
+							result.Add(l, d);
+						}
 					}
+					else
+					{
+						for (int c = 0; c < indices.Length; c += _B)
+						{
+							var l = F.PRF(k1, BitConverter.GetBytes(c));
+							var bucket = indices.Skip(c).Take(_B).Select(i => i.ToBytes());
+							if (bucket.Count() < _B)
+							{
+								bucket = bucket.Concat(
+									Enumerable
+										.Range(0, _B - bucket.Count())
+										.Select(_ =>
+											Enumerable
+												.Repeat((byte)0x00, 128 / 8)
+												.ToArray()
+										)
+								);
+							}
+
+							var d = E.Encrypt(k2, bucket.SelectMany(b => b).ToArray());
+							result.Add(l, d);
+						}
+					}
+
 				}
 
 				return (new Database { Value = result }, key);
@@ -130,15 +163,18 @@ namespace ORESchemes.CJJJKRS
 			private readonly IPRF F;
 			private readonly ISymmetric E;
 
+			private readonly int _B;
+
 			/// <summary>
 			/// I/O page size in bits.
 			/// If set, NodeVisited event will be fired.
 			/// </summary>
 			public int? PageSize { private get; set; }
 
-			public Server(Database database)
+			public Server(Database database, int B = 1)
 			{
 				_database = database;
+				_B = B;
 
 				F = new PRFFactory().GetPrimitive();
 				E = new SymmetricFactory().GetPrimitive();
@@ -158,8 +194,28 @@ namespace ORESchemes.CJJJKRS
 					if (_database.Value.ContainsKey(dictKey))
 					{
 						var d = _database.Value[dictKey];
-						var id = E.Decrypt(token.Value.k2, d);
-						result.Add(decode(id));
+						var ids = E.Decrypt(token.Value.k2, d);
+						if (d.Length == (2 * 128 / 8)) // IV + cipher
+						{
+							result.Add(decode(ids));
+						}
+						else
+						{
+							for (int i = 0; i < _B; i++)
+							{
+								var id = ids.Skip(i * (128 / 8)).Take(_B).ToArray();
+								if (!id.All(b => b == 0x00))
+								{
+									result.Add(decode(id));
+								}
+								else
+								{
+									break;
+								}
+							}
+
+						}
+
 						c++;
 					}
 					else
