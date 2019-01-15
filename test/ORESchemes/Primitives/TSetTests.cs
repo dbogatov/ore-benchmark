@@ -32,6 +32,7 @@ namespace Test.ORESchemes.Primitives.TSet
 		public CashTSet1024() : base(alpha: 1024) { }
 	}
 
+	[Trait("Category", "Unit")]
 	public class BitArrayChecks
 	{
 		[Fact]

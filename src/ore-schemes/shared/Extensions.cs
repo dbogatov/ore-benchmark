@@ -106,6 +106,9 @@ namespace ORESchemes.Shared
 			return bytes;
 		}
 
+		/// <summary>
+		/// Returns a given number of pseudo-randomly sampled bits
+		/// </summary>
 		public static BitArray GetBits(this IPRG G, int n)
 			=> new BitArray(new BitArray(G.GetBytes((n + 7) / 8)).Cast<bool>().Take(n).ToArray());
 
