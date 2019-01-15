@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using ORESchemes.Shared.Primitives.Hash;
 using ORESchemes.Shared.Primitives.PRF;
@@ -72,8 +73,9 @@ namespace ORESchemes.Shared.Primitives.TSet
 		/// between keywords and encrypted indices of documents
 		/// </summary>
 		/// <param name="T">Mapping of keywords to lists of encrypted indices</param>
+		/// <param name="p">Probability of a failure - the lower the fewer re-runs will be required, but the longer the buckets will be</param>
 		/// <returns>An encrypted index data structure and a secret key</returns>
-		(TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T);
+		(TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T, double p = 0.5);
 
 		/// <summary>
 		/// Generates a token to search over encrypted index data structure
@@ -160,16 +162,13 @@ namespace ORESchemes.Shared.Primitives.TSet
 				var recordsTraversed = 0;
 				for (int j = 0; j < B.Count(); j++)
 				{
-					if (B[j] != null)
+					recordsTraversed++;
+
+					if (B[j].Label.IsEqualTo(L))
 					{
-						recordsTraversed++;
-						
-						if (B[j].Label.IsEqualTo(L))
-						{
-							jFound = j;
-							traversed.Add(recordsTraversed);
-							break;
-						}
+						jFound = j;
+						traversed.Add(recordsTraversed);
+						break;
 					}
 				}
 
@@ -239,9 +238,41 @@ namespace ORESchemes.Shared.Primitives.TSet
 			return t.ToArray();
 		}
 
-		public (TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T)
+		public (TSetStructure, byte[]) Setup(Dictionary<IWord, BitArray[]> T, double p = 0.5)
 		{
 			OnUse(Primitive.TSet);
+
+			// Choosing B and S
+			// k is set to log_2 N, probability is set to 0.5
+			double Formula(int n, double k, int s) => ((n * k) / s) * Math.Pow((Math.Exp(1 - 1 / k) / k), s);
+
+			var N = T.Sum(v => v.Value.Count());
+			var overhead = Math.Log(N, 2);
+			var S = 5;
+			var epsilon = 0.1;
+			var haltDetection = new HashSet<int> { S };
+			while (true)
+			{
+				var overflow = Formula(N, overhead, S);
+				if (overflow < p - epsilon)
+				{
+					S = (int)Math.Round(S * 0.75);
+				}
+				else if (overflow > p + epsilon)
+				{
+					S *= 2;
+				}
+				if (haltDetection.Contains(S))
+				{
+					break;
+				}
+				haltDetection.Add(S);
+			}
+			var B = (int)Math.Round(overhead * N / S);
+
+			// At least some reasonable minimum values
+			S = S >= 5 ? S : 5;
+			B = B >= 5 ? B : 5;
 
 			// Extract ALPHA
 			var alpha = 0;
@@ -251,23 +282,10 @@ namespace ORESchemes.Shared.Primitives.TSet
 				alpha = word.Value[0].Length;
 			}
 
-			var bMultiplier = 2;
-			var sMultiplier = 2;
-
 			while (true)
 			{
-
 				try // until no overflow
 				{
-					// The TSetSetup(T) procedure sets the parameters B and S depending on the total number N
-					var N = T.Sum(v => v.Value.Count());
-					var B = (int)Math.Ceiling(bMultiplier * Math.Log(N, 2));
-					var S = sMultiplier * N / B;
-
-					// At least some reasonable minimum values
-					S = S >= 5 ? S : 5;
-					B = B >= 5 ? B : 5;
-
 					// Initialize an array TSet of size B whose every element is an array of S records of type record
 					var TSet = new Record[B][];
 					for (int i = 0; i < B; i++)
@@ -334,6 +352,22 @@ namespace ORESchemes.Shared.Primitives.TSet
 						}
 					}
 
+					// This step is to ensure that empty (null) records are filled with random
+					for (int b = 0; b < B; b++)
+					{
+						for (int s = 0; s < S; s++)
+						{
+							if (TSet[b][s] == null)
+							{
+								TSet[b][s] = new Record
+								{
+									Label = G.GetBits(alpha),
+									Value = G.GetBits(alpha + 1),
+								};
+							}
+						}
+					}
+
 					// Output (TSet, Kt).
 					return (new TSetStructure { Set = TSet, B = B, alpha = alpha }, Kt);
 				}
@@ -341,8 +375,6 @@ namespace ORESchemes.Shared.Primitives.TSet
 				{
 					// Oops, overflow
 					// If it happens too often (non-negligibly often), consider different B and S
-					bMultiplier *= 2;
-					sMultiplier *= 2;
 					continue;
 				}
 			}
@@ -362,7 +394,8 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 			var output = H.ComputeHash(input);
 
-			while (output.Length * 8 < sizeof(int) * 8 + alpha + alpha + 1)
+			// request double int size (64 bits) for b to reduce bias
+			while (output.Length * 8 < 2 * (sizeof(int) * 8) + alpha + alpha + 1)
 			{
 				var upper = output.Skip(output.Length - 512 / 8 / 2).Take(512 / 8 / 2).ToArray();
 				output = output.Take(output.Length - 512 / 8 / 2).ToArray();
@@ -371,8 +404,8 @@ namespace ORESchemes.Shared.Primitives.TSet
 
 			var bits = new BitArray(output);
 
-			var bBits = new BitArray(Enumerable.Repeat(false, sizeof(int) * 8).ToArray());
-			for (int j = 0; j < sizeof(int) * 8; j++)
+			var bBits = new BitArray(Enumerable.Repeat(false, 2 * (sizeof(int) * 8)).ToArray());
+			for (int j = 0; j < 2 * (sizeof(int) * 8); j++)
 			{
 				bBits[j] = bits[j];
 			}
@@ -389,12 +422,9 @@ namespace ORESchemes.Shared.Primitives.TSet
 				KBits[j - (sizeof(int) * 8 + alpha)] = bits[j];
 			}
 
-			// https://stackoverflow.com/a/5283199/1644554
-			int[] bArray = new int[1];
-			bBits.CopyTo(bArray, 0);
-			int b = bArray[0];
+			var bigB = BigInteger.Abs(new BigInteger(bBits.ToBytes()));
 
-			b = Math.Abs(b % B);
+			var b = (int)(bigB % B);
 
 			return (b, LBits, KBits);
 		}

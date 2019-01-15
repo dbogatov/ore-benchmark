@@ -32,6 +32,7 @@ namespace Test.ORESchemes.Primitives.TSet
 		public CashTSet1024() : base(alpha: 1024) { }
 	}
 
+	[Trait("Category", "Unit")]
 	public class BitArrayChecks
 	{
 		[Fact]
@@ -80,8 +81,9 @@ namespace Test.ORESchemes.Primitives.TSet
 
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
-		private readonly int RUNS = 50;
+		private readonly int RUNS = 20;
 		private readonly byte[] _encKey = new byte[128 / 8];
+		private readonly double _p = 0.1; // for tests, trade space for speed
 
 		private readonly Dictionary<IWord, BitArray[]> _sampleInput;
 
@@ -147,7 +149,7 @@ namespace Test.ORESchemes.Primitives.TSet
 
 		private BitArray[] RunPipeline(Dictionary<IWord, BitArray[]> input, IWord keyword)
 		{
-			(var TSet, var key) = T.Setup(input);
+			(var TSet, var key) = T.Setup(input, _p);
 
 			var stag = T.GetTag(key, keyword);
 
@@ -212,7 +214,7 @@ namespace Test.ORESchemes.Primitives.TSet
 							.ToArray()
 					);
 
-				(var TSet, var key) = T.Setup(input);
+				(var TSet, var key) = T.Setup(input, _p);
 
 				foreach (var keywordIndices in input)
 				{
@@ -231,7 +233,7 @@ namespace Test.ORESchemes.Primitives.TSet
 		[Fact]
 		public void NonExistentWord()
 		{
-			(var TSet, var key) = T.Setup(_sampleInput);
+			(var TSet, var key) = T.Setup(_sampleInput, _p);
 
 			var stag = T.GetTag(key, new StringWord { Value = "NonExistent" });
 
@@ -256,7 +258,7 @@ namespace Test.ORESchemes.Primitives.TSet
 				T,
 				set =>
 				{
-					(var TSet, var key) = set.Setup(_sampleInput);
+					(var TSet, var key) = set.Setup(_sampleInput, _p);
 
 					var stag = set.GetTag(key, new StringWord { Value = "Dmytro" });
 
@@ -264,9 +266,9 @@ namespace Test.ORESchemes.Primitives.TSet
 				},
 				new Dictionary<Primitive, int> {
 					{ Primitive.TSet, 3 },
-					{ Primitive.PRG, 5 },
+					{ Primitive.PRG, 97 },
 					{ Primitive.PRF, 3 },
-					{ Primitive.AES, 8 },
+					{ Primitive.AES, 100 },
 					{ Primitive.Hash, 6 * (_alpha / 128) }
 				},
 				new Dictionary<Primitive, int> {
@@ -283,7 +285,7 @@ namespace Test.ORESchemes.Primitives.TSet
 
 			T.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
 
-			(var TSet, var key) = T.Setup(_sampleInput);
+			(var TSet, var key) = T.Setup(_sampleInput, _p);
 			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
 
 			T.Retrive(TSet, stag);
@@ -300,7 +302,7 @@ namespace Test.ORESchemes.Primitives.TSet
 			T.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
 			T.PageSize = _alpha * 3;
 
-			(var TSet, var key) = T.Setup(_sampleInput);
+			(var TSet, var key) = T.Setup(_sampleInput, _p);
 			var stag = T.GetTag(key, new StringWord { Value = "Dmytro" });
 
 			T.Retrive(TSet, stag);
@@ -314,7 +316,7 @@ namespace Test.ORESchemes.Primitives.TSet
 		/// </summary>
 		public void DuplicateQuery()
 		{
-			(var TSet, var key) = T.Setup(_sampleInput);
+			(var TSet, var key) = T.Setup(_sampleInput, _p);
 			var keyword = new StringWord { Value = "Dmytro" };
 
 			var stag = T.GetTag(key, keyword);
@@ -326,7 +328,7 @@ namespace Test.ORESchemes.Primitives.TSet
 				_sampleInput[keyword],
 				first
 			));
-			
+
 			Assert.True(OutputAsExpected(
 				_sampleInput[keyword],
 				second

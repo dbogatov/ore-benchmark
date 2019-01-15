@@ -9,7 +9,7 @@ namespace Test.Simulators.Protocols.SSE
 	[Trait("Category", "Unit")]
 	public class Protocol
 	{
-		private readonly int RUNS = 20;
+		private readonly int RUNS = 2;
 		private readonly Random _random = new Random(123456);
 		private readonly global::Simulation.Protocol.SSE.Protocol _protocol;
 
