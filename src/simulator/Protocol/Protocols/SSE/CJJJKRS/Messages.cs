@@ -1,7 +1,7 @@
 using System.Linq;
-using static ORESchemes.CJJKRS.CJJKRS<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
+using static ORESchemes.CJJJKRS.CJJJKRS<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
 
-namespace Simulation.Protocol.SSE
+namespace Simulation.Protocol.SSE.CJJJKRS
 {
 	internal class PublishDatabaseMessage : AbsMessage<Database>
 	{
@@ -17,10 +17,10 @@ namespace Simulation.Protocol.SSE
 		public override int GetSize() => _content.Sum(t => t.Size);
 	}
 
-	public class EncryptedIndicesMessage : AbsMessage<EncryptedIndices[]>
+	public class ResultMessage : AbsMessage<Index[]>
 	{
-		public EncryptedIndicesMessage(EncryptedIndices[] content) : base(content) { }
+		public ResultMessage(Index[] content) : base(content) { }
 
-		public override int GetSize() => _content.Sum(i => i.Value.Length);
+		public override int GetSize() => 0; // result is inherent and no false positives
 	}
 }

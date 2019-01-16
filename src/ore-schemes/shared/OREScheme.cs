@@ -15,7 +15,8 @@ namespace ORESchemes.Shared
 		Florian,
 		POPE,
 		ORAM,
-		SSE
+		CJJKRS,
+		CJJJKRS
 	}
 
 	public enum SchemeOperation

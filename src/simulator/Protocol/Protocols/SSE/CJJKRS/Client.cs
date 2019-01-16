@@ -4,9 +4,9 @@ using ORESchemes.CJJKRS;
 using ORESchemes.Shared;
 using static ORESchemes.CJJKRS.CJJKRS<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
 
-namespace Simulation.Protocol.SSE
+namespace Simulation.Protocol.SSE.CJJKRS
 {
-	public class Client : AbsClient
+	public class Client : AbsClient, ISSEClient
 	{
 		private readonly CJJKRS<Word, Index>.Client SSEClient;
 
@@ -21,34 +21,8 @@ namespace Simulation.Protocol.SSE
 
 		public override void RunConstruction(List<Record> input)
 		{
-			// generate keyword - index pairs
-			var pairs = input
-				.DistinctBy(r => r.index)
-				.Select(
-					record =>
-						Cover
-							.Path(record.index.ToUInt())
-							.Select(
-								keyword => (
-									index: new Index { Value = record.value },
-									word: new Word { Value = keyword }
-								)
-							)
-				)
-				.SelectMany(l => l);
-
-			// invert index - generate a hash table where key is a keyword and
-			// value is a list of indices
-			var database = pairs
-				.GroupBy(
-					pair => pair.word,
-					pair => pair.index
-				)
-				.ToDictionary(
-					group => group.Key,
-					group => group.ToArray()
-				);
-
+			var database = Utility.InputToDatabase(input);
+			
 			var encrypted = SSEClient.Setup(database);
 
 			OnClientStorage(encrypted.Size);
@@ -64,7 +38,7 @@ namespace Simulation.Protocol.SSE
 		{
 			foreach (var query in input)
 			{
-				Search(query.from, query.to);
+				((ISSEClient)this).Search(query.from, query.to);
 
 				OnQueryCompleted();
 			}
@@ -76,7 +50,7 @@ namespace Simulation.Protocol.SSE
 		/// <param name="from">Left endpoint of a query</param>
 		/// <param name="to">Right endpoint of a query</param>
 		/// <returns>A list of indices corresponding to given range</returns>
-		internal List<Index> Search(int from, int to)
+		List<Index> ISSEClient.Search(int from, int to)
 		{
 			var keywords =
 					Cover

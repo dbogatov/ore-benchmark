@@ -2,23 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Simulation.Protocol;
+using Simulation.Protocol.SSE;
 using Xunit;
 
 namespace Test.Simulators.Protocols.SSE
 {
 	[Trait("Category", "Unit")]
-	public class Protocol
+	public class CJJKRSProtocol : AbsProtocol
 	{
-		private readonly int RUNS = 2;
-		private readonly Random _random = new Random(123456);
-		private readonly global::Simulation.Protocol.SSE.Protocol _protocol;
+		public CJJKRSProtocol() : base(2, new Simulation.Protocol.SSE.CJJKRS.Protocol(new byte[] { 0x13 }, 10)) { }
+	}
 
-		public Protocol()
+	[Trait("Category", "Unit")]
+	public class CJJJKRSProtocolNoPack : AbsProtocol
+	{
+		public CJJJKRSProtocolNoPack() : base(2, new Simulation.Protocol.SSE.CJJJKRS.Protocol(new byte[] { 0x13 }, 10)) { }
+	}
+
+	[Trait("Category", "Unit")]
+	public class CJJJKRSProtocolPack : AbsProtocol
+	{
+		public CJJJKRSProtocolPack() : base(2, new Simulation.Protocol.SSE.CJJJKRS.Protocol(new byte[] { 0x13 }, 10, 5, 20)) { }
+	}
+
+	[Trait("Category", "Unit")]
+	public class AbsProtocol
+	{
+		private readonly int _runs;
+		private readonly Random _random = new Random(123456);
+		private readonly ISSEProtocol _protocol;
+
+		internal AbsProtocol(int runs, ISSEProtocol protocol)
 		{
 			var entropy = new byte[128 / 8];
 			_random.NextBytes(entropy);
 
-			_protocol = new global::Simulation.Protocol.SSE.Protocol(entropy, 10);
+			_protocol = protocol;
+
+			_runs = runs;
 		}
 
 		[Fact]
@@ -57,24 +78,24 @@ namespace Test.Simulators.Protocols.SSE
 		[Fact]
 		public void SearchCorrecness()
 		{
-			for (int i = 0; i < RUNS; i++)
+			for (int i = 0; i < _runs; i++)
 			{
 				var input = Enumerable
-					.Range(0, RUNS * 10)
+					.Range(0, _runs * 10)
 					.Select(_ =>
 					{
-						var value = _random.Next(-RUNS * 5, RUNS * 5);
+						var value = _random.Next(-_runs * 5, _runs * 5);
 						return new Simulation.Protocol.Record(value, value.ToString());
 					})
 					.ToList();
 
-				var range = (int)Math.Floor(RUNS * 10 * 0.03);
+				var range = (int)Math.Floor(_runs * 10 * 0.03);
 
 				var queries = Enumerable
-					.Range(0, RUNS / 2)
+					.Range(0, _runs / 2)
 					.Select(_ =>
 					{
-						var value = _random.Next(-RUNS * 5, RUNS * 5 - range);
+						var value = _random.Next(-_runs * 5, _runs * 5 - range);
 						return new RangeQuery(value, value + range);
 					})
 					.ToList();

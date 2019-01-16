@@ -132,8 +132,11 @@ namespace Web.Models.Data.Entities
 				case ORESchemes.Shared.ORESchemes.AdamORE:
 					cipherSize = 4088;
 					break;
-				case ORESchemes.Shared.ORESchemes.SSE:
+				case ORESchemes.Shared.ORESchemes.CJJKRS:
 					cipherSize = 257;
+					break;
+				case ORESchemes.Shared.ORESchemes.CJJJKRS:
+					cipherSize = 128 / 8;
 					break;
 			}
 			ElementsPerPage = (int)Math.Round((double)pageSize / cipherSize);

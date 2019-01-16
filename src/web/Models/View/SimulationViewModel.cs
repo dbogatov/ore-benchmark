@@ -33,8 +33,10 @@ namespace Web.Models.View
 		POPE,
 		[Display(Name = "ORAM Protocol")]
 		ORAM,
-		[Display(Name = "Logarithmic-BRC SSE Protocol")]
-		SSE
+		[Display(Name = "Logarithmic-BRC SSE (CJJKRS'13) Protocol")]
+		CJJKRS,
+		[Display(Name = "Logarithmic-BRC SSE (CJJJKRS'14) Protocol")]
+		CJJJKRS
 	}
 
 	public enum PrimitiveView

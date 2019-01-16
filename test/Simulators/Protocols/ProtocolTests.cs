@@ -166,11 +166,32 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class SSEProtocol : AbsProtocol
+	public class CJJKRSProtocol : AbsProtocol
 	{
-		public SSEProtocol()
+		public CJJKRSProtocol()
 		{
-			_protocol = new global::Simulation.Protocol.SSE.Protocol(new Random(123456).GetBytes(128 / 8), 64);
+			_protocol = new global::Simulation.Protocol.SSE.CJJKRS.Protocol(new Random(123456).GetBytes(128 / 8), 64);
+
+			SetupHandlers();
+		}
+
+		protected override HashSet<Events> ExpectedTriggers
+		{
+			get
+			{
+				var set = Enum.GetValues(typeof(Events)).Cast<Events>().ToHashSet();
+				set.Remove(Events.SchemeOperation);
+				return set;
+			}
+		}
+	}
+	
+	[Trait("Category", "Unit")]
+	public class CJJJKRSProtocol : AbsProtocol
+	{
+		public CJJJKRSProtocol()
+		{
+			_protocol = new global::Simulation.Protocol.SSE.CJJJKRS.Protocol(new Random(123456).GetBytes(128 / 8), 64);
 
 			SetupHandlers();
 		}

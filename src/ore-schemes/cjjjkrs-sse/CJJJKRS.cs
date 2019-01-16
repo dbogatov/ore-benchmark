@@ -115,10 +115,12 @@ namespace ORESchemes.CJJJKRS
 						var l = F.PRF(k1, BitConverter.GetBytes(c));
 						var d = E.Encrypt(k2, indices[c].ToBytes());
 						result.Add(l, d);
+
+						size += 8 * l.Length; // count keyword / label
 					}
 
-					size += 8 * word.ToBytes().Length;
-					size += 8 * indices[0].ToBytes().Length * (indices.Length > b ? (int)Math.Ceiling(1.0 * indices.Length / B) * B : indices.Length);
+					var toBeEncrypted = 8 * indices[0].ToBytes().Length * (indices.Length > b ? (int)Math.Ceiling(1.0 * indices.Length / B) * B : indices.Length);
+					size += (int)Math.Ceiling(1.0 * toBeEncrypted / (128 / 8)) + (128 / 8); // AES will pad to multiple of block and add IV
 				}
 
 				return (new Database(result, size), key);
