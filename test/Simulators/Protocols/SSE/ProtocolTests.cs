@@ -26,7 +26,7 @@ namespace Test.Simulators.Protocols.SSE
 	}
 
 	[Trait("Category", "Unit")]
-	public class AbsProtocol
+	public abstract class AbsProtocol
 	{
 		private readonly int _runs;
 		private readonly Random _random = new Random(123456);

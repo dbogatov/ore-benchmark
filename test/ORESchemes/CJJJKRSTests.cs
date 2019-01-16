@@ -283,10 +283,14 @@ namespace Test.ORESchemes
 		{
 			var b = pack ? 10 : int.MaxValue;
 			var B = pack ? 20 : 1;
-			var expected = 50 * sizeof(int) * 8 * (pack ? 80 : 75);
+			var expected = 50 *
+				(
+					pack ?
+					128 * 4 + 4 * (128 * (20 * 4 * 8 / 128) + 128) :
+					61 * 128 + 61 * (128 + 128)
+				);
 
-			var input = GenerateInput(50, (75, 75));
-			expected += input.Keys.Sum(k => k.ToBytes().Length * 8);
+			var input = GenerateInput(50, (61, 61));
 
 			(var database, var _) = _client.Setup(input, b, B);
 
