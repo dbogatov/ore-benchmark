@@ -93,6 +93,33 @@ namespace Test.ORESchemes
 					.All(e => e);
 		}
 
+		Dictionary<StringWord, NumericIndex[]> GenerateInput(int keywords, (int from, int to) indices)
+		{
+			string RandomString(int length)
+			{
+				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+				return new string(
+					Enumerable
+						.Repeat(chars, length)
+						.Select(s => s[G.Next(s.Length)])
+						.ToArray()
+				);
+			}
+
+			return
+				Enumerable
+					.Range(1, keywords)
+					.ToDictionary(
+						_ => new StringWord { Value = RandomString(G.Next(5, 10)) },
+						_ => Enumerable
+							.Range(1, G.Next(indices.from, indices.to))
+							.Select(__ => new NumericIndex { Value = G.Next() })
+							.ToArray()
+					);
+		}
+
+
+
 		[Fact]
 		public void NoExceptions() => PrimitiveRun("Dmytro");
 
@@ -107,28 +134,9 @@ namespace Test.ORESchemes
 		[Fact]
 		public void Correctness()
 		{
-			string randomString(int length)
-			{
-				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-				return new string(
-					Enumerable
-						.Repeat(chars, length)
-						.Select(s => s[G.Next(s.Length)])
-						.ToArray()
-				);
-			}
-
 			for (int i = 0; i < RUNS; i++)
 			{
-				var input = Enumerable
-					.Range(1, RUNS * 5)
-					.ToDictionary(
-						_ => new StringWord { Value = randomString(G.Next(5, 10)) },
-						_ => Enumerable
-							.Range(1, G.Next(1, RUNS / 5))
-							.Select(__ => new NumericIndex { Value = G.Next() })
-							.ToArray()
-					);
+				var input = GenerateInput(RUNS * 5, (1, RUNS / 5));
 
 				(var database, var key) = _client.Setup(input);
 
@@ -225,50 +233,64 @@ namespace Test.ORESchemes
 			Assert.Equal(expectedPure, actualPure);
 		}
 
-		// [Fact]
-		// public void NodeVisitedEvents()
-		// {
-		// 	var count = new Reference<int>();
-		// 	count.Value = 0;
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void NodeVisitedEvents(bool pack)
+		{
+			var b = pack ? 10 : int.MaxValue;
+			var B = pack ? 20 : 1;
+			var expected = pack ? 5 : 100;
 
-		// 	var database = _client.Setup(_input);
-		// 	_server = new Scheme.Server(database);
-		// 	_server.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
-		// 	_server.PageSize = 600;
+			var count = new Reference<int>();
+			count.Value = 0;
 
-		// 	var keyword = new StringWord { Value = "Dmytro" };
-		// 	var token = _client.Trapdoor(keyword);
-		// 	var encrypted = _server.Search(token);
-		// 	_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			var input = GenerateInput(50, (100, 100));
 
-		// 	Assert.NotEqual(0, count.Value);
-		// }
+			(var database, var key) = _client.Setup(input, b, B);
+			_server = new Scheme.Server(database, G.GetBytes(128 / 8));
+			_server.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
+			_server.PageSize = 20 * sizeof(int) * 8; // 20 indices
 
-		// [Fact]
-		// public void NodeVisitedEventsNoPageSize()
-		// {
-		// 	var triggered = new Reference<bool>();
-		// 	triggered.Value = false;
+			var keyword = input.Keys.First();
+			var token = _client.Trapdoor(keyword, key);
+			_server.Search(token, NumericIndex.Decode, b, B);
 
-		// 	var database = _client.Setup(_input);
-		// 	_server = new Scheme.Server(database);
-		// 	_server.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
-
-		// 	var keyword = new StringWord { Value = "Dmytro" };
-		// 	var token = _client.Trapdoor(keyword);
-		// 	var encrypted = _server.Search(token);
-		// 	_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
-
-		// 	Assert.False(triggered.Value);
-		// }
+			Assert.Equal(expected, count.Value);
+		}
 
 		[Fact]
-		public void DatabaseSize()
+		public void NodeVisitedEventsNoPageSize()
 		{
-			(var database, var _) = _client.Setup(_input);
+			var triggered = new Reference<bool>();
+			triggered.Value = false;
 
-			// TODO
-			// Assert.InRange(database.Size, 513 * 5 * 5, 513 * 5 * 5 * 2);
+			(var database, var key) = _client.Setup(_input);
+			_server = new Scheme.Server(database);
+			_server.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
+
+			var keyword = new StringWord { Value = "Dmytro" };
+			var token = _client.Trapdoor(keyword, key);
+			var encrypted = _server.Search(token, NumericIndex.Decode);
+
+			Assert.False(triggered.Value);
+		}
+
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void DatabaseSize(bool pack)
+		{
+			var b = pack ? 10 : int.MaxValue;
+			var B = pack ? 20 : 1;
+			var expected = 50 * sizeof(int) * 8 * (pack ? 80 : 75);
+
+			var input = GenerateInput(50, (75, 75));
+			expected += input.Keys.Sum(k => k.ToBytes().Length * 8);
+
+			(var database, var _) = _client.Setup(input, b, B);
+
+			Assert.Equal(expected, database.Size);
 		}
 	}
 }

@@ -34,11 +34,15 @@ namespace ORESchemes.CJJJKRS
 		/// <typeparam name="T">Wrapped type</typeparam>
 		public abstract class Wrapper<T>
 		{
-			public T Value { get; set; }
+			public Wrapper(T value) => Value = value;
+
+			public T Value { get; private set; }
 		}
 
 		public class Database : Wrapper<Dictionary<byte[], byte[]>>
 		{
+			public Database(Dictionary<byte[], byte[]> value, int size) : base(value) => Size = size;
+
 			/// <summary>
 			/// Needed for correct behavior of dictionary with byte array key
 			/// </summary>
@@ -65,11 +69,13 @@ namespace ORESchemes.CJJJKRS
 					=> obj == null ? 0 : obj.ProperHashCode();
 			}
 
-			public int Size { get => 8 * Value.Sum(kvp => kvp.Key.Length + kvp.Value.Length); }
+			public int Size { get; private set; }
 		}
 
 		public class Token : Wrapper<(byte[] k1, byte[] k2)>
 		{
+			public Token((byte[] k1, byte[] k2) value) : base(value) { }
+
 			public int Size { get => 8 * (Value.k1.Length + Value.k2.Length); }
 		}
 
@@ -90,10 +96,11 @@ namespace ORESchemes.CJJJKRS
 				SubscribePrimitive(E);
 			}
 
-			public (Database, byte[]) Setup(Dictionary<W, I[]> input)
+			public (Database, byte[]) Setup(Dictionary<W, I[]> input, int b = int.MaxValue, int B = 1)
 			{
 				var key = G.GetBytes(256 / 8);
 				var result = new Dictionary<byte[], byte[]>(new Database.ByteArrayComparer());
+				var size = 0;
 
 				foreach (var wordIndices in input)
 				{
@@ -109,51 +116,49 @@ namespace ORESchemes.CJJJKRS
 						var d = E.Encrypt(k2, indices[c].ToBytes());
 						result.Add(l, d);
 					}
+
+					size += 8 * word.ToBytes().Length;
+					size += 8 * indices[0].ToBytes().Length * (indices.Length > b ? (int)Math.Ceiling(1.0 * indices.Length / B) * B : indices.Length);
 				}
 
-				return (new Database { Value = result }, key);
+				return (new Database(result, size), key);
 			}
 
 			public Token Trapdoor(W keyword, byte[] key)
-				=> new Token
-				{
-					Value = (
-						k1: F.PRF(key.Take(128 / 8).ToArray(), keyword.ToBytes()),
-						k2: F.PRF(key.Skip(128 / 8).ToArray(), keyword.ToBytes())
-					)
-				};
+				=> new Token((
+					k1: F.PRF(key.Take(128 / 8).ToArray(), keyword.ToBytes()),
+					k2: F.PRF(key.Skip(128 / 8).ToArray(), keyword.ToBytes())
+				));
 		}
 
 		public class Server : EventHandlers
 		{
 			private readonly Database _database;
+
 			private readonly IPRF F;
 			private readonly ISymmetric E;
-
-			private readonly int _B;
-			private readonly int _b;
 
 			/// <summary>
 			/// I/O page size in bits.
 			/// If set, NodeVisited event will be fired.
 			/// </summary>
 			public int? PageSize { private get; set; }
+			private readonly IPRG _G; // internal
 
-			public Server(Database database, int b = int.MaxValue, int B = 1)
+			public Server(Database database, byte[] entropy = null)
 			{
 				_database = database;
-				
-				_b = b;
-				_B = B;
 
 				F = new PRFFactory().GetPrimitive();
 				E = new SymmetricFactory().GetPrimitive();
+
+				_G = new PRGFactory(entropy).GetPrimitive();
 
 				SubscribePrimitive(F);
 				SubscribePrimitive(E);
 			}
 
-			public I[] Search(Token token, Func<byte[], I> decode)
+			public I[] Search(Token token, Func<byte[], I> decode, int b = int.MaxValue, int B = 1)
 			{
 				var c = 0;
 				var result = new List<I>();
@@ -173,6 +178,25 @@ namespace ORESchemes.CJJJKRS
 					else
 					{
 						break;
+					}
+				}
+
+				if (PageSize.HasValue)
+				{
+					var totalPages = (int)Math.Ceiling(1.0 * _database.Size / PageSize.Value);
+					if (c < b)
+					{
+						for (int i = 0; i < c; i++)
+						{
+							OnVisit(_G.Next(0, totalPages));
+						}
+					}
+					else
+					{
+						for (int i = 0; i < (int)Math.Ceiling(1.0 * c / B); i++)
+						{
+							OnVisit(_G.Next(0, totalPages));
+						}
 					}
 				}
 
