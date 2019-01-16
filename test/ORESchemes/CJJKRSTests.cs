@@ -60,9 +60,7 @@ namespace Test.ORESchemes
 
 		public CJJKRS()
 		{
-			byte[] entropy = new byte[128 / 8];
-
-			_client = new Scheme.Client(entropy);
+			_client = new Scheme.Client(G.GetBytes(128 / 8));
 		}
 
 		public IIndex[] PrimitiveRun(string word)

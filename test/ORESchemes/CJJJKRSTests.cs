@@ -62,9 +62,7 @@ namespace Test.ORESchemes
 
 		public CJJJKRS()
 		{
-			byte[] entropy = new byte[128 / 8];
-
-			_client = new Scheme.Client(int.MaxValue, 1, entropy);
+			_client = new Scheme.Client(G.GetBytes(128 / 8));
 		}
 
 		public IIndex[] PrimitiveRun(string word)
@@ -123,11 +121,11 @@ namespace Test.ORESchemes
 			for (int i = 0; i < RUNS; i++)
 			{
 				var input = Enumerable
-					.Range(1, RUNS * 10)
+					.Range(1, RUNS * 5)
 					.ToDictionary(
-						_ => new StringWord { Value = randomString(G.Next(5, 16)) },
+						_ => new StringWord { Value = randomString(G.Next(5, 10)) },
 						_ => Enumerable
-							.Range(1, RUNS / 10)
+							.Range(1, G.Next(1, RUNS / 5))
 							.Select(__ => new NumericIndex { Value = G.Next() })
 							.ToArray()
 					);
