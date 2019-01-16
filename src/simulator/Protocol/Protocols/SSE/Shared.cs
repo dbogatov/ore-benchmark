@@ -7,11 +7,17 @@ using ORESchemes.Shared;
 
 namespace Simulation.Protocol.SSE
 {
+	/// <summary>
+	/// Abstraction of two SSE schemes for testing
+	/// </summary>
 	internal interface ISSEClient
 	{
 		List<Index> Search(int from, int to);
 	}
 
+	/// <summary>
+	/// Abstraction of two SSE schemes for testing
+	/// </summary>
 	internal interface ISSEProtocol
 	{
 		ISSEClient ExposeClient();
@@ -25,6 +31,11 @@ namespace Simulation.Protocol.SSE
 
 	public static class Utility
 	{
+		/// <summary>
+		/// Produces an inverted index
+		/// </summary>
+		/// <param name="input">User-supplied list of records</param>
+		/// <returns>A database fit for SSE scheme</returns>
 		public static Dictionary<Word, Index[]> InputToDatabase(List<Record> input)
 		{
 			// generate keyword - index pairs
