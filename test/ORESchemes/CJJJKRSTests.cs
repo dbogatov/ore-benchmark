@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ORESchemes.CJJKRS;
+using ORESchemes.CJJJKRS;
 using ORESchemes.Shared;
 using ORESchemes.Shared.Primitives;
 using Xunit;
 using static Test.ORESchemes.Primitives.EventsTestsShared;
-using Scheme = ORESchemes.CJJKRS.CJJKRS<Test.ORESchemes.CJJKRS.StringWord, Test.ORESchemes.CJJKRS.NumericIndex>;
+using Scheme = ORESchemes.CJJJKRS.CJJJKRS<Test.ORESchemes.CJJJKRS.StringWord, Test.ORESchemes.CJJJKRS.NumericIndex>;
 
 namespace Test.ORESchemes
 {
 	[Trait("Category", "Unit")]
-	public class CJJKRS
+	public class CJJJKRS
 	{
 		public class StringWord : IWord
 		{
@@ -32,6 +32,8 @@ namespace Test.ORESchemes
 			public override bool Equals(object obj) => Value.Equals(obj);
 
 			public override int GetHashCode() => Value.GetHashCode();
+
+			static public NumericIndex Decode(byte[] encoded) => new NumericIndex { Value = BitConverter.ToInt32(encoded, 0) };
 		}
 
 		private readonly Scheme.Client _client;
@@ -58,22 +60,21 @@ namespace Test.ORESchemes
 				}
 			};
 
-		public CJJKRS()
+		public CJJJKRS()
 		{
 			_client = new Scheme.Client(G.GetBytes(128 / 8));
 		}
 
 		public IIndex[] PrimitiveRun(string word)
 		{
-			var database = _client.Setup(_input);
+			(var database, var key) = _client.Setup(_input);
 
 			_server = new Scheme.Server(database);
 
 			// Search protocol
 			var keyword = new StringWord { Value = word };
-			var token = _client.Trapdoor(keyword);
-			var encrypted = _server.Search(token);
-			return _client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			var token = _client.Trapdoor(keyword, key);
+			return _server.Search(token, NumericIndex.Decode);
 		}
 
 		private bool OutputAsExpected(int[] expected, IIndex[] actual)
@@ -92,6 +93,33 @@ namespace Test.ORESchemes
 					.All(e => e);
 		}
 
+		Dictionary<StringWord, NumericIndex[]> GenerateInput(int keywords, (int from, int to) indices)
+		{
+			string RandomString(int length)
+			{
+				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+				return new string(
+					Enumerable
+						.Repeat(chars, length)
+						.Select(s => s[G.Next(s.Length)])
+						.ToArray()
+				);
+			}
+
+			return
+				Enumerable
+					.Range(1, keywords)
+					.ToDictionary(
+						_ => new StringWord { Value = RandomString(G.Next(5, 10)) },
+						_ => Enumerable
+							.Range(1, G.Next(indices.from, indices.to))
+							.Select(__ => new NumericIndex { Value = G.Next() })
+							.ToArray()
+					);
+		}
+
+
+
 		[Fact]
 		public void NoExceptions() => PrimitiveRun("Dmytro");
 
@@ -106,30 +134,11 @@ namespace Test.ORESchemes
 		[Fact]
 		public void Correctness()
 		{
-			string randomString(int length)
-			{
-				const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-				return new string(
-					Enumerable
-						.Repeat(chars, length)
-						.Select(s => s[G.Next(s.Length)])
-						.ToArray()
-				);
-			}
-
 			for (int i = 0; i < RUNS; i++)
 			{
-				var input = Enumerable
-					.Range(1, RUNS * 10)
-					.ToDictionary(
-						_ => new StringWord { Value = randomString(G.Next(5, 16)) },
-						_ => Enumerable
-							.Range(1, RUNS / 10)
-							.Select(__ => new NumericIndex { Value = G.Next() })
-							.ToArray()
-					);
+				var input = GenerateInput(RUNS * 5, (1, RUNS / 5));
 
-				var database = _client.Setup(input);
+				(var database, var key) = _client.Setup(input);
 
 				_server = new Scheme.Server(database);
 
@@ -137,11 +146,9 @@ namespace Test.ORESchemes
 				{
 					var keyword = keywordIndices.Key;
 
-					var token = _client.Trapdoor(keyword);
+					var token = _client.Trapdoor(keyword, key);
 
-					var encrypted = _server.Search(token);
-
-					var result = _client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+					var result = _server.Search(token, NumericIndex.Decode);
 
 					Assert.True(OutputAsExpected(
 						input[keywordIndices.Key].Cast<NumericIndex>().Select(e => e.Value).ToArray(),
@@ -154,16 +161,16 @@ namespace Test.ORESchemes
 		[Fact]
 		public void NonExistentKeyword()
 		{
-			var database = _client.Setup(_input);
+			(var database, var key) = _client.Setup(_input);
 
 			_server = new Scheme.Server(database);
 
 			// Search protocol
 			var keyword = new StringWord { Value = "NonExistent" };
-			var token = _client.Trapdoor(keyword);
-			var encrypted = _server.Search(token);
+			var token = _client.Trapdoor(keyword, key);
+			var result = _server.Search(token, NumericIndex.Decode);
 
-			Assert.Empty(encrypted.Value);
+			Assert.Empty(result);
 		}
 
 		[Fact]
@@ -171,20 +178,16 @@ namespace Test.ORESchemes
 		{
 			var expectedTotal =
 				new Dictionary<Primitive, int> {
-					{ Primitive.TSet, 3 },
-					{ Primitive.PRG, 61 },
-					{ Primitive.PRF, 6 },
-					{ Primitive.AES, 73 },
-					{ Primitive.Hash, 12 },
-					{ Primitive.PRP, 2 },
+					{ Primitive.PRG, 1 },
+					{ Primitive.PRF, 13 },
+					{ Primitive.AES, 20 },
 					{ Primitive.Symmetric, 6 }
 				};
 			var expectedPure =
 				new Dictionary<Primitive, int> {
-					{ Primitive.TSet, 3 },
-					{ Primitive.PRF, 3 },
-					{ Primitive.Symmetric, 6 },
-					{ Primitive.PRP, 2 }
+					{ Primitive.PRG, 1 },
+					{ Primitive.PRF, 13 },
+					{ Primitive.Symmetric, 6 }
 				};
 
 			var actualTotal = new Dictionary<Primitive, int>();
@@ -216,38 +219,44 @@ namespace Test.ORESchemes
 			});
 			_client.PrimitiveUsed += handler;
 
-			var database = _client.Setup(_input);
+			(var database, var key) = _client.Setup(_input);
 			_server = new Scheme.Server(database);
 
 			_server.PrimitiveUsed += handler;
 
 			// Search protocol
 			var keyword = new StringWord { Value = "Dmytro" };
-			var token = _client.Trapdoor(keyword);
-			var encrypted = _server.Search(token);
-			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			var token = _client.Trapdoor(keyword, key);
+			_server.Search(token, NumericIndex.Decode);
 
 			Assert.Equal(expectedTotal, actualTotal);
 			Assert.Equal(expectedPure, actualPure);
 		}
 
-		[Fact]
-		public void NodeVisitedEvents()
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void NodeVisitedEvents(bool pack)
 		{
+			var b = pack ? 10 : int.MaxValue;
+			var B = pack ? 20 : 1;
+			var expected = pack ? 5 : 100;
+
 			var count = new Reference<int>();
 			count.Value = 0;
 
-			var database = _client.Setup(_input);
-			_server = new Scheme.Server(database);
+			var input = GenerateInput(50, (100, 100));
+
+			(var database, var key) = _client.Setup(input, b, B);
+			_server = new Scheme.Server(database, G.GetBytes(128 / 8));
 			_server.NodeVisited += new NodeVisitedEventHandler(_ => count.Value++);
-			_server.PageSize = 600;
+			_server.PageSize = 20 * sizeof(int) * 8; // 20 indices
 
-			var keyword = new StringWord { Value = "Dmytro" };
-			var token = _client.Trapdoor(keyword);
-			var encrypted = _server.Search(token);
-			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			var keyword = input.Keys.First();
+			var token = _client.Trapdoor(keyword, key);
+			_server.Search(token, NumericIndex.Decode, b, B);
 
-			Assert.NotEqual(0, count.Value);
+			Assert.Equal(expected, count.Value);
 		}
 
 		[Fact]
@@ -256,24 +265,36 @@ namespace Test.ORESchemes
 			var triggered = new Reference<bool>();
 			triggered.Value = false;
 
-			var database = _client.Setup(_input);
+			(var database, var key) = _client.Setup(_input);
 			_server = new Scheme.Server(database);
 			_server.NodeVisited += new NodeVisitedEventHandler(_ => triggered.Value = true);
 
 			var keyword = new StringWord { Value = "Dmytro" };
-			var token = _client.Trapdoor(keyword);
-			var encrypted = _server.Search(token);
-			_client.Decrypt(encrypted, keyword, e => new NumericIndex { Value = BitConverter.ToInt32(e, 0) });
+			var token = _client.Trapdoor(keyword, key);
+			var encrypted = _server.Search(token, NumericIndex.Decode);
 
 			Assert.False(triggered.Value);
 		}
 
-		[Fact]
-		public void DatabaseSize()
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public void DatabaseSize(bool pack)
 		{
-			var database = _client.Setup(_input);
+			var b = pack ? 10 : int.MaxValue;
+			var B = pack ? 20 : 1;
+			var expected = 50 *
+				(
+					pack ?
+					128 * 4 + 4 * (128 * (20 * 4 * 8 / 128) + 128) :
+					61 * 128 + 61 * (128 + 128)
+				);
 
-			Assert.InRange(database.Size, 513 * 5 * 5, 513 * 5 * 5 * 2);
+			var input = GenerateInput(50, (61, 61));
+
+			(var database, var _) = _client.Setup(input, b, B);
+
+			Assert.Equal(expected, database.Size);
 		}
 	}
 }

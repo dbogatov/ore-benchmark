@@ -163,9 +163,15 @@ namespace Simulation.Protocol
 							elementsPerPage,
 							128
 						);
-				case ORESchemes.Shared.ORESchemes.SSE:
+				case ORESchemes.Shared.ORESchemes.CJJKRS:
 					return
-						new Simulation.Protocol.SSE.Protocol(
+						new Simulation.Protocol.SSE.CJJKRS.Protocol(
+							new Random(seed).GetBytes(128 / 8),
+							elementsPerPage
+						);
+				case ORESchemes.Shared.ORESchemes.CJJJKRS:
+					return
+						new Simulation.Protocol.SSE.CJJJKRS.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage
 						);

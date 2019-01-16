@@ -121,6 +121,7 @@ namespace Web.Models.Data.Entities
 				case ORESchemes.Shared.ORESchemes.ORAM:
 				case ORESchemes.Shared.ORESchemes.Florian:
 				case ORESchemes.Shared.ORESchemes.POPE:
+				case ORESchemes.Shared.ORESchemes.CJJJKRS:
 					cipherSize = 128;
 					break;
 				case ORESchemes.Shared.ORESchemes.NoEncryption:
@@ -132,7 +133,7 @@ namespace Web.Models.Data.Entities
 				case ORESchemes.Shared.ORESchemes.AdamORE:
 					cipherSize = 4088;
 					break;
-				case ORESchemes.Shared.ORESchemes.SSE:
+				case ORESchemes.Shared.ORESchemes.CJJKRS:
 					cipherSize = 257;
 					break;
 			}
