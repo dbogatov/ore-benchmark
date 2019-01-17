@@ -34,9 +34,11 @@ build-app:
   - dotnet restore src/cli/ --disable-parallel
   - dotnet restore src/web/ --disable-parallel 
   - dotnet restore tools/data-gen/ --disable-parallel 
+  - dotnet restore tools/packages-example/ --disable-parallel 
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release src/web/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
+  - dotnet publish -c release tools/packages-example/ -o dist/
   dependencies:
   - build-docs
   artifacts:
@@ -45,6 +47,7 @@ build-app:
     - ./src/cli/dist
     - ./src/web/dist
     - ./tools/data-gen/dist
+    - ./tools/packages-example/dist
     - ./tools/data-gen/generate.sh
     - ./tools/simulation/
     - ./Dockerfile
@@ -162,6 +165,21 @@ system-schemes-tests:
   - apk add --update bash ruby ruby-bundler
   - ./tools/data-gen/generate.sh -d 20 -s 1305 -n
   - ./tools/simulation/pure-schemes.rb
+  artifacts:
+    paths:
+      - ./results/schemes.json
+  dependencies:
+  - build-app
+  tags:
+  - docker
+  
+published-packages-tests:
+  image: $DOTNET_RUNTIME_IMAGE
+  variables:
+    GIT_STRATEGY: none
+  stage: test
+  script:
+  - dotnet ./tools/packages-example/dist/packages-example.dll
   artifacts:
     paths:
       - ./results/schemes.json

@@ -38,63 +38,16 @@ Primitive documentation is hosted [here](https://ore.dbogatov.org/documentation/
 
 Here is how to add the dependencies (in `.csproj` file)
 
-	<PackageReference Include="ore-benchamrk.shared" Version="*" />
-	<PackageReference Include="clww-ore" Version="*" />
-	<PackageReference Include="lewi-wu-ore" Version="*" />
-	<PackageReference Include="fh-ope" Version="*" />
-	<PackageReference Include="bclo-ope" Version="*" />
-	<PackageReference Include="cjjkrs-sse" Version="*" />
-	<PackageReference Include="cjjjkrs-sse" Version="*" />
+	<ItemGroup>
+		<PackageReference Include="ore-benchamrk.shared" Version="*" />
+		<PackageReference Include="clww-ore" Version="*" />
+		<PackageReference Include="lewi-wu-ore" Version="*" />
+		<PackageReference Include="fh-ope" Version="*" />
+		<PackageReference Include="bclo-ope" Version="*" />
+		<PackageReference Include="cjjkrs-sse" Version="*" />
+		<PackageReference Include="cjjjkrs-sse" Version="*" />
+	</ItemGroup>
 
 ## Code examples
 
-### OPE / ORE Schemes
-
-```cs
-// Choose one of the schemes
-
-ORESchemes.CryptDBOPE.CryptDBScheme scheme =
-	new ORESchemes.CryptDBOPE.CryptDBScheme(
-		int.MinValue,
-		int.MaxValue,
-		Convert.ToInt64(-Math.Pow(2, 48)),
-		Convert.ToInt64(Math.Pow(2, 48))
-	);
-
-ORESchemes.PracticalORE.PracticalOREScheme scheme =
-	new ORESchemes.PracticalORE.PracticalOREScheme();
-
-ORESchemes.LewiORE.LewiOREScheme scheme =
-	new ORESchemes.LewiORE.LewiOREScheme();
-
-ORESchemes.FHOPE.FHOPEScheme scheme =
-	new ORESchemes.FHOPE.FHOPEScheme(long.MinValue, long.MaxValue);
-
-// Scheme operations
-
-var key = scheme.KeyGen();
-
-var cipher5 = scheme.Encrypt(5, key);
-var cipher6 = scheme.Encrypt(6, key);
-
-// If FH-OPE then we need max and min for ciphers to compare 
-cipher5.max = scheme.MaxCiphertext(5, key);
-cipher5.min = scheme.MinCiphertext(5, key);
-cipher6.max = scheme.MaxCiphertext(6, key);
-cipher6.min = scheme.MinCiphertext(6, key);
-
-scheme.IsLess(cipher5, cipher6); // true
-scheme.IsLessOrEqual(cipher5, cipher6); // true
-scheme.IsEqual(cipher5, cipher6); // false
-scheme.IsGreaterOrEqual(cipher5, cipher6); // false
-scheme.IsGreater(cipher5, cipher6); // false
-
-int plaint5 = scheme.Decrypt(cipher5, key); // 5
-int plaint6 = scheme.Decrypt(cipher6, key); // 6
-```
-
-### SSE
-
-### Primitives
-
-<!-- TODO -->
+See code examples [here]().

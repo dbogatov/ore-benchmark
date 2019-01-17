@@ -10,9 +10,10 @@
 		<Description>SSE scheme (basic, no extensions) as defined in https://eprint.iacr.org/2014/853.pdf.</Description>
 		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
 		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
-
 	<ItemGroup>
+		<None Include="../../../LICENSE" Pack="true" PackagePath=""/>
 		<ProjectReference Include="..\shared\shared.csproj" />
 	</ItemGroup>
 
