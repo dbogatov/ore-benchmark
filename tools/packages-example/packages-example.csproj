@@ -13,5 +13,7 @@
 		<PackageReference Include="bclo-ope" Version="*" />
 		<PackageReference Include="cjjkrs-sse" Version="*" />
 		<PackageReference Include="cjjjkrs-sse" Version="*" />
+
+		<PackageReference Include="b-plus-tree" Version="*" />
 	</ItemGroup>
 </Project>

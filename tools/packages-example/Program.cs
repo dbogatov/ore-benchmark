@@ -10,6 +10,8 @@
 			CJJJKRS();
 
 			Primitives();
+			
+			BPlusTree();
 
 			System.Console.WriteLine("Run complete. No exceptions.");
 

@@ -50,4 +50,4 @@ Here is how to add the dependencies (in `.csproj` file)
 
 ## Code examples
 
-See code examples [here]().
+See code examples [here](https://github.com/dbogatov/ore-benchmark/tree/master/tools/packages-example).
