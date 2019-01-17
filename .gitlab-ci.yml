@@ -94,6 +94,7 @@ data-gen:
   - apk add --update bash
   - ./tools/data-gen/generate.sh -d 2500 -q 50 -s 1305
   artifacts:
+    expire_in: 1 day
     paths:
     - ./data/
   tags:
@@ -149,6 +150,7 @@ system-protocol-tests:
   - ./tools/data-gen/generate.sh -d 20 -q 20 -s 1305 -n
   - ./tools/simulation/protocol.rb
   artifacts:
+    expire_in: 1 day
     paths:
       - ./results/protocol.json
   dependencies:
@@ -166,6 +168,7 @@ system-schemes-tests:
   - ./tools/data-gen/generate.sh -d 20 -s 1305 -n
   - ./tools/simulation/pure-schemes.rb
   artifacts:
+    expire_in: 1 day
     paths:
       - ./results/schemes.json
   dependencies:
@@ -180,9 +183,6 @@ published-packages-tests:
   stage: test
   script:
   - dotnet ./tools/packages-example/dist/packages-example.dll
-  artifacts:
-    paths:
-      - ./results/schemes.json
   dependencies:
   - build-app
   tags:
