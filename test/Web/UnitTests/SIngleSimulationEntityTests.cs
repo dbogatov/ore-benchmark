@@ -12,7 +12,7 @@ namespace Test.Web.UnitTests
 		{
 			var simulation =
 				new SingleSimulation(
-					dataset: "4, four\n5, five",
+					dataset: "4\n5",
 					queryset: "4, 5",
 					datasetSize: 5,
 					querysetSize: 5,
@@ -49,7 +49,7 @@ namespace Test.Web.UnitTests
 			var exception = Assert.Throws<SingleSimulation.MalformedSetException>(
 				() =>
 				new SingleSimulation(
-					dataset: "4, four\n5, five",
+					dataset: "4\n5",
 					queryset: "4",
 					datasetSize: 5,
 					querysetSize: 5,
@@ -59,23 +59,6 @@ namespace Test.Web.UnitTests
 				)
 			);
 			Assert.Equal("Queryset", exception.Set);
-		}
-
-		[Fact]
-		public void SimulationLongString()
-		{
-			var exception = Assert.Throws<SingleSimulation.MalformedSetException>(
-				() => new SingleSimulation(
-					dataset: "5, 123456789xxxxx",
-					queryset: "5, 6",
-					datasetSize: 1,
-					querysetSize: 1,
-					pageSize: 5,
-					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
-					random: new Random()
-				)
-			);
-			Assert.Equal("Dataset", exception.Set);
 		}
 
 		[Fact]
