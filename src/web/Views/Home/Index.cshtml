@@ -104,16 +104,13 @@
 				*No encryption* and OPE / ORE schemes will be used in a B+ tree, other protocols are custom.
 				We refer to the [paper](https://dbogatov.org/assets/custom/docs/ore-benchmark.pdf) for protocol descriptions.
 
-				**Dataset** is a list of index-value pair, where index is an integer and value is string.
-				The format is a number, followed by coma, followed by string value of maximum 10 characters without quotes per line.
-				For example, `4, elephant`.
-				Values do not play a special role in simulations, so you may put index as a string for value.
-
+				**Dataset** is a list of indices, where index is an integer (that is, an integer per line).
+				For example, `4`.
 				**Queryset** is a list of from-to pairs, where both components are integers and the first is no greater than the second.
 				The format is a number, followed by coma, followed by a number.
 				For example, `4, 6`.
 
-				**Cache size** defines virtual LRU cache capacity.
+				**Cache size** defines virtual cache capacity.
 				Requests fulfilled by the cache do not count as I/Os.
 
 				I/O performance heavily depends on the page size and the **number of elements per I/O page**.

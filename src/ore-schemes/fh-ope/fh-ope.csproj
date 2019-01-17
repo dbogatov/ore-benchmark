@@ -9,8 +9,10 @@
 		<Description>OPE scheme as defined in http://www.fkerschbaum.org/ccs15.pdf.</Description>
 		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
 		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 	<ItemGroup>
+		<None Include="../../../LICENSE" Pack="true" PackagePath=""/>
 		<ProjectReference Include="..\shared\shared.csproj" />
 	</ItemGroup>
 </Project>

@@ -100,4 +100,4 @@ dotnet ./src/cli/dist/cli.dll --help
 ## Packages
 
 - [B+ tree docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
-- [ORE/ OPE schemes docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/ore-schemes)
+- [ORE / OPE / SSE schemes and primitives docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/ore-schemes)

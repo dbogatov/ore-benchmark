@@ -38,7 +38,7 @@ namespace Web.Models.Data.Entities
 				Dataset = Enumerable
 					.Range(0, datasetSize)
 					.Select(e => random.Next(0, datasetSize / 2))
-					.Select(e => new Record(e, e.ToString()))
+					.Select(e => new Record(e, $"{e}_r{random.Next()}"))
 					.ToList();
 			}
 			else
@@ -55,15 +55,8 @@ namespace Web.Models.Data.Entities
 							line = reader.ReadLine();
 							if (line != null)
 							{
-								var record = line.Split(',');
-								Dataset.Add(new Record(int.Parse(record[0]), record[1]));
-								if (record[1].Length > 10)
-								{
-									throw new ArgumentException($@"
-										String must be of maximum 10 characters length. 
-										Length {record[1].Length} supplied"
-									);
-								}
+								var index = int.Parse(line);
+								Dataset.Add(new Record(index, $"{index}_r{random.Next()}"));
 								read++;
 							}
 						} while (line != null && read < datasetSize);

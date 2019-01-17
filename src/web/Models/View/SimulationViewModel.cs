@@ -96,11 +96,11 @@ namespace Web.Models.View
 			}
 		}
 
-		// Allow maximum of 10K lines of 64 characters
-		[StringLength(64 * 10 * 1000, ErrorMessage = "Max dataset size is 640000 characters!")]
+		// Allow maximum of 10K lines of 16 characters
+		[StringLength(16 * 10 * 1000, ErrorMessage = "Max dataset size is 160000 characters!")]
 		public string Dataset { get; set; }
 
-		[StringLength(64 * 10 * 1000, ErrorMessage = "Max queryset size is 640000 characters!")]
+		[StringLength(16 * 10 * 1000, ErrorMessage = "Max queryset size is 160000 characters!")]
 		public string Queryset { get; set; }
 
 		[Range(0, 100)]

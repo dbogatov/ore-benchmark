@@ -1,7 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<ItemGroup>
-		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
-	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
@@ -12,5 +9,10 @@
 		<Description>In-memory implementation of B+ tree designed for research and prototype projects.</Description>
 		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
 		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="../../LICENSE" Pack="true" PackagePath=""/>
+		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+	</ItemGroup>
 </Project>

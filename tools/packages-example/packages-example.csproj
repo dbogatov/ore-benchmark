@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ore-benchamrk.shared" Version="*" />
+		<PackageReference Include="clww-ore" Version="*" />
+		<PackageReference Include="lewi-wu-ore" Version="*" />
+		<PackageReference Include="fh-ope" Version="*" />
+		<PackageReference Include="bclo-ope" Version="*" />
+		<PackageReference Include="cjjkrs-sse" Version="*" />
+		<PackageReference Include="cjjjkrs-sse" Version="*" />
+
+		<PackageReference Include="b-plus-tree" Version="*" />
+	</ItemGroup>
+</Project>

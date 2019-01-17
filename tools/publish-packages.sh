@@ -44,6 +44,8 @@ PROJECTS['ore-schemes/practical-ore']='clww-ore'
 PROJECTS['ore-schemes/lewi-ore']='lewi-wu-ore'
 PROJECTS['ore-schemes/fh-ope']='fh-ope'
 PROJECTS['ore-schemes/cryptdb-ope']='bclo-ope'
+PROJECTS['ore-schemes/cjjkrs-sse']='cjjkrs-sse'
+PROJECTS['ore-schemes/cjjjkrs-sse']='cjjjkrs-sse'
 
 cd ..
 VERSION=$(<version.txt)
