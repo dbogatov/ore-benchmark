@@ -252,7 +252,7 @@ namespace DataGen
 			{
 				foreach (var point in data)
 				{
-					await sw.WriteLineAsync($"{point},\"{point.ToString()}\"");
+					await sw.WriteLineAsync($"{point}");
 				}
 			}
 

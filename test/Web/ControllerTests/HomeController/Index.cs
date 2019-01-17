@@ -93,13 +93,13 @@ namespace Test.Web.ControllerTests
 			
 			if (dataVsQuery)
 			{
-				badInput.Dataset = new string('D', 64 * 10 * 1000 + 50);
-				goodInput.Dataset = new string('D', 64 * 10 * 1000 - 50);
+				badInput.Dataset = new string('D', 16 * 10 * 1000 + 50);
+				goodInput.Dataset = new string('D', 16 * 10 * 1000 - 50);
 			}
 			else
 			{
-				badInput.Queryset = new string('Q', 64 * 10 * 1000 + 50);
-				goodInput.Queryset = new string('Q', 64 * 10 * 1000 - 50);
+				badInput.Queryset = new string('Q', 16 * 10 * 1000 + 50);
+				goodInput.Queryset = new string('Q', 16 * 10 * 1000 - 50);
 			}
 
 			// Act and Assert
