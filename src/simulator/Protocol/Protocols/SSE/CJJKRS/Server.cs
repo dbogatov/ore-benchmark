@@ -29,7 +29,8 @@ namespace Simulation.Protocol.SSE.CJJKRS
 					SSEServer.OperationOcurred += operation => OnOperationOccurred(operation);
 
 					// emulate database write to disk
-					for (int i = 0; i < database.Unpack().Size / (_elementsPerPage * 257); i++)
+					var pages = database.Unpack().Size / (_elementsPerPage * 257);
+					for (int i = 0; i < pages; i++)
 					{
 						OnNodeVisited(i);
 					}
