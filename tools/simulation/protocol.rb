@@ -36,7 +36,7 @@ open('../../results/protocol.json', 'a') do |f|
   f << '{'
 end
 
-%w[pope florian adamore fhope lewiore cryptdb practicalore noencryption].each do |scheme|
+%w[pope kerschbaum cloz fhope lewiwu bclo clww noencryption cjjkrs cjjjkrs oram].each do |scheme|
   ['queries-.5', 'queries-3'].each do |queries|
     [5, 50].each do |btreebranches|
       success = false unless run('uniform', queries, scheme, prng.rand(2**30), 10, btreebranches)

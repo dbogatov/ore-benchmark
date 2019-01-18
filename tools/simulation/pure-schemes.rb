@@ -36,7 +36,7 @@ open('../../results/schemes.json', 'a') do |f|
   f << '{'
 end
 
-%w[adamore fhope lewiore cryptdb practicalore noencryption].each do |scheme|
+%w[cloz fhope lewiwu bclo clww noencryption].each do |scheme|
   case scheme
 
   when 'lewiore'
