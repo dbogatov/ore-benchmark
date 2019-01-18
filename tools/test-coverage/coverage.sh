@@ -47,9 +47,6 @@ do
 	fi
 done < cov-report.txt
 
-# echo $alltotal
-# echo $allhit
-
 coverage=$(bc -l <<< "scale=2; 100*$allhit/$alltotal")
 
 echo "Final coverage is $coverage%"

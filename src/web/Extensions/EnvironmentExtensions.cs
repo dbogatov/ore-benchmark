@@ -10,8 +10,6 @@ namespace Web.Extensions
 		/// <param name="env">Environment object to check</param>
 		/// <returns>True if EnvironmentName is "Testing", false otherwise</returns>
 		public static bool IsTesting(this IHostingEnvironment env)
-		{
-			return env.EnvironmentName == "Testing";
-		}
+			=> env.EnvironmentName == "Testing";
 	}
 }

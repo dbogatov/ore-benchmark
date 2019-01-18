@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
-		<ProjectReference Include="..\simulator\simulator.csproj" />
+		<ProjectReference Include="../crypto/shared/shared.csproj" />
+		<ProjectReference Include="../simulator/simulator.csproj" />
 	</ItemGroup>
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>

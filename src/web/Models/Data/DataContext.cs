@@ -25,7 +25,7 @@ namespace Web.Models.Data
 	}
 
 	/// <summary>
-	/// %Models the database. 
+	/// Models the database. 
 	/// DbSet's represent tables. 
 	/// See https://msdn.microsoft.com/en-us/library/jj729737(v=vs.113).aspx
 	/// </summary>

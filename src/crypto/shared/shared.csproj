@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<PackageId>ore-benchamrk.shared</PackageId>
+		<Authors>Dmytro Bogatov</Authors>
+		<Company>Boston University</Company>
+		<Title>Cryptographic primitives</Title>
+		<Description>Includes primitives used by OPE / ORE / SSE schemes.</Description>
+		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
+		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="../../../LICENSE" Pack="true" PackagePath=""/>
+	</ItemGroup>
+</Project>

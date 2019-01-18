@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ORESchemes.Shared.Primitives.PRF;
-using ORESchemes.Shared.Primitives.TSet;
-using ORESchemes.Shared;
+using Crypto.Shared.Primitives.PRF;
+using Crypto.Shared.Primitives.TSet;
+using Crypto.Shared;
 using Xunit;
 using System.Numerics;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.Symmetric;
-using static Test.ORESchemes.Primitives.EventsTestsShared;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.Symmetric;
+using static Test.Crypto.Primitives.EventsTestsShared;
 
-namespace Test.ORESchemes.Primitives.TSet
+namespace Test.Crypto.Primitives.TSet
 {
 	[Trait("Category", "Unit")]
 	public class CashTSet128 : CashTSet
@@ -78,7 +78,6 @@ namespace Test.ORESchemes.Primitives.TSet
 		private readonly IPRF F;
 		private readonly ISymmetric E;
 
-
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
 		private readonly int RUNS = 20;
@@ -104,7 +103,7 @@ namespace Test.ORESchemes.Primitives.TSet
 			F = new PRFFactory().GetPrimitive();
 			E = new SymmetricFactory().GetPrimitive();
 
-			T = new global::ORESchemes.Shared.Primitives.TSet.CashTSet(entropy);
+			T = new global::Crypto.Shared.Primitives.TSet.CashTSet(entropy);
 
 			_sampleInput = new Dictionary<IWord, BitArray[]> {
 				{

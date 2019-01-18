@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.POPE
 {

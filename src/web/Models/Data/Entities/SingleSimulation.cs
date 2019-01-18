@@ -29,7 +29,7 @@ namespace Web.Models.Data.Entities
 			int datasetSize,
 			int querysetSize,
 			int pageSize,
-			ORESchemes.Shared.ORESchemes protocol,
+			Crypto.Shared.Protocols protocol,
 			Random random
 		)
 		{
@@ -38,7 +38,7 @@ namespace Web.Models.Data.Entities
 				Dataset = Enumerable
 					.Range(0, datasetSize)
 					.Select(e => random.Next(0, datasetSize / 2))
-					.Select(e => new Record(e, $"{e}_r{random.Next()}"))
+					.Select(e => new Record(e, $"{e}_r{random.Next(0, 99)}"))
 					.ToList();
 			}
 			else
@@ -56,7 +56,7 @@ namespace Web.Models.Data.Entities
 							if (line != null)
 							{
 								var index = int.Parse(line);
-								Dataset.Add(new Record(index, $"{index}_r{random.Next()}"));
+								Dataset.Add(new Record(index, $"{index}_r{random.Next(0, 99)}"));
 								read++;
 							}
 						} while (line != null && read < datasetSize);
@@ -106,27 +106,27 @@ namespace Web.Models.Data.Entities
 			int cipherSize = 0;
 			switch (protocol)
 			{
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
-				case ORESchemes.Shared.ORESchemes.CryptDB:
-				case ORESchemes.Shared.ORESchemes.FHOPE:
+				case Crypto.Shared.Protocols.CLWW:
+				case Crypto.Shared.Protocols.BCLO:
+				case Crypto.Shared.Protocols.FHOPE:
 					cipherSize = 64;
 					break;
-				case ORESchemes.Shared.ORESchemes.ORAM:
-				case ORESchemes.Shared.ORESchemes.Florian:
-				case ORESchemes.Shared.ORESchemes.POPE:
-				case ORESchemes.Shared.ORESchemes.CJJJKRS:
+				case Crypto.Shared.Protocols.ORAM:
+				case Crypto.Shared.Protocols.Kerschbaum:
+				case Crypto.Shared.Protocols.POPE:
+				case Crypto.Shared.Protocols.CJJJKRS:
 					cipherSize = 128;
 					break;
-				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case Crypto.Shared.Protocols.NoEncryption:
 					cipherSize = 32;
 					break;
-				case ORESchemes.Shared.ORESchemes.LewiORE:
+				case Crypto.Shared.Protocols.LewiWu:
 					cipherSize = 2816;
 					break;
-				case ORESchemes.Shared.ORESchemes.AdamORE:
+				case Crypto.Shared.Protocols.CLOZ:
 					cipherSize = 4088;
 					break;
-				case ORESchemes.Shared.ORESchemes.CJJKRS:
+				case Crypto.Shared.Protocols.CJJKRS:
 					cipherSize = 257;
 					break;
 			}
@@ -146,7 +146,7 @@ namespace Web.Models.Data.Entities
 
 		// Inputs
 		public int Seed { get; set; } = new Random().Next();
-		public ORESchemes.Shared.ORESchemes Protocol { get; set; } = ORESchemes.Shared.ORESchemes.NoEncryption;
+		public Crypto.Shared.Protocols Protocol { get; set; } = Crypto.Shared.Protocols.NoEncryption;
 		public IList<Record> Dataset { get; set; }
 		public IList<RangeQuery> Queryset { get; set; }
 		public int CacheSize { get; set; } = 0;

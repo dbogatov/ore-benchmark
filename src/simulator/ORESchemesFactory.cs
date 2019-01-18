@@ -1,10 +1,6 @@
 using System;
-using ORESchemes.Shared;
-using ORESchemes.CryptDBOPE;
-using ORESchemes.PracticalORE;
-using ORESchemes.LewiORE;
-using ORESchemes.FHOPE;
-using ORESchemes.AdamORE;
+using Crypto.Shared;
+using Crypto.FHOPE;
 
 namespace Simulation
 {
@@ -48,19 +44,19 @@ namespace Simulation
 		public override NoEncryptionScheme GetScheme(int parameter = 0) => new NoEncryptionScheme(_entropy);
 	}
 
-	public class PracticalOREFactory : ORESchemesFactory<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>
+	public class CLWWFactory : ORESchemesFactory<Crypto.CLWW.Scheme, Crypto.CLWW.Ciphertext, BytesKey>
 	{
-		public PracticalOREFactory(int? seed = null) : base(seed) { }
+		public CLWWFactory(int? seed = null) : base(seed) { }
 
-		public override PracticalOREScheme GetScheme(int parameter = 0) => new PracticalOREScheme(_entropy);
+		public override Crypto.CLWW.Scheme GetScheme(int parameter = 0) => new Crypto.CLWW.Scheme(_entropy);
 	}
 
-	public class CryptDBOPEFactory : ORESchemesFactory<CryptDBScheme, OPECipher, BytesKey>
+	public class BCLOFactory : ORESchemesFactory<Crypto.BCLO.Scheme, OPECipher, BytesKey>
 	{
-		public CryptDBOPEFactory(int? seed = null) : base(seed) { }
+		public BCLOFactory(int? seed = null) : base(seed) { }
 
-		public override CryptDBScheme GetScheme(int parameter = 48) =>
-			new CryptDBScheme(
+		public override Crypto.BCLO.Scheme GetScheme(int parameter = 48) =>
+			new Crypto.BCLO.Scheme(
 				Int32.MinValue,
 				Int32.MaxValue,
 				Convert.ToInt64(-Math.Pow(2, parameter)),
@@ -69,24 +65,24 @@ namespace Simulation
 			);
 	}
 
-	public class LewiOREFactory : ORESchemesFactory<LewiOREScheme, ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>
+	public class LewiWuFactory : ORESchemesFactory<Crypto.LewiWu.Scheme, Crypto.LewiWu.Ciphertext, Crypto.LewiWu.Key>
 	{
-		public LewiOREFactory(int? seed = null) : base(seed) { }
+		public LewiWuFactory(int? seed = null) : base(seed) { }
 
-		public override LewiOREScheme GetScheme(int parameter = 16) => new LewiOREScheme(parameter, _entropy);
+		public override Crypto.LewiWu.Scheme GetScheme(int parameter = 16) => new Crypto.LewiWu.Scheme(parameter, _entropy);
 	}
 
-	public class FHOPEFactory : ORESchemesFactory<FHOPEScheme, ORESchemes.FHOPE.Ciphertext, State>
+	public class FHOPEFactory : ORESchemesFactory<Crypto.FHOPE.Scheme, Crypto.FHOPE.Ciphertext, State>
 	{
 		public FHOPEFactory(int? seed = null) : base(seed) { }
 
-		public override FHOPEScheme GetScheme(int parameter = 0) => new FHOPEScheme(long.MinValue, long.MaxValue, 10, parameter * 0.01, _entropy);
+		public override Crypto.FHOPE.Scheme GetScheme(int parameter = 0) => new Crypto.FHOPE.Scheme(long.MinValue, long.MaxValue, 10, parameter * 0.01, _entropy);
 	}
 
-	public class AdamOREFactory : ORESchemesFactory<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>
+	public class CLOZFactory : ORESchemesFactory<Crypto.CLOZ.Scheme, Crypto.CLOZ.Ciphertext, Crypto.CLOZ.Key>
 	{
-		public AdamOREFactory(int? seed = null) : base(seed) { }
+		public CLOZFactory(int? seed = null) : base(seed) { }
 
-		public override AdamOREScheme GetScheme(int parameter = 0) => new AdamOREScheme(_entropy);
+		public override Crypto.CLOZ.Scheme GetScheme(int parameter = 0) => new Crypto.CLOZ.Scheme(_entropy);
 	}
 }

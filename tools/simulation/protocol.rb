@@ -5,7 +5,7 @@ require 'English'
 Dir.chdir File.dirname(__FILE__)
 
 def run(input, queries, scheme, seed, cache, branching)
-  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --ore-scheme #{scheme} --seed #{seed} protocol --queries ../../data/#{input}/#{queries}.txt --cache-size #{cache} --b-plus-tree-branches #{branching}"
+  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --protocol #{scheme} --seed #{seed} protocol --queries ../../data/#{input}/#{queries}.txt --cache-size #{cache} --elements-per-page #{branching}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
 
@@ -36,7 +36,7 @@ open('../../results/protocol.json', 'a') do |f|
   f << '{'
 end
 
-%w[pope florian adamore fhope lewiore cryptdb practicalore noencryption].each do |scheme|
+%w[pope kerschbaum cloz fhope lewiwu bclo clww noencryption cjjjkrs oram].each do |scheme|
   ['queries-.5', 'queries-3'].each do |queries|
     [5, 50].each do |btreebranches|
       success = false unless run('uniform', queries, scheme, prng.rand(2**30), 10, btreebranches)

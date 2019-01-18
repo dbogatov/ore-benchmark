@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.TapeGen;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.TapeGen;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives.LFPRF
+namespace Test.Crypto.Primitives.LFPRF
 {
 	[Trait("Category", "Unit")]
 	public class TapeGenerator

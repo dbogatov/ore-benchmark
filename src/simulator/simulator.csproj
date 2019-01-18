@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
-		<ProjectReference Include="..\ore-schemes\cryptdb-ope\cryptdb-ope.csproj" />
-		<ProjectReference Include="..\ore-schemes\practical-ore\practical-ore.csproj" />
-		<ProjectReference Include="..\ore-schemes\adam-ore\adam-ore.csproj" />
-		<ProjectReference Include="..\ore-schemes\lewi-ore\lewi-ore.csproj" />
-		<ProjectReference Include="..\ore-schemes\fh-ope\fh-ope.csproj" />
-		<ProjectReference Include="..\ore-schemes\cjjkrs-sse\cjjkrs-sse.csproj" />
-		<ProjectReference Include="..\ore-schemes\cjjjkrs-sse\cjjjkrs-sse.csproj" />
-		<ProjectReference Include="..\b-plus-tree\b-plus-tree.csproj" />
+		<ProjectReference Include="../crypto/shared/shared.csproj" />
+		<ProjectReference Include="../crypto/bclo-ope/bclo-ope.csproj" />
+		<ProjectReference Include="../crypto/clww-ore/clww-ore.csproj" />
+		<ProjectReference Include="../crypto/cloz-ore/cloz-ore.csproj" />
+		<ProjectReference Include="../crypto/lewi-wu-ore/lewi-wu-ore.csproj" />
+		<ProjectReference Include="../crypto/fh-ope/fh-ope.csproj" />
+		<ProjectReference Include="../crypto/cjjkrs-sse/cjjkrs-sse.csproj" />
+		<ProjectReference Include="../crypto/cjjjkrs-sse/cjjjkrs-sse.csproj" />
+		<ProjectReference Include="../b-plus-tree/b-plus-tree.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="11.0.2" />

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using BPlusTree;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared;
+using Crypto.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.POPE
 {

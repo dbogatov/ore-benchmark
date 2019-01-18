@@ -1,11 +1,11 @@
 
 using System;
 using System.Collections.Generic;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Xunit;
 using System.Linq;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.Crypto.Primitives
 {
 	public partial class Sampler
 	{

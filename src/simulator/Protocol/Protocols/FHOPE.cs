@@ -1,6 +1,6 @@
 using System;
 using BPlusTree;
-using ORESchemes.FHOPE;
+using Crypto.FHOPE;
 
 namespace Simulation.Protocol.FHOPE
 {
@@ -24,9 +24,9 @@ namespace Simulation.Protocol.FHOPE
 		}
 	}
 
-	public class Client : SimpleORE.Client<FHOPEScheme, Ciphertext, State>
+	public class Client : SimpleORE.Client<Crypto.FHOPE.Scheme, Ciphertext, State>
 	{
-		public Client(FHOPEScheme scheme) : base(scheme) { }
+		public Client(Crypto.FHOPE.Scheme scheme) : base(scheme) { }
 
 		public override void RunHandshake()
 		{
@@ -72,11 +72,11 @@ namespace Simulation.Protocol.FHOPE
 		}
 	}
 
-	public class Protocol : SimpleORE.Protocol<FHOPEScheme, Ciphertext, State>
+	public class Protocol : SimpleORE.Protocol<Crypto.FHOPE.Scheme, Ciphertext, State>
 	{
 		public Protocol(
 			Options<Ciphertext> options,
-			FHOPEScheme scheme
+			Crypto.FHOPE.Scheme scheme
 		) : base(options, scheme)
 		{
 			_client = new Client(scheme);

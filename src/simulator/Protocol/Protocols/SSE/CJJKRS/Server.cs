@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
-using ORESchemes.CJJKRS;
+using Crypto.CJJKRS;
 
 namespace Simulation.Protocol.SSE.CJJKRS
 {
 	public class Server : AbsParty
 	{
-		private CJJKRS<Word, Index>.Server SSEServer;
+		private Scheme<Word, Index>.Server SSEServer;
 		private readonly int _elementsPerPage;
 
 		/// <param name="elementsPerPage">Number of TSet records fit per page (one record is 257 bits in this setting)</param>
@@ -20,7 +20,7 @@ namespace Simulation.Protocol.SSE.CJJKRS
 			switch (message)
 			{
 				case PublishDatabaseMessage database:
-					SSEServer = new CJJKRS<Word, Index>.Server(database.Unpack());
+					SSEServer = new Scheme<Word, Index>.Server(database.Unpack());
 					SSEServer.PageSize = _elementsPerPage * 257; // hardcoded, this number assumes CJJKRS SSE scheme
 
 					// register event handlers
@@ -29,7 +29,8 @@ namespace Simulation.Protocol.SSE.CJJKRS
 					SSEServer.OperationOcurred += operation => OnOperationOccurred(operation);
 
 					// emulate database write to disk
-					for (int i = 0; i < database.Unpack().Size / (_elementsPerPage * 257); i++)
+					var pages = database.Unpack().Size / (_elementsPerPage * 257);
+					for (int i = 0; i < pages; i++)
 					{
 						OnNodeVisited(i);
 					}

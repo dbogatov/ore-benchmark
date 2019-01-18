@@ -19,7 +19,6 @@ namespace Web.Controllers
 		private readonly ISimulationService _simulations;
 		private readonly IConfiguration _config;
 
-
 		public HomeController(
 			IDataContext context,
 			ISimulationService simulations,

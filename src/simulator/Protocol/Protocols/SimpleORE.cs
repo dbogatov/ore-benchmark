@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using BPlusTree;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared;
+using Crypto.Shared.Primitives;
 
 // Let Moq use internal classes
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

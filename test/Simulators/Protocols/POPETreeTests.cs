@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using Simulation.Protocol;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Xunit;
 using Simulation.Protocol.POPE;
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives.PRG;
 
 namespace Test.Simulators.Protocols
 {
@@ -90,7 +90,6 @@ namespace Test.Simulators.Protocols
 				}
 			);
 		}
-
 
 		[Fact]
 		public void InsertionCorrectness()

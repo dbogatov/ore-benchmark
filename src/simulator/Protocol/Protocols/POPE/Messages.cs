@@ -10,7 +10,6 @@ namespace Simulation.Protocol.POPE
 		public override int GetSize() => _content.Sum(c => c == null ? 0 : c.GetSize());
 	}
 
-
 	internal class GetSortedListMessage : RequestMessage { }
 
 	internal class SortedListResponseMessage : AbsMessage<List<Cipher>>
@@ -19,7 +18,6 @@ namespace Simulation.Protocol.POPE
 
 		public override int GetSize() => _content.Sum(c => c == null ? 0 : c.GetSize());
 	}
-
 
 	internal class IndexOfResultMessage : SizeableMessage<Cipher>
 	{

@@ -1,8 +1,8 @@
 using System;
 using Xunit;
-using ORESchemes.Shared.Primitives.Sampler;
+using Crypto.Shared.Primitives.Sampler;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.Crypto.Primitives
 {
 	[Trait("Category", "Unit")]
 	public partial class Sampler

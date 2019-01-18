@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using MathNet.Numerics;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.Crypto.Primitives
 {
 	public partial class Sampler
 	{

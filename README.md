@@ -18,15 +18,17 @@ Furthermore, we propose a number of improvements for some of these schemes and p
 
 ## Analyzed schemes and protocols
 
-- [Order Preserving Symmetric Encryption (aka **CryptDB OPE**)](https://eprint.iacr.org/2012/624.pdf)
-- [Practical Order-Revealing Encryption with Limited Leakage (aka **Practical ORE**)](https://eprint.iacr.org/2015/1125.pdf)
-- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi ORE**)](https://eprint.iacr.org/2016/612.pdf)
+- [Order Preserving Symmetric Encryption (aka **BCLO OPE**)](https://eprint.iacr.org/2012/624.pdf)
+- [Practical Order-Revealing Encryption with Limited Leakage (aka **CLWW ORE**)](https://eprint.iacr.org/2015/1125.pdf)
+- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi-Wu ORE**)](https://eprint.iacr.org/2016/612.pdf)
 - [Frequency-Hiding Order-Preserving Encryption (aka **FH-OPE**)](http://www.fkerschbaum.org/ccs15.pdf)
-- [Reducing the Leakage in Practical Order-Revealing Encryption (aka **Adam ORE**)](https://eprint.iacr.org/2016/661.pdf)
-- [An Efficiently Searchable Encrypted Data Structure for Range Queries (aka **Florian Protocol**)](https://arxiv.org/pdf/1709.09314.pdf)
-- [POPE: Partial Order Preserving Encoding (aka (**POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
+- [Reducing the Leakage in Practical Order-Revealing Encryption (aka **CLOZ ORE**)](https://eprint.iacr.org/2016/661.pdf)
+- [POPE: Partial Order Preserving Encoding (aka **POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
+- [Practical Private Range Search Revisited](http://www.idemertzis.com/Papers/sigmod16.pdf) working on top of
+	- [Highly-Scalable Searchable Symmetric Encryption with Support for Boolean Queries (aka CJJKRS)](https://eprint.iacr.org/2013/169.pdf)
+	- [Dynamic Searchable Encryption in Very-Large Databases: Data Structures and Implementation (aka CJJJKRS)](https://eprint.iacr.org/2014/853.pdf)
 
-We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) datasets.
+We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) data sets.
 
 The canonical project repository is [here](https://git.dbogatov.org/bu/ore-benchmark/Project-Code).
 
@@ -51,10 +53,10 @@ docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll protocol --help"
 docker run dbogatov/ore-benchmark /bin/sh -c "tree ./data"
 
 # to run simple scheme simulation (e.g. CLWW) on supplied data set
-docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme practicalore scheme"
+docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --protocol clww scheme"
 
 # to run simple protocol simulation (e.g. POPE) on supplied data and query sets
-docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme pope protocol --queries ./data/uniform/queries-1.txt"
+docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --protocol pope protocol --queries ./data/uniform/queries-1.txt"
 
 # to see the format of data and query files
 # data file line is an integer, coma, string (in quotes)
@@ -68,7 +70,7 @@ docker run dbogatov/ore-benchmark /bin/sh -c "head -n 10 ./data/uniform/queries-
 docker run \
 	-v /path/to/data:/benchmark/your-data/ \
 	dbogatov/ore-benchmark \
-	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt -v --ore-scheme pope protocol --queries ./your-data/queries.txt"
+	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt -v --protocol pope protocol --queries ./your-data/queries.txt"
 
 # advanced; to generate JSON output and save it locally
 # you have to have a directory /path/to/results, where result.json will appear
@@ -76,7 +78,7 @@ docker run \
 	-v /path/to/data:/benchmark/your-data/ \
 	-v /path/to/results:/benchmark/results/ \
 	dbogatov/ore-benchmark \
-	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt --ore-scheme pope protocol --queries ./your-data/queries.txt > ./results/result.json"
+	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt --protocol pope protocol --queries ./your-data/queries.txt > ./results/result.json"
 ```
 
 Running the tool locally without docker is more trivial (just omit all docker wrappers).
@@ -99,5 +101,5 @@ dotnet ./src/cli/dist/cli.dll --help
 
 ## Packages
 
-- [B+ tree docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
-- [ORE / OPE / SSE schemes and primitives docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/ore-schemes)
+- [B+ tree docs and code](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
+- [ORE / OPE / SSE schemes and primitives docs and code](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/crypto)

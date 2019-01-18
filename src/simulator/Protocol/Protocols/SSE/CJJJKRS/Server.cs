@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
-using ORESchemes.CJJJKRS;
+using Crypto.CJJJKRS;
 
 namespace Simulation.Protocol.SSE.CJJJKRS
 {
 	public class Server : AbsParty
 	{
-		private CJJJKRS<Word, Index>.Server SSEServer;
+		private Scheme<Word, Index>.Server SSEServer;
 		private readonly int _elementsPerPage;
 
 		private readonly int _b;
@@ -24,7 +24,7 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 			switch (message)
 			{
 				case PublishDatabaseMessage database:
-					SSEServer = new CJJJKRS<Word, Index>.Server(database.Unpack());
+					SSEServer = new Scheme<Word, Index>.Server(database.Unpack());
 					SSEServer.PageSize = _elementsPerPage * (128 / 8); // AES block
 
 					// register event handlers

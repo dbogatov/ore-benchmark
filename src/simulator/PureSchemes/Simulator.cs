@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared;
+using Crypto.Shared.Primitives;
 
 namespace Simulation.PureSchemes
 {
@@ -111,15 +111,15 @@ namespace Simulation.PureSchemes
 			// This is a necessary hack because FH-OPE requires min and max 
 			// ciphers for comparison which can be computed only when all
 			// plaintexts got encrypted
-			if (scheme is ORESchemes.FHOPE.FHOPEScheme)
+			if (scheme is Crypto.FHOPE.Scheme)
 			{
-				var fhope = (ORESchemes.FHOPE.FHOPEScheme)scheme;
+				var fhope = (Crypto.FHOPE.Scheme)scheme;
 				ciphertexts.ForEach(
 					c =>
 					{
 						int plaintext = scheme.Decrypt(c, key);
-						((ORESchemes.FHOPE.Ciphertext)(object)c).max = fhope.MaxCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)key);
-						((ORESchemes.FHOPE.Ciphertext)(object)c).min = fhope.MinCiphertext(plaintext, (ORESchemes.FHOPE.State)(object)key);
+						((Crypto.FHOPE.Ciphertext)(object)c).max = fhope.MaxCiphertext(plaintext, (Crypto.FHOPE.State)(object)key);
+						((Crypto.FHOPE.Ciphertext)(object)c).min = fhope.MinCiphertext(plaintext, (Crypto.FHOPE.State)(object)key);
 					}
 				);
 			}

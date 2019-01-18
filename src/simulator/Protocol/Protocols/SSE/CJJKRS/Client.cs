@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.CJJKRS;
-using ORESchemes.Shared;
-using static ORESchemes.CJJKRS.CJJKRS<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
+using Crypto.CJJKRS;
+using Crypto.Shared;
+using static Crypto.CJJKRS.Scheme<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
 
 namespace Simulation.Protocol.SSE.CJJKRS
 {
 	public class Client : AbsClient, ISSEClient
 	{
-		private readonly CJJKRS<Word, Index>.Client SSEClient;
+		private readonly Scheme<Word, Index>.Client SSEClient;
 
 		public Client(byte[] entropy)
 		{
-			SSEClient = new CJJKRS<Word, Index>.Client(entropy);
+			SSEClient = new Scheme<Word, Index>.Client(entropy);
 
 			SSEClient.PrimitiveUsed += (prim, impure) => OnPrimitiveUsed(prim, impure);
 			SSEClient.NodeVisited += hash => OnNodeVisited(hash);

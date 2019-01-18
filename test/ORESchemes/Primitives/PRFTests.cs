@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.PRF;
-using ORESchemes.Shared.Primitives.PRP;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.PRF;
+using Crypto.Shared.Primitives.PRP;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives.PRF
+namespace Test.Crypto.Primitives.PRF
 {
 	[Trait("Category", "Unit")]
 	public class AESPRFChecks : AbsPRF

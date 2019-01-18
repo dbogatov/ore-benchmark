@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.PPH;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.PPH;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives.PPH
+namespace Test.Crypto.Primitives.PPH
 {
 	[Trait("Category", "Unit")]
 	public class FakePPH
@@ -21,7 +21,7 @@ namespace Test.ORESchemes.Primitives.PPH
 			byte[] entropy = new byte[128 / 8];
 			G.NextBytes(entropy);
 
-			R = new global::ORESchemes.Shared.Primitives.PPH.FakePPH(entropy);
+			R = new global::Crypto.Shared.Primitives.PPH.FakePPH(entropy);
 			_key = R.KeyGen();
 		}
 

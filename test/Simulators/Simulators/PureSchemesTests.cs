@@ -2,7 +2,7 @@ using System;
 using Xunit;
 using System.Linq;
 using Simulation.PureSchemes;
-using ORESchemes.LewiORE;
+using Crypto.LewiWu;
 
 namespace Test.Simulators
 {
@@ -21,7 +21,7 @@ namespace Test.Simulators
 					.Range(-max, max)
 					.ToList();
 
-			var simulator = new Simulator<Ciphertext, Key>(dataset, new LewiOREScheme(16, entropy));
+			var simulator = new Simulator<Ciphertext, Key>(dataset, new Scheme(16, entropy));
 			var report = (global::Simulation.PureSchemes.Report)simulator.Simulate();
 
 			var subreports = report.Stages.Values;

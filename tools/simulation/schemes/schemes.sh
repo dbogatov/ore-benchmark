@@ -25,7 +25,7 @@ shift $((OPTIND-1))
 
 dotnet build -c release -o dist/
 
-schemes=( "practicalore" "cryptdb" "lewiore" "fhope" "adamore" )
+schemes=( "clww" "bclo" "lewiwu" "fhope" "cloz" )
 
 set -x # echo ON
 
@@ -33,7 +33,7 @@ for scheme in "${schemes[@]}"
 do
     dotnet ./dist/schemes.dll \
 		--data-dir ../../../data \
-		--ore-scheme $scheme \
+		--protocol $scheme \
 		--seed $SEED
 done
 

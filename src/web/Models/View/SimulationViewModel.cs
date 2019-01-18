@@ -18,17 +18,17 @@ namespace Web.Models.View
 		[Display(Name = "No Encryption")]
 		NoEncryption,
 		[Display(Name = "BCLO OPE")]
-		CryptDB,
+		BCLO,
 		[Display(Name = "CLWW ORE")]
-		PracticalORE,
+		CLWW,
 		[Display(Name = "Lewi-Wu ORE")]
-		LewiORE,
+		LewiWu,
 		[Display(Name = "FH-OPE")]
 		FHOPE,
 		[Display(Name = "CLOZ ORE")]
-		AdamORE,
+		CLOZ,
 		[Display(Name = "Kerschbaum Protocol")]
-		Florian,
+		Kerschbaum,
 		[Display(Name = "POPE Protocol")]
 		POPE,
 		[Display(Name = "ORAM Protocol")]
@@ -77,11 +77,11 @@ namespace Web.Models.View
 
 		[EnumDataType(typeof(ORESchemesView))]
 		public ORESchemesView Protocol { get; set; } = ORESchemesView.NoEncryption;
-		public ORESchemes.Shared.ORESchemes ProtocolReal
+		public Crypto.Shared.Protocols ProtocolReal
 		{
 			get
 			{
-				return (ORESchemes.Shared.ORESchemes)Protocol;
+				return (Crypto.Shared.Protocols)Protocol;
 			}
 		}
 

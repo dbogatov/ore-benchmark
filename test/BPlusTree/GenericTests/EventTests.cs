@@ -3,7 +3,7 @@ using Xunit;
 using BPlusTree;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 namespace Test.BPlusTree
 {
@@ -26,7 +26,6 @@ namespace Test.BPlusTree
 
 			return visited.Count();
 		}
-
 
 		[Fact]
 		public void InsertionEvents()

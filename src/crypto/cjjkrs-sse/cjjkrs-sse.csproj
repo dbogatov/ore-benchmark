@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<PackageId>cjjkrs-sse</PackageId>
+		<Authors>Dmytro Bogatov</Authors>
+		<Company>Boston University</Company>
+		<Title>CJJKRS '13 SSE</Title>
+		<Description>SSE scheme (basic single-keyword search) as defined in https://eprint.iacr.org/2013/169.pdf.</Description>
+		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
+		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="../../../LICENSE" Pack="true" PackagePath=""/>
+		<ProjectReference Include="../shared/shared.csproj" />
+	</ItemGroup>
+
+</Project>

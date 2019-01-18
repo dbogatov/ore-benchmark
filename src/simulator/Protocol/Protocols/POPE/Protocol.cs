@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared;
+using Crypto.Shared.Primitives.PRG;
 
 [assembly: InternalsVisibleTo("test")]
 

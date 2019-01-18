@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ORESchemes.FHOPE;
-using ORESchemes.Shared;
+using Crypto.FHOPE;
+using Crypto.Shared;
 using Xunit;
 
-namespace Test.ORESchemes
+namespace Test.Crypto
 {
 	[Trait("Category", "Unit")]
 	public class PerfectFHOPE : AbsFHOPE
@@ -25,7 +25,7 @@ namespace Test.ORESchemes
 
 			var key = _scheme.KeyGen();
 
-			var perfect = new FHOPEScheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
+			var perfect = new Scheme(long.MinValue, long.MaxValue, 10, 0, _entropy);
 			var pKey = perfect.KeyGen();
 
 			for (int i = 0; i < _runs; i++)
@@ -45,7 +45,7 @@ namespace Test.ORESchemes
 
 		protected override void SetScheme()
 		{
-			_scheme = new FHOPEScheme(long.MinValue, long.MaxValue, 10, GetP(), _entropy);
+			_scheme = new Scheme(long.MinValue, long.MaxValue, 10, GetP(), _entropy);
 
 			_expectedEvents = new Dictionary<SchemeOperation, Tuple<int, int>>
 			{
@@ -58,7 +58,7 @@ namespace Test.ORESchemes
 
 		protected override Ciphertext ConfigureCiphertext(Ciphertext cipher, State key)
 		{
-			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
+			Scheme scheme = Assert.IsType<Scheme>(_scheme);
 
 			var plaintext = scheme.Decrypt(cipher, key);
 
@@ -79,7 +79,7 @@ namespace Test.ORESchemes
 		[Fact]
 		public void Exceptions()
 		{
-			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
+			Scheme scheme = Assert.IsType<Scheme>(_scheme);
 
 			var key = scheme.KeyGen();
 
@@ -115,7 +115,7 @@ namespace Test.ORESchemes
 		[ClassData(typeof(OrderCorrectnessTestData))]
 		public void FHOPEOrderCorrectness(int plaintextOne, int plaintextTwo, bool configureFirst)
 		{
-			FHOPEScheme scheme = Assert.IsType<FHOPEScheme>(_scheme);
+			Scheme scheme = Assert.IsType<Scheme>(_scheme);
 
 			var key = scheme.KeyGen();
 

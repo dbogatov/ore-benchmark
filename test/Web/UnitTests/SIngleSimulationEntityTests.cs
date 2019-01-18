@@ -17,7 +17,7 @@ namespace Test.Web.UnitTests
 					datasetSize: 5,
 					querysetSize: 5,
 					pageSize: 5,
-					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					protocol: global::Crypto.Shared.Protocols.NoEncryption,
 					random: new Random()
 				);
 
@@ -36,7 +36,7 @@ namespace Test.Web.UnitTests
 					datasetSize: 5,
 					querysetSize: 5,
 					pageSize: 5,
-					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					protocol: global::Crypto.Shared.Protocols.NoEncryption,
 					random: new Random()
 				)
 			);
@@ -54,7 +54,7 @@ namespace Test.Web.UnitTests
 					datasetSize: 5,
 					querysetSize: 5,
 					pageSize: 5,
-					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					protocol: global::Crypto.Shared.Protocols.NoEncryption,
 					random: new Random()
 				)
 			);
@@ -71,7 +71,7 @@ namespace Test.Web.UnitTests
 					datasetSize: 5,
 					querysetSize: 5,
 					pageSize: 5,
-					protocol: global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					protocol: global::Crypto.Shared.Protocols.NoEncryption,
 					random: new Random()
 				);
 

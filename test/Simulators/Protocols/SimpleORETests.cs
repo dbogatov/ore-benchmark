@@ -4,8 +4,8 @@ using System.Linq;
 using BPlusTree;
 using Moq;
 using Moq.Protected;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared;
+using Crypto.Shared.Primitives;
 using Simulation.Protocol;
 using Simulation.Protocol.SimpleORE;
 using Xunit;
@@ -206,7 +206,6 @@ namespace Test.Simulators.Protocols.SimpleORE
 				.As<IServerProtected<OPECipher>>()
 				.Setup(s => s.AcceptMessage(It.IsAny<QueryMessage<OPECipher>>()))
 				.Callback<QueryMessage<OPECipher>>(m => query = true);
-
 
 			mockServer.Object.AcceptMessage<Tuple<OPECipher, OPECipher>, object>(
 				new Mock<MinMaxMessage<OPECipher>>(

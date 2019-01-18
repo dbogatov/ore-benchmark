@@ -4,12 +4,12 @@ using System.Linq;
 using System.Collections;
 using BenchmarkDotNet.Attributes;
 
-using ORESchemes.Shared.Primitives.Hash;
-using ORESchemes.Shared.Primitives.PRG;
-using ORESchemes.Shared.Primitives.PRF;
-using ORESchemes.Shared.Primitives.PRP;
-using ORESchemes.Shared.Primitives.Sampler;
-using ORESchemes.Shared.Primitives.Symmetric;
+using Crypto.Shared.Primitives.Hash;
+using Crypto.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives.PRF;
+using Crypto.Shared.Primitives.PRP;
+using Crypto.Shared.Primitives.Sampler;
+using Crypto.Shared.Primitives.Symmetric;
 
 namespace Benchmark.Primitives
 {

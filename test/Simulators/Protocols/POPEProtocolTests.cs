@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Simulation.Protocol;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Xunit;
 using Simulation.Protocol.POPE;
 using System.Collections.Generic;

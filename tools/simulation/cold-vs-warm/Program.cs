@@ -47,7 +47,7 @@ namespace ColdVsWarm
 			AllReports reports = new AllReports();
 			int queries = 0;
 
-			foreach (var protocol in new List<string> { "adamore", "cryptdb", "practicalore", "lewiore", "fhope", "florian", "pope", "noencryption", "popecold" })
+			foreach (var protocol in new List<string> { "cloz", "bclo", "clww", "lewi-wu", "fhope", "kerschbaum", "pope", "noencryption", "popecold" })
 			{
 				reports.Reports.Add(protocol, new List<AllReports.Report>());
 
@@ -75,7 +75,7 @@ namespace ColdVsWarm
 				{
 					await file.WriteLineAsync(queries.ToString());
 
-					foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+					foreach (var protocol in new List<string> { "cloz", "bclo", "clww", "lewiwu", "fhope", "kerschbaum", "pope", "noencryption", "popecold" })
 					{
 						foreach (var subreport in reports.Reports[protocol])
 						{

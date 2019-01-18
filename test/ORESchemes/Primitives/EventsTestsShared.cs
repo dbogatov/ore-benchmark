@@ -1,10 +1,10 @@
 using Xunit;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared.Primitives;
 using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Test.ORESchemes.Primitives
+namespace Test.Crypto.Primitives
 {
 	public static class EventsTestsShared
 	{

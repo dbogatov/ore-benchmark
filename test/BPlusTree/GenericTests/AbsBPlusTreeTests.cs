@@ -1,5 +1,5 @@
 using BPlusTree;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 namespace Test.BPlusTree
 {

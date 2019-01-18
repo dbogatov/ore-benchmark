@@ -1,10 +1,10 @@
 
 using System;
-using ORESchemes.FHOPE;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.FHOPE;
+using Crypto.Shared.Primitives.PRG;
 using Xunit;
 
-namespace Test.ORESchemes
+namespace Test.Crypto
 {
 	[Trait("Category", "Unit")]
 	public class FHOPEState

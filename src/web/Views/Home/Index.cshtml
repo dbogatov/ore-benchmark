@@ -91,11 +91,11 @@
 				**Do not supply sensitive data.**
 
 				Use this form to schedule a simulation.
-				Simulations are placed in queue and are executed in order, although the queue is usually empty.
+				Simulations are placed in a queue and are executed in-order, although the queue is usually empty.
 				Simulation result page will be available immediately and will show its current state and results when available.
 				Results will be persisted at least for @(Config["Daemon:CleanService:MaxAge"]) seconds.
 
-				Click "Run dewfault example" to schedule a trivial simulation, or use the fields in the form to customized it.
+				Click "Run default example" to schedule a trivial simulation, or use the fields in the form to customize it.
 
 				**Seed** value is used to seed the PRG for the whole simulation.
 				Same inputs with the same seed will always produce the same result.
@@ -110,16 +110,16 @@
 				The format is a number, followed by coma, followed by a number.
 				For example, `4, 6`.
 
-				**Cache size** defines virtual cache capacity.
+				**Cache size** and **cache policy** define virtual cache capacity and behavior.
 				Requests fulfilled by the cache do not count as I/Os.
 
 				I/O performance heavily depends on the page size and the **number of elements per I/O page**.
 				Default values will be assigned such that elements (ciphertexts) and B+ tree nodes fit in a page, assuming page size of @(Config["Daemon:SimulationService:PageSize"]) bits.
-				For ORAM, client's B+ tree branching factor is 128.
-				An *element* is specific to protocol: a node for B+ tree and POPE, symmetric encryption cipher for Kerschbaum, block of ORAM or T-set record for SSE.
+				For ORAM, client's B+ tree branching factor is 256.
+				An *element* is specific to protocol: a node for B+ tree and POPE, symmetric encryption cipher for Kerschbaum and SSE schemes or block of ORAM.
 				
 				> Data and query set sizes are restricted to @(Config["Limits:Dataset"]) and @(Config["Limits:Queryset"]) elements respectively.
-				> Inputs beyond these limits will be discarded.
+				> Inputs beyond these limits will not be read.
 				> Please, use our docker images (see the [docs](/documentation)) to run arbitrary-sized simulations.
 
 			</markdown>

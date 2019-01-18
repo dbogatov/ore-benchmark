@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 namespace Simulation.Protocol.SSE
 {

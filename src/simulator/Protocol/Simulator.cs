@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BPlusTree;
-using ORESchemes.AdamORE;
-using ORESchemes.CryptDBOPE;
-using ORESchemes.PracticalORE;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 namespace Simulation.Protocol
 {
@@ -86,11 +83,11 @@ namespace Simulation.Protocol
 		/// <param name="seed">Seed value to use (if supplied, deterministic</param>
 		/// <param name="elementsPerPage">Option that controls the number of elements per page for I/Os (branching factor for B+ tree)</param>
 		/// <returns>An instantiated protocol</returns>
-		public static IProtocol GenerateProtocol(ORESchemes.Shared.ORESchemes scheme, int seed, int elementsPerPage)
+		public static IProtocol GenerateProtocol(Crypto.Shared.Protocols scheme, int seed, int elementsPerPage)
 		{
 			switch (scheme)
 			{
-				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case Crypto.Shared.Protocols.NoEncryption:
 					return
 						new Simulation.Protocol.SimpleORE.Protocol<NoEncryptionScheme, OPECipher, BytesKey>(
 							new Options<OPECipher>(
@@ -99,77 +96,77 @@ namespace Simulation.Protocol
 							),
 							new NoEncryptionFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.CryptDB:
+				case Crypto.Shared.Protocols.BCLO:
 					return
-						new Simulation.Protocol.SimpleORE.Protocol<CryptDBScheme, OPECipher, BytesKey>(
+						new Simulation.Protocol.SimpleORE.Protocol<Crypto.BCLO.Scheme, OPECipher, BytesKey>(
 							new Options<OPECipher>(
-								new CryptDBOPEFactory().GetScheme(),
+								new BCLOFactory().GetScheme(),
 								elementsPerPage
 							),
-							new CryptDBOPEFactory(seed).GetScheme()
+							new BCLOFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
+				case Crypto.Shared.Protocols.CLWW:
 					return
-						new Simulation.Protocol.SimpleORE.Protocol<PracticalOREScheme, ORESchemes.PracticalORE.Ciphertext, BytesKey>(
-							new Options<ORESchemes.PracticalORE.Ciphertext>(
-								new PracticalOREFactory().GetScheme(),
+						new Simulation.Protocol.SimpleORE.Protocol<Crypto.CLWW.Scheme, Crypto.CLWW.Ciphertext, BytesKey>(
+							new Options<Crypto.CLWW.Ciphertext>(
+								new CLWWFactory().GetScheme(),
 								elementsPerPage
 							),
-							new PracticalOREFactory(seed).GetScheme()
+							new CLWWFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.LewiORE:
+				case Crypto.Shared.Protocols.LewiWu:
 					return
-						new Simulation.Protocol.LewiORE.Protocol(
-							new Options<ORESchemes.LewiORE.Ciphertext>(
-								new LewiOREFactory().GetScheme(),
+						new Simulation.Protocol.LewiWu.Protocol(
+							new Options<Crypto.LewiWu.Ciphertext>(
+								new LewiWuFactory().GetScheme(),
 								elementsPerPage
 							),
-							new LewiOREFactory(seed).GetScheme()
+							new LewiWuFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.FHOPE:
+				case Crypto.Shared.Protocols.FHOPE:
 					return
 						new Simulation.Protocol.FHOPE.Protocol(
-							new Options<ORESchemes.FHOPE.Ciphertext>(
+							new Options<Crypto.FHOPE.Ciphertext>(
 								new FHOPEFactory().GetScheme(),
 								elementsPerPage
 							),
 							new FHOPEFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.AdamORE:
+				case Crypto.Shared.Protocols.CLOZ:
 					return
-						new Simulation.Protocol.SimpleORE.Protocol<AdamOREScheme, ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
-							new Options<ORESchemes.AdamORE.Ciphertext>(
-								new AdamOREFactory().GetScheme(),
+						new Simulation.Protocol.SimpleORE.Protocol<Crypto.CLOZ.Scheme, Crypto.CLOZ.Ciphertext, Crypto.CLOZ.Key>(
+							new Options<Crypto.CLOZ.Ciphertext>(
+								new CLOZFactory().GetScheme(),
 								elementsPerPage
 							),
-							new AdamOREFactory(seed).GetScheme()
+							new CLOZFactory(seed).GetScheme()
 						);
-				case ORESchemes.Shared.ORESchemes.Florian:
+				case Crypto.Shared.Protocols.Kerschbaum:
 					return
-						new Simulation.Protocol.Florian.Protocol(
+						new Simulation.Protocol.Kerschbaum.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage
 						);
-				case ORESchemes.Shared.ORESchemes.POPE:
+				case Crypto.Shared.Protocols.POPE:
 					return
 						new Simulation.Protocol.POPE.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage
 						);
-				case ORESchemes.Shared.ORESchemes.ORAM:
+				case Crypto.Shared.Protocols.ORAM:
 					return
 						new Simulation.Protocol.ORAM.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage,
 							128
 						);
-				case ORESchemes.Shared.ORESchemes.CJJKRS:
+				case Crypto.Shared.Protocols.CJJKRS:
 					return
 						new Simulation.Protocol.SSE.CJJKRS.Protocol(
 							new Random(seed).GetBytes(128 / 8),
 							elementsPerPage
 						);
-				case ORESchemes.Shared.ORESchemes.CJJJKRS:
+				case Crypto.Shared.Protocols.CJJJKRS:
 					return
 						new Simulation.Protocol.SSE.CJJJKRS.Protocol(
 							new Random(seed).GetBytes(128 / 8),

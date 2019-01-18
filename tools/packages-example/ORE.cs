@@ -7,11 +7,11 @@ namespace Packages
 		static private void ORESchemes()
 		{
 			void UseScheme<C, K>(
-				ORESchemes.Shared.IOREScheme<C, K> scheme,
-				Action<C, ORESchemes.Shared.IOREScheme<C, K>, int, K> preprocess = null
+				Crypto.Shared.IOREScheme<C, K> scheme,
+				Action<C, Crypto.Shared.IOREScheme<C, K>, int, K> preprocess = null
 			)
-				where C : ORESchemes.Shared.IGetSize
-				where K : ORESchemes.Shared.IGetSize
+				where C : Crypto.Shared.IGetSize
+				where K : Crypto.Shared.IGetSize
 			{
 				// Generate a key
 				var key = scheme.KeyGen();
@@ -37,9 +37,8 @@ namespace Packages
 				int plaint6 = scheme.Decrypt(cipher6, key); // 6
 			}
 
-
 			UseScheme(
-				new ORESchemes.CryptDBOPE.CryptDBScheme(
+				new Crypto.BCLO.Scheme(
 					int.MinValue,
 					int.MaxValue,
 					Convert.ToInt64(-Math.Pow(2, 48)),
@@ -48,19 +47,19 @@ namespace Packages
 			);
 
 			UseScheme(
-				new ORESchemes.PracticalORE.PracticalOREScheme()
+				new Crypto.CLWW.Scheme()
 			);
 
 			UseScheme(
-				new ORESchemes.LewiORE.LewiOREScheme()
+				new Crypto.LewiWu.Scheme()
 			);
 
 			UseScheme(
-				new ORESchemes.FHOPE.FHOPEScheme(long.MinValue, long.MaxValue),
+				new Crypto.FHOPE.Scheme(long.MinValue, long.MaxValue),
 				(cipher, scheme, plain, key) =>
 				{
-					cipher.max = ((ORESchemes.FHOPE.FHOPEScheme)scheme).MaxCiphertext(plain, key);
-					cipher.min = ((ORESchemes.FHOPE.FHOPEScheme)scheme).MinCiphertext(plain, key);
+					cipher.max = ((Crypto.FHOPE.Scheme)scheme).MaxCiphertext(plain, key);
+					cipher.min = ((Crypto.FHOPE.Scheme)scheme).MinCiphertext(plain, key);
 				}
 			);
 		}

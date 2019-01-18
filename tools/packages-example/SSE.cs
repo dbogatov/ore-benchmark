@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Text;
-using CJJKRSScheme = ORESchemes.CJJKRS.CJJKRS<Packages.Program.StringWord, Packages.Program.NumericIndex>;
-using CJJJKRSScheme = ORESchemes.CJJJKRS.CJJJKRS<Packages.Program.StringWord, Packages.Program.NumericIndex>;
+using CJJKRSScheme = Crypto.CJJKRS.Scheme<Packages.Program.StringWord, Packages.Program.NumericIndex>;
+using CJJJKRSScheme = Crypto.CJJJKRS.Scheme<Packages.Program.StringWord, Packages.Program.NumericIndex>;
 using System;
 
 namespace Packages
 {
 	partial class Program
 	{
-		public class StringWord : ORESchemes.CJJKRS.IWord, ORESchemes.CJJJKRS.IWord
+		public class StringWord : Crypto.CJJKRS.IWord, Crypto.CJJJKRS.IWord
 		{
 			public string Value { get; set; }
 
@@ -17,7 +17,7 @@ namespace Packages
 			public override int GetHashCode() => Value.GetHashCode();
 		}
 
-		public class NumericIndex : ORESchemes.CJJKRS.IIndex, ORESchemes.CJJJKRS.IIndex
+		public class NumericIndex : Crypto.CJJKRS.IIndex, Crypto.CJJJKRS.IIndex
 		{
 			public int Value { get; set; }
 

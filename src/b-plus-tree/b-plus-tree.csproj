@@ -13,6 +13,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="../../LICENSE" Pack="true" PackagePath=""/>
-		<ProjectReference Include="..\ore-schemes\shared\shared.csproj" />
+		<ProjectReference Include="../crypto/shared/shared.csproj" />
 	</ItemGroup>
 </Project>
