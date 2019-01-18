@@ -7,7 +7,7 @@ namespace Web.Extensions
 		/// <summary>
 		/// Parses string into enum of given type T.
 		/// </summary>
-		public static T ToEnum<T>(this string value) =>
-			(T)Enum.Parse(typeof(T), value, true);
+		public static T ToEnum<T>(this string value) 
+			=> (T)Enum.Parse(typeof(T), value, true);
 	}
 }

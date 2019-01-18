@@ -5,7 +5,7 @@
 		<PackageId>ore-benchamrk.shared</PackageId>
 		<Authors>Dmytro Bogatov</Authors>
 		<Company>Boston University</Company>
-		<Title>Internal project dependencies</Title>
+		<Title>Cryptographic primitives</Title>
 		<Description>Includes primitives used by OPE / ORE / SSE schemes.</Description>
 		<RepositoryUrl>https://git.dbogatov.org/bu/ore-benchmark/Project-Code</RepositoryUrl>
 		<PackageProjectUrl>https://ore.dbogatov.org</PackageProjectUrl>

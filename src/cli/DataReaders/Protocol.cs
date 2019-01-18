@@ -23,7 +23,7 @@ namespace CLI.DataReaders
 				{
 					var index = int.Parse(line);
 
-					Inputs.Dataset.Add(new Record(index, $"{index}_r{random.Next()}"));
+					Inputs.Dataset.Add(new Record(index, $"{index}_r{random.Next(0, 99)}"));
 				}
 			}
 

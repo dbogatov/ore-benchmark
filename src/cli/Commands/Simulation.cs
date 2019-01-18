@@ -64,7 +64,7 @@ namespace CLI
 		[Option("--seed <number>", Description = "Seed to use for all operations. Default random (depends on system time).")]
 		public int Seed { get; set; } = new Random().Next();
 
-		[Option("--protocol <enum>", Description = "Protocol to use. Default NoEncryption.")]
+		[Option("--protocol <enum>", Description = "Protocol / scheme to use. Default NoEncryption.")]
 		public Crypto.Shared.Protocols Protocol { get; set; } = Crypto.Shared.Protocols.NoEncryption;
 
 		[Required]

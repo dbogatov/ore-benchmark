@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace CLI
 {
-	[Command(Description = "Run plain encryptions, decryptions and comparisons on a scheme")]
+	[Command(Description = "Run plain encryptions, decryptions and comparisons on an OPE / ORE scheme")]
 	public class PureSchemeCommand : CommandBase
 	{
 		[AllowedValues("4", "8", "16")]
@@ -97,7 +97,7 @@ namespace CLI
 						).Simulate();
 					break;
 				default:
-					throw new NotImplementedException($"Protocol {Parent.Protocol} is not yet supported");
+					throw new NotImplementedException($"Scheme {Parent.Protocol} is not yet supported");
 			}
 
 			if (!Parent.Extended)

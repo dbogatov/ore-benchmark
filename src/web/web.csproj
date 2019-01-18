@@ -7,8 +7,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\simulator\simulator.csproj" />
-		<ProjectReference Include="..\crypto\shared\shared.csproj" />
+		<ProjectReference Include="../simulator/simulator.csproj" />
+		<ProjectReference Include="../crypto/shared/shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

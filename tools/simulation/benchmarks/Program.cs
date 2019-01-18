@@ -49,7 +49,7 @@ namespace Schemes
 
 		private void Primitives(dynamic data)
 		{
-			List<ValueTuple<string, string>> primitives = new List<ValueTuple<string, string>> {
+			List<(string, string)> primitives = new List<(string, string)> {
 				( "SymmetricEnc", "size=128" ),
 				( "PRGCachedNext", string.Empty ),
 				( "PRF", "size=128" ),
@@ -76,7 +76,7 @@ namespace Schemes
 
 		private void Schemes(dynamic data)
 		{
-			List<ValueTuple<string, int>> schemes = new List<ValueTuple<string, int>> {
+			List<(string, int)> schemes = new List<(string, int)> {
 				( "BCLO", 48 ),
 				( "CLWW", 0 ),
 				( "LewiWu", 16 ),

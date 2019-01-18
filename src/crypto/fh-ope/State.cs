@@ -37,7 +37,7 @@ namespace Crypto.FHOPE
 				Imperfect = p != 0.0,
 				p = p,
 				r = r,
-				Density = new Dictionary<int, ValueTuple<ulong, ulong>>()
+				Density = new Dictionary<int, (ulong, ulong)>()
 			};
 		}
 
@@ -168,7 +168,7 @@ namespace Crypto.FHOPE
 
 		private class NodeOptions
 		{
-			public Dictionary<int, ValueTuple<ulong, ulong>> Density;
+			public Dictionary<int, (ulong, ulong)> Density;
 			public IPRG G;
 			public bool Imperfect;
 			public int r;
@@ -358,7 +358,7 @@ namespace Crypto.FHOPE
 			/// <summary>
 			/// Returns a size of a node with its subtree in bytes
 			/// </summary>
-			public ValueTuple<int, int, bool> GetSize()
+			public (int, int, bool) GetSize()
 			{
 				int size = sizeof(int);
 				int number = 1;

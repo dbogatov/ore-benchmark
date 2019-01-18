@@ -38,7 +38,7 @@ namespace Web.Models.Data.Entities
 				Dataset = Enumerable
 					.Range(0, datasetSize)
 					.Select(e => random.Next(0, datasetSize / 2))
-					.Select(e => new Record(e, $"{e}_r{random.Next()}"))
+					.Select(e => new Record(e, $"{e}_r{random.Next(0, 99)}"))
 					.ToList();
 			}
 			else
@@ -56,7 +56,7 @@ namespace Web.Models.Data.Entities
 							if (line != null)
 							{
 								var index = int.Parse(line);
-								Dataset.Add(new Record(index, $"{index}_r{random.Next()}"));
+								Dataset.Add(new Record(index, $"{index}_r{random.Next(0, 99)}"));
 								read++;
 							}
 						} while (line != null && read < datasetSize);

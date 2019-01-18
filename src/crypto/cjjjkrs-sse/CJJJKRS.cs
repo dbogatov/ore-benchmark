@@ -237,6 +237,5 @@ namespace Crypto.CJJJKRS
 				return result.ToArray();
 			}
 		}
-
 	}
 }

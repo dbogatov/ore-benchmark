@@ -11,7 +11,7 @@ namespace Crypto.Shared.Primitives.PRP
 
 	public class TablePRP : AbsPrimitive, ISimplifiedPRP
 	{
-		private ValueTuple<byte[], byte>? _cacheKey = null;
+		private (byte[], byte)? _cacheKey = null;
 		private byte[] _cachePermutation;
 
 		public byte PRP(byte input, byte[] key, byte bits)
@@ -38,7 +38,7 @@ namespace Crypto.Shared.Primitives.PRP
 		{
 			if (bits < 1 || bits > 8)
 			{
-				throw new ArgumentException("Simplified PRP works only within 1 to {sizeof(byte) * 8} bits.");
+				throw new ArgumentException($"Simplified PRP works only within 1 to {sizeof(byte) * 8} bits.");
 			}
 
 			int max = (int)Math.Pow(2, bits) - 1;

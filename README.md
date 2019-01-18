@@ -19,14 +19,16 @@ Furthermore, we propose a number of improvements for some of these schemes and p
 ## Analyzed schemes and protocols
 
 - [Order Preserving Symmetric Encryption (aka **BCLO OPE**)](https://eprint.iacr.org/2012/624.pdf)
-- [Practical Order-Revealing Encryption with Limited Leakage (aka **Practical ORE**)](https://eprint.iacr.org/2015/1125.pdf)
-- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi ORE**)](https://eprint.iacr.org/2016/612.pdf)
+- [Practical Order-Revealing Encryption with Limited Leakage (aka **CLWW ORE**)](https://eprint.iacr.org/2015/1125.pdf)
+- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi-Wu ORE**)](https://eprint.iacr.org/2016/612.pdf)
 - [Frequency-Hiding Order-Preserving Encryption (aka **FH-OPE**)](http://www.fkerschbaum.org/ccs15.pdf)
-- [Reducing the Leakage in Practical Order-Revealing Encryption (aka **Adam ORE**)](https://eprint.iacr.org/2016/661.pdf)
-- [An Efficiently Searchable Encrypted Data Structure for Range Queries (aka **Kerschbaum Protocol**)](https://arxiv.org/pdf/1709.09314.pdf)
-- [POPE: Partial Order Preserving Encoding (aka (**POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
+- [Reducing the Leakage in Practical Order-Revealing Encryption (aka **CLOZ ORE**)](https://eprint.iacr.org/2016/661.pdf)
+- [POPE: Partial Order Preserving Encoding (aka **POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
+- [Practical Private Range Search Revisited](http://www.idemertzis.com/Papers/sigmod16.pdf) working on top of
+	- [Highly-Scalable Searchable Symmetric Encryption with Support for Boolean Queries (aka CJJKRS)](https://eprint.iacr.org/2013/169.pdf)
+	- [Dynamic Searchable Encryption in Very-Large Databases: Data Structures and Implementation (aka CJJJKRS)](https://eprint.iacr.org/2014/853.pdf)
 
-We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) datasets.
+We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) data sets.
 
 The canonical project repository is [here](https://git.dbogatov.org/bu/ore-benchmark/Project-Code).
 
@@ -99,5 +101,5 @@ dotnet ./src/cli/dist/cli.dll --help
 
 ## Packages
 
-- [B+ tree docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
-- [ORE / OPE / SSE schemes and primitives docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/crypto)
+- [B+ tree docs and code](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
+- [ORE / OPE / SSE schemes and primitives docs and code](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/crypto)

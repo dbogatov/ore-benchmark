@@ -3,8 +3,8 @@
 These are the open-source implementation of the following OPE / ORE schemes
 
 - [Order Preserving Symmetric Encryption (aka BCLO OPE)](https://eprint.iacr.org/2012/624.pdf)
-- [Practical Order-Revealing Encryption with Limited Leakage (aka Practical ORE)](https://eprint.iacr.org/2015/1125.pdf)
-- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka Lewi ORE)](https://eprint.iacr.org/2016/612.pdf)
+- [Practical Order-Revealing Encryption with Limited Leakage (aka CLWW ORE)](https://eprint.iacr.org/2015/1125.pdf)
+- [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka Lewi-Wu ORE)](https://eprint.iacr.org/2016/612.pdf)
 - [Frequency-Hiding Order-Preserving Encryption (aka FH-OPE)](http://www.fkerschbaum.org/ccs15.pdf)
 - [CJJKRS '13 SSE scheme (aka CJJKRS)](https://eprint.iacr.org/2013/169.pdf)
 - [CJJJKRS '14 SSE scheme (aka CJJJKRS)](https://eprint.iacr.org/2014/853.pdf)
@@ -26,7 +26,6 @@ The primitives include
 This implementation is exported as a NuGet packages
 
 - [Primitives](https://www.nuget.org/packages/ore-benchamrk.shared/)
-- [CJJJKRS](https://www.nuget.org/packages/cjjjkrs-sse/)
 - [BCLO OPE](https://www.nuget.org/packages/bclo-ope/)
 - [Practical ORE](https://www.nuget.org/packages/clww-ore/)
 - [Lewi ORE](https://www.nuget.org/packages/lewi-wu-ore/)

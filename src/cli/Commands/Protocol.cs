@@ -8,7 +8,7 @@ using Simulation;
 
 namespace CLI
 {
-	[Command(Description = "Simulate a client-server range query protocol simulation")]
+	[Command(Description = "Simulate a client-server range query protocol")]
 	public class ProtocolCommand : CommandBase
 	{
 		private SimulatorCommand Parent { get; set; }
@@ -26,7 +26,7 @@ namespace CLI
 		public CachePolicy CachePolicy { get; } = CachePolicy.LFU;
 
 		[Range(2, 1024)]
-		[Option("--elements-per-page <number>", Description = "Number of elements that fit in a page. Specific to protocol. See docs. Must be from 2 to 1024. Default 3.")]
+		[Option("--elements-per-page <number>", Description = "Number of elements that fit in a page. Specific to protocol, see docs. Must be from 2 to 1024. Default 3.")]
 		public int ElementsPerPage { get; } = 3;
 
 		[Range(1, 100)]
@@ -36,7 +36,7 @@ namespace CLI
 		protected override int OnExecute(CommandLineApplication app)
 		{
 			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
-			PutToConsole($"Inputs: dataset={Parent.Dataset}, queries={Queries}, scheme={Parent.Protocol}, B+tree-branches={ElementsPerPage}", Parent.Verbose);
+			PutToConsole($"Inputs: dataset={Parent.Dataset}, queries={Queries}, protocol={Parent.Protocol}, elements-per-page={ElementsPerPage}", Parent.Verbose);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 

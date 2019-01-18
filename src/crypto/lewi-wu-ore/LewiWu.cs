@@ -63,7 +63,7 @@ namespace Crypto.LewiWu
 		{
 			if (!new int[] { 16, 8, 4 }.Contains(n))
 			{
-				throw new ArgumentException($"Value of n ({n}) is invalid. It must be a multiple of 32. One of [16, 8, 4].");
+				throw new ArgumentException($"Value of n ({n}) is invalid. It must be a factor of 32. One of [16, 8, 4].");
 			}
 
 			this.n = n;
