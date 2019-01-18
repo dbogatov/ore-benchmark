@@ -91,7 +91,6 @@ namespace Test.Simulators.Protocols
 			);
 		}
 
-
 		[Fact]
 		public void InsertionCorrectness()
 		{

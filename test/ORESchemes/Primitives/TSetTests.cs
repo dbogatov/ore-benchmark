@@ -78,7 +78,6 @@ namespace Test.Crypto.Primitives.TSet
 		private readonly IPRF F;
 		private readonly ISymmetric E;
 
-
 		static readonly int SEED = 123456;
 		private readonly Random G = new Random(SEED);
 		private readonly int RUNS = 20;

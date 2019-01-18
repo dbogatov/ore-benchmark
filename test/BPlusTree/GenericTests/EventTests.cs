@@ -27,7 +27,6 @@ namespace Test.BPlusTree
 			return visited.Count();
 		}
 
-
 		[Fact]
 		public void InsertionEvents()
 		{

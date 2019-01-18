@@ -237,7 +237,6 @@ namespace Crypto.Shared.Primitives.Sampler
 			Func<RR, ulong> to_ZZ = (value) => Convert.ToUInt64(value);
 			Action<bool> throw_c = (value) => throw new ArgumentException();
 
-
 			Func<decimal, decimal> AFC = (I) =>
 			{
 				/*

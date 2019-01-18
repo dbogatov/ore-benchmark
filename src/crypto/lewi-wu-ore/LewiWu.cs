@@ -113,7 +113,6 @@ namespace Crypto.LewiWu
 			};
 		}
 
-
 		protected override int ProperCompare(Ciphertext ciphertextOne, Ciphertext ciphertextTwo)
 		{
 			bool invert = false;
@@ -264,8 +263,6 @@ namespace Crypto.LewiWu
 		/// Transforms signed int32 to unsigned int32 by shifting the value by int32 min value
 		/// </summary>
 		private uint ToUInt(int value) => unchecked((uint)(value + Int32.MinValue));
-
-
 
 		/// <summary>
 		/// Wrapper around Hash function

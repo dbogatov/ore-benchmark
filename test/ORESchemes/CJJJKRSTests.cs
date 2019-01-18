@@ -118,8 +118,6 @@ namespace Test.Crypto
 					);
 		}
 
-
-
 		[Fact]
 		public void NoExceptions() => PrimitiveRun("Dmytro");
 

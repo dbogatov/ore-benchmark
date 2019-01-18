@@ -82,8 +82,6 @@ namespace Crypto.Shared
 		public static implicit operator BytesKey(byte[] v) => new BytesKey(v);
 	}
 
-
-
 	/// <summary>
 	/// Base functionality for ORE operations
 	/// </summary>

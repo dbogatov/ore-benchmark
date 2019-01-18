@@ -37,7 +37,6 @@ namespace Packages
 				int plaint6 = scheme.Decrypt(cipher6, key); // 6
 			}
 
-
 			UseScheme(
 				new Crypto.BCLO.Scheme(
 					int.MinValue,

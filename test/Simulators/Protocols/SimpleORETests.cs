@@ -207,7 +207,6 @@ namespace Test.Simulators.Protocols.SimpleORE
 				.Setup(s => s.AcceptMessage(It.IsAny<QueryMessage<OPECipher>>()))
 				.Callback<QueryMessage<OPECipher>>(m => query = true);
 
-
 			mockServer.Object.AcceptMessage<Tuple<OPECipher, OPECipher>, object>(
 				new Mock<MinMaxMessage<OPECipher>>(
 					new Tuple<OPECipher, OPECipher>(
