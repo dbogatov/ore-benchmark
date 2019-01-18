@@ -147,7 +147,7 @@ system-protocol-tests:
   stage: test
   script:
   - apk add --update bash ruby ruby-bundler
-  - ./tools/data-gen/generate.sh -d 20 -q 20 -s 1305 -n
+  - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
   - ./tools/simulation/protocol.rb
   artifacts:
     expire_in: 1 day
@@ -165,7 +165,7 @@ system-schemes-tests:
   stage: test
   script:
   - apk add --update bash ruby ruby-bundler
-  - ./tools/data-gen/generate.sh -d 20 -s 1305 -n
+  - ./tools/data-gen/generate.sh -d 100 -s 1305 -n
   - ./tools/simulation/pure-schemes.rb
   artifacts:
     expire_in: 1 day
