@@ -23,7 +23,7 @@ Furthermore, we propose a number of improvements for some of these schemes and p
 - [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi ORE**)](https://eprint.iacr.org/2016/612.pdf)
 - [Frequency-Hiding Order-Preserving Encryption (aka **FH-OPE**)](http://www.fkerschbaum.org/ccs15.pdf)
 - [Reducing the Leakage in Practical Order-Revealing Encryption (aka **Adam ORE**)](https://eprint.iacr.org/2016/661.pdf)
-- [An Efficiently Searchable Encrypted Data Structure for Range Queries (aka **Florian Protocol**)](https://arxiv.org/pdf/1709.09314.pdf)
+- [An Efficiently Searchable Encrypted Data Structure for Range Queries (aka **Kerschbaum Protocol**)](https://arxiv.org/pdf/1709.09314.pdf)
 - [POPE: Partial Order Preserving Encoding (aka (**POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
 
 We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) datasets.
@@ -100,4 +100,4 @@ dotnet ./src/cli/dist/cli.dll --help
 ## Packages
 
 - [B+ tree docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/b-plus-tree)
-- [ORE / OPE / SSE schemes and primitives docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/ore-schemes)
+- [ORE / OPE / SSE schemes and primitives docs and repo](https://git.dbogatov.org/bu/ore-benchmark/Project-Code/tree/master/src/crypto)

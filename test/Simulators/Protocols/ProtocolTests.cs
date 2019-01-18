@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BPlusTree;
-using ORESchemes.CryptDBOPE;
-using ORESchemes.FHOPE;
-using ORESchemes.LewiORE;
-using ORESchemes.PracticalORE;
-using ORESchemes.Shared;
+using Crypto.BCLO;
+using Crypto.FHOPE;
+using Crypto.LewiWu;
+using Crypto.CLWW;
+using Crypto.Shared;
 using Simulation.Protocol.SimpleORE;
 using Xunit;
 
@@ -42,14 +42,14 @@ namespace Test.Simulators.Protocols.Integration
 		public CryptDBProtocol()
 		{
 			var scheme =
-				new CryptDBScheme(
+				new global::Crypto.BCLO.Scheme(
 					Int32.MinValue,
 					Int32.MaxValue,
 					Convert.ToInt64(-Math.Pow(2, 48)),
 					Convert.ToInt64(Math.Pow(2, 48))
 				);
 
-			_protocol = new Protocol<CryptDBScheme, OPECipher, BytesKey>(
+			_protocol = new Protocol<global::Crypto.BCLO.Scheme, OPECipher, BytesKey>(
 				new Options<OPECipher>(scheme), scheme
 			);
 
@@ -58,14 +58,14 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class PracticalOREProtocol : AbsProtocol
+	public class CLWWProtocol : AbsProtocol
 	{
-		public PracticalOREProtocol()
+		public CLWWProtocol()
 		{
-			var scheme = new PracticalOREScheme();
+			var scheme = new global::Crypto.CLWW.Scheme();
 
-			_protocol = new Protocol<PracticalOREScheme, global::ORESchemes.PracticalORE.Ciphertext, BytesKey>(
-				new Options<global::ORESchemes.PracticalORE.Ciphertext>(scheme), scheme
+			_protocol = new Protocol<global::Crypto.CLWW.Scheme, global::Crypto.CLWW.Ciphertext, BytesKey>(
+				new Options<global::Crypto.CLWW.Ciphertext>(scheme), scheme
 			);
 
 			SetupHandlers();
@@ -73,14 +73,14 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class LewiOREProtocol : AbsProtocol
+	public class LewiWuProtocol : AbsProtocol
 	{
-		public LewiOREProtocol()
+		public LewiWuProtocol()
 		{
-			var scheme = new LewiOREScheme();
+			var scheme = new global::Crypto.LewiWu.Scheme();
 
-			_protocol = new Simulation.Protocol.LewiORE.Protocol(
-				new Options<global::ORESchemes.LewiORE.Ciphertext>(scheme), scheme
+			_protocol = new Simulation.Protocol.LewiWu.Protocol(
+				new Options<global::Crypto.LewiWu.Ciphertext>(scheme), scheme
 			);
 
 			SetupHandlers();
@@ -92,10 +92,10 @@ namespace Test.Simulators.Protocols.Integration
 	{
 		public FHOPEProtocol()
 		{
-			var scheme = new FHOPEScheme(long.MinValue, long.MaxValue);
+			var scheme = new global::Crypto.FHOPE.Scheme(long.MinValue, long.MaxValue);
 
 			_protocol = new Simulation.Protocol.FHOPE.Protocol(
-				new Options<global::ORESchemes.FHOPE.Ciphertext>(scheme), scheme
+				new Options<global::Crypto.FHOPE.Ciphertext>(scheme), scheme
 			);
 
 			SetupHandlers();
@@ -103,11 +103,11 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class FlorianProtocol : AbsProtocol
+	public class KerschbaumProtocol : AbsProtocol
 	{
-		public FlorianProtocol()
+		public KerschbaumProtocol()
 		{
-			_protocol = new global::Simulation.Protocol.Florian.Protocol(new Random(123456).GetBytes(128 / 8));
+			_protocol = new global::Simulation.Protocol.Kerschbaum.Protocol(new Random(123456).GetBytes(128 / 8));
 
 			SetupHandlers();
 		}

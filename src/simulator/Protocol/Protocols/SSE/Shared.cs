@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 namespace Simulation.Protocol.SSE
 {
@@ -70,7 +70,7 @@ namespace Simulation.Protocol.SSE
 		}
 	}
 
-	public class Word : ORESchemes.CJJKRS.IWord, ORESchemes.CJJJKRS.IWord
+	public class Word : Crypto.CJJKRS.IWord, Crypto.CJJJKRS.IWord
 	{
 		public (BitArray, int) Value { get; set; }
 
@@ -97,7 +97,7 @@ namespace Simulation.Protocol.SSE
 		}
 	}
 
-	public class Index : ORESchemes.CJJKRS.IIndex, ORESchemes.CJJJKRS.IIndex
+	public class Index : Crypto.CJJKRS.IIndex, Crypto.CJJJKRS.IIndex
 	{
 		public string Value { get; set; }
 

@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared;
+using Crypto.Shared.Primitives;
+using Crypto.Shared;
 using Xunit;
-using ORESchemes.Shared.Primitives.Hash;
+using Crypto.Shared.Primitives.Hash;
 
-namespace Test.ORESchemes.Primitives.Hash
+namespace Test.Crypto.Primitives.Hash
 {
 	[Trait("Category", "Unit")]
 	public class SHA256Hash : AbsHash

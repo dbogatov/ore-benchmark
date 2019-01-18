@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives.Symmetric;
+using Crypto.Shared.Primitives.Symmetric;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives.Symmetric
+namespace Test.Crypto.Primitives.Symmetric
 {
 	[Trait("Category", "Unit")]
 	public class AESChecks

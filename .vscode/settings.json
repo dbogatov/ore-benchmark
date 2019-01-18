@@ -7,5 +7,10 @@
 		"**/.DS_Store": true,
 		"**/obj": true,
 		"**/bin": true
-	}
+	},
+	"cSpell.words": [
+		"BCLO",
+		"CLOZ",
+		"CLWW"
+	]
 }

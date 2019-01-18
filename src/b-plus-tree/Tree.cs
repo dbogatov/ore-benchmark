@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using ORESchemes.Shared;
+using Crypto.Shared;
 
 [assembly: InternalsVisibleTo("simulator")]
 [assembly: InternalsVisibleTo("test")]

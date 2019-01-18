@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.PRP;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.PRP;
 using Xunit;
 
-namespace Test.ORESchemes.Primitives.PRP
+namespace Test.Crypto.Primitives.PRP
 {
 	[Trait("Category", "Unit")]
 	public class FeistelPRP : AbsPRP
@@ -146,7 +146,7 @@ namespace Test.ORESchemes.Primitives.PRP
 
 	public abstract class AbsSimplifiedPRPChecks : AbsPRP
 	{
-		private class SimplifiedPRPWrapper : global::ORESchemes.Shared.Primitives.PRP.AbsPRP
+		private class SimplifiedPRPWrapper : global::Crypto.Shared.Primitives.PRP.AbsPRP
 		{
 			private readonly ISimplifiedPRP P;
 

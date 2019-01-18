@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BPlusTree;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Xunit;
 
 namespace Test.BPlusTree

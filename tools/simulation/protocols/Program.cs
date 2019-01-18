@@ -97,7 +97,7 @@ namespace Protocols
 
 			AllReports reports = new AllReports();
 
-			foreach (var protocol in new List<string> { "adamore", "cryptdb", "practicalore", "lewiore", "fhope", "florian", "pope", "noencryption", "popecold" })
+			foreach (var protocol in new List<string> { "cloz", "bclo", "clww", "lewiwu", "fhope", "kerschbaum", "pope", "noencryption", "popecold" })
 			{
 				reports.Reports.Add(protocol, new Dictionary<string, Dictionary<string, Dictionary<string, AllReports.Report>>>());
 
@@ -214,10 +214,10 @@ namespace Protocols
 
 			ProcessRow(
 				AverageRows(
-					reports.Reports["adamore"]["employees"][QueryRange][DataPercent],
-					reports.Reports["practicalore"]["employees"][QueryRange][DataPercent],
-					reports.Reports["lewiore"]["employees"][QueryRange][DataPercent],
-					reports.Reports["cryptdb"]["employees"][QueryRange][DataPercent],
+					reports.Reports["cloz"]["employees"][QueryRange][DataPercent],
+					reports.Reports["clww"]["employees"][QueryRange][DataPercent],
+					reports.Reports["lewiwu"]["employees"][QueryRange][DataPercent],
+					reports.Reports["bclo"]["employees"][QueryRange][DataPercent],
 					reports.Reports["fhope"]["employees"][QueryRange][DataPercent]
 				),
 				"B+ tree w. ORE"
@@ -239,7 +239,7 @@ namespace Protocols
 					{
 						foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
 						{
-							foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "florian", "popecold", "pope" })
 							{
 								long result = 0;
 								switch (value)

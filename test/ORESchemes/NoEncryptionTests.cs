@@ -1,11 +1,11 @@
 using System;
 using Xunit;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using System.Linq;
 using System.Collections.Generic;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared.Primitives;
 
-namespace Test.ORESchemes
+namespace Test.Crypto
 {
 	[Trait("Category", "Unit")]
 	public class NoEncryption : GenericORE<OPECipher, BytesKey>

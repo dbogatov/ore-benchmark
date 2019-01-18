@@ -4,7 +4,7 @@ using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 using Simulation;
 using CLI.DataReaders;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using System.Linq;
 
 namespace CLI
@@ -13,8 +13,8 @@ namespace CLI
 	public class PureSchemeCommand : CommandBase
 	{
 		[AllowedValues("4", "8", "16")]
-		[Option("--lewi-ore-n <number>", Description = "Parameter N for LewiORE. Must be one of [4, 8, 16]. Default 16.")]
-		public int LewiOREN { get; } = 16;
+		[Option("--lewi-wu-ore-n <number>", Description = "Parameter N for LewiWu. Must be one of [4, 8, 16]. Default 16.")]
+		public int LewiWuN { get; } = 16;
 
 		[Range(32, 48)]
 		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (e.g. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
@@ -51,49 +51,49 @@ namespace CLI
 
 			switch (Parent.OREScheme)
 			{
-				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case Crypto.Shared.Protocols.NoEncryption:
 					report =
 						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
 							new NoEncryptionFactory(Parent.Seed).GetScheme()
 						).Simulate();
 					break;
-				case ORESchemes.Shared.ORESchemes.CryptDB:
+				case Crypto.Shared.Protocols.BCLO:
 					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
 					report =
 						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
-							new CryptDBOPEFactory(Parent.Seed).GetScheme(CryptDBRange)
+							new BCLOFactory(Parent.Seed).GetScheme(CryptDBRange)
 						).Simulate();
 					break;
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
+				case Crypto.Shared.Protocols.CLWW:
 					report =
-						new Simulator<ORESchemes.PracticalORE.Ciphertext, BytesKey>(
+						new Simulator<Crypto.CLWW.Ciphertext, BytesKey>(
 							reader.Dataset,
-							new PracticalOREFactory(Parent.Seed).GetScheme()
+							new CLWWFactory(Parent.Seed).GetScheme()
 						).Simulate();
 					break;
-				case ORESchemes.Shared.ORESchemes.LewiORE:
-					PutToConsole($"LewiORE N = {LewiOREN}", Parent.Verbose);
+				case Crypto.Shared.Protocols.LewiWu:
+					PutToConsole($"LewiWu N = {LewiWuN}", Parent.Verbose);
 					report =
-						new Simulator<ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>(
+						new Simulator<Crypto.LewiWu.Ciphertext, Crypto.LewiWu.Key>(
 							reader.Dataset,
-							new LewiOREFactory(Parent.Seed).GetScheme(LewiOREN)
+							new LewiWuFactory(Parent.Seed).GetScheme(LewiWuN)
 						).Simulate();
 					break;
-				case ORESchemes.Shared.ORESchemes.FHOPE:
+				case Crypto.Shared.Protocols.FHOPE:
 					PutToConsole($"FH-OPE p = {FHOPEP}", Parent.Verbose);
 					report =
-						new Simulator<ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>(
+						new Simulator<Crypto.FHOPE.Ciphertext, Crypto.FHOPE.State>(
 							reader.Dataset,
 							new FHOPEFactory(Parent.Seed).GetScheme(FHOPEP)
 						).Simulate();
 					break;
-				case ORESchemes.Shared.ORESchemes.AdamORE:
+				case Crypto.Shared.Protocols.CLOZ:
 					report =
-						new Simulator<ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>(
+						new Simulator<Crypto.CLOZ.Ciphertext, Crypto.CLOZ.Key>(
 							reader.Dataset,
-							new AdamOREFactory(Parent.Seed).GetScheme()
+							new CLOZFactory(Parent.Seed).GetScheme()
 						).Simulate();
 					break;
 				default:
@@ -116,7 +116,7 @@ namespace CLI
 						{
 							CryptDBRange = CryptDBRange,
 							FHOPEP = FHOPEP,
-							LewiOREN = LewiOREN,
+							LewiWuN = LewiWuN,
 							Dataset = Parent.Dataset,
 							OREScheme = Parent.OREScheme,
 							Seed = Parent.Seed

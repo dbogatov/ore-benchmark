@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ORESchemes.CJJJKRS;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
+using Crypto.CJJJKRS;
+using Crypto.Shared;
+using Crypto.Shared.Primitives;
 using Xunit;
-using static Test.ORESchemes.Primitives.EventsTestsShared;
-using Scheme = ORESchemes.CJJJKRS.CJJJKRS<Test.ORESchemes.CJJJKRS.StringWord, Test.ORESchemes.CJJJKRS.NumericIndex>;
+using static Test.Crypto.Primitives.EventsTestsShared;
+using Scheme = Crypto.CJJJKRS.Scheme<Test.Crypto.CJJJKRS.StringWord, Test.Crypto.CJJJKRS.NumericIndex>;
 
-namespace Test.ORESchemes
+namespace Test.Crypto
 {
 	[Trait("Category", "Unit")]
 	public class CJJJKRS

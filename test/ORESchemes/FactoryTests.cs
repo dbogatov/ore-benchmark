@@ -2,19 +2,19 @@ using System;
 using Xunit;
 using Simulation;
 
-namespace Test.ORESchemes
+namespace Test.Crypto
 {
 	[Trait("Category", "Unit")]
 	public class Factory
 	{
 		[Theory]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.CryptDB)]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.LewiORE)]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.NoEncryption)]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.PracticalORE)]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.FHOPE)]
-		[InlineData(global::ORESchemes.Shared.ORESchemes.AdamORE)]
-		public void SchemeFactory(global::ORESchemes.Shared.ORESchemes scheme)
+		[InlineData(global::Crypto.Shared.Protocols.BCLO)]
+		[InlineData(global::Crypto.Shared.Protocols.LewiWu)]
+		[InlineData(global::Crypto.Shared.Protocols.NoEncryption)]
+		[InlineData(global::Crypto.Shared.Protocols.CLWW)]
+		[InlineData(global::Crypto.Shared.Protocols.FHOPE)]
+		[InlineData(global::Crypto.Shared.Protocols.CLOZ)]
+		public void SchemeFactory(global::Crypto.Shared.Protocols scheme)
 		{
 			bool useSeed = true;
 
@@ -28,35 +28,35 @@ namespace Test.ORESchemes
 
 				switch (scheme)
 				{
-					case global::ORESchemes.Shared.ORESchemes.CryptDB:
-						var cryptdb = new CryptDBOPEFactory(seed).GetScheme();
-						Assert.NotNull(cryptdb);
-						Assert.IsType<global::ORESchemes.CryptDBOPE.CryptDBScheme>(cryptdb);
+					case global::Crypto.Shared.Protocols.BCLO:
+						var bclo = new BCLOFactory(seed).GetScheme();
+						Assert.NotNull(bclo);
+						Assert.IsType<global::Crypto.BCLO.Scheme>(bclo);
 						break;
-					case global::ORESchemes.Shared.ORESchemes.LewiORE:
-						var lewi = new LewiOREFactory(seed).GetScheme();
-						Assert.NotNull(lewi);
-						Assert.IsType<global::ORESchemes.LewiORE.LewiOREScheme>(lewi);
+					case global::Crypto.Shared.Protocols.LewiWu:
+						var lewiWu = new LewiWuFactory(seed).GetScheme();
+						Assert.NotNull(lewiWu);
+						Assert.IsType<global::Crypto.LewiWu.Scheme>(lewiWu);
 						break;
-					case global::ORESchemes.Shared.ORESchemes.PracticalORE:
-						var practical = new PracticalOREFactory(seed).GetScheme();
-						Assert.NotNull(practical);
-						Assert.IsType<global::ORESchemes.PracticalORE.PracticalOREScheme>(practical);
+					case global::Crypto.Shared.Protocols.CLWW:
+						var clww = new CLWWFactory(seed).GetScheme();
+						Assert.NotNull(clww);
+						Assert.IsType<global::Crypto.CLWW.Scheme>(clww);
 						break;
-					case global::ORESchemes.Shared.ORESchemes.NoEncryption:
+					case global::Crypto.Shared.Protocols.NoEncryption:
 						var noEncryption = new NoEncryptionFactory(seed).GetScheme();
 						Assert.NotNull(noEncryption);
-						Assert.IsType<global::ORESchemes.Shared.NoEncryptionScheme>(noEncryption);
+						Assert.IsType<global::Crypto.Shared.NoEncryptionScheme>(noEncryption);
 						break;
-					case global::ORESchemes.Shared.ORESchemes.FHOPE:
+					case global::Crypto.Shared.Protocols.FHOPE:
 						var fhope = new FHOPEFactory(seed).GetScheme();
 						Assert.NotNull(fhope);
-						Assert.IsType<global::ORESchemes.FHOPE.FHOPEScheme>(fhope);
+						Assert.IsType<global::Crypto.FHOPE.Scheme>(fhope);
 						break;
-					case global::ORESchemes.Shared.ORESchemes.AdamORE:
-						var adam = new AdamOREFactory(seed).GetScheme();
-						Assert.NotNull(adam);
-						Assert.IsType<global::ORESchemes.AdamORE.AdamOREScheme>(adam);
+					case global::Crypto.Shared.Protocols.CLOZ:
+						var cloz = new CLOZFactory(seed).GetScheme();
+						Assert.NotNull(cloz);
+						Assert.IsType<global::Crypto.CLOZ.Scheme>(cloz);
 						break;
 				}
 

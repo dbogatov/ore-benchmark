@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Simulation;
 
 namespace Benchmark.Schemes
@@ -25,7 +25,7 @@ namespace Benchmark.Schemes
 		private Dictionary<Stages, K> _keys = new Dictionary<Stages, K>();
 
 		[ParamsSource(nameof(Parameters))]
-		public Tuple<ORESchemes.Shared.ORESchemes, int> Scheme;
+		public Tuple<Crypto.Shared.Protocols, int> Scheme;
 
 		[GlobalSetup]
 		public void GlobalSetup()
@@ -38,23 +38,23 @@ namespace Benchmark.Schemes
 
 			switch (Scheme.Item1)
 			{
-				case ORESchemes.Shared.ORESchemes.NoEncryption:
+				case Crypto.Shared.Protocols.NoEncryption:
 					_scheme = (IOREScheme<C, K>)new NoEncryptionFactory(seed).GetScheme(Scheme.Item2);
 					break;
-				case ORESchemes.Shared.ORESchemes.CryptDB:
-					_scheme = (IOREScheme<C, K>)new CryptDBOPEFactory(seed).GetScheme(Scheme.Item2);
+				case Crypto.Shared.Protocols.BCLO:
+					_scheme = (IOREScheme<C, K>)new BCLOFactory(seed).GetScheme(Scheme.Item2);
 					break;
-				case ORESchemes.Shared.ORESchemes.PracticalORE:
-					_scheme = (IOREScheme<C, K>)new PracticalOREFactory(seed).GetScheme(Scheme.Item2);
+				case Crypto.Shared.Protocols.CLWW:
+					_scheme = (IOREScheme<C, K>)new CLWWFactory(seed).GetScheme(Scheme.Item2);
 					break;
-				case ORESchemes.Shared.ORESchemes.LewiORE:
-					_scheme = (IOREScheme<C, K>)new LewiOREFactory(seed).GetScheme(Scheme.Item2);
+				case Crypto.Shared.Protocols.LewiWu:
+					_scheme = (IOREScheme<C, K>)new LewiWuFactory(seed).GetScheme(Scheme.Item2);
 					break;
-				case ORESchemes.Shared.ORESchemes.FHOPE:
+				case Crypto.Shared.Protocols.FHOPE:
 					_scheme = (IOREScheme<C, K>)new FHOPEFactory(seed).GetScheme(Scheme.Item2);
 					break;
-				case ORESchemes.Shared.ORESchemes.AdamORE:
-					_scheme = (IOREScheme<C, K>)new AdamOREFactory(seed).GetScheme(Scheme.Item2);
+				case Crypto.Shared.Protocols.CLOZ:
+					_scheme = (IOREScheme<C, K>)new CLOZFactory(seed).GetScheme(Scheme.Item2);
 					break;
 			}
 
@@ -87,33 +87,33 @@ namespace Benchmark.Schemes
 		{
 			if (typeof(C) == typeof(OPECipher))
 			{
-				yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.NoEncryption, 0);
+				yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.NoEncryption, 0);
 				foreach (var value in new int[] { 32, 36, 40, 44, 48 })
 				{
-					yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.CryptDB, value);
+					yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.BCLO, value);
 				}
 			}
-			else if (typeof(C) == typeof(ORESchemes.PracticalORE.Ciphertext))
+			else if (typeof(C) == typeof(Crypto.CLWW.Ciphertext))
 			{
-				yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.PracticalORE, 0);
+				yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.CLWW, 0);
 			}
-			else if (typeof(C) == typeof(ORESchemes.LewiORE.Ciphertext))
+			else if (typeof(C) == typeof(Crypto.LewiWu.Ciphertext))
 			{
 				foreach (var value in new int[] { 16, 8, 4 })
 				{
-					yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.LewiORE, value);
+					yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.LewiWu, value);
 				}
 			}
-			else if (typeof(C) == typeof(ORESchemes.FHOPE.Ciphertext))
+			else if (typeof(C) == typeof(Crypto.FHOPE.Ciphertext))
 			{
 				foreach (var value in new int[] { 0, 50 })
 				{
-					yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.FHOPE, value);
+					yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.FHOPE, value);
 				}
 			}
-			else if (typeof(C) == typeof(ORESchemes.AdamORE.Ciphertext))
+			else if (typeof(C) == typeof(Crypto.CLOZ.Ciphertext))
 			{
-				yield return new Tuple<ORESchemes.Shared.ORESchemes, int>(ORESchemes.Shared.ORESchemes.AdamORE, 0);
+				yield return new Tuple<Crypto.Shared.Protocols, int>(Crypto.Shared.Protocols.CLOZ, 0);
 			}
 		}
 

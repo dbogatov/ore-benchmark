@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared.Primitives;
 
 namespace Simulation
 {

@@ -1,5 +1,5 @@
 using System.Linq;
-using static ORESchemes.CJJKRS.CJJKRS<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
+using static Crypto.CJJKRS.Scheme<Simulation.Protocol.SSE.Word, Simulation.Protocol.SSE.Index>;
 
 namespace Simulation.Protocol.SSE.CJJKRS
 {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using CLI;
 using McMaster.Extensions.CommandLineUtils;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared.Primitives;
 using Simulation.PureSchemes;
 
 namespace Schemes
@@ -31,7 +31,7 @@ namespace Schemes
 		public int Runs { get; } = 100;
 
 		[Option("--ore-scheme <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
-		public ORESchemes.Shared.ORESchemes OREScheme { get; } = ORESchemes.Shared.ORESchemes.NoEncryption;
+		public Crypto.Shared.Protocols OREScheme { get; } = Crypto.Shared.Protocols.NoEncryption;
 
 		private int OnExecute()
 		{

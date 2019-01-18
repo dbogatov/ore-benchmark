@@ -1,6 +1,6 @@
 using System;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.PRG;
 
 namespace Simulation.Protocol.ORAM
 {

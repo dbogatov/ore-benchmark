@@ -8,7 +8,7 @@ using Simulation;
 
 namespace CLI
 {
-	[Command(Description = "Simulate a client-server protocol using an ORE scheme and a B+ tree")]
+	[Command(Description = "Simulate a client-server range query protocol simulation")]
 	public class ProtocolCommand : CommandBase
 	{
 		private SimulatorCommand Parent { get; set; }

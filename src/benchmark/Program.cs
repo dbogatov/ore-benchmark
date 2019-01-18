@@ -1,5 +1,5 @@
 using BenchmarkDotNet.Running;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using McMaster.Extensions.CommandLineUtils;
 using System;
 using BenchmarkDotNet.Configs;
@@ -48,10 +48,10 @@ namespace Benchmark
 			BenchmarkSwitcher.FromTypes(
 				new[] {
 					typeof(Schemes.Benchmark<OPECipher, BytesKey>),
-					typeof(Schemes.Benchmark<ORESchemes.PracticalORE.Ciphertext, BytesKey>),
-					typeof(Schemes.Benchmark<ORESchemes.LewiORE.Ciphertext, ORESchemes.LewiORE.Key>),
-					typeof(Schemes.Benchmark<ORESchemes.FHOPE.Ciphertext, ORESchemes.FHOPE.State>),
-					typeof(Schemes.Benchmark<ORESchemes.AdamORE.Ciphertext, ORESchemes.AdamORE.Key>),
+					typeof(Schemes.Benchmark<Crypto.CLWW.Ciphertext, BytesKey>),
+					typeof(Schemes.Benchmark<Crypto.LewiWu.Ciphertext, Crypto.LewiWu.Key>),
+					typeof(Schemes.Benchmark<Crypto.FHOPE.Ciphertext, Crypto.FHOPE.State>),
+					typeof(Schemes.Benchmark<Crypto.CLOZ.Ciphertext, Crypto.CLOZ.Key>),
 					typeof(Primitives.Benchmark)
 				}
 			).Run(new[] { $"--namespace=Benchmark.{@namespace}", "--join" }, new CustomConfig());

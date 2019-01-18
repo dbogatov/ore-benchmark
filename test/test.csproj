@@ -18,18 +18,18 @@
 		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\src\ore-schemes\shared\shared.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\cryptdb-ope\cryptdb-ope.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\practical-ore\practical-ore.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\adam-ore\adam-ore.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\lewi-ore\lewi-ore.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\fh-ope\fh-ope.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\cjjkrs-sse\cjjkrs-sse.csproj" />
-		<ProjectReference Include="..\src\ore-schemes\cjjjkrs-sse\cjjjkrs-sse.csproj" />
-		<ProjectReference Include="..\src\simulator\simulator.csproj" />
-		<ProjectReference Include="..\src\benchmark\benchmark.csproj" />
-		<ProjectReference Include="..\src\web\web.csproj" />
-		<ProjectReference Include="..\src\b-plus-tree\b-plus-tree.csproj" />
+		<ProjectReference Include="../src/crypto/shared/shared.csproj" />
+		<ProjectReference Include="../src/crypto/bclo-ope/bclo-ope.csproj" />
+		<ProjectReference Include="../src/crypto/clww-ore/clww-ore.csproj" />
+		<ProjectReference Include="../src/crypto/cloz-ore/cloz-ore.csproj" />
+		<ProjectReference Include="../src/crypto/lewi-wu-ore/lewi-wu-ore.csproj" />
+		<ProjectReference Include="../src/crypto/fh-ope/fh-ope.csproj" />
+		<ProjectReference Include="../src/crypto/cjjkrs-sse/cjjkrs-sse.csproj" />
+		<ProjectReference Include="../src/crypto/cjjjkrs-sse/cjjjkrs-sse.csproj" />
+		<ProjectReference Include="../src/simulator/simulator.csproj" />
+		<ProjectReference Include="../src/benchmark/benchmark.csproj" />
+		<ProjectReference Include="../src/web/web.csproj" />
+		<ProjectReference Include="../src/b-plus-tree/b-plus-tree.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<AppSettings Include="../src/web/appsettings*.*"/>

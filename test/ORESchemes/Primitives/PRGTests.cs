@@ -1,12 +1,12 @@
 using System;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared;
+using Crypto.Shared.Primitives;
+using Crypto.Shared;
 using Xunit;
 using System.Collections.Generic;
 using System.Linq;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives.PRG;
 
-namespace Test.ORESchemes.Primitives.PRG
+namespace Test.Crypto.Primitives.PRG
 {
 	[Trait("Category", "Unit")]
 	public class AESPRGGenerator : AbsPRG

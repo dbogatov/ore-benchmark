@@ -5,9 +5,9 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.InProcess;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives.PRF;
-using ORESchemes.Shared.Primitives.Symmetric;
+using Crypto.Shared;
+using Crypto.Shared.Primitives.PRF;
+using Crypto.Shared.Primitives.Symmetric;
 using Xunit;
 
 namespace Test
@@ -24,9 +24,9 @@ namespace Test
 			var summary = BenchmarkSwitcher.FromTypes(
 				new[] {
 					typeof(global::Benchmark.Schemes.Benchmark<OPECipher, BytesKey>),
-					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.PracticalORE.Ciphertext, BytesKey>),
-					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.LewiORE.Ciphertext, global::ORESchemes.LewiORE.Key>),
-					typeof(global::Benchmark.Schemes.Benchmark<global::ORESchemes.FHOPE.Ciphertext, global::ORESchemes.FHOPE.State>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::Crypto.CLWW.Ciphertext, BytesKey>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::Crypto.LewiWu.Ciphertext, global::Crypto.LewiWu.Key>),
+					typeof(global::Benchmark.Schemes.Benchmark<global::Crypto.FHOPE.Ciphertext, global::Crypto.FHOPE.State>),
 					typeof(global::Benchmark.Primitives.Benchmark)
 				}
 			).Run(new[] { $"--namespace=Benchmark.{@namespace}", "--join" }, new CustomConfig());

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ORESchemes.Shared;
+using Crypto.Shared;
 using System.Linq;
-using ORESchemes.Shared.Primitives;
+using Crypto.Shared.Primitives;
 using System.Diagnostics;
 
 namespace Simulation

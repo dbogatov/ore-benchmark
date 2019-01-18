@@ -81,7 +81,7 @@ build-packages:
     - ./tools/publish-packages.sh
     - ./version.txt
     - ./src/b-plus-tree/dist/*.nupkg
-    - ./src/ore-schemes/*/dist/*.nupkg
+    - ./src/crypto/*/dist/*.nupkg
   tags:
   - docker
   only:

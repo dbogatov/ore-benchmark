@@ -77,11 +77,11 @@ namespace Schemes
 		private void Schemes(dynamic data)
 		{
 			List<ValueTuple<string, int>> schemes = new List<ValueTuple<string, int>> {
-				( "CryptDB", 48 ),
-				( "PracticalORE", 0 ),
-				( "LewiORE", 16 ),
-				( "LewiORE", 8 ),
-				( "LewiORE", 4 ),
+				( "BCLO", 48 ),
+				( "CLWW", 0 ),
+				( "LewiWu", 16 ),
+				( "LewiWu", 8 ),
+				( "LewiWu", 4 ),
 				( "FHOPE", 0 )
 			};
 

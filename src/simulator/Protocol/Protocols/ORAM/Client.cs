@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using BPlusTree;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives;
-using ORESchemes.Shared.Primitives.PRG;
-using ORESchemes.Shared.Primitives.Symmetric;
+using Crypto.Shared;
+using Crypto.Shared.Primitives;
+using Crypto.Shared.Primitives.PRG;
+using Crypto.Shared.Primitives.Symmetric;
 
 namespace Simulation.Protocol.ORAM
 {

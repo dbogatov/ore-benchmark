@@ -5,7 +5,7 @@ require 'English'
 Dir.chdir File.dirname(__FILE__)
 
 def run(input, scheme, seed, lewioren, cryptdbrange)
-  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --ore-scheme #{scheme} --seed #{seed} scheme --lewi-ore-n #{lewioren} --cryptdb-range #{cryptdbrange}"
+  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --ore-scheme #{scheme} --seed #{seed} scheme --lewi-wu-ore-n #{lewioren} --cryptdb-range #{cryptdbrange}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
 

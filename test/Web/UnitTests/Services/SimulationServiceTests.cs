@@ -148,13 +148,13 @@ namespace Test.Web.UnitTests.Services
 
 		public static IEnumerable<object[]> Protocols =>
 			Enum
-				.GetValues(typeof(global::ORESchemes.Shared.ORESchemes))
-				.Cast<global::ORESchemes.Shared.ORESchemes>()
+				.GetValues(typeof(global::Crypto.Shared.Protocols))
+				.Cast<global::Crypto.Shared.Protocols>()
 				.Select(v => new object[] { v });
 
 		[Theory]
 		[MemberData(nameof(Protocols))]
-		public async Task SimulateSomething(global::ORESchemes.Shared.ORESchemes protocol)
+		public async Task SimulateSomething(global::Crypto.Shared.Protocols protocol)
 		{
 			// Arrange
 			var simulationService = new global::Web.Services.SimulationService(
@@ -212,7 +212,7 @@ namespace Test.Web.UnitTests.Services
 					Status = Status.Pending,
 					Dataset = Enumerable.Range(1, 5).Select(n => new Simulation.Protocol.Record(n, n.ToString())).OrderBy(e => random.Next()).ToList(),
 					Queryset = Enumerable.Range(1, 5).Select(n => new RangeQuery(n, n + random.Next(1, 10))).OrderBy(e => random.Next()).ToList(),
-					Protocol = global::ORESchemes.Shared.ORESchemes.NoEncryption,
+					Protocol = global::Crypto.Shared.Protocols.NoEncryption,
 					CacheSize = -1
 				}
 			);

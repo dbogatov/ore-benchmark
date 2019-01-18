@@ -1,4 +1,4 @@
-using ORESchemes.Shared;
+using Crypto.Shared;
 using Xunit;
 
 namespace Test.BPlusTree

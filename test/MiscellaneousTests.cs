@@ -1,7 +1,7 @@
 using System;
 using Xunit;
-using ORESchemes.Shared;
-using ORESchemes.Shared.Primitives.PRG;
+using Crypto.Shared;
+using Crypto.Shared.Primitives.PRG;
 using System.Linq;
 using System.Collections.Generic;
 using Web.Models.View;
@@ -174,14 +174,14 @@ namespace Test
 
 		public class ORESchemesCorrelation : EnumViewCorrelation
 			<
-				global::ORESchemes.Shared.ORESchemes,
+				global::Crypto.Shared.Protocols,
 				global::Web.Models.View.ORESchemesView
 			>
 		{ }
 
 		public class PrimitivesCorrelation : EnumViewCorrelation
 			<
-				global::ORESchemes.Shared.Primitives.Primitive,
+				global::Crypto.Shared.Primitives.Primitive,
 				global::Web.Models.View.PrimitiveView
 			>
 		{ }

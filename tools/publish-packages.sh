@@ -38,14 +38,14 @@ then
 fi
 
 declare -A PROJECTS
-PROJECTS['ore-schemes/shared']='ore-benchamrk.shared'
+PROJECTS['crypto/shared']='ore-benchamrk.shared'
 PROJECTS['b-plus-tree']='b-plus-tree'
-PROJECTS['ore-schemes/practical-ore']='clww-ore'
-PROJECTS['ore-schemes/lewi-ore']='lewi-wu-ore'
-PROJECTS['ore-schemes/fh-ope']='fh-ope'
-PROJECTS['ore-schemes/cryptdb-ope']='bclo-ope'
-PROJECTS['ore-schemes/cjjkrs-sse']='cjjkrs-sse'
-PROJECTS['ore-schemes/cjjjkrs-sse']='cjjjkrs-sse'
+PROJECTS['crypto/clww-ore']='clww-ore'
+PROJECTS['crypto/lewi-wu-ore']='lewi-wu-ore'
+PROJECTS['crypto/fh-ope']='fh-ope'
+PROJECTS['crypto/bclo-ope']='bclo-ope'
+PROJECTS['crypto/cjjkrs-sse']='cjjkrs-sse'
+PROJECTS['crypto/cjjjkrs-sse']='cjjjkrs-sse'
 
 cd ..
 VERSION=$(<version.txt)

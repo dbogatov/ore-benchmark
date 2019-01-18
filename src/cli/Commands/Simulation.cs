@@ -65,7 +65,7 @@ namespace CLI
 		public int Seed { get; set; } = new Random().Next();
 
 		[Option("--ore-scheme <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
-		public ORESchemes.Shared.ORESchemes OREScheme { get; set; } = ORESchemes.Shared.ORESchemes.NoEncryption;
+		public Crypto.Shared.Protocols OREScheme { get; set; } = Crypto.Shared.Protocols.NoEncryption;
 
 		[Required]
 		[FileExists]
