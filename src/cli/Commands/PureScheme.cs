@@ -13,12 +13,12 @@ namespace CLI
 	public class PureSchemeCommand : CommandBase
 	{
 		[AllowedValues("4", "8", "16")]
-		[Option("--lewi-ore-n <number>", Description = "Parameter N for LewiWu. Must be one of [4, 8, 16]. Default 16.")]
+		[Option("--lewi-wu-n <number>", Description = "Parameter N for LewiWu. Must be one of [4, 8, 16]. Default 16.")]
 		public int LewiWuN { get; } = 16;
 
 		[Range(32, 48)]
-		[Option("--cryptdb-range <number>", Description = "Range size (in bits) for CryptDB OPE (e.g. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
-		public int CryptDBRange { get; } = 48;
+		[Option("--bclo-range <number>", Description = "Range size (in bits) for BCLO OPE (e.g. 32 gives range +/- 2^32). Must be in range [32, 48]. Default 48.")]
+		public int BCLORange { get; } = 48;
 
 		[Range(0, 100)]
 		[Option("--fhope-p <number>", Description = "For imperfect FH-OPE, probability to generate new ciphertext. 0 means using perfect FH-OPE. Must be in range [0, 100]. Default 0.")]
@@ -36,7 +36,7 @@ namespace CLI
 		public AbsReport<Stages> Simulate()
 		{
 			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
-			PutToConsole($"Inputs: dataset={Parent.Dataset}, scheme={Parent.OREScheme}", Parent.Verbose);
+			PutToConsole($"Inputs: dataset={Parent.Dataset}, scheme={Parent.Protocol}", Parent.Verbose);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -49,7 +49,7 @@ namespace CLI
 
 			AbsReport<Stages> report;
 
-			switch (Parent.OREScheme)
+			switch (Parent.Protocol)
 			{
 				case Crypto.Shared.Protocols.NoEncryption:
 					report =
@@ -59,11 +59,11 @@ namespace CLI
 						).Simulate();
 					break;
 				case Crypto.Shared.Protocols.BCLO:
-					PutToConsole($"CryptDB range is [{Convert.ToInt64(-Math.Pow(2, CryptDBRange))}, {Convert.ToInt64(Math.Pow(2, CryptDBRange))}]", Parent.Verbose);
+					PutToConsole($"BCLO range is [{Convert.ToInt64(-Math.Pow(2, BCLORange))}, {Convert.ToInt64(Math.Pow(2, BCLORange))}]", Parent.Verbose);
 					report =
 						new Simulator<OPECipher, BytesKey>(
 							reader.Dataset,
-							new BCLOFactory(Parent.Seed).GetScheme(CryptDBRange)
+							new BCLOFactory(Parent.Seed).GetScheme(BCLORange)
 						).Simulate();
 					break;
 				case Crypto.Shared.Protocols.CLWW:
@@ -97,7 +97,7 @@ namespace CLI
 						).Simulate();
 					break;
 				default:
-					throw new NotImplementedException($"Scheme {Parent.OREScheme} is not yet supported");
+					throw new NotImplementedException($"Protocol {Parent.Protocol} is not yet supported");
 			}
 
 			if (!Parent.Extended)
@@ -114,11 +114,11 @@ namespace CLI
 						report.Stages,
 						new
 						{
-							CryptDBRange = CryptDBRange,
+							BCLORange = BCLORange,
 							FHOPEP = FHOPEP,
 							LewiWuN = LewiWuN,
 							Dataset = Parent.Dataset,
-							OREScheme = Parent.OREScheme,
+							OREScheme = Parent.Protocol,
 							Seed = Parent.Seed
 						}
 					)

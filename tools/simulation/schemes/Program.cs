@@ -30,7 +30,7 @@ namespace Schemes
 		[Option("--runs <number>", Description = "Number of runs to perform. Default 100.")]
 		public int Runs { get; } = 100;
 
-		[Option("--ore-scheme <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
+		[Option("--protocol <enum>", Description = "ORE scheme to use. Default NoEncryption.")]
 		public Crypto.Shared.Protocols OREScheme { get; } = Crypto.Shared.Protocols.NoEncryption;
 
 		private int OnExecute()

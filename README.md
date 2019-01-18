@@ -18,7 +18,7 @@ Furthermore, we propose a number of improvements for some of these schemes and p
 
 ## Analyzed schemes and protocols
 
-- [Order Preserving Symmetric Encryption (aka **CryptDB OPE**)](https://eprint.iacr.org/2012/624.pdf)
+- [Order Preserving Symmetric Encryption (aka **BCLO OPE**)](https://eprint.iacr.org/2012/624.pdf)
 - [Practical Order-Revealing Encryption with Limited Leakage (aka **Practical ORE**)](https://eprint.iacr.org/2015/1125.pdf)
 - [Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds (aka **Lewi ORE**)](https://eprint.iacr.org/2016/612.pdf)
 - [Frequency-Hiding Order-Preserving Encryption (aka **FH-OPE**)](http://www.fkerschbaum.org/ccs15.pdf)
@@ -51,10 +51,10 @@ docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll protocol --help"
 docker run dbogatov/ore-benchmark /bin/sh -c "tree ./data"
 
 # to run simple scheme simulation (e.g. CLWW) on supplied data set
-docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme clww scheme"
+docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --protocol clww scheme"
 
 # to run simple protocol simulation (e.g. POPE) on supplied data and query sets
-docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme pope protocol --queries ./data/uniform/queries-1.txt"
+docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --protocol pope protocol --queries ./data/uniform/queries-1.txt"
 
 # to see the format of data and query files
 # data file line is an integer, coma, string (in quotes)
@@ -68,7 +68,7 @@ docker run dbogatov/ore-benchmark /bin/sh -c "head -n 10 ./data/uniform/queries-
 docker run \
 	-v /path/to/data:/benchmark/your-data/ \
 	dbogatov/ore-benchmark \
-	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt -v --ore-scheme pope protocol --queries ./your-data/queries.txt"
+	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt -v --protocol pope protocol --queries ./your-data/queries.txt"
 
 # advanced; to generate JSON output and save it locally
 # you have to have a directory /path/to/results, where result.json will appear
@@ -76,7 +76,7 @@ docker run \
 	-v /path/to/data:/benchmark/your-data/ \
 	-v /path/to/results:/benchmark/results/ \
 	dbogatov/ore-benchmark \
-	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt --ore-scheme pope protocol --queries ./your-data/queries.txt > ./results/result.json"
+	/bin/sh -c "dotnet ./cli.dll --dataset ./your-data/data.txt --protocol pope protocol --queries ./your-data/queries.txt > ./results/result.json"
 ```
 
 Running the tool locally without docker is more trivial (just omit all docker wrappers).

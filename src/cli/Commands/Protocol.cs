@@ -26,8 +26,8 @@ namespace CLI
 		public CachePolicy CachePolicy { get; } = CachePolicy.LFU;
 
 		[Range(2, 1024)]
-		[Option("--b-plus-tree-branches <number>", Description = "Max number of leaves (b parameter) of B+ tree. Must be from 2 to 1024. Default 3.")]
-		public int BPlusTreeBranching { get; } = 3;
+		[Option("--elements-per-page <number>", Description = "Number of elements that fit in a page. Specific to protocol. See docs. Must be from 2 to 1024. Default 3.")]
+		public int ElementsPerPage { get; } = 3;
 
 		[Range(1, 100)]
 		[Option("--data-percent <number>", Description = "The fraction (percent) of data to consume for simulation. Default 100 (all the data).")]
@@ -36,7 +36,7 @@ namespace CLI
 		protected override int OnExecute(CommandLineApplication app)
 		{
 			PutToConsole($"Seed: {Parent.Seed}", Parent.Verbose);
-			PutToConsole($"Inputs: dataset={Parent.Dataset}, queries={Queries}, scheme={Parent.OREScheme}, B+tree-branches={BPlusTreeBranching}", Parent.Verbose);
+			PutToConsole($"Inputs: dataset={Parent.Dataset}, queries={Queries}, scheme={Parent.Protocol}, B+tree-branches={ElementsPerPage}", Parent.Verbose);
 
 			var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -54,7 +54,7 @@ namespace CLI
 			PutToConsole($"Queries of {reader.Inputs.QueriesCount()} queries.", Parent.Verbose);
 			PutToConsole($"Inputs read in {timer.ElapsedMilliseconds} ms.", Parent.Verbose);
 
-			IProtocol protocol = Simulator.GenerateProtocol(Parent.OREScheme, Parent.Seed, BPlusTreeBranching);
+			IProtocol protocol = Simulator.GenerateProtocol(Parent.Protocol, Parent.Seed, ElementsPerPage);
 
 			var report = new Simulator(reader.Inputs, protocol).Simulate();
 
@@ -70,11 +70,11 @@ namespace CLI
 					report.Stages,
 					new
 					{
-						BPlusTreeBranching = BPlusTreeBranching,
+						ElementsPerPage = ElementsPerPage,
 						CacheSize = CacheSize,
 						Queries = Queries,
 						Dataset = Parent.Dataset,
-						OREScheme = Parent.OREScheme,
+						Protocol = Parent.Protocol,
 						Seed = Parent.Seed
 					}
 				)

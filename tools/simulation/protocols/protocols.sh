@@ -81,12 +81,12 @@ do
 	echo "Current timestamp: $(date)"
 	dotnet ../../../src/cli/dist/cli.dll $VERBOSE \
 		--dataset ../../../data/$DATA/data.txt \
-		--ore-scheme $TOEXECUTE \
+		--protocol $TOEXECUTE \
 		--seed $SEED \
 		protocol \
 		--queries ../../../data/$DATA/${QPREFIX}queries-$QUERIES.txt \
 		--cache-size $CACHE \
-		--b-plus-tree-branches ${protocols[$protocol]} \
+		--elements-per-page ${protocols[$protocol]} \
 		--data-percent $DATAPERCENT \
 		> ../../../results/protocols/$protocol-$DATA-$QUERIES-$DATAPERCENT-$CACHE-$SEED.json
 done

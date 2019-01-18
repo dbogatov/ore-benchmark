@@ -33,7 +33,7 @@ for scheme in "${schemes[@]}"
 do
     dotnet ./dist/schemes.dll \
 		--data-dir ../../../data \
-		--ore-scheme $scheme \
+		--protocol $scheme \
 		--seed $SEED
 done
 

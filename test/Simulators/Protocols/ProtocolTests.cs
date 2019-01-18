@@ -37,9 +37,9 @@ namespace Test.Simulators.Protocols.Integration
 	}
 
 	[Trait("Category", "Unit")]
-	public class CryptDBProtocol : AbsProtocol
+	public class BCLOProtocol : AbsProtocol
 	{
-		public CryptDBProtocol()
+		public BCLOProtocol()
 		{
 			var scheme =
 				new global::Crypto.BCLO.Scheme(
