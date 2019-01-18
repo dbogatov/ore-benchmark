@@ -44,8 +44,7 @@ mkdir -p ../../data
 
 if [ "$BUILD" == true ];
 then
-	# TODO
-	types=( "uniform" "normal" "zipf" ) # "employees" "forest" )
+	types=( "uniform" "normal" "zipf" "employees" "forest" )
 else
 	types=( "uniform" )
 fi
@@ -59,6 +58,8 @@ do
 		--type $type \
 		--output ../../data/$type \
 		--data-size $DMAX \
+		--normal-stddev $(( $DMAX / 10 )) \
+		--uniform-range $(( $DMAX / 3 )) \
 		--query-size $QMAX \
 		--seed $SEED \
 		--employees-url "https://spaces.dbogatov.org/public/state-of-california-2017.csv" \

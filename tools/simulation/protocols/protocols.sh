@@ -49,14 +49,16 @@ shift $((OPTIND-1))
 
 declare -A protocols # Create an associative array
 protocols[practicalore]=512
-protocols[cryptdb]=512 
-protocols[fhope]=512 
-protocols[lewiore]=11 
-protocols[adamore]=8 
+protocols[cryptdb]=512
+protocols[fhope]=512
+protocols[lewiore]=11
+protocols[adamore]=8
 protocols[florian]=256 
 protocols[pope]=256
 protocols[popecold]=256 
 protocols[noencryption]=1024
+protocols[cjjjkrs]=128
+protocols[oram]=2
 
 mkdir -p ../../../results/protocols
 
