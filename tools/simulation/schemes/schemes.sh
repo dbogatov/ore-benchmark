@@ -25,7 +25,7 @@ shift $((OPTIND-1))
 
 dotnet build -c release -o dist/
 
-schemes=( "practicalore" "cryptdb" "lewiore" "fhope" "adamore" )
+schemes=( "clww" "bclo" "lewiwu" "fhope" "cloz" )
 
 set -x # echo ON
 

@@ -223,7 +223,7 @@ namespace Protocols
 				"B+ tree w. ORE"
 				);
 			Console.WriteLine(@"\midrule");
-			ProcessRow(reports.Reports["florian"]["employees"][QueryRange][DataPercent], @"Kerschbaum~\cite{florian-protocol}");
+			ProcessRow(reports.Reports["kerschbaum"]["employees"][QueryRange][DataPercent], @"Kerschbaum~\cite{kerschbaum-protocol}");
 			Console.WriteLine(@"\midrule");
 			ProcessRow(reports.Reports["popecold"]["employees"][QueryRange][DataPercent], @"POPE~\cite{pope} cold");
 			ProcessRow(reports.Reports["pope"]["employees"][QueryRange][DataPercent], @"POPE~\cite{pope} warm");
@@ -239,7 +239,7 @@ namespace Protocols
 					{
 						foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
 						{
-							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "florian", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
 							{
 								long result = 0;
 								switch (value)
@@ -271,7 +271,7 @@ namespace Protocols
 				{
 					foreach (var querySize in new List<double> { 0.5, 1, 1.5, 2, 3 }.Select(s => s.ToString("#.#")))
 					{
-						foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+						foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
 						{
 							long result = 0;
 							switch (value)
@@ -304,7 +304,7 @@ namespace Protocols
 					{
 						foreach (var dataPercent in new List<int> { 5, 10, 20, 50, 100 }.Select(s => s.ToString()))
 						{
-							foreach (var protocol in new List<string> { "noencryption", "cryptdb", "practicalore", "lewiore", "fhope", "adamore", "florian", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
 							{
 								long result = 0;
 								switch (value)

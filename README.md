@@ -51,7 +51,7 @@ docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll protocol --help"
 docker run dbogatov/ore-benchmark /bin/sh -c "tree ./data"
 
 # to run simple scheme simulation (e.g. CLWW) on supplied data set
-docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme practicalore scheme"
+docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme clww scheme"
 
 # to run simple protocol simulation (e.g. POPE) on supplied data and query sets
 docker run dbogatov/ore-benchmark /bin/sh -c "dotnet ./cli.dll --dataset ./data/uniform/data.txt -v --ore-scheme pope protocol --queries ./data/uniform/queries-1.txt"

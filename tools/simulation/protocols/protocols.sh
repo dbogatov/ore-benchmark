@@ -48,12 +48,12 @@ done
 shift $((OPTIND-1))
 
 declare -A protocols # Create an associative array
-protocols[practicalore]=512
-protocols[cryptdb]=512 
+protocols[clww]=512
+protocols[bclo]=512 
 protocols[fhope]=512 
-protocols[lewiore]=11 
-protocols[adamore]=8 
-protocols[florian]=256 
+protocols[lewiwu]=11 
+protocols[cloz]=8 
+protocols[kerschbaum]=256 
 protocols[pope]=256
 protocols[popecold]=256 
 protocols[noencryption]=1024

@@ -4,8 +4,8 @@ require 'English'
 
 Dir.chdir File.dirname(__FILE__)
 
-def run(input, scheme, seed, lewioren, cryptdbrange)
-  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --ore-scheme #{scheme} --seed #{seed} scheme --lewi-wu-ore-n #{lewioren} --cryptdb-range #{cryptdbrange}"
+def run(input, scheme, seed, lewiwun, bclorange)
+  cmd = "dotnet ../../src/cli/dist/cli.dll --dataset ../../data/#{input}/data.txt --ore-scheme #{scheme} --seed #{seed} scheme --lewi-wu-ore-n #{lewiwun} --bclo-range #{bclorange}"
   puts ">>> #{cmd}"
   output = `#{cmd}`
 
@@ -39,14 +39,14 @@ end
 %w[cloz fhope lewiwu bclo clww noencryption].each do |scheme|
   case scheme
 
-  when 'lewiore'
-    [16, 8, 4].each do |lewioren|
-      success = false unless run('uniform', scheme, prng.rand(2**30), lewioren, 48)
+  when 'lewiwu'
+    [16, 8, 4].each do |lewiwun|
+      success = false unless run('uniform', scheme, prng.rand(2**30), lewiwun, 48)
     end
 
-  when 'cryptdb'
-    [32, 36, 40, 44, 48].each do |cryptdbrange|
-      success = false unless run('uniform', scheme, prng.rand(2**30), 16, cryptdbrange)
+  when 'bclo'
+    [32, 36, 40, 44, 48].each do |bclorange|
+      success = false unless run('uniform', scheme, prng.rand(2**30), 16, bclorange)
     end
 
   else

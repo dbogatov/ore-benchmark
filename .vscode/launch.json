@@ -44,7 +44,7 @@
 				"--data-dir",
 				"./data",
 				"--ore-scheme",
-				"practicalore",
+				"clww",
 				"--seed",
 				"10"
 			],
