@@ -116,7 +116,7 @@ namespace Simulation.Protocol.ORAM
 		/// <param name="hash"></param>
 		private void AccessORAM(int hash)
 		{
-			var heightORAM = (int)Math.Ceiling(Math.Log(_tree.Size(), 2));
+			var heightORAM = (int)Math.Ceiling(Math.Log(_tree.Nodes(includeDataNodes: false), 2));
 
 			foreach (var readOrWrite in new bool[] { true, false })
 			{

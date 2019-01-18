@@ -10,7 +10,7 @@ import numpy as np
 value = str(sys.argv[1])
 
 names = ('No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
-         'Kerschbaum', 'POPE cold', 'POPE warm')
+         'Kerschbaum', 'POPE cold', 'POPE warm', 'CJJJKRS', 'ORAM')
 N = len(names) + 2
 
 uniform = []

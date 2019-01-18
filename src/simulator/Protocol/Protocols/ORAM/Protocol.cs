@@ -8,7 +8,7 @@ namespace Simulation.Protocol.ORAM
 {
 	public class Protocol : AbsProtocol
 	{
-		public Protocol(byte[] entropy, int elementsPerPage, int branches = 1024, int z = 4)
+		public Protocol(byte[] entropy, int elementsPerPage, int branches = 256, int z = 4)
 		{
 			IPRG G = new PRGFactory(entropy).GetPrimitive();
 

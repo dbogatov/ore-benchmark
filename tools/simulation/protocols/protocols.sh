@@ -57,6 +57,8 @@ protocols[kerschbaum]=256
 protocols[pope]=256
 protocols[popecold]=256 
 protocols[noencryption]=1024
+protocols[cjjjkrs]=128
+protocols[oram]=2
 
 mkdir -p ../../../results/protocols
 

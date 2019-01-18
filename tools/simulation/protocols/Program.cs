@@ -97,7 +97,7 @@ namespace Protocols
 
 			AllReports reports = new AllReports();
 
-			foreach (var protocol in new List<string> { "cloz", "bclo", "clww", "lewiwu", "fhope", "kerschbaum", "pope", "noencryption", "popecold" })
+			foreach (var protocol in new List<string> { "cloz", "bclo", "clww", "lewiwu", "fhope", "kerschbaum", "pope", "noencryption", "popecold", "cjjjkrs", "oram" })
 			{
 				reports.Reports.Add(protocol, new Dictionary<string, Dictionary<string, Dictionary<string, AllReports.Report>>>());
 
@@ -227,6 +227,10 @@ namespace Protocols
 			Console.WriteLine(@"\midrule");
 			ProcessRow(reports.Reports["popecold"]["employees"][QueryRange][DataPercent], @"POPE~\cite{pope} cold");
 			ProcessRow(reports.Reports["pope"]["employees"][QueryRange][DataPercent], @"POPE~\cite{pope} warm");
+			Console.WriteLine(@"\midrule");
+			ProcessRow(reports.Reports["cjjjkrs"]["employees"][QueryRange][DataPercent], @"CJJJKRS~\cite{cjjjkrs-13}");
+			Console.WriteLine(@"\midrule");
+			ProcessRow(reports.Reports["oram"]["employees"][QueryRange][DataPercent], @"ORAM~\ref{some-sec}");
 		}
 
 		private async Task PlotsAsync(AllReports reports)
@@ -239,7 +243,7 @@ namespace Protocols
 					{
 						foreach (var distribution in new List<string> { "uniform", "normal", "zipf", "employees", "forest" })
 						{
-							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope", "cjjjkrs", "oram" })
 							{
 								long result = 0;
 								switch (value)

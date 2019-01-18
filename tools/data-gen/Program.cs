@@ -270,7 +270,8 @@ namespace DataGen
 				{
 					diff = (uint)max - (uint)min;
 				}
-				var range = Math.Ceiling((diff / 100) * percent);
+
+				var range = Math.Ceiling((1.0 * diff / 100) * percent);
 				var sampler = new DiscreteUniform(min, max, generator);
 
 				Debug.Assert(range > 0);
