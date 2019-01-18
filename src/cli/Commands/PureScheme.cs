@@ -13,7 +13,7 @@ namespace CLI
 	public class PureSchemeCommand : CommandBase
 	{
 		[AllowedValues("4", "8", "16")]
-		[Option("--lewi-wu-ore-n <number>", Description = "Parameter N for LewiWu. Must be one of [4, 8, 16]. Default 16.")]
+		[Option("--lewi-ore-n <number>", Description = "Parameter N for LewiWu. Must be one of [4, 8, 16]. Default 16.")]
 		public int LewiWuN { get; } = 16;
 
 		[Range(32, 48)]
