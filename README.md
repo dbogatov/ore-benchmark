@@ -25,8 +25,8 @@ Furthermore, we propose a number of improvements for some of these schemes and p
 - [Reducing the Leakage in Practical Order-Revealing Encryption (aka **CLOZ ORE**)](https://eprint.iacr.org/2016/661.pdf)
 - [POPE: Partial Order Preserving Encoding (aka **POPE Protocol**)](https://arxiv.org/pdf/1610.04025.pdf)
 - [Practical Private Range Search Revisited](http://www.idemertzis.com/Papers/sigmod16.pdf) working on top of
-	- [Highly-Scalable Searchable Symmetric Encryption with Support for Boolean Queries (aka CJJKRS)](https://eprint.iacr.org/2013/169.pdf)
-	- [Dynamic Searchable Encryption in Very-Large Databases: Data Structures and Implementation (aka CJJJKRS)](https://eprint.iacr.org/2014/853.pdf)
+	- [Highly-Scalable Searchable Symmetric Encryption with Support for Boolean Queries (aka **CJJKRS**)](https://eprint.iacr.org/2013/169.pdf)
+	- [Dynamic Searchable Encryption in Very-Large Databases: Data Structures and Implementation (aka **CJJJKRS**w)](https://eprint.iacr.org/2014/853.pdf)
 
 We have generated synthetic (uniform and normal distributions) and real (CA public employees salaries) data sets.
 
