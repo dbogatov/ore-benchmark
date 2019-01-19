@@ -10,11 +10,9 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 	{
 		private readonly Scheme<Word, Index>.Client SSEClient;
 		private byte[] _key;
+		private readonly int _elementsPerPage;
 
-		private readonly int _b;
-		private readonly int _B;
-
-		public Client(byte[] entropy, int b, int B)
+		public Client(byte[] entropy, int elementsPerPage)
 		{
 			SSEClient = new Scheme<Word, Index>.Client(entropy);
 
@@ -22,21 +20,23 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 			SSEClient.NodeVisited += hash => OnNodeVisited(hash);
 			SSEClient.OperationOcurred += operation => OnOperationOccurred(operation);
 
-			_b = b;
-			_B = B;
+			_elementsPerPage = elementsPerPage;
 		}
 
 		public override void RunConstruction(List<Record> input)
 		{
 			var database = Utility.InputToDatabase(input);
 
-			(var encrypted, var key) = SSEClient.Setup(database, _b, _B);
+			var b = _elementsPerPage / 2;
+			var B = _elementsPerPage;
+
+			(var encrypted, var key) = SSEClient.Setup(database, b, B);
 			_key = key;
 
 			OnClientStorage(encrypted.Size);
 
-			_mediator.SendToServer<Database, object>(
-				new PublishDatabaseMessage(encrypted)
+			_mediator.SendToServer<(Database, int, int), object>(
+				new PublishDatabaseMessage((encrypted, b, B))
 			);
 
 			OnQueryCompleted();

@@ -6,10 +6,10 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 {
 	public class Protocol : AbsProtocol, ISSEProtocol
 	{
-		public Protocol(byte[] entropy, int elementsPerPage, int b = int.MaxValue, int B = 1)
+		public Protocol(byte[] entropy, int elementsPerPage)
 		{
-			_client = new Client(entropy, b, B);
-			_server = new Server(elementsPerPage, b, B);
+			_client = new Client(entropy, elementsPerPage);
+			_server = new Server(elementsPerPage);
 
 			SetupProtocol();
 		}

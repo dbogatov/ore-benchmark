@@ -9,22 +9,20 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 		private Scheme<Word, Index>.Server SSEServer;
 		private readonly int _elementsPerPage;
 
-		private readonly int _b;
-		private readonly int _B;
+		private int _b;
+		private int _B;
 
-		public Server(int elementsPerPage, int b, int B)
+		public Server(int elementsPerPage)
 		{
 			_elementsPerPage = elementsPerPage;
-			_b = b;
-			_B = B;
 		}
 
 		public override IMessage<R> AcceptMessage<Q, R>(IMessage<Q> message)
 		{
 			switch (message)
 			{
-				case PublishDatabaseMessage database:
-					SSEServer = new Scheme<Word, Index>.Server(database.Unpack());
+				case PublishDatabaseMessage input:
+					SSEServer = new Scheme<Word, Index>.Server(input.Unpack().db);
 					SSEServer.PageSize = _elementsPerPage * (128 / 8); // AES block
 
 					// register event handlers
@@ -33,10 +31,14 @@ namespace Simulation.Protocol.SSE.CJJJKRS
 					SSEServer.OperationOcurred += operation => OnOperationOccurred(operation);
 
 					// emulate database write to disk
-					for (int i = 0; i < database.Unpack().Size / _elementsPerPage * (128 / 8); i++)
+					var pages = input.Unpack().db.Size / _elementsPerPage * (128 / 8);
+					for (int i = 0; i < pages; i++)
 					{
 						OnNodeVisited(i);
 					}
+					
+					_b = input.Unpack().b;
+					_B = input.Unpack().B;
 
 					return (IMessage<R>)new FinishMessage();
 				case TokensMessage tokens:
