@@ -12,5 +12,6 @@
 		"BCLO",
 		"CLOZ",
 		"CLWW"
-	]
+	],
+	"python.linting.pylintEnabled": false
 }

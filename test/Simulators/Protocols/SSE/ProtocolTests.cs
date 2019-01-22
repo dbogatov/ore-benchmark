@@ -14,15 +14,9 @@ namespace Test.Simulators.Protocols.SSE
 	}
 
 	[Trait("Category", "Unit")]
-	public class CJJJKRSProtocolNoPack : AbsProtocol
+	public class CJJJKRSProtocol : AbsProtocol
 	{
-		public CJJJKRSProtocolNoPack() : base(2, new Simulation.Protocol.SSE.CJJJKRS.Protocol(new byte[] { 0x13 }, 10)) { }
-	}
-
-	[Trait("Category", "Unit")]
-	public class CJJJKRSProtocolPack : AbsProtocol
-	{
-		public CJJJKRSProtocolPack() : base(2, new Simulation.Protocol.SSE.CJJJKRS.Protocol(new byte[] { 0x13 }, 10, 5, 20)) { }
+		public CJJJKRSProtocol() : base(2, new Simulation.Protocol.SSE.CJJJKRS.Protocol(new byte[] { 0x13 }, 10)) { }
 	}
 
 	[Trait("Category", "Unit")]

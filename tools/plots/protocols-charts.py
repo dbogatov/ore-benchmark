@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
 import os
@@ -9,9 +9,13 @@ import numpy as np
 
 value = str(sys.argv[1])
 
-names = ('No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
-         'Kerschbaum', 'POPE cold', 'POPE warm', 'CJJJKRS', 'ORAM')
+names = ['No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
+         'Kerschbaum', 'POPE cold', 'POPE warm', 'CJJJKRS', 'ORAM']
+
 N = len(names) + 2
+
+if value[0] == 'c':
+    names.remove('CJJJKRS')
 
 uniform = []
 normal = []
@@ -19,27 +23,40 @@ zipf = []
 employees = []
 forest = []
 
+def readCondition(_counter, _N, _value):
+   return _counter % N != 2 and _counter % N != 4 and (_value[0] != 'c' or _counter % N != 9)
+
 with open("./data/protocols-{0}.txt".format(value)) as fp:
     line = fp.readline()
     counter = 0
     while line:
         if counter < N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 uniform.append(int(line.strip()))
         elif counter < 2 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 normal.append(int(line.strip()))
         elif counter < 3 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 zipf.append(int(line.strip()))
         elif counter < 4 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 employees.append(int(line.strip()))
         elif counter < 5 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 forest.append(int(line.strip()))
         line = fp.readline()
         counter += 1
+
+if value[0] == 'c':
+    N = N - 1
+
+# ORAM average
+if value[0] == 'c':
+    oramIndex = 7
+else:
+    oramIndex = 8
+oram = round((uniform[oramIndex] + normal[oramIndex] + employees[oramIndex]) / 3)
 
 ind = np.arange(N - 2)
 width = 1.0 / 6
@@ -64,16 +81,17 @@ if value != "qsize":
 
     if value == "cios":
         ax.set_ylim(481, 495)  # outliers only
-        ax2.set_ylim(0, 11)  # most of the data
+        ax2.set_ylim(0, 35)  # most of the data
     elif value == "cvol":
-        ax.set_ylim(37.5, 41)  # outliers only
-        ax2.set_ylim(0, 5.5)  # most of the data
+        ax.set_ylim(45, 155)  # outliers only
+        ax2.set_ylim(0, 45)  # most of the data
     elif value == "csize":
         ax.set_ylim(321, 700)  # outliers only
         ax2.set_ylim(0, 35.5)  # most of the data
+        ax.text(5.8, 655, f"ORAM avg: {oram}", horizontalalignment='center', verticalalignment='center')
     elif value == "qios":
-        ax.set_ylim(32, 2200)  # outliers only
-        ax2.set_ylim(0, 31.5)  # most of the data
+        ax.set_ylim(200, 2500)  # outliers only
+        ax2.set_ylim(0, 200)  # most of the data
     elif value == "qvol":
         ax.set_ylim(490000, 505000)  # outliers only
         ax2.set_ylim(0, 1020)  # most of the data

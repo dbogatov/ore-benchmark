@@ -3,11 +3,11 @@ using static Crypto.CJJJKRS.Scheme<Simulation.Protocol.SSE.Word, Simulation.Prot
 
 namespace Simulation.Protocol.SSE.CJJJKRS
 {
-	internal class PublishDatabaseMessage : AbsMessage<Database>
+	internal class PublishDatabaseMessage : AbsMessage<(Database db, int b, int B)>
 	{
-		public PublishDatabaseMessage(Database content) : base(content) { }
+		public PublishDatabaseMessage((Database db, int b, int B) content) : base(content) { }
 
-		public override int GetSize() => _content.Size;
+		public override int GetSize() => _content.db.Size;
 	}
 
 	public class TokensMessage : AbsMessage<Token[]>
