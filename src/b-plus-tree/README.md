@@ -7,7 +7,6 @@ This is an open-source implementation of B+ tree as defined in [the original pap
 
 This implementation is exported as a [NuGet package](https://www.nuget.org/packages/b-plus-tree/).
 Primitive documentation is hosted [here](https://ore.dbogatov.org/documentation/api/BPlusTree.ITree-2.html). 
-<!-- TODO -->
 
 Here is how to add a dependency (in `.csproj` file)
 

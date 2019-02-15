@@ -9,7 +9,7 @@ CWD=$(pwd)
 
 usage() { echo "Usage: $0 [-s <number> -d <string> -q <string> -c <number>]" 1>&2; exit 1; }
 
-SPACE=sandor-dolores-space
+SPACE=jorah
 
 SEED=$RANDOM
 DATA="uniform"

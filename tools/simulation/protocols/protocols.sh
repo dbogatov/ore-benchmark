@@ -11,7 +11,7 @@ usage() { echo "Usage: $0 [-s <number> -d <string> -q <string> -c <number> -n]" 
 
 SEED=$RANDOM
 DATA=uniform
-QUERIES=1
+QUERIES=.5
 CACHE=128
 BUILD=true
 DATAPERCENT=100

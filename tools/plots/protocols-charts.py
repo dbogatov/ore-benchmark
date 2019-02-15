@@ -10,12 +10,12 @@ import numpy as np
 value = str(sys.argv[1])
 
 names = ['No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
-         'Kerschbaum', 'POPE cold', 'POPE warm', 'CJJJKRS', 'ORAM']
+         'Kerschbaum', 'POPE cold', 'POPE warm', 'Logarithmic\nBRC', 'ORAM']
 
 N = len(names) + 2
 
 if value[0] == 'c':
-    names.remove('CJJJKRS')
+    names.remove('Logarithmic\nBRC')
 
 uniform = []
 normal = []
