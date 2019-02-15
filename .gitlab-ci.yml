@@ -22,6 +22,8 @@ build-docs:
     - ./docs/Dockerfile
     - ./docs/nginx.conf
     - ./src/web/wwwroot/documentation
+  only:
+  - merge_requests
   tags:
   - docker
   
@@ -53,6 +55,8 @@ build-app:
     - ./Dockerfile
     - ./.dockerignore
     - ./src/web/Dockerfile
+  only:
+  - merge_requests
   tags:
   - docker
 
@@ -67,6 +71,8 @@ build-tests:
     paths:
     - ./test/dist
     - ./test/test.csproj
+  only:
+  - merge_requests
   tags:
   - docker
 
@@ -118,6 +124,8 @@ unit-tests:
       junit: ./unit.xml
     paths:
       - coverage-html/
+  only:
+  - merge_requests
   tags:
   - docker
 
@@ -137,6 +145,8 @@ integration-tests:
       junit: ./integration.xml
   dependencies:
   - build-tests
+  only:
+  - merge_requests
   tags:
   - docker
 
@@ -155,6 +165,8 @@ system-protocol-tests:
       - ./results/protocol.json
   dependencies:
   - build-app
+  only:
+  - merge_requests
   tags:
   - docker
 
@@ -173,6 +185,8 @@ system-schemes-tests:
       - ./results/schemes.json
   dependencies:
   - build-app
+  only:
+  - merge_requests
   tags:
   - docker
   
@@ -185,6 +199,8 @@ published-packages-tests:
   - dotnet ./tools/packages-example/dist/packages-example.dll
   dependencies:
   - build-app
+  only:
+  - merge_requests
   tags:
   - docker
 

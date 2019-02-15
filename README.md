@@ -1,4 +1,4 @@
-# ORE Schemes Simulator
+# Comparative Evaluation of Order-Revealing Encryption Schemes and Secure Range-Query Protocols
 
 The paper is submitted to VLDB.
 See [technical report on eprint](https://eprint.iacr.org/2018/953.pdf).
@@ -8,13 +8,14 @@ Leonid Reyzin was supported in part by NSF grant 1422965.
 
 ## Abstract
 
-Database operations over encrypted data has received a lot of attention recently due to increasing security concerns for many database applications.
-One of the most promising approaches to perform database queries over encrypted data is to use specialized encryption schemes.
-Order Preserving Encryption (OPE) and Order Revealing Encryption (ORE) schemes are examples of encryption schemes that trade security for performance and fit very well database systems approaches. However, until now, there is no clear comparison between the different schemes and protocols that have been proposed in this area.
-In this paper, we present the first comprehensive comparison among a number of important OPE and ORE schemes using a new framework that we implemented from scratch.
-We analyze and compare the schemes and protocols both theoretically and experimentally in a unified setting.
-Our comparison reveals some interesting results concerning the relative security and performance of these schemes and protocols.
-Furthermore, we propose a number of improvements for some of these schemes and provide a number of suggestions and recommendation that will be valuable to database system designers and practitioners.
+Database query evaluation over encrypted data can allow database users to maintain the privacy of their data while outsourcing data processing.
+Order-Preserving Encryption (OPE) and Order-Revealing Encryption (ORE) were designed to enable efficient query execution, but provide only partial privacy.
+More private protocols, based on Searchable Symmetric Encryption (SSE), Oblivious RAM (ORAM) or custom encrypted data structures, have also been designed.
+In this paper, we develop a framework to provide the first comprehensive comparison among a number of range query protocols that ensure varying levels of privacy of user data.
+We evaluate five ORE-based and five generic range query protocols.
+We analyze and compare them both theoretically and experimentally and measure their performance over database indexing and query evaluation.
+We report not only execution time but also I/O performance, communication amount, and usage of cryptographic primitive operations.
+Our comparison reveals some interesting insights concerning the relative security and performance of these approaches in database settings.
 
 ## Analyzed schemes and protocols
 

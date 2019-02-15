@@ -10,7 +10,7 @@ import numpy as np
 value = str(sys.argv[1])
 
 names = ('No encryption', 'BCLO, CLWW,\nFH-OPE', 'Lewi-Wu', 'CLOZ',
-         'Kerschbaum', 'POPE cold', 'POPE warm')
+         'Kerschbaum', 'POPE', 'Logarithmic\nBRC (pack)', 'Logarithmic\nBRC', 'ORAM')
 N = len(names) + 2
 
 queries05 = []
@@ -61,8 +61,8 @@ for axis in [ax, ax2]:
     axis.bar(ind + 4 * width, queries30, width, alpha=alpha,
             edgecolor="black", label='3% of query range')
 
-ax.set_ylim(100, 2200)  # outliers only
-ax2.set_ylim(0, 45)  # most of the data
+ax.set_ylim(155, 4000)  # outliers only
+ax2.set_ylim(0, 140)  # most of the data
 
 ax.spines['bottom'].set_visible(False)
 ax2.spines['top'].set_visible(False)

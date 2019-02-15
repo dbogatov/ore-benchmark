@@ -9,9 +9,13 @@ import numpy as np
 
 value = str(sys.argv[1])
 
-names = ('No encryption', 'BCLO, CLWW\nFH-OPE', 'Lewi-Wu', 'CLOZ',
-         'Kerschbaum', 'POPE cold', 'POPE warm')
+names = ['No encryption', 'BCLO, CLWW\nFH-OPE', 'Lewi-Wu', 'CLOZ',
+         'Kerschbaum', 'POPE cold', 'POPE warm', 'Logarithmic\nBRC', 'ORAM']
+
 N = len(names) + 2
+
+if value[0] == 'c':
+    names.remove('Logarithmic\nBRC')
 
 percent5 = []
 percent10 = []
@@ -19,27 +23,33 @@ percent20 = []
 percent50 = []
 percent100 = []
 
+def readCondition(_counter, _N, _value):
+   return _counter % N != 2 and _counter % N != 4 and (_value[0] != 'c' or _counter % N != 9)
+
 with open("./data/protocols-data-percent-{0}.txt".format(value)) as fp:
     line = fp.readline()
     counter = 0
     while line:
         if counter < N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 percent5.append(int(line.strip()))
         elif counter < 2 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 percent10.append(int(line.strip()))
         elif counter < 3 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 percent20.append(int(line.strip()))
         elif counter < 4 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 percent50.append(int(line.strip()))
         elif counter < 5 * N:
-            if counter % N != 2 and counter % N != 4:
+            if readCondition(counter, N, value):
                 percent100.append(int(line.strip()))
         line = fp.readline()
         counter += 1
+
+if value[0] == 'c':
+    N = N - 1
 
 ind = np.arange(N - 2)
 width = 1.0 / 6
@@ -62,20 +72,20 @@ for axis in [ax, ax2]:
             edgecolor="black", label='100% of data')
 
 if value == "cios":
-    ax.set_ylim(20, 500)  # outliers only
-    ax2.set_ylim(0, 8.5)  # most of the data
+    ax.set_ylim(35, 550)  # outliers only
+    ax2.set_ylim(0, 35)  # most of the data
 if value == "cvol":
-    ax.set_ylim(29, 42)  # outliers only
-    ax2.set_ylim(0, 5.5)  # most of the data
+    ax.set_ylim(45, 150)  # outliers only
+    ax2.set_ylim(0, 45)  # most of the data
 elif value == "csize":
     ax.set_ylim(315, 700)  # outliers only
     ax2.set_ylim(0, 55)  # most of the data
 elif value == "qios":
-    ax.set_ylim(150, 2200)  # outliers only
-    ax2.set_ylim(0, 105)  # most of the data
+    ax.set_ylim(180, 2200)  # outliers only
+    ax2.set_ylim(0, 175)  # most of the data
 elif value == "qvol":
     ax.set_ylim(18000, 550000)  # outliers only
-    ax2.set_ylim(0, 1200)  # most of the data
+    ax2.set_ylim(0, 1050)  # most of the data
 elif value == "qsize":
     ax.set_ylim(40001, 1000000)  # outliers only
     ax2.set_ylim(0, 40050)  # most of the data

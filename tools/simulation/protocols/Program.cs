@@ -267,6 +267,9 @@ namespace Protocols
 			}
 		}
 
+		/// <summary>
+		/// This assumes that Logarithmic-BRC is cold coldpope-*json
+		/// </summary>
 		private async Task QuerySizesAsync(AllReports reports)
 		{
 			foreach (var value in new List<string> { "ios", "vol", "size" })
@@ -275,7 +278,7 @@ namespace Protocols
 				{
 					foreach (var querySize in new List<double> { 0.5, 1, 1.5, 2, 3 }.Select(s => s.ToString("#.#")))
 					{
-						foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
+						foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "pope", "popecold", "cjjjkrs", "oram" })
 						{
 							long result = 0;
 							switch (value)
@@ -308,7 +311,7 @@ namespace Protocols
 					{
 						foreach (var dataPercent in new List<int> { 5, 10, 20, 50, 100 }.Select(s => s.ToString()))
 						{
-							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope" })
+							foreach (var protocol in new List<string> { "noencryption", "bclo", "clww", "lewiwu", "fhope", "cloz", "kerschbaum", "popecold", "pope", "cjjjkrs", "oram" })
 							{
 								long result = 0;
 								switch (value)
