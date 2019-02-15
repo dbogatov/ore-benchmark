@@ -56,7 +56,7 @@ build-app:
     - ./.dockerignore
     - ./src/web/Dockerfile
   only:
-  - merge_requests
+  - master
   tags:
   - docker
 
