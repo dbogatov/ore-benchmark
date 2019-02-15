@@ -145,7 +145,7 @@ namespace Test.Simulators.Protocols.Integration
 	{
 		public ORAMProtocol()
 		{
-			_protocol = new global::Simulation.Protocol.ORAM.Protocol(new Random(123456).GetBytes(128 / 8), 64);
+			_protocol = new global::Simulation.Protocol.ORAM.Protocol(new Random(123456).GetBytes(128 / 8), 2, 4);
 
 			SetupHandlers();
 		}
@@ -181,7 +181,7 @@ namespace Test.Simulators.Protocols.Integration
 			}
 		}
 	}
-	
+
 	[Trait("Category", "Unit")]
 	public class CJJJKRSProtocol : AbsProtocol
 	{

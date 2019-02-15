@@ -128,6 +128,7 @@ unit-tests:
   - merge_requests
   tags:
   - docker
+  - heavy
 
 integration-tests:
   image: $DOTNET_SDK_IMAGE
