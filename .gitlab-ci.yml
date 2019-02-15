@@ -23,7 +23,7 @@ build-docs:
     - ./docs/nginx.conf
     - ./src/web/wwwroot/documentation
   only:
-  - merge_requests
+  - master
   tags:
   - docker
   
