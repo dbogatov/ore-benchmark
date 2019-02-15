@@ -55,8 +55,6 @@ build-app:
     - ./Dockerfile
     - ./.dockerignore
     - ./src/web/Dockerfile
-  only:
-  - master
   tags:
   - docker
 
