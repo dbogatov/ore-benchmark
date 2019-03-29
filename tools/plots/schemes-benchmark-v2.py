@@ -33,7 +33,7 @@ plt.style.use('grayscale')
 plt.bar(ind, encryptions, width, alpha=0.5,
         edgecolor="black", label='Encryption')
 plt.bar(ind + width, comparisons, width, alpha=0.5,
-        edgecolor="black", label='Comparsion')
+        edgecolor="black", label='Comparison')
 
 plt.xticks(ind + width / 2, names, rotation=45)
 plt.legend(loc='best')
