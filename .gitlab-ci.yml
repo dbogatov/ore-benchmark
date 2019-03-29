@@ -124,6 +124,7 @@ unit-tests:
       - coverage-html/
   only:
   - merge_requests
+  - master
   tags:
   - docker
   - heavy
@@ -146,6 +147,7 @@ integration-tests:
   - build-tests
   only:
   - merge_requests
+  - master
   tags:
   - docker
 
@@ -166,6 +168,7 @@ system-protocol-tests:
   - build-app
   only:
   - merge_requests
+  - master
   tags:
   - docker
 
@@ -186,6 +189,7 @@ system-schemes-tests:
   - build-app
   only:
   - merge_requests
+  - master
   tags:
   - docker
   
@@ -200,6 +204,7 @@ published-packages-tests:
   - build-app
   only:
   - merge_requests
+  - master
   tags:
   - docker
 
