@@ -71,6 +71,7 @@ build-tests:
     - ./test/test.csproj
   only:
   - merge_requests
+  - master
   tags:
   - docker
 
