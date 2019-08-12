@@ -62,8 +62,8 @@ do
 		--uniform-range $(( $DMAX / 3 )) \
 		--query-size $QMAX \
 		--seed $SEED \
-		--employees-url "https://spaces.dbogatov.org/public/state-of-california-2017.csv" \
-		--forest-url "https://spaces.dbogatov.org/public/covtype.data"
+		--employees-url "https://gist.github.com/dbogatov/a192d00d72de02f188c5268ea1bbf25b/raw/afb4d44111f42dbe9ed0148bee3b954d43e38907/state-of-california-2017.csv" \
+		--forest-url "https://gist.github.com/dbogatov/a192d00d72de02f188c5268ea1bbf25b/raw/afb4d44111f42dbe9ed0148bee3b954d43e38907/covtype.data"
 done
 
 echo "Done!"
