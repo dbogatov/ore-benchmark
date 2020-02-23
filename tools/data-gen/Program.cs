@@ -164,7 +164,7 @@ namespace DataGen
 
 						var engine = new FileHelperAsyncEngine<Employee>();
 
-						Log("Prcessing file...");
+						Log("Processing file...");
 
 						using (engine.BeginReadString(responseString))
 						{
@@ -186,7 +186,7 @@ namespace DataGen
 							}
 						}
 
-						Log("Prcessing specific data points...");
+						Log("Processing specific data points...");
 
 						foreach (var index in set)
 						{
@@ -212,7 +212,7 @@ namespace DataGen
 
 						var engine = new FileHelperAsyncEngine<Forest>();
 
-						Log("Prcessing file...");
+						Log("Processing file...");
 
 						using (engine.BeginReadString(responseString))
 						{
@@ -234,7 +234,7 @@ namespace DataGen
 							}
 						}
 
-						Log("Prcessing specific data points...");
+						Log("Processing specific data points...");
 
 						foreach (var index in set)
 						{

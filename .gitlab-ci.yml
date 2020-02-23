@@ -65,7 +65,6 @@ build-app:
     - ./tools/data-gen/generate.sh
     - ./tools/simulation/
     - ./Dockerfile
-    - ./.dockerignore
     - ./src/web/Dockerfile
   tags:
   - docker
