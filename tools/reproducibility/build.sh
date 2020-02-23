@@ -7,7 +7,7 @@ cd /benchmark
 
 if [ -z "$CI_BUILD_REF" ]
 then
-	CI_BUILD_REF="local-dev"
+	CI_BUILD_REF="dev"
 fi
 
 printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
