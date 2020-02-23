@@ -81,8 +81,6 @@ build-tests:
     paths:
     - ./test/dist
     - ./test/test.csproj
-  only:
-  - master
   tags:
   - docker
 
@@ -134,8 +132,6 @@ data-gen:
 #       junit: ./unit.xml
 #     paths:
 #       - coverage-html/
-#   only:
-#   - master
 #   tags:
 #   - docker
 #   - heavy
@@ -156,8 +152,6 @@ data-gen:
 #       junit: ./integration.xml
 #   dependencies:
 #   - build-tests
-#   only:
-#   - master
 #   tags:
 #   - docker
 
@@ -176,8 +170,6 @@ data-gen:
 #       - ./results/protocol.json
 #   dependencies:
 #   - build-app
-#   only:
-#   - master
 #   tags:
 #   - docker
 
@@ -196,8 +188,6 @@ data-gen:
 #       - ./results/schemes.json
 #   dependencies:
 #   - build-app
-#   only:
-#   - master
 #   tags:
 #   - docker
 
