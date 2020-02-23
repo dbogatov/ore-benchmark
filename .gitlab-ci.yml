@@ -11,284 +11,296 @@ variables:
   DOTNET_SDK_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-sdk-alpine"
   DOTNET_RUNTIME_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-runtime-alpine"
 
-build-docs:
-  image: dbogatov/docker-sources:tsgkadot-docker-docfx
-  stage: pre-build
-  script:
-  - ./docs/docs.sh
-  artifacts:
-    paths:
-    - ./docs/_site
-    - ./docs/Dockerfile
-    - ./docs/nginx.conf
-    - ./src/web/wwwroot/documentation
-  only:
-  - master
-  tags:
-  - docker
-  
-build-app:
-  image: $DOTNET_SDK_IMAGE
-  stage: build
-  script:
-  - printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
-  - printf "{\"Version\":{\"GitHash\":\"%s\"}}" $(echo $CI_BUILD_REF | cut -c1-8) > src/web/version.json
-  - dotnet restore src/cli/ --disable-parallel
-  - dotnet restore src/web/ --disable-parallel 
-  - dotnet restore tools/data-gen/ --disable-parallel 
-  - dotnet restore tools/packages-example/ --disable-parallel 
-  - dotnet publish -c release src/cli/ -o dist/
-  - dotnet publish -c release src/web/ -o dist/
-  - dotnet publish -c release tools/data-gen/ -o dist/
-  - dotnet publish -c release tools/packages-example/ -o dist/
-  dependencies:
-  - build-docs
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - ./src/cli/dist
-    - ./src/web/dist
-    - ./tools/data-gen/dist
-    - ./tools/packages-example/dist
-    - ./tools/data-gen/generate.sh
-    - ./tools/simulation/
-    - ./Dockerfile
-    - ./.dockerignore
-    - ./src/web/Dockerfile
-  tags:
-  - docker
-
-build-tests:
-  image: $DOTNET_SDK_IMAGE
-  stage: build
-  script:
-  - dotnet restore --disable-parallel test/
-  - dotnet publish -c release --no-restore test/ -o dist/
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - ./test/dist
-    - ./test/test.csproj
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-
-build-packages:
-  image: $DOTNET_SDK_IMAGE
-  stage: build
-  script:
-  - apk add --update bash 
-  - ./tools/publish-packages.sh -b -k $NUGET_KEY
-  artifacts:
-    paths:
-    - ./tools/publish-packages.sh
-    - ./version.txt
-    - ./src/b-plus-tree/dist/*.nupkg
-    - ./src/crypto/*/dist/*.nupkg
-  tags:
-  - docker
-  only:
-  - master
-
-data-gen:
-  image: $DOTNET_SDK_IMAGE
-  stage: build
-  script:
-  - apk add --update bash
-  - ./tools/data-gen/generate.sh -d 2500 -q 50 -s 1305
-  artifacts:
-    expire_in: 1 day
-    paths:
-    - ./data/
-  tags:
-  - docker
-  only:
-  - master
-
-unit-tests:
-  image: $DOTNET_SDK_IMAGE
-  stage: test
-  script:
-  - apk add --update bash bc
-  - ./tools/test-coverage/coverage.sh
-  - dotnet tool install --global trx2junit --version 1.0.2
-  - export PATH="$PATH:/root/.dotnet/tools"
-  - trx2junit test/TestResults/*.trx
-  - cp test/TestResults/*.xml unit.xml
-  dependencies: []
-  artifacts:
-    reports:
-      junit: ./unit.xml
-    paths:
-      - coverage-html/
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-  - heavy
-
-integration-tests:
-  image: $DOTNET_SDK_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: test
-  script:
-  - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Integration
-  - dotnet tool install --global trx2junit --version 1.0.2
-  - export PATH="$PATH:/root/.dotnet/tools"
-  - trx2junit test/TestResults/*.trx
-  - cp test/TestResults/*.xml integration.xml
-  artifacts:
-    reports:
-      junit: ./integration.xml
-  dependencies:
-  - build-tests
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-
-system-protocol-tests:
-  image: $DOTNET_RUNTIME_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: test
-  script:
-  - apk add --update bash ruby ruby-bundler
-  - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
-  - ./tools/simulation/protocol.rb
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - ./results/protocol.json
-  dependencies:
-  - build-app
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-
-system-schemes-tests:
-  image: $DOTNET_RUNTIME_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: test
-  script:
-  - apk add --update bash ruby ruby-bundler
-  - ./tools/data-gen/generate.sh -d 100 -s 1305 -n
-  - ./tools/simulation/pure-schemes.rb
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - ./results/schemes.json
-  dependencies:
-  - build-app
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-  
-published-packages-tests:
-  image: $DOTNET_RUNTIME_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: test
-  script:
-  - dotnet ./tools/packages-example/dist/packages-example.dll
-  dependencies:
-  - build-app
-  only:
-  - merge_requests
-  - master
-  tags:
-  - docker
-
-publish-docker-images:
-  variables:
-    GIT_STRATEGY: none
+build-reproducibility:
   stage: release
   script:
-  - docker build -t dbogatov/ore-benchmark .
+  - docker build -t dbogatov/ore-benchmark:repro -f ./tools/reproducibility/Dockerfile .
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - docker push dbogatov/ore-benchmark
-  dependencies:
-  - build-app
-  - data-gen
+  - docker push dbogatov/ore-benchmark:repro
+  dependencies: []
   tags:
   - shell
-  only:
-  - master
+  # only:
+  # - master
 
-publish-packages:
-  image: $DOTNET_SDK_IMAGE
-  variables:
-    GIT_STRATEGY: none
-  stage: release
-  script:
-  - apk add --update bash 
-  - ./tools/publish-packages.sh -p -k $NUGET_KEY
-  dependencies:
-  - build-packages
-  allow_failure: true
-  tags:
-  - docker
-  only:
-    refs:
-      - master
-    changes:
-      - version.txt
+# build-docs:
+#   image: dbogatov/docker-sources:tsgkadot-docker-docfx
+#   stage: pre-build
+#   script:
+#   - ./docs/docs.sh
+#   artifacts:
+#     paths:
+#     - ./docs/_site
+#     - ./docs/Dockerfile
+#     - ./docs/nginx.conf
+#     - ./src/web/wwwroot/documentation
+#   only:
+#   - master
+#   tags:
+#   - docker
 
-docs-website:
-  variables:
-    GIT_STRATEGY: none
-  stage: release
-  script:
-  - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME docs/
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
-  - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME
-  dependencies:
-  - build-docs
-  tags:
-  - shell
-  only:
-  - master
-  
-website:
-  variables:
-    GIT_STRATEGY: none
-  stage: release
-  script:
-  - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME src/web/
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
-  - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME
-  dependencies:
-  - build-app
-  tags:
-  - shell
-  only:
-  - master
+# build-app:
+#   image: $DOTNET_SDK_IMAGE
+#   stage: build
+#   script:
+#   - printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
+#   - printf "{\"Version\":{\"GitHash\":\"%s\"}}" $(echo $CI_BUILD_REF | cut -c1-8) > src/web/version.json
+#   - dotnet restore src/cli/ --disable-parallel
+#   - dotnet restore src/web/ --disable-parallel
+#   - dotnet restore tools/data-gen/ --disable-parallel
+#   - dotnet restore tools/packages-example/ --disable-parallel
+#   - dotnet publish -c release src/cli/ -o dist/
+#   - dotnet publish -c release src/web/ -o dist/
+#   - dotnet publish -c release tools/data-gen/ -o dist/
+#   - dotnet publish -c release tools/packages-example/ -o dist/
+#   dependencies:
+#   - build-docs
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - ./src/cli/dist
+#     - ./src/web/dist
+#     - ./tools/data-gen/dist
+#     - ./tools/packages-example/dist
+#     - ./tools/data-gen/generate.sh
+#     - ./tools/simulation/
+#     - ./Dockerfile
+#     - ./.dockerignore
+#     - ./src/web/Dockerfile
+#   tags:
+#   - docker
 
-pages:
-  image: dbogatov/docker-images:alpine-extras-latest
-  variables:
-    GIT_STRATEGY: none
-  stage: release
-  script:
-  - mv docs/_site public/
-  - echo "Uploading files to pages"
-  artifacts:
-    expire_in: 30 min
-    paths:
-    - public
-  dependencies:
-  - build-docs
-  tags:
-  - docker
-  only:
-  - master
+# build-tests:
+#   image: $DOTNET_SDK_IMAGE
+#   stage: build
+#   script:
+#   - dotnet restore --disable-parallel test/
+#   - dotnet publish -c release --no-restore test/ -o dist/
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - ./test/dist
+#     - ./test/test.csproj
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+
+# build-packages:
+#   image: $DOTNET_SDK_IMAGE
+#   stage: build
+#   script:
+#   - apk add --update bash
+#   - ./tools/publish-packages.sh -b -k $NUGET_KEY
+#   artifacts:
+#     paths:
+#     - ./tools/publish-packages.sh
+#     - ./version.txt
+#     - ./src/b-plus-tree/dist/*.nupkg
+#     - ./src/crypto/*/dist/*.nupkg
+#   tags:
+#   - docker
+#   only:
+#   - master
+
+# data-gen:
+#   image: $DOTNET_SDK_IMAGE
+#   stage: build
+#   script:
+#   - apk add --update bash
+#   - ./tools/data-gen/generate.sh -d 2500 -q 50 -s 1305
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#     - ./data/
+#   tags:
+#   - docker
+#   only:
+#   - master
+
+# unit-tests:
+#   image: $DOTNET_SDK_IMAGE
+#   stage: test
+#   script:
+#   - apk add --update bash bc
+#   - ./tools/test-coverage/coverage.sh
+#   - dotnet tool install --global trx2junit --version 1.0.2
+#   - export PATH="$PATH:/root/.dotnet/tools"
+#   - trx2junit test/TestResults/*.trx
+#   - cp test/TestResults/*.xml unit.xml
+#   dependencies: []
+#   artifacts:
+#     reports:
+#       junit: ./unit.xml
+#     paths:
+#       - coverage-html/
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+#   - heavy
+
+# integration-tests:
+#   image: $DOTNET_SDK_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - dotnet test test/test.csproj --output dist/ --no-build --no-restore --verbosity n --logger trx --filter Category=Integration
+#   - dotnet tool install --global trx2junit --version 1.0.2
+#   - export PATH="$PATH:/root/.dotnet/tools"
+#   - trx2junit test/TestResults/*.trx
+#   - cp test/TestResults/*.xml integration.xml
+#   artifacts:
+#     reports:
+#       junit: ./integration.xml
+#   dependencies:
+#   - build-tests
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+
+# system-protocol-tests:
+#   image: $DOTNET_RUNTIME_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - apk add --update bash ruby ruby-bundler
+#   - ./tools/data-gen/generate.sh -d 100 -q 20 -s 1305 -n
+#   - ./tools/simulation/protocol.rb
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#       - ./results/protocol.json
+#   dependencies:
+#   - build-app
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+
+# system-schemes-tests:
+#   image: $DOTNET_RUNTIME_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - apk add --update bash ruby ruby-bundler
+#   - ./tools/data-gen/generate.sh -d 100 -s 1305 -n
+#   - ./tools/simulation/pure-schemes.rb
+#   artifacts:
+#     expire_in: 1 day
+#     paths:
+#       - ./results/schemes.json
+#   dependencies:
+#   - build-app
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+
+# published-packages-tests:
+#   image: $DOTNET_RUNTIME_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: test
+#   script:
+#   - dotnet ./tools/packages-example/dist/packages-example.dll
+#   dependencies:
+#   - build-app
+#   only:
+#   - merge_requests
+#   - master
+#   tags:
+#   - docker
+
+# publish-docker-images:
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: release
+#   script:
+#   - docker build -t dbogatov/ore-benchmark .
+#   - docker login -u $DOCKER_USER -p $DOCKER_PASS
+#   - docker push dbogatov/ore-benchmark
+#   dependencies:
+#   - build-app
+#   - data-gen
+#   tags:
+#   - shell
+#   only:
+#   - master
+
+# publish-packages:
+#   image: $DOTNET_SDK_IMAGE
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: release
+#   script:
+#   - apk add --update bash
+#   - ./tools/publish-packages.sh -p -k $NUGET_KEY
+#   dependencies:
+#   - build-packages
+#   allow_failure: true
+#   tags:
+#   - docker
+#   only:
+#     refs:
+#       - master
+#     changes:
+#       - version.txt
+
+# docs-website:
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: release
+#   script:
+#   - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME docs/
+#   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
+#   - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/docs:$CI_BUILD_REF_NAME
+#   dependencies:
+#   - build-docs
+#   tags:
+#   - shell
+#   only:
+#   - master
+
+# website:
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: release
+#   script:
+#   - docker build -t registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME src/web/
+#   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.dbogatov.org
+#   - docker push registry.dbogatov.org/bu/ore-benchmark/project-code/website:$CI_BUILD_REF_NAME
+#   dependencies:
+#   - build-app
+#   tags:
+#   - shell
+#   only:
+#   - master
+
+# pages:
+#   image: dbogatov/docker-images:alpine-extras-latest
+#   variables:
+#     GIT_STRATEGY: none
+#   stage: release
+#   script:
+#   - mv docs/_site public/
+#   - echo "Uploading files to pages"
+#   artifacts:
+#     expire_in: 30 min
+#     paths:
+#     - public
+#   dependencies:
+#   - build-docs
+#   tags:
+#   - docker
+#   only:
+#   - master
