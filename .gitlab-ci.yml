@@ -82,7 +82,6 @@ build-tests:
     - ./test/dist
     - ./test/test.csproj
   only:
-  - merge_requests
   - master
   tags:
   - docker
@@ -136,7 +135,6 @@ data-gen:
 #     paths:
 #       - coverage-html/
 #   only:
-#   - merge_requests
 #   - master
 #   tags:
 #   - docker
@@ -159,7 +157,6 @@ data-gen:
 #   dependencies:
 #   - build-tests
 #   only:
-#   - merge_requests
 #   - master
 #   tags:
 #   - docker
@@ -180,7 +177,6 @@ data-gen:
 #   dependencies:
 #   - build-app
 #   only:
-#   - merge_requests
 #   - master
 #   tags:
 #   - docker
@@ -201,7 +197,6 @@ data-gen:
 #   dependencies:
 #   - build-app
 #   only:
-#   - merge_requests
 #   - master
 #   tags:
 #   - docker
@@ -216,7 +211,6 @@ published-packages-tests:
   dependencies:
   - build-app
   only:
-  - merge_requests
   - master
   tags:
   - docker
