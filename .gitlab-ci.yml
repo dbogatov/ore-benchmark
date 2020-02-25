@@ -11,6 +11,18 @@ variables:
   DOTNET_SDK_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-sdk-alpine"
   DOTNET_RUNTIME_IMAGE: "dbogatov/docker-sources:microsoft-dotnet-2.2-runtime-alpine"
 
+build-reproducibility:
+  stage: release
+  script:
+  - docker build -t dbogatov/ore-benchmark:repro -f ./tools/reproducibility/Dockerfile --build-arg CI_BUILD_REF .
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker push dbogatov/ore-benchmark:repro
+  dependencies: []
+  tags:
+  - shell
+  only:
+  - master
+
 build-docs:
   image: dbogatov/docker-sources:tsgkadot-docker-docfx
   stage: pre-build
@@ -26,7 +38,7 @@ build-docs:
   - master
   tags:
   - docker
-  
+
 build-app:
   image: $DOTNET_SDK_IMAGE
   stage: build
@@ -34,9 +46,9 @@ build-app:
   - printf "namespace CLI { public partial class Version { public override string ToString() => \"%s\"; } }" $(echo $CI_BUILD_REF | cut -c1-8) > ./src/cli/Version.cs
   - printf "{\"Version\":{\"GitHash\":\"%s\"}}" $(echo $CI_BUILD_REF | cut -c1-8) > src/web/version.json
   - dotnet restore src/cli/ --disable-parallel
-  - dotnet restore src/web/ --disable-parallel 
-  - dotnet restore tools/data-gen/ --disable-parallel 
-  - dotnet restore tools/packages-example/ --disable-parallel 
+  - dotnet restore src/web/ --disable-parallel
+  - dotnet restore tools/data-gen/ --disable-parallel
+  - dotnet restore tools/packages-example/ --disable-parallel
   - dotnet publish -c release src/cli/ -o dist/
   - dotnet publish -c release src/web/ -o dist/
   - dotnet publish -c release tools/data-gen/ -o dist/
@@ -53,7 +65,6 @@ build-app:
     - ./tools/data-gen/generate.sh
     - ./tools/simulation/
     - ./Dockerfile
-    - ./.dockerignore
     - ./src/web/Dockerfile
   tags:
   - docker
@@ -69,9 +80,6 @@ build-tests:
     paths:
     - ./test/dist
     - ./test/test.csproj
-  only:
-  - merge_requests
-  - master
   tags:
   - docker
 
@@ -79,7 +87,7 @@ build-packages:
   image: $DOTNET_SDK_IMAGE
   stage: build
   script:
-  - apk add --update bash 
+  - apk add --update bash
   - ./tools/publish-packages.sh -b -k $NUGET_KEY
   artifacts:
     paths:
@@ -123,9 +131,6 @@ unit-tests:
       junit: ./unit.xml
     paths:
       - coverage-html/
-  only:
-  - merge_requests
-  - master
   tags:
   - docker
   - heavy
@@ -146,9 +151,6 @@ integration-tests:
       junit: ./integration.xml
   dependencies:
   - build-tests
-  only:
-  - merge_requests
-  - master
   tags:
   - docker
 
@@ -167,9 +169,6 @@ system-protocol-tests:
       - ./results/protocol.json
   dependencies:
   - build-app
-  only:
-  - merge_requests
-  - master
   tags:
   - docker
 
@@ -188,12 +187,9 @@ system-schemes-tests:
       - ./results/schemes.json
   dependencies:
   - build-app
-  only:
-  - merge_requests
-  - master
   tags:
   - docker
-  
+
 published-packages-tests:
   image: $DOTNET_RUNTIME_IMAGE
   variables:
@@ -204,7 +200,6 @@ published-packages-tests:
   dependencies:
   - build-app
   only:
-  - merge_requests
   - master
   tags:
   - docker
@@ -231,7 +226,7 @@ publish-packages:
     GIT_STRATEGY: none
   stage: release
   script:
-  - apk add --update bash 
+  - apk add --update bash
   - ./tools/publish-packages.sh -p -k $NUGET_KEY
   dependencies:
   - build-packages
@@ -258,7 +253,7 @@ docs-website:
   - shell
   only:
   - master
-  
+
 website:
   variables:
     GIT_STRATEGY: none
