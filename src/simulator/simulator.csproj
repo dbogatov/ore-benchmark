@@ -11,7 +11,7 @@
 		<ProjectReference Include="../b-plus-tree/b-plus-tree.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
